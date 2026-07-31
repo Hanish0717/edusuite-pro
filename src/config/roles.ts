@@ -54,3 +54,44 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
 };
 
 export const roleOrder: LoginRole[] = ["super-admin", "staff", "student", "parent", "hod"];
+
+/** Marketing-facing role cards used on the public site. */
+export interface RoleHighlight {
+  id: LoginRole;
+  label: string;
+  summary: string;
+  icon: LucideIcon;
+}
+
+export const roleList: RoleHighlight[] = [
+  {
+    id: "super-admin",
+    label: "Super Admin",
+    summary: "Institution-wide control, module access matrix and system health.",
+    icon: ShieldCheck,
+  },
+  {
+    id: "staff",
+    label: "Staff (Faculty)",
+    summary: "Classes, attendance, internals, notes and mentee tracking.",
+    icon: UserCog,
+  },
+  {
+    id: "student",
+    label: "Student",
+    summary: "Timetable, attendance, assignments, results and fees.",
+    icon: GraduationCap,
+  },
+  {
+    id: "parent",
+    label: "Parent",
+    summary: "Ward progress, attendance alerts, fees and transport tracking.",
+    icon: Users,
+  },
+  {
+    id: "hod",
+    label: "HOD",
+    summary: "Department performance, faculty allocation and approvals.",
+    icon: Building2,
+  },
+];
