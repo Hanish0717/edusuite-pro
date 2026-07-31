@@ -156,6 +156,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     const baseProfile = roleProfiles[role];
     return {
       ...baseProfile,
+      role,
       flags,
       department,
       externalPersona,
