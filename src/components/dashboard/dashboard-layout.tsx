@@ -5,8 +5,12 @@ import { AiAssistant } from "@/components/dashboard/ai-assistant";
 import { Topbar } from "@/components/dashboard/topbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { brand } from "@/config/branding";
+import { useRole } from "@/context/role-context";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
+  const { profile } = useRole();
+  const showAi = profile.featureFlags?.aiAssistant !== false;
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
@@ -23,7 +27,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
             </div>
           </footer>
         </div>
-        <AiAssistant />
+        {showAi && <AiAssistant />}
       </div>
     </SidebarProvider>
   );

@@ -45,20 +45,64 @@ export const Route = createFileRoute("/")({
 });
 
 const modules = [
-  { icon: GraduationCap, title: "Admissions & Academics", text: "Enquiry to enrolment, curriculum, courses and department structures." },
-  { icon: CalendarCheck, title: "Attendance & Timetable", text: "Biometric-ready attendance, period planning and clash-free timetables." },
-  { icon: FileSpreadsheet, title: "Examinations & Results", text: "Internals, hall tickets, valuation, revaluation and result publishing." },
-  { icon: Wallet, title: "Finance & Fees", text: "Fee plans, online collection, scholarships, refunds and payroll." },
-  { icon: Library, title: "Library & LMS", text: "Catalogue, circulation, digital notes, assignments and quizzes." },
-  { icon: BedDouble, title: "Hostel & Rooms", text: "Allotment, occupancy, mess billing and warden workflows." },
-  { icon: Bus, title: "Transport", text: "Routes, stops, live tracking and per-student transport billing." },
-  { icon: BarChart3, title: "Reports & Analytics", text: "NAAC/NBA ready reporting with department level drilldowns." },
+  {
+    icon: GraduationCap,
+    title: "Admissions & Academics",
+    text: "Enquiry to enrolment, curriculum, courses and department structures.",
+  },
+  {
+    icon: CalendarCheck,
+    title: "Attendance & Timetable",
+    text: "Biometric-ready attendance, period planning and clash-free timetables.",
+  },
+  {
+    icon: FileSpreadsheet,
+    title: "Examinations & Results",
+    text: "Internals, hall tickets, valuation, revaluation and result publishing.",
+  },
+  {
+    icon: Wallet,
+    title: "Finance & Fees",
+    text: "Fee plans, online collection, scholarships, refunds and payroll.",
+  },
+  {
+    icon: Library,
+    title: "Library & LMS",
+    text: "Catalogue, circulation, digital notes, assignments and quizzes.",
+  },
+  {
+    icon: BedDouble,
+    title: "Hostel & Rooms",
+    text: "Allotment, occupancy, mess billing and warden workflows.",
+  },
+  {
+    icon: Bus,
+    title: "Transport",
+    text: "Routes, stops, live tracking and per-student transport billing.",
+  },
+  {
+    icon: BarChart3,
+    title: "Reports & Analytics",
+    text: "NAAC/NBA ready reporting with department level drilldowns.",
+  },
 ];
 
 const highlights = [
-  { icon: ShieldCheck, title: "Granular RBAC", text: "Five login roles with privilege flags and department scopes, mapped to every module action." },
-  { icon: Bot, title: "AI Assistant", text: "Ask for attendance risks, fee defaulters or result trends in plain language." },
-  { icon: Users, title: "Multi-campus", text: "Run several institutes with isolated data and a single control plane." },
+  {
+    icon: ShieldCheck,
+    title: "Granular RBAC",
+    text: "Five login roles with privilege flags and department scopes, mapped to every module action.",
+  },
+  {
+    icon: Bot,
+    title: "AI Assistant",
+    text: "Ask for attendance risks, fee defaulters or result trends in plain language.",
+  },
+  {
+    icon: Users,
+    title: "Multi-campus",
+    text: "Run several institutes with isolated data and a single control plane.",
+  },
 ];
 
 const plans = [
@@ -67,14 +111,25 @@ const plans = [
     price: "Rs 29k",
     period: "/ year",
     text: "For single-campus colleges getting started with digital operations.",
-    features: ["Up to 500 students", "Core academics & attendance", "Parent portal", "Email support"],
+    features: [
+      "Up to 500 students",
+      "Core academics & attendance",
+      "Parent portal",
+      "Email support",
+    ],
   },
   {
     name: "Growth",
     price: "Rs 89k",
     period: "/ year",
     text: "For growing institutions that need exams, finance and analytics.",
-    features: ["Up to 3,000 students", "Exams, finance & LMS", "Role-based dashboards", "AI assistant", "Priority support"],
+    features: [
+      "Up to 3,000 students",
+      "Exams, finance & LMS",
+      "Role-based dashboards",
+      "AI assistant",
+      "Priority support",
+    ],
     featured: true,
   },
   {
@@ -82,13 +137,28 @@ const plans = [
     price: "Custom",
     period: "",
     text: "For multi-campus groups with compliance and integration needs.",
-    features: ["Unlimited students", "Multi-campus control plane", "SSO & audit logs", "Dedicated success manager"],
+    features: [
+      "Unlimited students",
+      "Multi-campus control plane",
+      "SSO & audit logs",
+      "Dedicated success manager",
+    ],
   },
 ];
 
 const testimonials = [
-  { quote: "Attendance disputes dropped to near zero and parents finally stopped calling the office every week.", name: "Dr. Meera Rao", role: "Principal, Sree Institute of Technology" },
-  { quote: "Our HODs plan faculty load and internals in one screen. Result publishing went from days to hours.", name: "Prof. Anand Kumar", role: "Dean Academics, Vignan Group" },
+  {
+    quote:
+      "Attendance disputes dropped to near zero and parents finally stopped calling the office every week.",
+    name: "Dr. Meera Rao",
+    role: "Principal, Sree Institute of Technology",
+  },
+  {
+    quote:
+      "Our HODs plan faculty load and internals in one screen. Result publishing went from days to hours.",
+    name: "Prof. Anand Kumar",
+    role: "Dean Academics, Vignan Group",
+  },
 ];
 
 function Landing() {
@@ -98,7 +168,10 @@ function Landing() {
 
       <main>
         <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 bg-brand-gradient-soft" aria-hidden />
+          <div
+            className="pointer-events-none absolute inset-0 bg-brand-gradient-soft"
+            aria-hidden
+          />
           <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-16 md:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:py-24">
             <div className="min-w-0">
               <Badge variant="secondary" className="gap-1.5">
@@ -107,7 +180,9 @@ function Landing() {
               <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
                 The complete ERP for <span className="text-brand-gradient">modern colleges</span>
               </h1>
-              <p className="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">{brand.description}</p>
+              <p className="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
+                {brand.description}
+              </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button asChild size="lg" className="bg-brand-gradient shadow-glow">
                   <Link to="/dashboard">
@@ -125,7 +200,9 @@ function Landing() {
                   { k: "Uptime", v: "99.9%" },
                 ].map((stat) => (
                   <div key={stat.k}>
-                    <dt className="text-xs uppercase tracking-wide text-muted-foreground">{stat.k}</dt>
+                    <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+                      {stat.k}
+                    </dt>
                     <dd className="font-display text-2xl font-extrabold">{stat.v}</dd>
                   </div>
                 ))}
@@ -147,7 +224,10 @@ function Landing() {
         <section className="mx-auto max-w-7xl px-4 py-16 md:px-6">
           <div className="grid gap-4 md:grid-cols-3">
             {highlights.map((item) => (
-              <div key={item.title} className="rounded-2xl border border-border/70 bg-card p-6 shadow-card">
+              <div
+                key={item.title}
+                className="rounded-2xl border border-border/70 bg-card p-6 shadow-card"
+              >
                 <span className="grid size-11 place-items-center rounded-2xl bg-brand-gradient text-primary-foreground">
                   <item.icon className="size-5" />
                 </span>
@@ -164,11 +244,15 @@ function Landing() {
               Every campus workflow, in one platform
             </h2>
             <p className="mt-3 max-w-2xl text-muted-foreground">
-              Sixteen production modules built for Indian higher education, ready to switch on per department.
+              Sixteen production modules built for Indian higher education, ready to switch on per
+              department.
             </p>
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {modules.map((mod) => (
-                <div key={mod.title} className="rounded-2xl border border-border/70 bg-card p-5 shadow-card">
+                <div
+                  key={mod.title}
+                  className="rounded-2xl border border-border/70 bg-card p-5 shadow-card"
+                >
                   <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
                     <mod.icon className="size-5" />
                   </span>
@@ -200,7 +284,8 @@ function Landing() {
                 <h3 className="mt-4 font-display text-base font-bold">{role.label}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{role.summary}</p>
                 <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                  View dashboard <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                  View dashboard{" "}
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </span>
               </Link>
             ))}
@@ -228,7 +313,9 @@ function Landing() {
                   </div>
                   <p className="mt-4 font-display text-3xl font-extrabold">
                     {plan.price}
-                    <span className="text-base font-medium text-muted-foreground">{plan.period}</span>
+                    <span className="text-base font-medium text-muted-foreground">
+                      {plan.period}
+                    </span>
                   </p>
                   <p className="mt-3 text-sm text-muted-foreground">{plan.text}</p>
                   <ul className="mt-6 space-y-2.5">
@@ -252,11 +339,16 @@ function Landing() {
 
             <div className="mt-12 grid gap-4 md:grid-cols-2">
               {testimonials.map((item) => (
-                <figure key={item.name} className="rounded-2xl border border-border/70 bg-card p-6 shadow-card">
+                <figure
+                  key={item.name}
+                  className="rounded-2xl border border-border/70 bg-card p-6 shadow-card"
+                >
                   <blockquote className="text-sm leading-relaxed">"{item.quote}"</blockquote>
                   <figcaption className="mt-4 text-sm font-medium">
                     {item.name}
-                    <span className="block text-xs font-normal text-muted-foreground">{item.role}</span>
+                    <span className="block text-xs font-normal text-muted-foreground">
+                      {item.role}
+                    </span>
                   </figcaption>
                 </figure>
               ))}
@@ -270,13 +362,19 @@ function Landing() {
               Ready to digitise your campus?
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-brand-deep-foreground/70">
-              Go live in weeks with guided data migration, staff training and department-level rollout.
+              Go live in weeks with guided data migration, staff training and department-level
+              rollout.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="bg-brand-gradient shadow-glow">
                 <Link to="/signup">Start free trial</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/25 bg-transparent">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="border-white/25 bg-transparent"
+              >
                 <Link to="/contact">Contact sales</Link>
               </Button>
             </div>

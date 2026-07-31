@@ -1,31 +1,36 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Bus } from "lucide-react";
-
+import { createFileRoute, Outlet, Link } from "@tanstack/react-router";
+import { ShieldAlert } from "lucide-react";
+import { useRole } from "@/context/role-context";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { ModulePage } from "@/components/dashboard/module-page";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/transport")({
-  head: () => ({
-    meta: [
-      { title: "Transport — EduSuite Pro" },
-      { name: "description", content: "Routes, stops and tracking in EduSuite Pro college ERP." },
-      { property: "og:title", content: "Transport — EduSuite Pro" },
-      { property: "og:description", content: "Routes, stops and tracking." },
-    ],
-  }),
-  component: Page,
+  component: TransportLayout,
 });
 
-function Page() {
+function TransportLayout() {
+  const { role, flags } = useRole();
+
+  if (role !== "super-admin" && (role !== "staff" || !flags.includes("isTransportOfficer"))) {
+    return (
+      <div className="flex h-screen items-center justify-center p-4 bg-background">
+        <div className="text-center max-w-md border border-destructive/20 bg-destructive/5 rounded-2xl p-6">
+          <ShieldAlert className="size-10 text-destructive mx-auto mb-3" />
+          <h3 className="text-lg font-bold">Access Denied</h3>
+          <p className="text-xs text-muted-foreground mt-1 mb-4">
+            You need Transport Officer privileges to view this section.
+          </p>
+          <Button asChild className="rounded-xl">
+            <Link to="/login">Go to Login</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DashboardLayout>
-      <ModulePage
-        title="Transport"
-        description="Routes, stops and tracking"
-        icon={Bus}
-        tabs={["Routes", "Vehicles", "Tracking"]}
-        highlights={[{"label": "Routes", "value": "22"}, {"label": "Buses", "value": "28"}, {"label": "Riders", "value": "1,486"}, {"label": "On Time", "value": "96%"}]}
-      />
+      <Outlet />
     </DashboardLayout>
   );
 }

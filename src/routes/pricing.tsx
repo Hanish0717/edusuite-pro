@@ -12,7 +12,8 @@ export const Route = createFileRoute("/pricing")({
       { title: "Pricing — EduSuite Pro College ERP" },
       {
         name: "description",
-        content: "Transparent annual pricing for colleges of every size, from single campus to multi-campus groups.",
+        content:
+          "Transparent annual pricing for colleges of every size, from single campus to multi-campus groups.",
       },
       { property: "og:title", content: "Pricing — EduSuite Pro College ERP" },
       { property: "og:description", content: "Annual plans that scale with student enrolment." },
@@ -32,22 +33,45 @@ const plans = [
     name: "Growth",
     price: "Rs 89,000",
     text: "Full academic and finance stack.",
-    features: ["Up to 3,000 students", "Exams, finance, LMS", "All role dashboards", "AI assistant", "Priority support"],
+    features: [
+      "Up to 3,000 students",
+      "Exams, finance, LMS",
+      "All role dashboards",
+      "AI assistant",
+      "Priority support",
+    ],
     featured: true,
   },
   {
     name: "Enterprise",
     price: "Custom",
     text: "Multi-campus groups and universities.",
-    features: ["Unlimited students", "Multi-campus control plane", "SSO, audit logs, SLAs", "Dedicated success manager"],
+    features: [
+      "Unlimited students",
+      "Multi-campus control plane",
+      "SSO, audit logs, SLAs",
+      "Dedicated success manager",
+    ],
   },
 ];
 
 const faqs = [
-  { q: "Is pricing per student or per campus?", a: "Plans are billed annually per campus, with student bands determining the tier." },
-  { q: "Can we start with a few modules?", a: "Yes. Modules can be enabled per department and expanded any time." },
-  { q: "Do you help with data migration?", a: "Every paid plan includes guided migration from spreadsheets or your existing ERP." },
-  { q: "Is there an implementation fee?", a: "Starter and Growth include onboarding. Enterprise rollouts are scoped per campus." },
+  {
+    q: "Is pricing per student or per campus?",
+    a: "Plans are billed annually per campus, with student bands determining the tier.",
+  },
+  {
+    q: "Can we start with a few modules?",
+    a: "Yes. Modules can be enabled per department and expanded any time.",
+  },
+  {
+    q: "Do you help with data migration?",
+    a: "Every paid plan includes guided migration from spreadsheets or your existing ERP.",
+  },
+  {
+    q: "Is there an implementation fee?",
+    a: "Starter and Growth include onboarding. Enterprise rollouts are scoped per campus.",
+  },
 ];
 
 function PricingPage() {
@@ -104,7 +128,10 @@ function PricingPage() {
 
           <div className="mt-14 grid gap-4 md:grid-cols-2">
             {faqs.map((faq) => (
-              <div key={faq.q} className="rounded-2xl border border-border/70 bg-card p-6 shadow-card">
+              <div
+                key={faq.q}
+                className="rounded-2xl border border-border/70 bg-card p-6 shadow-card"
+              >
                 <h3 className="font-display text-base font-bold">{faq.q}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{faq.a}</p>
               </div>

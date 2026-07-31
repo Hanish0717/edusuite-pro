@@ -4,12 +4,7 @@ import { Panel } from "@/components/dashboard/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ModulePageProps {
   title: string;
@@ -17,9 +12,19 @@ interface ModulePageProps {
   icon: LucideIcon;
   tabs: string[];
   highlights: { label: string; value: string }[];
+  onActionClick?: () => void;
+  actionText?: string;
 }
 
-export function ModulePage({ title, description, icon: Icon, tabs, highlights }: ModulePageProps) {
+export function ModulePage({
+  title,
+  description,
+  icon: Icon,
+  tabs,
+  highlights,
+  onActionClick,
+  actionText = "New record",
+}: ModulePageProps) {
   return (
     <div className="space-y-6">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between">
@@ -32,7 +37,14 @@ export function ModulePage({ title, description, icon: Icon, tabs, highlights }:
             <p className="truncate text-sm text-muted-foreground">{description}</p>
           </div>
         </div>
-        <Button className="shrink-0 bg-brand-gradient shadow-glow">New record</Button>
+        {onActionClick && (
+          <Button
+            onClick={onActionClick}
+            className="shrink-0 bg-brand-gradient shadow-glow cursor-pointer"
+          >
+            {actionText}
+          </Button>
+        )}
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

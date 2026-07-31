@@ -9,7 +9,11 @@ export const Route = createFileRoute("/verify-email")({
   head: () => ({
     meta: [
       { title: "Verify your email — EduSuite Pro" },
-      { name: "description", content: "Enter the six digit code sent to your institution email to activate your workspace." },
+      {
+        name: "description",
+        content:
+          "Enter the six digit code sent to your institution email to activate your workspace.",
+      },
       { property: "og:title", content: "Verify your email — EduSuite Pro" },
       { property: "og:description", content: "Activate your EduSuite Pro workspace." },
     ],
@@ -46,7 +50,8 @@ function VerifyEmailPage() {
           <Link to="/dashboard">Verify and continue</Link>
         </Button>
         <p className="text-sm text-muted-foreground">
-          Didn't get it? <button className="font-medium text-primary hover:underline">Resend code</button>
+          Didn't get it?{" "}
+          <button className="font-medium text-primary hover:underline">Resend code</button>
         </p>
       </div>
     </AuthLayout>

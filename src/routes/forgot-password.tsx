@@ -9,7 +9,10 @@ export const Route = createFileRoute("/forgot-password")({
   head: () => ({
     meta: [
       { title: "Reset your password — EduSuite Pro" },
-      { name: "description", content: "Request a secure password reset link for your EduSuite Pro account." },
+      {
+        name: "description",
+        content: "Request a secure password reset link for your EduSuite Pro account.",
+      },
       { property: "og:title", content: "Reset your password — EduSuite Pro" },
       { property: "og:description", content: "Request a secure password reset link." },
     ],

@@ -22,15 +22,19 @@ export function AuthLayout({
           <Logo tone="mono" showName nameClassName="text-brand-deep-foreground" />
         </Link>
         <div>
-          <h2 className="max-w-md font-display text-4xl font-extrabold leading-tight">{brand.tagline}</h2>
+          <h2 className="max-w-md font-display text-4xl font-extrabold leading-tight">
+            {brand.tagline}
+          </h2>
           <p className="mt-5 max-w-md text-sm text-brand-deep-foreground/70">{brand.description}</p>
           <ul className="mt-8 space-y-3 text-sm text-brand-deep-foreground/80">
-            {["Role based dashboards", "Department level scopes", "AI campus assistant"].map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <span className="size-1.5 rounded-full bg-primary" />
-                {item}
-              </li>
-            ))}
+            {["Role based dashboards", "Department level scopes", "AI campus assistant"].map(
+              (item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-primary" />
+                  {item}
+                </li>
+              ),
+            )}
           </ul>
         </div>
         <p className="text-xs text-brand-deep-foreground/50">
@@ -45,7 +49,9 @@ export function AuthLayout({
               <Logo showName />
             </Link>
           </div>
-          <h1 className="mt-8 font-display text-2xl font-extrabold tracking-tight lg:mt-0">{title}</h1>
+          <h1 className="mt-8 font-display text-2xl font-extrabold tracking-tight lg:mt-0">
+            {title}
+          </h1>
           <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
           <div className="mt-8">{children}</div>
           {footer && <div className="mt-6 text-sm text-muted-foreground">{footer}</div>}

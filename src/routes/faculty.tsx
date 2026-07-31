@@ -1,31 +1,37 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { UserCog } from "lucide-react";
-
+import { createFileRoute, Outlet, Link } from "@tanstack/react-router";
+import { ShieldAlert } from "lucide-react";
+import { useRole } from "@/context/role-context";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { ModulePage } from "@/components/dashboard/module-page";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/faculty")({
-  head: () => ({
-    meta: [
-      { title: "Faculty — EduSuite Pro" },
-      { name: "description", content: "Faculty profiles and workload in EduSuite Pro college ERP." },
-      { property: "og:title", content: "Faculty — EduSuite Pro" },
-      { property: "og:description", content: "Faculty profiles and workload." },
-    ],
-  }),
-  component: Page,
+  component: FacultyLayout,
 });
 
-function Page() {
+function FacultyLayout() {
+  const { role } = useRole();
+
+  if (role !== "staff") {
+    return (
+      <div className="flex h-screen items-center justify-center p-4 bg-background">
+        <div className="text-center max-w-md border border-destructive/20 bg-destructive/5 rounded-2xl p-6">
+          <ShieldAlert className="size-10 text-destructive mx-auto mb-3" />
+          <h3 className="text-lg font-bold">Access Denied</h3>
+          <p className="text-xs text-muted-foreground mt-1 mb-4">
+            You need Staff (Faculty) privileges to view this section. Please switch your role in the
+            topbar or log in.
+          </p>
+          <Button asChild className="rounded-xl">
+            <Link to="/login">Go to Login</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DashboardLayout>
-      <ModulePage
-        title="Faculty"
-        description="Faculty profiles and workload"
-        icon={UserCog}
-        tabs={["Profiles", "Workload", "Leave"]}
-        highlights={[{"label": "Faculty", "value": "186"}, {"label": "Departments", "value": "8"}, {"label": "On Leave", "value": "4"}, {"label": "Avg Load", "value": "16 hrs"}]}
-      />
+      <Outlet />
     </DashboardLayout>
   );
 }

@@ -1,31 +1,36 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { BedDouble } from "lucide-react";
-
+import { createFileRoute, Outlet, Link } from "@tanstack/react-router";
+import { ShieldAlert } from "lucide-react";
+import { useRole } from "@/context/role-context";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { ModulePage } from "@/components/dashboard/module-page";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/hostel")({
-  head: () => ({
-    meta: [
-      { title: "Hostel — EduSuite Pro" },
-      { name: "description", content: "Room allotment and mess in EduSuite Pro college ERP." },
-      { property: "og:title", content: "Hostel — EduSuite Pro" },
-      { property: "og:description", content: "Room allotment and mess." },
-    ],
-  }),
-  component: Page,
+  component: HostelLayout,
 });
 
-function Page() {
+function HostelLayout() {
+  const { role, flags } = useRole();
+
+  if (role !== "super-admin" && (role !== "staff" || !flags.includes("isHostelWarden"))) {
+    return (
+      <div className="flex h-screen items-center justify-center p-4 bg-background">
+        <div className="text-center max-w-md border border-destructive/20 bg-destructive/5 rounded-2xl p-6">
+          <ShieldAlert className="size-10 text-destructive mx-auto mb-3" />
+          <h3 className="text-lg font-bold">Access Denied</h3>
+          <p className="text-xs text-muted-foreground mt-1 mb-4">
+            You need Hostel Warden privileges to view this section.
+          </p>
+          <Button asChild className="rounded-xl">
+            <Link to="/login">Go to Login</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DashboardLayout>
-      <ModulePage
-        title="Hostel"
-        description="Room allotment and mess"
-        icon={BedDouble}
-        tabs={["Blocks", "Allotment", "Mess"]}
-        highlights={[{"label": "Blocks", "value": "6"}, {"label": "Occupancy", "value": "88%"}, {"label": "Vacant Beds", "value": "142"}, {"label": "Mess Bills", "value": "Rs 8.2L"}]}
-      />
+      <Outlet />
     </DashboardLayout>
   );
 }

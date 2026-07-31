@@ -16,9 +16,15 @@ export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
       { title: "Create your campus account — EduSuite Pro" },
-      { name: "description", content: "Start your EduSuite Pro trial and onboard your institution in minutes." },
+      {
+        name: "description",
+        content: "Start your EduSuite Pro trial and onboard your institution in minutes.",
+      },
       { property: "og:title", content: "Create your campus account — EduSuite Pro" },
-      { property: "og:description", content: "Onboard your institution to EduSuite Pro in minutes." },
+      {
+        property: "og:description",
+        content: "Onboard your institution to EduSuite Pro in minutes.",
+      },
     ],
   }),
   component: SignupPage,
@@ -88,7 +94,8 @@ function SignupPage() {
           Create account
         </Button>
         <p className="text-xs text-muted-foreground">
-          By continuing you agree to the EduSuite Pro terms of service and data processing agreement.
+          By continuing you agree to the EduSuite Pro terms of service and data processing
+          agreement.
         </p>
       </form>
     </AuthLayout>

@@ -15,7 +15,8 @@ export const Route = createFileRoute("/contact")({
       { title: "Contact EduSuite Pro — Book a Campus Demo" },
       {
         name: "description",
-        content: "Talk to the EduSuite Pro team about a guided demo, migration plan and rollout timeline for your college.",
+        content:
+          "Talk to the EduSuite Pro team about a guided demo, migration plan and rollout timeline for your college.",
       },
       { property: "og:title", content: "Contact EduSuite Pro" },
       { property: "og:description", content: "Book a guided demo for your campus." },
@@ -30,7 +31,9 @@ function ContactPage() {
       <SiteHeader />
       <main className="mx-auto grid max-w-7xl gap-10 px-4 py-16 md:px-6 lg:grid-cols-[1fr_1.1fr]">
         <div className="min-w-0">
-          <h1 className="font-display text-4xl font-extrabold tracking-tight">Book a campus demo</h1>
+          <h1 className="font-display text-4xl font-extrabold tracking-tight">
+            Book a campus demo
+          </h1>
           <p className="mt-4 text-muted-foreground">
             Tell us about your institution and we will tailor the walkthrough to your departments.
           </p>
@@ -76,7 +79,11 @@ function ContactPage() {
           </div>
           <div className="mt-4 space-y-2">
             <Label htmlFor="message">What would you like to see?</Label>
-            <Textarea id="message" rows={5} placeholder="Attendance, exams and fee collection for 1,800 students." />
+            <Textarea
+              id="message"
+              rows={5}
+              placeholder="Attendance, exams and fee collection for 1,800 students."
+            />
           </div>
           <Button type="submit" className="mt-6 w-full bg-brand-gradient shadow-glow">
             Request demo

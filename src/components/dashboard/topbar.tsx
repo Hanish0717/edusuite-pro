@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, Download, Filter, Moon, Search, Sun } from "lucide-react";
+import { Bell, Download, Filter, Moon, Search, Sun, Settings as SettingsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -22,6 +22,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -38,10 +41,18 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { roleOrder, roleProfiles } from "@/config/roles";
+import {
+  roleOrder,
+  roleProfiles,
+  RESPONSIBILITY_FLAGS,
+  EXTERNAL_PERSONAS,
+  DEPARTMENTS,
+  type LoginRole,
+  type ExternalPersona,
+  type DepartmentCode,
+} from "@/config/roles";
 import { useRole } from "@/context/role-context";
 import { notifications } from "@/data/mock";
-import type { LoginRole } from "@/config/roles";
 
 function useCrumbs() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
@@ -55,7 +66,17 @@ function useCrumbs() {
 
 export function Topbar() {
   const crumbs = useCrumbs();
-  const { role, setRole, profile } = useRole();
+  const {
+    role,
+    setRole,
+    profile,
+    flags,
+    setFlags,
+    department,
+    setDepartment,
+    externalPersona,
+    setExternalPersona,
+  } = useRole();
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -75,9 +96,9 @@ export function Topbar() {
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2 flex-wrap">
           <Select value={role} onValueChange={(v) => setRole(v as LoginRole)}>
-            <SelectTrigger className="h-9 w-[168px]" aria-label="Demo role">
+            <SelectTrigger className="h-9 w-[150px]" aria-label="Demo role">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -88,6 +109,80 @@ export function Topbar() {
               ))}
             </SelectContent>
           </Select>
+
+          {role === "staff" && (
+            <>
+              <Select value={department} onValueChange={(v) => setDepartment(v as DepartmentCode)}>
+                <SelectTrigger className="h-9 w-[100px]" aria-label="Department">
+                  <SelectValue placeholder="Dept" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS.map((dept) => (
+                    <SelectItem key={dept.code} value={dept.code}>
+                      {dept.code}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9 gap-1.5 px-3">
+                    <SettingsIcon className="size-3.5" /> Privileges ({flags.length})
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-3" align="end">
+                  <h4 className="font-semibold text-sm mb-2 border-b border-border pb-1">
+                    Responsibility Flags
+                  </h4>
+                  <div className="max-h-60 overflow-y-auto space-y-2">
+                    {RESPONSIBILITY_FLAGS.map((f) => {
+                      const active = flags.includes(f.id);
+                      return (
+                        <div key={f.id} className="flex items-center gap-2">
+                          <Checkbox
+                            id={`flag-${f.id}`}
+                            checked={active}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setFlags([...flags, f.id]);
+                              } else {
+                                setFlags(flags.filter((x) => x !== f.id));
+                              }
+                            }}
+                          />
+                          <Label
+                            htmlFor={`flag-${f.id}`}
+                            className="text-xs cursor-pointer select-none truncate"
+                          >
+                            {f.label}
+                          </Label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </>
+          )}
+
+          {role === "external-user" && (
+            <Select
+              value={externalPersona}
+              onValueChange={(v) => setExternalPersona(v as ExternalPersona)}
+            >
+              <SelectTrigger className="h-9 w-[150px]" aria-label="External Persona">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {EXTERNAL_PERSONAS.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
 
           <Button
             variant="ghost"
@@ -182,11 +277,18 @@ export function Topbar() {
         </Breadcrumb>
 
         <div className="flex items-center gap-2">
-          {profile.flags.slice(0, 2).map((flag) => (
-            <Badge key={flag} variant="secondary" className="hidden font-mono text-[0.65rem] sm:inline-flex">
-              {flag}
-            </Badge>
-          ))}
+          {profile.flags.slice(0, 2).map((flag) => {
+            const label = RESPONSIBILITY_FLAGS.find((f) => f.id === flag)?.label || flag;
+            return (
+              <Badge
+                key={flag}
+                variant="secondary"
+                className="hidden text-[0.65rem] sm:inline-flex"
+              >
+                {label}
+              </Badge>
+            );
+          })}
           <Button variant="outline" size="sm" className="h-8 gap-1.5">
             <Filter className="size-3.5" /> Filters
           </Button>

@@ -5,11 +5,7 @@ import { ChevronRight, Search } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
@@ -26,18 +22,18 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { navigationForRole } from "@/config/navigation";
+import { navigationForUser } from "@/config/navigation";
 import { useRole } from "@/context/role-context";
 import { cn } from "@/lib/utils";
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { role, profile } = useRole();
+  const { profile } = useRole();
   const [query, setQuery] = useState("");
   const pathname = useRouterState({ select: (r) => r.location.pathname });
 
-  const sections = navigationForRole(role)
+  const sections = navigationForUser(profile)
     .map((section) => ({
       ...section,
       items: section.items.filter((item) =>
@@ -50,7 +46,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-sidebar-border">
       <SidebarHeader className="gap-3 px-3 pt-4">
         <Link to="/dashboard" className="flex min-w-0 items-center">
-          <Logo showName={!collapsed} nameClassName="text-sidebar-foreground" />
+          <Logo showName={!collapsed} tone="mono" nameClassName="text-sidebar-foreground" />
         </Link>
         {!collapsed && (
           <div className="relative">
@@ -77,7 +73,11 @@ export function AppSidebar() {
                   const active = pathname === item.url;
                   if (item.children && !collapsed) {
                     return (
-                      <Collapsible key={item.title} defaultOpen={active} className="group/collapsible">
+                      <Collapsible
+                        key={item.title}
+                        defaultOpen={active}
+                        className="group/collapsible"
+                      >
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
                             <SidebarMenuButton isActive={active} tooltip={item.title}>

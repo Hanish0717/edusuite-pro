@@ -1,31 +1,28 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Users } from "lucide-react";
-
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { ModulePage } from "@/components/dashboard/module-page";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { useRole } from "@/context/role-context";
 
 export const Route = createFileRoute("/students")({
-  head: () => ({
-    meta: [
-      { title: "Students — EduSuite Pro" },
-      { name: "description", content: "Student information and lifecycle in EduSuite Pro college ERP." },
-      { property: "og:title", content: "Students — EduSuite Pro" },
-      { property: "og:description", content: "Student information and lifecycle." },
-    ],
-  }),
-  component: Page,
+  component: StudentsRedirect,
 });
 
-function Page() {
-  return (
-    <DashboardLayout>
-      <ModulePage
-        title="Students"
-        description="Student information and lifecycle"
-        icon={Users}
-        tabs={["All Students", "Admissions", "Documents"]}
-        highlights={[{"label": "Total", "value": "3,240"}, {"label": "New Admissions", "value": "612"}, {"label": "At Risk", "value": "48"}, {"label": "Alumni", "value": "5,120"}]}
-      />
-    </DashboardLayout>
-  );
+function StudentsRedirect() {
+  const { role, flags } = useRole();
+
+  if (role === "super-admin") {
+    return <Navigate to="/super-admin/students" replace />;
+  }
+  if (role === "staff") {
+    if (flags.includes("isPlacementOfficer")) {
+      return <Navigate to="/placement/students" replace />;
+    }
+    return <Navigate to="/faculty/dashboard" replace />;
+  }
+  if (role === "student") {
+    return <Navigate to="/student/dashboard" replace />;
+  }
+  if (role === "parent") {
+    return <Navigate to="/parent/dashboard" replace />;
+  }
+
+  return <Navigate to="/login" replace />;
 }

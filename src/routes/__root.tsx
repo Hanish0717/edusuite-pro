@@ -86,7 +86,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "EduSuite Pro" },
       { property: "og:title", content: "EduSuite Pro — AI College ERP" },
-      { property: "og:description", content: "One login. Many responsibilities. Department-level control." },
+      {
+        property: "og:description",
+        content: "One login. Many responsibilities. Department-level control.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

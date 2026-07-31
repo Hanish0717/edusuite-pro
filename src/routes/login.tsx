@@ -7,14 +7,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { roleOrder, roleProfiles, type LoginRole } from "@/config/roles";
+import { roleOrder, roleProfiles, type LoginRole, getDefaultRouteForUser } from "@/config/roles";
 import { useRole } from "@/context/role-context";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Sign in — EduSuite Pro" },
-      { name: "description", content: "Sign in to EduSuite Pro to access your role-based campus dashboard." },
+      {
+        name: "description",
+        content: "Sign in to EduSuite Pro to access your role-based campus dashboard.",
+      },
       { property: "og:title", content: "Sign in — EduSuite Pro" },
       { property: "og:description", content: "Access your role-based campus dashboard." },
     ],
@@ -45,17 +48,27 @@ function LoginPage() {
         onSubmit={(event) => {
           event.preventDefault();
           setRole(selected);
-          navigate({ to: "/dashboard" });
+          const defaultRoute = getDefaultRouteForUser(selected, roleProfiles[selected].flags);
+          navigate({ to: defaultRoute });
         }}
       >
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="you@college.edu" defaultValue="demo@edusuitepro.com" required />
+          <Input
+            id="email"
+            type="email"
+            placeholder="you@college.edu"
+            defaultValue="demo@edusuitepro.com"
+            required
+          />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <Label htmlFor="password">Password</Label>
-            <Link to="/forgot-password" className="text-xs font-medium text-primary hover:underline">
+            <Link
+              to="/forgot-password"
+              className="text-xs font-medium text-primary hover:underline"
+            >
               Forgot password?
             </Link>
           </div>

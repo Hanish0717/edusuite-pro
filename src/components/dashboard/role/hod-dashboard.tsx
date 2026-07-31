@@ -26,7 +26,13 @@ export function HodDashboard() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard label="Students" value="512" icon={Users} delta="3.1%" />
         <KpiCard label="Faculty" value="28" icon={UserCog} tone="info" />
-        <KpiCard label="Attendance (Dept.)" value="91%" icon={GraduationCap} delta="2.4%" tone="success" />
+        <KpiCard
+          label="Attendance (Dept.)"
+          value="91%"
+          icon={GraduationCap}
+          delta="2.4%"
+          tone="success"
+        />
         <KpiCard label="Pending Approvals" value="7" icon={CheckCircle2} tone="warning" />
       </div>
 
@@ -116,7 +122,13 @@ export function HodDashboard() {
       </div>
 
       <QuickActionsWidget
-        actions={["Approve leave", "Allocate faculty", "Publish results", "Schedule test", "Department report"]}
+        actions={[
+          "Approve leave",
+          "Allocate faculty",
+          "Publish results",
+          "Schedule test",
+          "Department report",
+        ]}
       />
     </div>
   );

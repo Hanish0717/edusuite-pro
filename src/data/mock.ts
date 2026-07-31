@@ -120,11 +120,51 @@ export const aiInsightsByRole: Record<string, string[]> = {
 };
 
 export const studentsTable = [
-  { roll: "22CS101", name: "K. Sai Teja", dept: "CSE", year: "II", attendance: "88%", cgpa: "8.45", status: "Active" },
-  { roll: "22CS114", name: "A. Meghana", dept: "CSE", year: "II", attendance: "94%", cgpa: "9.10", status: "Active" },
-  { roll: "22EC067", name: "R. Karthik", dept: "ECE", year: "II", attendance: "71%", cgpa: "7.20", status: "At Risk" },
-  { roll: "21ME043", name: "S. Divya", dept: "MECH", year: "III", attendance: "82%", cgpa: "8.02", status: "Active" },
-  { roll: "21CS009", name: "M. Arjun", dept: "CSE", year: "III", attendance: "68%", cgpa: "6.85", status: "At Risk" },
+  {
+    roll: "22CS101",
+    name: "K. Sai Teja",
+    dept: "CSE",
+    year: "II",
+    attendance: "88%",
+    cgpa: "8.45",
+    status: "Active",
+  },
+  {
+    roll: "22CS114",
+    name: "A. Meghana",
+    dept: "CSE",
+    year: "II",
+    attendance: "94%",
+    cgpa: "9.10",
+    status: "Active",
+  },
+  {
+    roll: "22EC067",
+    name: "R. Karthik",
+    dept: "ECE",
+    year: "II",
+    attendance: "71%",
+    cgpa: "7.20",
+    status: "At Risk",
+  },
+  {
+    roll: "21ME043",
+    name: "S. Divya",
+    dept: "MECH",
+    year: "III",
+    attendance: "82%",
+    cgpa: "8.02",
+    status: "Active",
+  },
+  {
+    roll: "21CS009",
+    name: "M. Arjun",
+    dept: "CSE",
+    year: "III",
+    attendance: "68%",
+    cgpa: "6.85",
+    status: "At Risk",
+  },
 ];
 
 export const notifications = [

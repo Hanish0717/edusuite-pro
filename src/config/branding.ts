@@ -1,5 +1,4 @@
-import markAsset from "@/assets/edusuite-mark.png.asset.json";
-import wordmarkAsset from "@/assets/edusuite-wordmark.png.asset.json";
+import logoAsset from "@/assets/edusuite-logo.png";
 
 /**
  * Centralised branding configuration.
@@ -29,11 +28,11 @@ export const brand: BrandConfig = {
     "AI powered College ERP SaaS platform that digitises admissions, academics, attendance, finance, hostel, transport and placements for every campus.",
   supportEmail: "hello@edusuitepro.com",
   logos: {
-    mark: markAsset.url,
-    wordmark: wordmarkAsset.url,
-    monochrome: markAsset.url,
+    mark: logoAsset,
+    wordmark: logoAsset,
+    monochrome: logoAsset,
     favicon: "/favicon.png",
-    appIcon: markAsset.url,
+    appIcon: logoAsset,
   },
   monochromeClassName: "brightness-0 invert",
 };

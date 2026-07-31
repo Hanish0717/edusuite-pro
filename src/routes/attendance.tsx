@@ -1,31 +1,26 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { CalendarCheck } from "lucide-react";
-
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { ModulePage } from "@/components/dashboard/module-page";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { useRole } from "@/context/role-context";
 
 export const Route = createFileRoute("/attendance")({
-  head: () => ({
-    meta: [
-      { title: "Attendance — EduSuite Pro" },
-      { name: "description", content: "Period-wise attendance and shortage alerts in EduSuite Pro college ERP." },
-      { property: "og:title", content: "Attendance — EduSuite Pro" },
-      { property: "og:description", content: "Period-wise attendance and shortage alerts." },
-    ],
-  }),
-  component: Page,
+  component: AttendanceRedirect,
 });
 
-function Page() {
-  return (
-    <DashboardLayout>
-      <ModulePage
-        title="Attendance"
-        description="Period-wise attendance and shortage alerts"
-        icon={CalendarCheck}
-        tabs={["Daily", "Subject Wise", "Shortage"]}
-        highlights={[{"label": "Today", "value": "92%"}, {"label": "This Month", "value": "89%"}, {"label": "Shortage", "value": "112"}, {"label": "Condoned", "value": "23"}]}
-      />
-    </DashboardLayout>
-  );
+function AttendanceRedirect() {
+  const { role, flags } = useRole();
+
+  if (role === "super-admin") {
+    return <Navigate to="/super-admin/dashboard" replace />;
+  }
+  if (role === "student") {
+    return <Navigate to="/student/attendance" replace />;
+  }
+  if (role === "parent") {
+    return <Navigate to="/parent/attendance" replace />;
+  }
+  if (role === "staff") {
+    if (flags.includes("isHod")) return <Navigate to="/hod/attendance" replace />;
+    return <Navigate to="/faculty/attendance" replace />;
+  }
+
+  return <Navigate to="/login" replace />;
 }

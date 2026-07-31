@@ -30,7 +30,10 @@ export const Route = createFileRoute("/features")({
           "Explore every EduSuite Pro module: admissions, academics, attendance, timetable, LMS, exams, finance, hostel, transport, placements and analytics.",
       },
       { property: "og:title", content: "Modules & Features — EduSuite Pro College ERP" },
-      { property: "og:description", content: "Sixteen campus modules with role-based access control." },
+      {
+        property: "og:description",
+        content: "Sixteen campus modules with role-based access control.",
+      },
     ],
   }),
   component: FeaturesPage,
@@ -40,30 +43,82 @@ const groups = [
   {
     title: "Academics",
     items: [
-      { icon: GraduationCap, title: "Admissions", text: "Enquiries, applications, merit lists and enrolment." },
-      { icon: Users, title: "Student Information", text: "360 degree student profiles with documents and history." },
-      { icon: UserCog, title: "Faculty & HR", text: "Profiles, workload, leave, payroll and appraisals." },
-      { icon: CalendarCheck, title: "Attendance", text: "Period-wise capture, shortage alerts and condonation." },
-      { icon: CalendarRange, title: "Timetable", text: "Automatic clash detection and substitution planning." },
-      { icon: Library, title: "LMS & Library", text: "Notes, assignments, quizzes, catalogue and circulation." },
+      {
+        icon: GraduationCap,
+        title: "Admissions",
+        text: "Enquiries, applications, merit lists and enrolment.",
+      },
+      {
+        icon: Users,
+        title: "Student Information",
+        text: "360 degree student profiles with documents and history.",
+      },
+      {
+        icon: UserCog,
+        title: "Faculty & HR",
+        text: "Profiles, workload, leave, payroll and appraisals.",
+      },
+      {
+        icon: CalendarCheck,
+        title: "Attendance",
+        text: "Period-wise capture, shortage alerts and condonation.",
+      },
+      {
+        icon: CalendarRange,
+        title: "Timetable",
+        text: "Automatic clash detection and substitution planning.",
+      },
+      {
+        icon: Library,
+        title: "LMS & Library",
+        text: "Notes, assignments, quizzes, catalogue and circulation.",
+      },
     ],
   },
   {
     title: "Examinations",
     items: [
-      { icon: FileSpreadsheet, title: "Exam Management", text: "Schedules, seating, hall tickets and invigilation." },
-      { icon: BarChart3, title: "Results & Analytics", text: "Internals, SGPA/CGPA, pass percentage and toppers." },
+      {
+        icon: FileSpreadsheet,
+        title: "Exam Management",
+        text: "Schedules, seating, hall tickets and invigilation.",
+      },
+      {
+        icon: BarChart3,
+        title: "Results & Analytics",
+        text: "Internals, SGPA/CGPA, pass percentage and toppers.",
+      },
     ],
   },
   {
     title: "Operations",
     items: [
-      { icon: Wallet, title: "Finance", text: "Fee plans, online payments, scholarships and receipts." },
-      { icon: BedDouble, title: "Hostel", text: "Room allotment, occupancy, mess and warden workflows." },
+      {
+        icon: Wallet,
+        title: "Finance",
+        text: "Fee plans, online payments, scholarships and receipts.",
+      },
+      {
+        icon: BedDouble,
+        title: "Hostel",
+        text: "Room allotment, occupancy, mess and warden workflows.",
+      },
       { icon: Bus, title: "Transport", text: "Routes, stops, live tracking and transport fees." },
-      { icon: Briefcase, title: "Placements", text: "Drives, eligibility, offers and recruiter pipeline." },
-      { icon: MessageSquare, title: "Communication", text: "Circulars, SMS, email and push notifications." },
-      { icon: ShieldCheck, title: "Access Control", text: "Role, privilege flag and department scope matrix." },
+      {
+        icon: Briefcase,
+        title: "Placements",
+        text: "Drives, eligibility, offers and recruiter pipeline.",
+      },
+      {
+        icon: MessageSquare,
+        title: "Communication",
+        text: "Circulars, SMS, email and push notifications.",
+      },
+      {
+        icon: ShieldCheck,
+        title: "Access Control",
+        text: "Role, privilege flag and department scope matrix.",
+      },
       { icon: Bot, title: "AI Assistant", text: "Natural language insights across every module." },
     ],
   },
@@ -80,7 +135,8 @@ function FeaturesPage() {
               Every module your campus runs on
             </h1>
             <p className="mt-4 max-w-2xl text-muted-foreground">
-              Switch modules on per department, control them with granular RBAC, and roll out at your own pace.
+              Switch modules on per department, control them with granular RBAC, and roll out at
+              your own pace.
             </p>
           </div>
         </section>
@@ -90,7 +146,10 @@ function FeaturesPage() {
             <h2 className="font-display text-2xl font-extrabold tracking-tight">{group.title}</h2>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {group.items.map((item) => (
-                <div key={item.title} className="rounded-2xl border border-border/70 bg-card p-6 shadow-card">
+                <div
+                  key={item.title}
+                  className="rounded-2xl border border-border/70 bg-card p-6 shadow-card"
+                >
                   <span className="grid size-11 place-items-center rounded-2xl bg-primary/10 text-primary">
                     <item.icon className="size-5" />
                   </span>

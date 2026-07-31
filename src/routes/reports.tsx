@@ -8,7 +8,10 @@ export const Route = createFileRoute("/reports")({
   head: () => ({
     meta: [
       { title: "Reports — EduSuite Pro" },
-      { name: "description", content: "Institution analytics and compliance in EduSuite Pro college ERP." },
+      {
+        name: "description",
+        content: "Institution analytics and compliance in EduSuite Pro college ERP.",
+      },
       { property: "og:title", content: "Reports — EduSuite Pro" },
       { property: "og:description", content: "Institution analytics and compliance." },
     ],
@@ -24,7 +27,12 @@ function Page() {
         description="Institution analytics and compliance"
         icon={BarChart3}
         tabs={["Academic", "Financial", "Compliance"]}
-        highlights={[{"label": "Dashboards", "value": "24"}, {"label": "Scheduled", "value": "12"}, {"label": "NAAC Ready", "value": "Yes"}, {"label": "Exports", "value": "318"}]}
+        highlights={[
+          { label: "Dashboards", value: "24" },
+          { label: "Scheduled", value: "12" },
+          { label: "NAAC Ready", value: "Yes" },
+          { label: "Exports", value: "318" },
+        ]}
       />
     </DashboardLayout>
   );

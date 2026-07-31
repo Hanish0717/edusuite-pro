@@ -21,7 +21,14 @@ const toneMap = {
   destructive: "bg-destructive/10 text-destructive",
 };
 
-export function KpiCard({ label, value, icon: Icon, delta, trend = "up", tone = "primary" }: KpiCardProps) {
+export function KpiCard({
+  label,
+  value,
+  icon: Icon,
+  delta,
+  trend = "up",
+  tone = "primary",
+}: KpiCardProps) {
   return (
     <Card className="animate-fade-up gap-0 border-border/70 py-0 shadow-card transition-shadow hover:shadow-elevated">
       <CardContent className="flex items-start justify-between gap-3 p-5">
