@@ -1,3 +1,12 @@
+import {
+  Building2,
+  GraduationCap,
+  ShieldCheck,
+  UserCog,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
+
 export type LoginRole = "super-admin" | "staff" | "student" | "parent" | "hod";
 
 export interface RoleProfile {
