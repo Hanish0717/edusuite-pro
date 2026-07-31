@@ -59,7 +59,7 @@ export const navigation: NavSection[] = [
           { title: "Curriculum", url: "/academics", moduleId: "academics" },
         ],
       },
-      { title: "Students", url: "/students", icon: Users, moduleId: "student-info" },
+      { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
       { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
       { title: "Attendance", url: "/attendance", icon: CalendarCheck, moduleId: "attendance" },
       { title: "Timetable", url: "/timetable", icon: CalendarRange, moduleId: "academics" },
@@ -74,6 +74,7 @@ export const navigation: NavSection[] = [
         url: "/examinations",
         icon: FileSpreadsheet,
         moduleId: "examination",
+        roles: ["super-admin", "staff"],
         children: [
           { title: "Exam Schedule", url: "/examinations", moduleId: "examination" },
           { title: "Hall Tickets", url: "/examinations", moduleId: "examination" },
@@ -97,7 +98,7 @@ export const navigation: NavSection[] = [
     items: [
       { title: "Finance", url: "/finance", icon: Wallet, moduleId: "finance" },
       { title: "HR", url: "/hr", icon: UserCog, moduleId: "hrms" },
-      { title: "Reports", url: "/reports", icon: BarChart3, moduleId: "student-info" },
+      { title: "Reports", url: "/reports", icon: BarChart3, moduleId: "student-info", roles: ["super-admin", "staff"] },
       {
         title: "Communication",
         url: "/communication",
