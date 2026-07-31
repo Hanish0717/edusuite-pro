@@ -11,7 +11,8 @@ const images = {
   faculty: path.join(baseDir, 'media__1785493877544.jpg'),
   academic: path.join(baseDir, 'media__1785493885816.jpg'),
   examination: path.join(baseDir, 'media__1785493944755.jpg'),
-  studentWorkflow: path.join(baseDir, 'media__1785494149393.jpg')
+  studentWorkflow: path.join(baseDir, 'media__1785494149393.jpg'),
+  accessControl: path.join(baseDir, 'media__1785494599702.jpg')
 };
 
 const pdfPath = path.resolve('public/edusuite_workflows.pdf');
@@ -155,8 +156,8 @@ const tocItems = [
   { s: '3', title: 'Examination & Results Processing Engine', page: 5 },
   { s: '4', title: 'Student Management & Complete Lifecycle', page: 6 },
   { s: '5', title: 'Access Control & Admin/Super-Admin Architecture', page: 8 },
-  { s: '6', title: 'Training & Placement (T&P) Cell Workflow', page: 9 },
-  { s: '7', title: 'Library Administration & Operations Workflow', page: 11 }
+  { s: '6', title: 'Training & Placement (T&P) Cell Workflow', page: 10 },
+  { s: '7', title: 'Library Administration & Operations Workflow', page: 12 }
 ];
 
 doc.moveDown(1);
@@ -324,7 +325,25 @@ addSubSection('SaaS Feature-Flagging Engine');
 addBody('SaaS module licensing is tied directly to feature flags. If a license is toggled off: (1) sidebar navigation filters the module, (2) hasPermission blocks backend/frontend routing, and (3) dependent integrations (like the AI Copilot assistant) are disabled.');
 
 // ----------------------------------------------------
-// PAGE 9: TRAINING & PLACEMENT WORKFLOW (PART 1)
+// PAGE 9: ROLE-BASED ACCESS CONTROL DIAGRAM
+// ----------------------------------------------------
+doc.addPage();
+addHeader('5.1 Role-Based Access Control Architecture');
+addBody('This diagram details the core 5 login roles, staff privilege override flags, department scopes, module access matrices, and dynamic approval chains.');
+
+if (fs.existsSync(images.accessControl)) {
+  doc.image(images.accessControl, 54, 180, { width: 487 });
+  doc.fillColor(TEXT_MUTED)
+     .font('Helvetica-Oblique')
+     .fontSize(8.5)
+     .text('Figure 5.1: College ERP 2.0 Access Control Architecture & Responsibility Matrix', 54, 530, { align: 'center' });
+} else {
+  doc.rect(54, 180, 487, 300).strokeColor(LINE_COLOR).stroke();
+  doc.text('Role-Based Access Control Diagram (Image missing)', 54, 320, { align: 'center' });
+}
+
+// ----------------------------------------------------
+// PAGE 10: TRAINING & PLACEMENT WORKFLOW (PART 1)
 // ----------------------------------------------------
 doc.addPage();
 addHeader('6. Training & Placement Cell Workflow');
@@ -346,7 +365,7 @@ addSubSection('Phase 5: Assessment Operations');
 addBody('• Setup Test: Schedule date and send access links.\n• Test Environment: Dynamic full-screen Assessment Player with auto-save, code compilers, timers, and resume support.');
 
 // ----------------------------------------------------
-// PAGE 10: TRAINING & PLACEMENT WORKFLOW (PART 2)
+// PAGE 11: TRAINING & PLACEMENT WORKFLOW (PART 2)
 // ----------------------------------------------------
 doc.addPage();
 addHeader('T&P Cell Workflow (Continued)');
@@ -370,7 +389,7 @@ addSubSection('Phase 11: Alumni Transition');
 addBody('• Graduating: Auto-converts placed candidates to active Alumni status.\n• Network: Integrates student profiles with referral networks and placement drives.');
 
 // ----------------------------------------------------
-// PAGE 11: LIBRARY WORKFLOW (PART 1)
+// PAGE 12: LIBRARY WORKFLOW (PART 1)
 // ----------------------------------------------------
 doc.addPage();
 addHeader('7. Library Admin & Operations Workflow');
@@ -392,7 +411,7 @@ addSubSection('Phase 5: Book Return Workflow');
 addBody('• Intake: Scan book barcode.\n• Audit: Calculate overdue days and assess book condition (Good, Damaged, Lost).\n• Finalize: Update inventory stock counts and clear borrow count logs.');
 
 // ----------------------------------------------------
-// PAGE 12: LIBRARY WORKFLOW (PART 2)
+// PAGE 13: LIBRARY WORKFLOW (PART 2)
 // ----------------------------------------------------
 doc.addPage();
 addHeader('Library Operations (Continued)');
