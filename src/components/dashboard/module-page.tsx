@@ -47,7 +47,7 @@ export function ModulePage({ title, description, icon: Icon, tabs, highlights }:
         ))}
       </div>
 
-      <Tabs defaultValue={tabs[0]}>
+      <Tabs defaultValue={tabs[0] ?? "overview"}>
         <TabsList className="flex-wrap">
           {tabs.map((tab) => (
             <TabsTrigger key={tab} value={tab}>
