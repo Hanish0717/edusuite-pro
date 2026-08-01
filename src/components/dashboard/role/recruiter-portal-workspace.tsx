@@ -463,6 +463,10 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   // Upload Offer Modal State
   const [isUploadOfferModalOpen, setIsUploadOfferModalOpen] = useState(false);
 
+  // Audit Timeline Modal State
+  const [selectedAuditAst, setSelectedAuditAst] = useState<RecruiterAssessment | null>(null);
+  const [isAuditTimelineModalOpen, setIsAuditTimelineModalOpen] = useState(false);
+
   // Send Test to TPO Modal State
   const [isSendToTpoModalOpen, setIsSendToTpoModalOpen] = useState(false);
   const [sendToTpoAst, setSendToTpoAst] = useState<RecruiterAssessment | null>(null);
@@ -1550,24 +1554,80 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
       {activeModule === "assessment-requests" && (
         <div className="space-y-6">
           <Panel title="Assessment Submission Requests Pipeline (To Placement Officer)">
-            <div className="space-y-3 pt-1 font-mono text-xs">
+            <div className="space-y-4 pt-1 font-mono text-xs">
               {MOCK_RECRUITER_ASSESSMENTS.map((ast) => (
-                <div key={ast.id} className="p-4 rounded-xl border border-border/70 bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-foreground font-sans text-sm">{ast.title}</span>
-                      <Badge variant="outline" className="text-[0.62rem]">{ast.version}</Badge>
+                <div key={ast.id} className="p-5 rounded-2xl border border-border/80 bg-card space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/50 pb-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-foreground font-sans text-base">{ast.title}</span>
+                        <Badge variant="outline" className="text-[0.65rem]">{ast.version}</Badge>
+                      </div>
+                      <span className="text-[0.68rem] text-muted-foreground block mt-0.5">{ast.type} • {ast.duration} • Total Marks: {ast.totalMarks} Mks</span>
                     </div>
-                    <span className="text-[0.68rem] text-muted-foreground block">{ast.type} • {ast.duration}</span>
+
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        className={
+                          ast.requestStatus === "Approved"
+                            ? "bg-emerald-600 text-white text-[0.65rem]"
+                            : ast.requestStatus === "Changes Requested"
+                            ? "bg-rose-600 text-white text-[0.65rem]"
+                            : "bg-purple-600 text-white text-[0.65rem]"
+                        }
+                      >
+                        ● {ast.requestStatus}
+                      </Badge>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedAuditAst(ast);
+                          setIsAuditTimelineModalOpen(true);
+                        }}
+                        className="h-8 text-xs rounded-xl cursor-pointer gap-1"
+                      >
+                        <Clock className="size-3.5" /> Audit Timeline
+                      </Button>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <Badge className={ast.requestStatus === "Approved" ? "bg-emerald-600 text-white text-[0.65rem]" : "bg-purple-600 text-white text-[0.65rem]"}>
-                      ● {ast.requestStatus}
-                    </Badge>
-                    <Button size="sm" variant="outline" onClick={() => toast.info(`Viewing approval audit history for ${ast.title}`)} className="h-8 text-xs rounded-xl cursor-pointer">
-                      Audit Timeline
+                  {/* REVIEWER FEEDBACK NOTES */}
+                  <div className="p-3.5 rounded-xl bg-muted/30 border border-border/60 text-[0.72rem] space-y-1">
+                    <p className="font-bold text-foreground font-sans">📋 TPO Reviewer Feedback Notes:</p>
+                    <p className="text-muted-foreground italic">"{ast.reviewerNotes}"</p>
+                  </div>
+
+                  {/* ACTION BUTTONS */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1 font-sans">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setSelectedPreviewAst(ast);
+                        setCandidateSimulationMode(false);
+                        setIsPreviewModalOpen(true);
+                      }}
+                      className="bg-brand-gradient shadow-glow text-white text-xs h-8 rounded-xl font-bold cursor-pointer gap-1"
+                    >
+                      <Eye className="size-3.5" /> Preview Exam
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleOpenSendToTpo(ast)}
+                      className="text-xs h-8 rounded-xl cursor-pointer gap-1"
+                    >
+                      <Send className="size-3.5" /> Send Test to TPO
+                    </Button>
+                    {ast.requestStatus === "Changes Requested" && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleOpenEditModal(ast)}
+                        className="bg-amber-600 hover:bg-amber-700 text-white text-xs h-8 rounded-xl font-bold cursor-pointer gap-1"
+                      >
+                        <Edit className="size-3.5" /> Resubmit with Edits
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -1675,6 +1735,105 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
           </Panel>
         </div>
       )}
+
+      {/* AUDIT TIMELINE MODAL DIALOG */}
+      <Dialog open={isAuditTimelineModalOpen} onOpenChange={setIsAuditTimelineModalOpen}>
+        <DialogContent className="sm:max-w-xl rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-purple-600 text-white grid place-items-center shadow-glow">
+                <Clock className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Assessment Audit History &amp; Approval Timeline</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  {selectedAuditAst?.id} • {selectedAuditAst?.title}
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {selectedAuditAst && (
+            <div className="space-y-4 pt-2 text-xs font-sans">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-muted/40 font-mono text-[0.7rem]">
+                <span>Current Status: <strong className="text-purple-600">{selectedAuditAst.requestStatus}</strong></span>
+                <span>Version: <strong className="text-foreground">{selectedAuditAst.version}</strong></span>
+              </div>
+
+              {/* TIMELINE STEPS */}
+              <div className="space-y-4 relative pl-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
+                {/* STEP 1 */}
+                <div className="relative">
+                  <div className="absolute -left-6 top-0.5 size-4 rounded-full bg-emerald-600 border-2 border-background grid place-items-center text-white text-[0.5rem] font-bold">✓</div>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center justify-between font-mono">
+                      <span className="font-bold text-foreground font-sans text-xs">1. Assessment Created &amp; Authored</span>
+                      <span className="text-[0.62rem] text-muted-foreground">Aug 01, 09:30 AM</span>
+                    </div>
+                    <p className="text-muted-foreground text-[0.7rem]">Authored by David Miller (Corporate Recruiter). {selectedAuditAst.mcqCount} MCQs, {selectedAuditAst.codingCount} Coding Problems configured.</p>
+                  </div>
+                </div>
+
+                {/* STEP 2 */}
+                <div className="relative">
+                  <div className="absolute -left-6 top-0.5 size-4 rounded-full bg-blue-600 border-2 border-background grid place-items-center text-white text-[0.5rem] font-bold">✓</div>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center justify-between font-mono">
+                      <span className="font-bold text-foreground font-sans text-xs">2. Submitted to Placement Officer (TPO)</span>
+                      <span className="text-[0.62rem] text-muted-foreground">Aug 01, 10:15 AM</span>
+                    </div>
+                    <p className="text-muted-foreground text-[0.7rem]">Submitted for Placement Drive approval to Dr. Ramesh Kumar (tpo@nitk.edu.in).</p>
+                  </div>
+                </div>
+
+                {/* STEP 3 */}
+                <div className="relative">
+                  <div className={`absolute -left-6 top-0.5 size-4 rounded-full border-2 border-background grid place-items-center text-white text-[0.5rem] font-bold ${
+                    selectedAuditAst.requestStatus === "Approved" ? "bg-emerald-600" : selectedAuditAst.requestStatus === "Changes Requested" ? "bg-rose-600" : "bg-amber-500"
+                  }`}>
+                    {selectedAuditAst.requestStatus === "Approved" ? "✓" : "!"}
+                  </div>
+                  <div className="space-y-0.5">
+                    <div className="flex items-center justify-between font-mono">
+                      <span className="font-bold text-foreground font-sans text-xs">3. TPO Review &amp; Placement Drive Sync</span>
+                      <span className="text-[0.62rem] text-muted-foreground">Aug 01, 11:00 AM</span>
+                    </div>
+                    <p className="text-muted-foreground text-[0.7rem]">TPO Review Status: <strong>{selectedAuditAst.requestStatus}</strong>. "{selectedAuditAst.reviewerNotes}"</p>
+                  </div>
+                </div>
+
+                {/* STEP 4 */}
+                <div className="relative">
+                  <div className="absolute -left-6 top-0.5 size-4 rounded-full bg-purple-600 border-2 border-background grid place-items-center text-white text-[0.5rem] font-bold">🔗</div>
+                  <div className="space-y-1">
+                    <span className="font-bold text-foreground font-sans text-xs block">4. Live Exam Conducting Link</span>
+                    <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 font-mono text-[0.68rem] flex items-center justify-between">
+                      <span className="text-purple-700 dark:text-purple-300 truncate">http://192.168.1.122:8082/exam/take?id={selectedAuditAst.id}</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`http://192.168.1.122:8082/exam/take?id=${selectedAuditAst.id}`);
+                          toast.success("Exam URL copied to clipboard!");
+                        }}
+                        className="h-6 text-[0.62rem] rounded-lg shrink-0 cursor-pointer ml-2"
+                      >
+                        Copy Link
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button type="button" onClick={() => setIsAuditTimelineModalOpen(false)} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs cursor-pointer">
+                  Close Audit Timeline
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* QUESTION VIEW DETAIL MODAL DIALOG */}
       <Dialog open={isViewQuestionModalOpen} onOpenChange={setIsViewQuestionModalOpen}>
