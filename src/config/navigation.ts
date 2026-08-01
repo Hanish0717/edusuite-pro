@@ -151,12 +151,8 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
   const role = user.role;
   const flags = user.flags;
 
-  if (role === "super-admin") {
-    if (url === "/dashboard") return "/super-admin/dashboard";
-    if (url === "/students") return "/super-admin/students";
-    if (url === "/faculty") return "/super-admin/faculty";
-    if (url === "/academics") return "/super-admin/courses";
-    if (url === "/settings") return "/super-admin/settings";
+  if (role === "super-admin" || role === "super_admin") {
+    return url === "/dashboard" ? "/super-admin/dashboard" : url;
   }
 
   if (role === "student") {
