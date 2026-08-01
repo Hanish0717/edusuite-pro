@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AcademicsRouteImport } from './routes/academics'
 import { Route as AccreditationRouteImport } from './routes/accreditation'
 import { Route as AdmissionRouteImport } from './routes/admission'
+import { Route as AiAnalyticsRouteImport } from './routes/ai-analytics'
 import { Route as AlumniRouteImport } from './routes/alumni'
 import { Route as ApprovalWorkflowsRouteImport } from './routes/approval-workflows'
 import { Route as AttendanceRouteImport } from './routes/attendance'
@@ -50,6 +51,15 @@ import { Route as SuperAdminRouteImport } from './routes/super-admin'
 import { Route as TimetableRouteImport } from './routes/timetable'
 import { Route as TransportRouteImport } from './routes/transport'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as AiAnalyticsIndexRouteImport } from './routes/ai-analytics.index'
+import { Route as AiAnalyticsAttendancePredictionRouteImport } from './routes/ai-analytics.attendance-prediction'
+import { Route as AiAnalyticsChatbotRouteImport } from './routes/ai-analytics.chatbot'
+import { Route as AiAnalyticsDashboardRouteImport } from './routes/ai-analytics.dashboard'
+import { Route as AiAnalyticsModelInsightsRouteImport } from './routes/ai-analytics.model-insights'
+import { Route as AiAnalyticsNotificationsRouteImport } from './routes/ai-analytics.notifications'
+import { Route as AiAnalyticsReportsRouteImport } from './routes/ai-analytics.reports'
+import { Route as AiAnalyticsSettingsRouteImport } from './routes/ai-analytics.settings'
+import { Route as AiAnalyticsStudentRiskRouteImport } from './routes/ai-analytics.student-risk'
 import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
 import { Route as ExaminationIndexRouteImport } from './routes/examination.index'
@@ -135,6 +145,11 @@ const AccreditationRoute = AccreditationRouteImport.update({
 const AdmissionRoute = AdmissionRouteImport.update({
   id: '/admission',
   path: '/admission',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAnalyticsRoute = AiAnalyticsRouteImport.update({
+  id: '/ai-analytics',
+  path: '/ai-analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AlumniRoute = AlumniRouteImport.update({
@@ -316,6 +331,54 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
   path: '/verify-email',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AiAnalyticsIndexRoute = AiAnalyticsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AiAnalyticsRoute,
+} as any)
+const AiAnalyticsAttendancePredictionRoute =
+  AiAnalyticsAttendancePredictionRouteImport.update({
+    id: '/attendance-prediction',
+    path: '/attendance-prediction',
+    getParentRoute: () => AiAnalyticsRoute,
+  } as any)
+const AiAnalyticsChatbotRoute = AiAnalyticsChatbotRouteImport.update({
+  id: '/chatbot',
+  path: '/chatbot',
+  getParentRoute: () => AiAnalyticsRoute,
+} as any)
+const AiAnalyticsDashboardRoute = AiAnalyticsDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AiAnalyticsRoute,
+} as any)
+const AiAnalyticsModelInsightsRoute =
+  AiAnalyticsModelInsightsRouteImport.update({
+    id: '/model-insights',
+    path: '/model-insights',
+    getParentRoute: () => AiAnalyticsRoute,
+  } as any)
+const AiAnalyticsNotificationsRoute =
+  AiAnalyticsNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AiAnalyticsRoute,
+  } as any)
+const AiAnalyticsReportsRoute = AiAnalyticsReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AiAnalyticsRoute,
+} as any)
+const AiAnalyticsSettingsRoute = AiAnalyticsSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AiAnalyticsRoute,
+} as any)
+const AiAnalyticsStudentRiskRoute = AiAnalyticsStudentRiskRouteImport.update({
+  id: '/student-risk',
+  path: '/student-risk',
+  getParentRoute: () => AiAnalyticsRoute,
 } as any)
 const DeanIndexRoute = DeanIndexRouteImport.update({
   id: '/',
@@ -629,6 +692,7 @@ export interface FileRoutesByFullPath {
   '/academics': typeof AcademicsRoute
   '/accreditation': typeof AccreditationRoute
   '/admission': typeof AdmissionRoute
+  '/ai-analytics': typeof AiAnalyticsRouteWithChildren
   '/alumni': typeof AlumniRoute
   '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
@@ -665,6 +729,14 @@ export interface FileRoutesByFullPath {
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/ai-analytics/attendance-prediction': typeof AiAnalyticsAttendancePredictionRoute
+  '/ai-analytics/chatbot': typeof AiAnalyticsChatbotRoute
+  '/ai-analytics/dashboard': typeof AiAnalyticsDashboardRoute
+  '/ai-analytics/model-insights': typeof AiAnalyticsModelInsightsRoute
+  '/ai-analytics/notifications': typeof AiAnalyticsNotificationsRoute
+  '/ai-analytics/reports': typeof AiAnalyticsReportsRoute
+  '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
+  '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -712,6 +784,7 @@ export interface FileRoutesByFullPath {
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
   '/transport/routes': typeof TransportRoutesRoute
+  '/ai-analytics/': typeof AiAnalyticsIndexRoute
   '/dean/': typeof DeanIndexRoute
   '/examination/': typeof ExaminationIndexRoute
   '/external-user/': typeof ExternalUserIndexRoute
@@ -755,6 +828,14 @@ export interface FileRoutesByTo {
   '/students': typeof StudentsRoute
   '/timetable': typeof TimetableRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/ai-analytics/attendance-prediction': typeof AiAnalyticsAttendancePredictionRoute
+  '/ai-analytics/chatbot': typeof AiAnalyticsChatbotRoute
+  '/ai-analytics/dashboard': typeof AiAnalyticsDashboardRoute
+  '/ai-analytics/model-insights': typeof AiAnalyticsModelInsightsRoute
+  '/ai-analytics/notifications': typeof AiAnalyticsNotificationsRoute
+  '/ai-analytics/reports': typeof AiAnalyticsReportsRoute
+  '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
+  '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -802,6 +883,7 @@ export interface FileRoutesByTo {
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
   '/transport/routes': typeof TransportRoutesRoute
+  '/ai-analytics': typeof AiAnalyticsIndexRoute
   '/dean': typeof DeanIndexRoute
   '/examination': typeof ExaminationIndexRoute
   '/external-user': typeof ExternalUserIndexRoute
@@ -824,6 +906,7 @@ export interface FileRoutesById {
   '/academics': typeof AcademicsRoute
   '/accreditation': typeof AccreditationRoute
   '/admission': typeof AdmissionRoute
+  '/ai-analytics': typeof AiAnalyticsRouteWithChildren
   '/alumni': typeof AlumniRoute
   '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
@@ -860,6 +943,14 @@ export interface FileRoutesById {
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/ai-analytics/attendance-prediction': typeof AiAnalyticsAttendancePredictionRoute
+  '/ai-analytics/chatbot': typeof AiAnalyticsChatbotRoute
+  '/ai-analytics/dashboard': typeof AiAnalyticsDashboardRoute
+  '/ai-analytics/model-insights': typeof AiAnalyticsModelInsightsRoute
+  '/ai-analytics/notifications': typeof AiAnalyticsNotificationsRoute
+  '/ai-analytics/reports': typeof AiAnalyticsReportsRoute
+  '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
+  '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -907,6 +998,7 @@ export interface FileRoutesById {
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
   '/transport/routes': typeof TransportRoutesRoute
+  '/ai-analytics/': typeof AiAnalyticsIndexRoute
   '/dean/': typeof DeanIndexRoute
   '/examination/': typeof ExaminationIndexRoute
   '/external-user/': typeof ExternalUserIndexRoute
@@ -930,6 +1022,7 @@ export interface FileRouteTypes {
     | '/academics'
     | '/accreditation'
     | '/admission'
+    | '/ai-analytics'
     | '/alumni'
     | '/approval-workflows'
     | '/attendance'
@@ -966,6 +1059,14 @@ export interface FileRouteTypes {
     | '/timetable'
     | '/transport'
     | '/verify-email'
+    | '/ai-analytics/attendance-prediction'
+    | '/ai-analytics/chatbot'
+    | '/ai-analytics/dashboard'
+    | '/ai-analytics/model-insights'
+    | '/ai-analytics/notifications'
+    | '/ai-analytics/reports'
+    | '/ai-analytics/settings'
+    | '/ai-analytics/student-risk'
     | '/dean/dashboard'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -1013,6 +1114,7 @@ export interface FileRouteTypes {
     | '/transport/buses'
     | '/transport/dashboard'
     | '/transport/routes'
+    | '/ai-analytics/'
     | '/dean/'
     | '/examination/'
     | '/external-user/'
@@ -1056,6 +1158,14 @@ export interface FileRouteTypes {
     | '/students'
     | '/timetable'
     | '/verify-email'
+    | '/ai-analytics/attendance-prediction'
+    | '/ai-analytics/chatbot'
+    | '/ai-analytics/dashboard'
+    | '/ai-analytics/model-insights'
+    | '/ai-analytics/notifications'
+    | '/ai-analytics/reports'
+    | '/ai-analytics/settings'
+    | '/ai-analytics/student-risk'
     | '/dean/dashboard'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -1103,6 +1213,7 @@ export interface FileRouteTypes {
     | '/transport/buses'
     | '/transport/dashboard'
     | '/transport/routes'
+    | '/ai-analytics'
     | '/dean'
     | '/examination'
     | '/external-user'
@@ -1124,6 +1235,7 @@ export interface FileRouteTypes {
     | '/academics'
     | '/accreditation'
     | '/admission'
+    | '/ai-analytics'
     | '/alumni'
     | '/approval-workflows'
     | '/attendance'
@@ -1160,6 +1272,14 @@ export interface FileRouteTypes {
     | '/timetable'
     | '/transport'
     | '/verify-email'
+    | '/ai-analytics/attendance-prediction'
+    | '/ai-analytics/chatbot'
+    | '/ai-analytics/dashboard'
+    | '/ai-analytics/model-insights'
+    | '/ai-analytics/notifications'
+    | '/ai-analytics/reports'
+    | '/ai-analytics/settings'
+    | '/ai-analytics/student-risk'
     | '/dean/dashboard'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -1207,6 +1327,7 @@ export interface FileRouteTypes {
     | '/transport/buses'
     | '/transport/dashboard'
     | '/transport/routes'
+    | '/ai-analytics/'
     | '/dean/'
     | '/examination/'
     | '/external-user/'
@@ -1229,6 +1350,7 @@ export interface RootRouteChildren {
   AcademicsRoute: typeof AcademicsRoute
   AccreditationRoute: typeof AccreditationRoute
   AdmissionRoute: typeof AdmissionRoute
+  AiAnalyticsRoute: typeof AiAnalyticsRouteWithChildren
   AlumniRoute: typeof AlumniRoute
   ApprovalWorkflowsRoute: typeof ApprovalWorkflowsRoute
   AttendanceRoute: typeof AttendanceRoute
@@ -1302,6 +1424,13 @@ declare module '@tanstack/react-router' {
       path: '/admission'
       fullPath: '/admission'
       preLoaderRoute: typeof AdmissionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-analytics': {
+      id: '/ai-analytics'
+      path: '/ai-analytics'
+      fullPath: '/ai-analytics'
+      preLoaderRoute: typeof AiAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/alumni': {
@@ -1555,6 +1684,69 @@ declare module '@tanstack/react-router' {
       fullPath: '/verify-email'
       preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/ai-analytics/': {
+      id: '/ai-analytics/'
+      path: '/'
+      fullPath: '/ai-analytics/'
+      preLoaderRoute: typeof AiAnalyticsIndexRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/attendance-prediction': {
+      id: '/ai-analytics/attendance-prediction'
+      path: '/attendance-prediction'
+      fullPath: '/ai-analytics/attendance-prediction'
+      preLoaderRoute: typeof AiAnalyticsAttendancePredictionRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/chatbot': {
+      id: '/ai-analytics/chatbot'
+      path: '/chatbot'
+      fullPath: '/ai-analytics/chatbot'
+      preLoaderRoute: typeof AiAnalyticsChatbotRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/dashboard': {
+      id: '/ai-analytics/dashboard'
+      path: '/dashboard'
+      fullPath: '/ai-analytics/dashboard'
+      preLoaderRoute: typeof AiAnalyticsDashboardRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/model-insights': {
+      id: '/ai-analytics/model-insights'
+      path: '/model-insights'
+      fullPath: '/ai-analytics/model-insights'
+      preLoaderRoute: typeof AiAnalyticsModelInsightsRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/notifications': {
+      id: '/ai-analytics/notifications'
+      path: '/notifications'
+      fullPath: '/ai-analytics/notifications'
+      preLoaderRoute: typeof AiAnalyticsNotificationsRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/reports': {
+      id: '/ai-analytics/reports'
+      path: '/reports'
+      fullPath: '/ai-analytics/reports'
+      preLoaderRoute: typeof AiAnalyticsReportsRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/settings': {
+      id: '/ai-analytics/settings'
+      path: '/settings'
+      fullPath: '/ai-analytics/settings'
+      preLoaderRoute: typeof AiAnalyticsSettingsRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/student-risk': {
+      id: '/ai-analytics/student-risk'
+      path: '/student-risk'
+      fullPath: '/ai-analytics/student-risk'
+      preLoaderRoute: typeof AiAnalyticsStudentRiskRouteImport
+      parentRoute: typeof AiAnalyticsRoute
     }
     '/dean/': {
       id: '/dean/'
@@ -1986,6 +2178,34 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AiAnalyticsRouteChildren {
+  AiAnalyticsAttendancePredictionRoute: typeof AiAnalyticsAttendancePredictionRoute
+  AiAnalyticsChatbotRoute: typeof AiAnalyticsChatbotRoute
+  AiAnalyticsDashboardRoute: typeof AiAnalyticsDashboardRoute
+  AiAnalyticsModelInsightsRoute: typeof AiAnalyticsModelInsightsRoute
+  AiAnalyticsNotificationsRoute: typeof AiAnalyticsNotificationsRoute
+  AiAnalyticsReportsRoute: typeof AiAnalyticsReportsRoute
+  AiAnalyticsSettingsRoute: typeof AiAnalyticsSettingsRoute
+  AiAnalyticsStudentRiskRoute: typeof AiAnalyticsStudentRiskRoute
+  AiAnalyticsIndexRoute: typeof AiAnalyticsIndexRoute
+}
+
+const AiAnalyticsRouteChildren: AiAnalyticsRouteChildren = {
+  AiAnalyticsAttendancePredictionRoute: AiAnalyticsAttendancePredictionRoute,
+  AiAnalyticsChatbotRoute: AiAnalyticsChatbotRoute,
+  AiAnalyticsDashboardRoute: AiAnalyticsDashboardRoute,
+  AiAnalyticsModelInsightsRoute: AiAnalyticsModelInsightsRoute,
+  AiAnalyticsNotificationsRoute: AiAnalyticsNotificationsRoute,
+  AiAnalyticsReportsRoute: AiAnalyticsReportsRoute,
+  AiAnalyticsSettingsRoute: AiAnalyticsSettingsRoute,
+  AiAnalyticsStudentRiskRoute: AiAnalyticsStudentRiskRoute,
+  AiAnalyticsIndexRoute: AiAnalyticsIndexRoute,
+}
+
+const AiAnalyticsRouteWithChildren = AiAnalyticsRoute._addFileChildren(
+  AiAnalyticsRouteChildren,
+)
+
 interface DeanRouteChildren {
   DeanDashboardRoute: typeof DeanDashboardRoute
   DeanIndexRoute: typeof DeanIndexRoute
@@ -2242,6 +2462,7 @@ const rootRouteChildren: RootRouteChildren = {
   AcademicsRoute: AcademicsRoute,
   AccreditationRoute: AccreditationRoute,
   AdmissionRoute: AdmissionRoute,
+  AiAnalyticsRoute: AiAnalyticsRouteWithChildren,
   AlumniRoute: AlumniRoute,
   ApprovalWorkflowsRoute: ApprovalWorkflowsRoute,
   AttendanceRoute: AttendanceRoute,

@@ -50,6 +50,7 @@ export const navigation: NavSection[] = [
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
       { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
+      { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
     ],
   },
   {

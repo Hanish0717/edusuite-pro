@@ -1,0 +1,13 @@
+{
+  "name": "AI & Analytics",
+  "version": "1.0.0",
+  "permissions": ["VIEW_AI", "TRIGGER_AI_ALERTS"],
+  "dependencies": ["attendance", "finance", "examinations", "lms"],
+  "apis": [
+    "/attendance/predictions",
+    "/risk/assessments",
+    "/chatbot/message",
+    "/reports/export",
+    "/notifications/dispatch"
+  ]
+}
