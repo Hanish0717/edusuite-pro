@@ -71,7 +71,6 @@ export const studentNavigation: NavSection[] = [
       { title: "Digital Notice Board", url: "/communication", icon: ClipboardList },
       { title: "My Profile", url: "/student/profile", icon: User },
       { title: "Learning Management", url: "/student/lms", icon: BookOpen },
-      { title: "Integrated Assignments", url: "/student/lms", icon: FileCheck2 },
       { title: "Timetable", url: "/student/timetable", icon: CalendarRange },
       { title: "Feedbacks", url: "/grievance", icon: MessageSquare },
       { title: "Student Services", url: "/student/profile", icon: Users },
