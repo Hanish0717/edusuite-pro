@@ -164,15 +164,6 @@ export const ErpUpdatesModule: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Breadcrumb */}
-      <div className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
-        <span>Home</span>
-        <span>&gt;</span>
-        <span>Student</span>
-        <span>&gt;</span>
-        <span className="text-foreground font-semibold">Updates</span>
-      </div>
-
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-border">
         <div>

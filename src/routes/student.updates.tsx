@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ErpUpdatesModule } from "@/components/erp-updates";
 
 export const Route = createFileRoute("/student/updates")({
@@ -19,10 +18,8 @@ export const Route = createFileRoute("/student/updates")({
 
 function StudentUpdatesRoute() {
   return (
-    <DashboardLayout>
-      <div className="p-6 max-w-7xl mx-auto">
-        <ErpUpdatesModule />
-      </div>
-    </DashboardLayout>
+    <div className="p-6 max-w-7xl mx-auto">
+      <ErpUpdatesModule />
+    </div>
   );
 }
