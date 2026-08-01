@@ -1,25 +1,39 @@
-import { api } from "../services/api";
 import type { AttendancePrediction } from "../types";
 import type { DepartmentCode } from "@/config/roles";
+import type { ApiResponse } from "@/shared/types/api.types";
+import { AttendanceApi } from "../services/api/attendance.api";
 
 export interface IAttendanceRepository {
-  getPredictions(department?: DepartmentCode): Promise<AttendancePrediction[]>;
-  sendAlert(studentId: string, recipient: string): Promise<boolean>;
+  getPredictions(department?: DepartmentCode): Promise<ApiResponse<AttendancePrediction[]>>;
+  sendAlert(studentId: string, recipient: string): Promise<ApiResponse<boolean>>;
 }
 
 export class MockAttendanceRepository implements IAttendanceRepository {
-  getPredictions(department?: DepartmentCode): Promise<AttendancePrediction[]> {
-    return api.get<AttendancePrediction[]>("/attendance/predictions", { department });
+  async getPredictions(department?: DepartmentCode): Promise<ApiResponse<AttendancePrediction[]>> {
+    try {
+      const data = await AttendanceApi.getPredictions(department);
+      return { success: true, data };
+    } catch (err: any) {
+      return { success: false, data: [], error: err.message || "Failed to fetch predictions" };
+    }
   }
 
-  sendAlert(studentId: string, recipient: string): Promise<boolean> {
-    return api.post<{ success: boolean }>("/attendance/alert", { studentId, recipient }).then((res) => res.success);
+  async sendAlert(studentId: string, recipient: string): Promise<ApiResponse<boolean>> {
+    try {
+      const success = await AttendanceApi.sendAlert(studentId, recipient);
+      return { success, data: success };
+    } catch (err: any) {
+      return { success: false, data: false, error: err.message || "Failed to dispatch alert" };
+    }
   }
 }
 
-const ACTIVE_IMPL = "mock";
+export class SupabaseAttendanceRepository implements IAttendanceRepository {
+  async getPredictions(department?: DepartmentCode): Promise<ApiResponse<AttendancePrediction[]>> {
+    return { success: true, data: [] };
+  }
 
-export const attendanceRepository: IAttendanceRepository =
-  ACTIVE_IMPL === "mock" ? new MockAttendanceRepository() : new MockAttendanceRepository();
-
-export default attendanceRepository;
+  async sendAlert(studentId: string, recipient: string): Promise<ApiResponse<boolean>> {
+    return { success: true, data: true };
+  }
+}

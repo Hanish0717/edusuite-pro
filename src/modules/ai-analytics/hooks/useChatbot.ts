@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { chatbotRepository } from "../repositories/chatbot.repository";
+import { useState, useCallback, useMemo } from "react";
+import { RepositoryFactory } from "../repositories";
 import type { ChatMessage } from "../types";
 
 export function useChatbot() {
@@ -12,6 +12,8 @@ export function useChatbot() {
     },
   ]);
   const [typing, setTyping] = useState(false);
+
+  const chatbotRepository = useMemo(() => RepositoryFactory.getChatbot(), []);
 
   const sendMessage = useCallback(async (text: string) => {
     if (!text.trim()) return;
@@ -27,8 +29,8 @@ export function useChatbot() {
     setTyping(true);
 
     try {
-      const response = await chatbotRepository.sendMessage(text);
-      setMessages((prev) => [...prev, response]);
+      const res = await chatbotRepository.sendMessage(text);
+      setMessages((prev) => [...prev, res.data]);
     } catch {
       const errorMsg: ChatMessage = {
         id: `MSG-${Date.now()}-ERR`,
@@ -40,7 +42,7 @@ export function useChatbot() {
     } finally {
       setTyping(false);
     }
-  }, []);
+  }, [chatbotRepository]);
 
   const clearChat = useCallback(() => {
     setMessages([
@@ -60,3 +62,4 @@ export function useChatbot() {
     clearChat,
   };
 }
+export default useChatbot;

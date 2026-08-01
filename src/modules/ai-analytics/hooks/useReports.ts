@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
-import { reportsRepository } from "../repositories/reports.repository";
+import { RepositoryFactory } from "../repositories";
 import type { AnalyticsReport } from "../types";
 
 export function useReports() {
@@ -8,18 +8,24 @@ export function useReports() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const reportsRepository = useMemo(() => RepositoryFactory.getReports(), []);
+
   const fetchReports = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await reportsRepository.getReports();
-      setReports(data);
+      const res = await reportsRepository.getReports();
+      if (res.success) {
+        setReports(res.data);
+      } else {
+        setError(res.error || "Failed to retrieve reports list.");
+      }
     } catch (err: any) {
       setError(err.message || "Failed to retrieve reports list.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [reportsRepository]);
 
   useEffect(() => {
     fetchReports();
@@ -32,13 +38,18 @@ export function useReports() {
 
     toast.promise(promise, {
       loading: `Compiling ${format} dataset for "${title}"...`,
-      success: `"${title}.${format.toLowerCase()}" successfully saved to downloads.`,
+      success: (res) => {
+        if (res.success) {
+          return `"${title}.${format.toLowerCase()}" successfully saved to downloads.`;
+        }
+        throw new Error(res.error);
+      },
       error: `Failed to compile ${format} report.`,
     });
 
     try {
-      await promise;
-      return true;
+      const res = await promise;
+      return res.success;
     } catch {
       return false;
     }
@@ -52,3 +63,4 @@ export function useReports() {
     refetch: fetchReports,
   };
 }
+export default useReports;

@@ -1,10 +1,7 @@
-export { attendanceRepository } from "./attendance.repository";
+export { RepositoryFactory } from "./RepositoryFactory";
 export type { IAttendanceRepository } from "./attendance.repository";
-export { riskRepository } from "./risk.repository";
 export type { IRiskRepository } from "./risk.repository";
-export { chatbotRepository } from "./chatbot.repository";
 export type { IChatbotRepository } from "./chatbot.repository";
-export { notificationsRepository } from "./notifications.repository";
 export type { INotificationsRepository } from "./notifications.repository";
-export { reportsRepository } from "./reports.repository";
 export type { IReportsRepository } from "./reports.repository";
+export type { ImplementationDriver } from "./RepositoryFactory";

@@ -1,25 +1,39 @@
-import { api } from "../services/api";
 import type { StudentRisk } from "../types";
 import type { DepartmentCode } from "@/config/roles";
+import type { ApiResponse } from "@/shared/types/api.types";
+import { RiskApi } from "../services/api/risk.api";
 
 export interface IRiskRepository {
-  getRisks(department?: DepartmentCode): Promise<StudentRisk[]>;
-  updateRecommendation(studentId: string, recommendation: string): Promise<boolean>;
+  getRisks(department?: DepartmentCode): Promise<ApiResponse<StudentRisk[]>>;
+  updateRecommendation(studentId: string, recommendation: string): Promise<ApiResponse<boolean>>;
 }
 
 export class MockRiskRepository implements IRiskRepository {
-  getRisks(department?: DepartmentCode): Promise<StudentRisk[]> {
-    return api.get<StudentRisk[]>("/risk/assessments", { department });
+  async getRisks(department?: DepartmentCode): Promise<ApiResponse<StudentRisk[]>> {
+    try {
+      const data = await RiskApi.getRisks(department);
+      return { success: true, data };
+    } catch (err: any) {
+      return { success: false, data: [], error: err.message || "Failed to load risk analysis" };
+    }
   }
 
-  updateRecommendation(studentId: string, recommendation: string): Promise<boolean> {
-    return api.put<{ success: boolean }>("/risk/recommendation", { studentId, recommendation }).then((res) => res.success);
+  async updateRecommendation(studentId: string, recommendation: string): Promise<ApiResponse<boolean>> {
+    try {
+      const success = await RiskApi.updateRecommendation(studentId, recommendation);
+      return { success, data: success };
+    } catch (err: any) {
+      return { success: false, data: false, error: err.message || "Failed to update recommendation" };
+    }
   }
 }
 
-const ACTIVE_IMPL = "mock";
+export class SupabaseRiskRepository implements IRiskRepository {
+  async getRisks(department?: DepartmentCode): Promise<ApiResponse<StudentRisk[]>> {
+    return { success: true, data: [] };
+  }
 
-export const riskRepository: IRiskRepository =
-  ACTIVE_IMPL === "mock" ? new MockRiskRepository() : new MockRiskRepository();
-
-export default riskRepository;
+  async updateRecommendation(studentId: string, recommendation: string): Promise<ApiResponse<boolean>> {
+    return { success: true, data: true };
+  }
+}

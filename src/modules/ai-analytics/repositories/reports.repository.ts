@@ -1,24 +1,38 @@
-import { api } from "../services/api";
 import type { AnalyticsReport } from "../types";
+import type { ApiResponse } from "@/shared/types/api.types";
+import { ReportsApi } from "../services/api/reports.api";
 
 export interface IReportsRepository {
-  getReports(): Promise<AnalyticsReport[]>;
-  exportReport(reportId: string, format: "PDF" | "Excel" | "CSV"): Promise<boolean>;
+  getReports(): Promise<ApiResponse<AnalyticsReport[]>>;
+  exportReport(reportId: string, format: "PDF" | "Excel" | "CSV"): Promise<ApiResponse<boolean>>;
 }
 
 export class MockReportsRepository implements IReportsRepository {
-  getReports(): Promise<AnalyticsReport[]> {
-    return api.get<AnalyticsReport[]>("/reports/list");
+  async getReports(): Promise<ApiResponse<AnalyticsReport[]>> {
+    try {
+      const data = await ReportsApi.getReports();
+      return { success: true, data };
+    } catch (err: any) {
+      return { success: false, data: [], error: err.message || "Failed to load reports" };
+    }
   }
 
-  exportReport(reportId: string, format: "PDF" | "Excel" | "CSV"): Promise<boolean> {
-    return api.post<{ success: boolean }>("/reports/export", { reportId, format }).then((res) => res.success);
+  async exportReport(reportId: string, format: "PDF" | "Excel" | "CSV"): Promise<ApiResponse<boolean>> {
+    try {
+      const success = await ReportsApi.exportReport(reportId, format);
+      return { success, data: success };
+    } catch (err: any) {
+      return { success: false, data: false, error: err.message || "Failed to export report" };
+    }
   }
 }
 
-const ACTIVE_IMPL = "mock";
+export class SupabaseReportsRepository implements IReportsRepository {
+  async getReports(): Promise<ApiResponse<AnalyticsReport[]>> {
+    return { success: true, data: [] };
+  }
 
-export const reportsRepository: IReportsRepository =
-  ACTIVE_IMPL === "mock" ? new MockReportsRepository() : new MockReportsRepository();
-
-export default reportsRepository;
+  async exportReport(reportId: string, format: "PDF" | "Excel" | "CSV"): Promise<ApiResponse<boolean>> {
+    return { success: true, data: true };
+  }
+}

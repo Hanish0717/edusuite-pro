@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
-import { riskRepository } from "../repositories/risk.repository";
+import { RepositoryFactory } from "../repositories";
 import type { StudentRisk } from "../types";
 import type { DepartmentCode } from "@/config/roles";
 
@@ -10,18 +10,24 @@ export function useRiskAnalysis(initialDept?: DepartmentCode) {
   const [error, setError] = useState<string | null>(null);
   const [department, setDepartment] = useState<DepartmentCode | undefined>(initialDept);
 
+  const riskRepository = useMemo(() => RepositoryFactory.getRisk(), []);
+
   const fetchRisks = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await riskRepository.getRisks(department);
-      setRisks(data);
+      const res = await riskRepository.getRisks(department);
+      if (res.success) {
+        setRisks(res.data);
+      } else {
+        setError(res.error || "Failed to load risk analysis records.");
+      }
     } catch (err: any) {
       setError(err.message || "Failed to load risk analysis records.");
     } finally {
       setLoading(false);
     }
-  }, [department]);
+  }, [department, riskRepository]);
 
   useEffect(() => {
     fetchRisks();
@@ -30,14 +36,14 @@ export function useRiskAnalysis(initialDept?: DepartmentCode) {
   const updateRecommendation = async (studentId: string, notes: string) => {
     try {
       setLoading(true);
-      const success = await riskRepository.updateRecommendation(studentId, notes);
-      if (success) {
+      const res = await riskRepository.updateRecommendation(studentId, notes);
+      if (res.success && res.data) {
         setRisks((prev) =>
           prev.map((r) => (r.studentId === studentId ? { ...r, recommendation: notes } : r))
         );
         toast.success("Academic recommendation updated.");
       } else {
-        toast.error("Failed to update recommendation.");
+        toast.error(res.error || "Failed to update recommendation.");
       }
     } catch (err: any) {
       toast.error(err.message || "An error occurred.");
@@ -56,3 +62,4 @@ export function useRiskAnalysis(initialDept?: DepartmentCode) {
     refetch: fetchRisks,
   };
 }
+export default useRiskAnalysis;

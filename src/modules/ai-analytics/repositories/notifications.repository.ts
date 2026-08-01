@@ -1,8 +1,9 @@
-import { api } from "../services/api";
 import type { AITriggerNotification } from "../types";
+import type { ApiResponse } from "@/shared/types/api.types";
+import { NotificationsApi } from "../services/api/notifications.api";
 
 export interface INotificationsRepository {
-  getNotifications(): Promise<AITriggerNotification[]>;
+  getNotifications(): Promise<ApiResponse<AITriggerNotification[]>>;
   triggerManualNotification(
     studentId: string,
     studentName: string,
@@ -10,36 +11,83 @@ export interface INotificationsRepository {
     channel: AITriggerNotification["channel"],
     recipient: AITriggerNotification["recipient"],
     message: string
-  ): Promise<AITriggerNotification>;
+  ): Promise<ApiResponse<AITriggerNotification>>;
 }
 
 export class MockNotificationsRepository implements INotificationsRepository {
-  getNotifications(): Promise<AITriggerNotification[]> {
-    return api.get<AITriggerNotification[]>("/notifications/list");
+  async getNotifications(): Promise<ApiResponse<AITriggerNotification[]>> {
+    try {
+      const data = await NotificationsApi.getNotifications();
+      return { success: true, data };
+    } catch (err: any) {
+      return { success: false, data: [], error: err.message || "Failed to load notification logs" };
+    }
   }
 
-  triggerManualNotification(
+  async triggerManualNotification(
     studentId: string,
     studentName: string,
     triggerType: AITriggerNotification["triggerType"],
     channel: AITriggerNotification["channel"],
     recipient: AITriggerNotification["recipient"],
     message: string
-  ): Promise<AITriggerNotification> {
-    return api.post<AITriggerNotification>("/notifications/trigger", {
-      studentId,
-      studentName,
-      triggerType,
-      channel,
-      recipient,
-      message,
-    });
+  ): Promise<ApiResponse<AITriggerNotification>> {
+    try {
+      const data = await NotificationsApi.triggerManualNotification(
+        studentId,
+        studentName,
+        triggerType,
+        channel,
+        recipient,
+        message
+      );
+      return { success: true, data };
+    } catch (err: any) {
+      return {
+        success: false,
+        data: {
+          id: `NOTIF-${Date.now()}`,
+          studentId,
+          studentName,
+          triggerType,
+          channel,
+          recipient,
+          message,
+          timestamp: new Date().toLocaleTimeString(),
+          status: "Failed",
+        },
+        error: err.message,
+      };
+    }
   }
 }
 
-const ACTIVE_IMPL = "mock";
+export class SupabaseNotificationsRepository implements INotificationsRepository {
+  async getNotifications(): Promise<ApiResponse<AITriggerNotification[]>> {
+    return { success: true, data: [] };
+  }
 
-export const notificationsRepository: INotificationsRepository =
-  ACTIVE_IMPL === "mock" ? new MockNotificationsRepository() : new MockNotificationsRepository();
-
-export default notificationsRepository;
+  async triggerManualNotification(
+    studentId: string,
+    studentName: string,
+    triggerType: AITriggerNotification["triggerType"],
+    channel: AITriggerNotification["channel"],
+    recipient: AITriggerNotification["recipient"],
+    message: string
+  ): Promise<ApiResponse<AITriggerNotification>> {
+    return {
+      success: true,
+      data: {
+        id: "NOTIF-SUB",
+        studentId,
+        studentName,
+        triggerType,
+        channel,
+        recipient,
+        message,
+        timestamp: new Date().toLocaleTimeString(),
+        status: "Sent",
+      },
+    };
+  }
+}
