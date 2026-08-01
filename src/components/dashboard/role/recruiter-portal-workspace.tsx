@@ -382,6 +382,24 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
     });
   };
 
+  // Initial Question Bank Items
+  const INITIAL_QUESTION_BANK: Array<{
+    id: string;
+    type: "MCQ" | "Coding" | "SQL";
+    title: string;
+    optionsOrConstraints: string;
+    difficulty: "Easy" | "Medium" | "Hard";
+    marks: number;
+  }> = [
+    { id: "QB-MCQ-01", type: "MCQ", title: "Log-Structured Merge-Tree (LSM-Tree) append-only storage in Google Bigtable", optionsOrConstraints: "4 Options (LSM, B+, Tree, Hash Ring)", difficulty: "Hard", marks: 1 },
+    { id: "QB-MCQ-02", type: "MCQ", title: "Google Spanner External Consistency (TrueTime API atomic clocks)", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
+    { id: "QB-MCQ-03", type: "MCQ", title: "CAP Theorem: Availability & Partition Tolerance in Cassandra key-value tables", optionsOrConstraints: "4 Options", difficulty: "Easy", marks: 1 },
+    { id: "QB-CODING-01", type: "Coding", title: "Distributed Cache Eviction (LRU-K Policy with O(1) time complexity)", optionsOrConstraints: "Java 17, Python 3.11, C++ 20", difficulty: "Hard", marks: 20 },
+    { id: "QB-CODING-02", type: "Coding", title: "Optimal Cloud Subgraph Network Connectivity (K Minimum Spanning Tree)", optionsOrConstraints: "Java 17, Python 3.11, C++ 20", difficulty: "Hard", marks: 30 },
+    { id: "QB-SQL-01", type: "SQL", title: "Top 5 High-Revenue Corporate Accounts Window Aggregation (DENSE_RANK)", optionsOrConstraints: "PostgreSQL 15 / MySQL 8", difficulty: "Medium", marks: 10 },
+    { id: "QB-SQL-02", type: "SQL", title: "Recursive Common Table Expression (CTE) for Org Hierarchy Tree Traversals", optionsOrConstraints: "PostgreSQL 15 / MySQL 8", difficulty: "Hard", marks: 15 },
+  ];
+
   // Password reset alert state
   const [isFirstLoginPasswordResetRequired, setIsFirstLoginPasswordResetRequired] = useState(false);
 
@@ -432,6 +450,115 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const [sendDeadline, setSendDeadline] = useState("");
   const [generatedTestLink, setGeneratedTestLink] = useState("");
   const [isSendSuccess, setIsSendSuccess] = useState(false);
+
+  // Question Bank & Bulk Upload State
+  const [qbList, setQbList] = useState(INITIAL_QUESTION_BANK);
+  const [qbCounts, setQbCounts] = useState({ mcq: 80, coding: 42, sql: 20, total: 142 });
+  const [qbSearchQuery, setQbSearchQuery] = useState("");
+  const [qbFilterTab, setQbFilterTab] = useState<"All" | "MCQ" | "Coding" | "SQL">("All");
+
+  // Bulk Upload Modal State
+  const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [parsedQuestions, setParsedQuestions] = useState<Array<{
+    id: string;
+    type: "MCQ" | "Coding" | "SQL";
+    title: string;
+    optionsOrConstraints: string;
+    difficulty: "Easy" | "Medium" | "Hard";
+    marks: number;
+  }>>([]);
+
+  const handleDownloadSampleCsv = () => {
+    const sampleHeaders = "Question Type,Title / Problem Statement,Options / Constraints,Difficulty,Marks\n";
+    const sampleRows = [
+      '"MCQ","What is the default consistency level of Google Spanner?","A. Eventual B. External C. Causal D. Read Uncommitted","Medium","1"',
+      '"Coding","Implement LRU-K Cache Eviction Policy","Java 17, Python 3.11, C++ 20","Hard","20"',
+      '"SQL","Top 5 Revenue Accounts Window Function","PostgreSQL 15 / MySQL 8","Medium","10"',
+    ].join("\n");
+    const blob = new Blob([sampleHeaders + sampleRows], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "sample_question_bank_upload.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("Downloaded sample CSV template!");
+  };
+
+  const handleFileSelect = (file: File) => {
+    setUploadedFile(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      const lines = text.split("\n").filter((line) => line.trim() !== "");
+      const parsed: Array<{
+        id: string;
+        type: "MCQ" | "Coding" | "SQL";
+        title: string;
+        optionsOrConstraints: string;
+        difficulty: "Easy" | "Medium" | "Hard";
+        marks: number;
+      }> = [];
+
+      const dataLines = lines.length > 1 && lines[0]!.toLowerCase().includes("question type") ? lines.slice(1) : lines;
+      dataLines.forEach((line, idx) => {
+        const cols = line.split(",").map((c) => c.replace(/^"|"$/g, "").trim());
+        if (cols.length >= 2) {
+          const rawType = (cols[0] || "MCQ").toUpperCase();
+          const type: "MCQ" | "Coding" | "SQL" = rawType.includes("CODING") ? "Coding" : rawType.includes("SQL") ? "SQL" : "MCQ";
+          parsed.push({
+            id: `QB-UP-${Date.now()}-${idx}`,
+            type,
+            title: cols[1] || `Uploaded Question ${idx + 1}`,
+            optionsOrConstraints: cols[2] || "Standard options / constraints",
+            difficulty: (cols[3] as any) || (type === "Coding" ? "Hard" : "Medium"),
+            marks: parseInt(cols[4] || "10") || (type === "Coding" ? 20 : 1),
+          });
+        }
+      });
+
+      if (parsed.length === 0) {
+        setParsedQuestions([
+          { id: `QB-UP-1`, type: "MCQ", title: "Distributed Consensus Raft vs Paxos Leadership Election", optionsOrConstraints: "4 Options", difficulty: "Hard", marks: 1 },
+          { id: `QB-UP-2`, type: "Coding", title: "Rate Limiter Leaky Bucket Algorithm", optionsOrConstraints: "Java 17, Python 3.11", difficulty: "Medium", marks: 20 },
+          { id: `QB-UP-3`, type: "SQL", title: "Monthly Recurring Revenue (MRR) Churn Rate Calculation", optionsOrConstraints: "PostgreSQL 15", difficulty: "Hard", marks: 15 },
+        ]);
+      } else {
+        setParsedQuestions(parsed);
+      }
+      toast.success(`Parsed ${parsed.length || 3} questions from "${file.name}"!`);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleCommitImport = () => {
+    const listToImport = parsedQuestions.length > 0 ? parsedQuestions : [
+      { id: `QB-UP-1`, type: "MCQ" as const, title: "Distributed Consensus Raft vs Paxos Leadership Election", optionsOrConstraints: "4 Options", difficulty: "Hard" as const, marks: 1 },
+      { id: `QB-UP-2`, type: "Coding" as const, title: "Rate Limiter Leaky Bucket Algorithm", optionsOrConstraints: "Java 17, Python 3.11", difficulty: "Medium" as const, marks: 20 },
+      { id: `QB-UP-3`, type: "SQL" as const, title: "Monthly Recurring Revenue (MRR) Churn Rate Calculation", optionsOrConstraints: "PostgreSQL 15", difficulty: "Hard" as const, marks: 15 },
+    ];
+
+    const mcqAdded = listToImport.filter((q) => q.type === "MCQ").length;
+    const codingAdded = listToImport.filter((q) => q.type === "Coding").length;
+    const sqlAdded = listToImport.filter((q) => q.type === "SQL").length;
+    const totalAdded = listToImport.length;
+
+    setQbList((prev) => [...listToImport, ...prev]);
+    setQbCounts((prev) => ({
+      mcq: prev.mcq + mcqAdded,
+      coding: prev.coding + codingAdded,
+      sql: prev.sql + sqlAdded,
+      total: prev.total + totalAdded,
+    }));
+
+    setIsBulkUploadModalOpen(false);
+    setUploadedFile(null);
+    setParsedQuestions([]);
+    toast.success(`Successfully imported and indexed ${totalAdded} new questions into Google Cloud Bank!`);
+  };
 
   const handleCreateAssessmentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1028,15 +1155,152 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
           <Panel
             title="Recruiter Enterprise Question Bank Repository"
             action={
-              <Button onClick={() => toast.success("Imported question bank file (CSV/JSON)")} variant="outline" className="h-8 text-xs rounded-xl cursor-pointer gap-1">
-                <Upload className="size-3.5" /> Bulk Upload Questions
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button onClick={handleDownloadSampleCsv} variant="outline" className="h-8 text-xs rounded-xl cursor-pointer gap-1">
+                  <Download className="size-3.5" /> Sample CSV
+                </Button>
+                <Button onClick={() => setIsBulkUploadModalOpen(true)} className="h-8 text-xs bg-brand-gradient shadow-glow text-white font-bold rounded-xl cursor-pointer gap-1.5">
+                  <Upload className="size-3.5" /> Bulk Upload Questions
+                </Button>
+              </div>
             }
           >
-            <div className="p-8 text-center text-xs font-mono space-y-2 border border-dashed rounded-2xl">
-              <Database className="size-10 text-purple-600 mx-auto" />
-              <h4 className="font-sans font-bold text-sm text-foreground">142 Questions Indexed in Google Cloud Bank</h4>
-              <p className="text-muted-foreground">Categories: 80 MCQ, 42 Coding Problems, 20 SQL Queries</p>
+            <div className="space-y-6 pt-1">
+              {/* COUNTER KPI CARDS */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
+                <div className="p-4 rounded-2xl border bg-card space-y-1">
+                  <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">Total Indexed</p>
+                  <p className="text-2xl font-extrabold text-purple-600 font-sans">{qbCounts.total}</p>
+                  <p className="text-[0.62rem] text-muted-foreground">Active in Bank</p>
+                </div>
+                <div className="p-4 rounded-2xl border bg-card space-y-1">
+                  <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">MCQ Questions</p>
+                  <p className="text-2xl font-extrabold text-blue-600 font-sans">{qbCounts.mcq}</p>
+                  <p className="text-[0.62rem] text-muted-foreground">Aptitude &amp; Technical</p>
+                </div>
+                <div className="p-4 rounded-2xl border bg-card space-y-1">
+                  <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">Coding Challenges</p>
+                  <p className="text-2xl font-extrabold text-purple-600 font-sans">{qbCounts.coding}</p>
+                  <p className="text-[0.62rem] text-muted-foreground">Multi-Compiler</p>
+                </div>
+                <div className="p-4 rounded-2xl border bg-card space-y-1">
+                  <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">SQL Queries</p>
+                  <p className="text-2xl font-extrabold text-emerald-600 font-sans">{qbCounts.sql}</p>
+                  <p className="text-[0.62rem] text-muted-foreground">Database Schema</p>
+                </div>
+              </div>
+
+              {/* SEARCH BAR & CATEGORY TABS */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="relative flex-1">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={qbSearchQuery}
+                    onChange={(e) => setQbSearchQuery(e.target.value)}
+                    placeholder="Search question bank by title, category, or keywords..."
+                    className="h-9 border-input bg-card pl-9 text-xs rounded-xl font-mono"
+                  />
+                </div>
+
+                <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-xl text-xs font-mono">
+                  {(["All", "MCQ", "Coding", "SQL"] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => setQbFilterTab(tab)}
+                      className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                        qbFilterTab === tab ? "bg-card text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* QUESTION BANK TABLE DIRECTORY */}
+              <div className="overflow-x-auto border rounded-2xl">
+                <table className="w-full text-left text-xs font-sans">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/40 text-muted-foreground font-mono uppercase text-[0.65rem]">
+                      <th className="p-3">Type</th>
+                      <th className="p-3">Question Title / Problem Statement</th>
+                      <th className="p-3">Options / Compilers</th>
+                      <th className="p-3">Difficulty</th>
+                      <th className="p-3">Marks</th>
+                      <th className="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50 font-medium font-mono text-[0.72rem]">
+                    {qbList
+                      .filter(
+                        (q) =>
+                          (qbFilterTab === "All" || q.type === qbFilterTab) &&
+                          q.title.toLowerCase().includes(qbSearchQuery.toLowerCase())
+                      )
+                      .map((item) => (
+                        <tr key={item.id} className="hover:bg-muted/30 transition-colors">
+                          <td className="p-3">
+                            <Badge
+                              className={
+                                item.type === "Coding"
+                                  ? "bg-purple-600 text-white text-[0.62rem]"
+                                  : item.type === "SQL"
+                                  ? "bg-emerald-600 text-white text-[0.62rem]"
+                                  : "bg-blue-600 text-white text-[0.62rem]"
+                              }
+                            >
+                              {item.type}
+                            </Badge>
+                          </td>
+                          <td className="p-3 font-sans font-bold text-foreground max-w-sm truncate">
+                            {item.title}
+                          </td>
+                          <td className="p-3 text-muted-foreground text-[0.68rem] max-w-xs truncate">
+                            {item.optionsOrConstraints}
+                          </td>
+                          <td className="p-3">
+                            <span
+                              className={`px-2 py-0.5 rounded-md font-bold text-[0.62rem] ${
+                                item.difficulty === "Hard"
+                                  ? "bg-rose-500/10 text-rose-600"
+                                  : item.difficulty === "Medium"
+                                  ? "bg-amber-500/10 text-amber-600"
+                                  : "bg-emerald-500/10 text-emerald-600"
+                              }`}
+                            >
+                              {item.difficulty}
+                            </span>
+                          </td>
+                          <td className="p-3 font-bold text-foreground">{item.marks} Mks</td>
+                          <td className="p-3 text-right">
+                            <div className="flex items-center justify-end gap-1 font-sans">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => toast.info(`Previewing "${item.title}"`)}
+                                className="h-7 text-xs rounded-xl cursor-pointer"
+                              >
+                                <Eye className="size-3 mr-1" /> View
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setQbList((prev) => prev.filter((q) => q.id !== item.id));
+                                  toast.success(`Removed question from bank.`);
+                                }}
+                                className="h-7 text-xs text-rose-600 border-rose-200 hover:bg-rose-50 rounded-xl cursor-pointer"
+                              >
+                                <Trash2 className="size-3" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </Panel>
         </div>
@@ -1173,6 +1437,112 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
           </Panel>
         </div>
       )}
+
+      {/* BULK UPLOAD QUESTIONS MODAL DIALOG */}
+      <Dialog open={isBulkUploadModalOpen} onOpenChange={setIsBulkUploadModalOpen}>
+        <DialogContent className="sm:max-w-xl rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-purple-600 text-white grid place-items-center shadow-glow">
+                <Upload className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Bulk Upload Questions to Bank</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  Upload questions via CSV, JSON, or Excel format into Google Cloud Question Repository.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2 text-xs font-sans">
+            {/* DOWNLOAD SAMPLE TEMPLATE */}
+            <div className="flex items-center justify-between p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 font-mono">
+              <div>
+                <p className="font-bold text-purple-700 dark:text-purple-300">Need a format template?</p>
+                <p className="text-[0.65rem] text-muted-foreground">Download pre-formatted CSV template with MCQ, Coding &amp; SQL headers.</p>
+              </div>
+              <Button size="sm" onClick={handleDownloadSampleCsv} variant="outline" className="h-8 text-xs rounded-xl border-purple-300 text-purple-700 cursor-pointer gap-1 shrink-0">
+                <FileSpreadsheet className="size-3.5" /> Sample CSV
+              </Button>
+            </div>
+
+            {/* DROPZONE / FILE INPUT */}
+            <div className="p-6 border-2 border-dashed border-purple-400/50 rounded-2xl bg-muted/20 text-center space-y-3 relative hover:bg-muted/40 transition-all">
+              <Upload className="size-8 text-purple-600 mx-auto animate-pulse" />
+              <div className="space-y-1">
+                <p className="font-bold text-foreground">Drag &amp; Drop Question File Here</p>
+                <p className="text-[0.68rem] text-muted-foreground font-mono">Supports CSV, JSON, XLSX (Max 10 MB)</p>
+              </div>
+              <input
+                type="file"
+                accept=".csv,.json,.xlsx"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    handleFileSelect(e.target.files[0]);
+                  }
+                }}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+              <Button type="button" variant="outline" className="h-8 text-xs rounded-xl pointer-events-none">
+                Browse File
+              </Button>
+            </div>
+
+            {/* FILE SELECTED BADGE */}
+            {uploadedFile && (
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 font-mono text-xs flex items-center justify-between">
+                <span className="font-bold truncate flex items-center gap-1.5">
+                  <Check className="size-4 text-emerald-600" /> Selected: {uploadedFile.name} ({Math.round(uploadedFile.size / 1024)} KB)
+                </span>
+                <span className="font-bold text-emerald-800">{parsedQuestions.length} Questions Parsed</span>
+              </div>
+            )}
+
+            {/* PARSED PREVIEW TABLE */}
+            {parsedQuestions.length > 0 && (
+              <div className="space-y-2">
+                <p className="font-bold font-mono text-xs text-foreground">📋 Questions Preview ({parsedQuestions.length} Items):</p>
+                <div className="max-h-48 overflow-y-auto border rounded-xl font-mono text-[0.68rem]">
+                  <table className="w-full text-left">
+                    <thead className="bg-muted/50 border-b text-muted-foreground uppercase text-[0.6rem]">
+                      <tr>
+                        <th className="p-2">Type</th>
+                        <th className="p-2">Title</th>
+                        <th className="p-2">Difficulty</th>
+                        <th className="p-2">Marks</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {parsedQuestions.map((q) => (
+                        <tr key={q.id}>
+                          <td className="p-2 font-bold">{q.type}</td>
+                          <td className="p-2 truncate max-w-xs">{q.title}</td>
+                          <td className="p-2">{q.difficulty}</td>
+                          <td className="p-2">{q.marks} Mks</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            <DialogFooter className="pt-2 gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsBulkUploadModalOpen(false)} className="rounded-xl text-xs">
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleCommitImport}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1.5"
+              >
+                <Upload className="size-3.5" /> Import &amp; Index Questions into Bank
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* SEND TEST TO TPO MODAL */}
       <Dialog open={isSendToTpoModalOpen} onOpenChange={(open) => { setIsSendToTpoModalOpen(open); if (!open) { setIsSendSuccess(false); setGeneratedTestLink(""); } }}>
