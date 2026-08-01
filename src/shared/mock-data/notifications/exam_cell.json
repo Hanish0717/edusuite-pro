@@ -1,0 +1,38 @@
+[
+  {
+    "id": "EX-001",
+    "title": "Timetable Draft Approved",
+    "message": "The end-semester exam timetable draft has been approved by the Dean of Academics.",
+    "type": "Success",
+    "priority": "Medium",
+    "target_role": "exam_cell",
+    "module": "Examination",
+    "is_read": false,
+    "created_at": "2026-08-01T10:30:00Z",
+    "created_by": "Dean Office"
+  },
+  {
+    "id": "EX-002",
+    "title": "Pending Marks Submission",
+    "message": "5 course instructors have not yet submitted their internal examination marks.",
+    "type": "Reminder",
+    "priority": "High",
+    "target_role": "exam_cell",
+    "module": "Examination",
+    "is_read": false,
+    "created_at": "2026-08-01T09:00:00Z",
+    "created_by": "System"
+  },
+  {
+    "id": "EX-003",
+    "title": "Malpractice Report Lodged",
+    "message": "Exam hall invigilator filed a malpractice report for student Arjun M. (Roll 21CS009).",
+    "type": "Emergency",
+    "priority": "High",
+    "target_role": "exam_cell",
+    "module": "Examination",
+    "is_read": true,
+    "created_at": "2026-07-31T15:00:00Z",
+    "created_by": "Invigilator A"
+  }
+]

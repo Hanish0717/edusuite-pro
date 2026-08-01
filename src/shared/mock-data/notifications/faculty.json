@@ -1,0 +1,62 @@
+[
+  {
+    "id": "FA-001",
+    "title": "Today's Schedule Update",
+    "message": "You have a lecture replacement in room Block C-201 at 02:00 PM today.",
+    "type": "Information",
+    "priority": "Medium",
+    "target_role": "faculty",
+    "module": "Academics",
+    "is_read": false,
+    "created_at": "2026-08-01T08:15:00Z",
+    "created_by": "Academics Coordinator"
+  },
+  {
+    "id": "FA-002",
+    "title": "Pending Attendance Submission",
+    "message": "Attendance sheet for CSE-401 lecture (10:00 AM) is pending submission.",
+    "type": "Reminder",
+    "priority": "High",
+    "target_role": "faculty",
+    "module": "Attendance",
+    "is_read": false,
+    "created_at": "2026-08-01T11:00:00Z",
+    "created_by": "Attendance Watchdog"
+  },
+  {
+    "id": "FA-003",
+    "title": "Evaluation Deadline Approaching",
+    "message": "Evaluation of CSE-302 Unit Test scripts is due in 24 hours.",
+    "type": "Warning",
+    "priority": "Medium",
+    "target_role": "faculty",
+    "module": "Examination",
+    "is_read": true,
+    "created_at": "2026-07-31T15:30:00Z",
+    "created_by": "Exam Controller"
+  },
+  {
+    "id": "FA-004",
+    "title": "Leave Approved",
+    "message": "Your leave request for August 5 has been approved by the HOD.",
+    "type": "Success",
+    "priority": "Low",
+    "target_role": "faculty",
+    "module": "Administration",
+    "is_read": false,
+    "created_at": "2026-07-31T10:00:00Z",
+    "created_by": "HOD CSE"
+  },
+  {
+    "id": "FA-005",
+    "title": "Student Risk Alert",
+    "message": "AI Analysis flagged student Arjun M. (Roll 21CS009) as high academic risk.",
+    "type": "Warning",
+    "priority": "High",
+    "target_role": "faculty",
+    "module": "AI & Analytics",
+    "is_read": false,
+    "created_at": "2026-07-30T14:20:00Z",
+    "created_by": "Risk Engine"
+  }
+]

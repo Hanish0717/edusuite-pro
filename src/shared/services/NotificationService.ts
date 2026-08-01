@@ -1,38 +1,31 @@
 import { toast } from "sonner";
-
-export interface LoggedNotification {
-  id: string;
-  studentId: string;
-  studentName: string;
-  triggerType: string;
-  channel: "Email" | "SMS" | "In-App" | "All";
-  recipient: "Student" | "Parent" | "Faculty" | "HOD" | "All";
-  message: string;
-  timestamp: string;
-  status: "Sent" | "Failed" | "Pending";
-}
+import { notificationRepository } from "../repositories/notification.repository";
+import type { Notification } from "../types/notification.types";
 
 class NotificationService {
-  private logs: LoggedNotification[] = [];
-
-  dispatch(payload: Omit<LoggedNotification, "id" | "timestamp" | "status">): Promise<LoggedNotification> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newLog: LoggedNotification = {
-          ...payload,
-          id: `NOT-${Math.floor(100 + Math.random() * 900)}`,
-          timestamp: new Date().toLocaleString(),
-          status: "Sent",
-        };
-        this.logs.unshift(newLog);
-        toast.success(`Notification sent via ${payload.channel} to ${payload.recipient}.`);
-        resolve(newLog);
-      }, 500);
-    });
+  async getNotificationsForRole(role: string): Promise<Notification[]> {
+    const res = await notificationRepository.getNotifications(role);
+    return res.success ? res.data : [];
   }
 
-  getLogs(): LoggedNotification[] {
-    return this.logs;
+  async markNotificationAsRead(id: string): Promise<boolean> {
+    const res = await notificationRepository.markAsRead(id);
+    return res.success ? res.data : false;
+  }
+
+  async dispatch(
+    payload: Omit<Notification, "id" | "created_at" | "is_read" | "created_by"> & { created_by?: string }
+  ): Promise<Notification | null> {
+    const res = await notificationRepository.createNotification({
+      ...payload,
+      created_by: payload.created_by || "System",
+    });
+    
+    if (res.success) {
+      toast.success(`New ${payload.type} alert sent to ${payload.target_role}: "${payload.title}"`);
+      return res.data;
+    }
+    return null;
   }
 }
 

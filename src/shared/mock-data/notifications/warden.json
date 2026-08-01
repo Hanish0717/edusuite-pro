@@ -1,0 +1,38 @@
+[
+  {
+    "id": "WD-001",
+    "title": "Room Allocate List Finalized",
+    "message": "Block A first-year allocations are complete and notification letters are ready.",
+    "type": "Success",
+    "priority": "Medium",
+    "target_role": "warden",
+    "module": "Hostel",
+    "is_read": false,
+    "created_at": "2026-08-01T10:00:00Z",
+    "created_by": "Allocations System"
+  },
+  {
+    "id": "WD-002",
+    "title": "Maintenance Complaint Registered",
+    "message": "Room 305 Block B reported air conditioning malfunction. Ticket ID: MAINT-894.",
+    "type": "Reminder",
+    "priority": "Low",
+    "target_role": "warden",
+    "module": "Hostel",
+    "is_read": false,
+    "created_at": "2026-08-01T09:00:00Z",
+    "created_by": "Student Portal"
+  },
+  {
+    "id": "WD-003",
+    "title": "Night Outpass Requests",
+    "message": "4 students have requested weekend night outpasses. Approvals required.",
+    "type": "Approval",
+    "priority": "High",
+    "target_role": "warden",
+    "module": "Hostel",
+    "is_read": true,
+    "created_at": "2026-07-31T19:00:00Z",
+    "created_by": "Outpass Engine"
+  }
+]

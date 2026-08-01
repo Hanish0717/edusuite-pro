@@ -1,0 +1,38 @@
+[
+  {
+    "id": "LB-001",
+    "title": "Book Purchase Request Approved",
+    "message": "The procurement request for 15 copies of 'Clean Architecture' has been approved.",
+    "type": "Success",
+    "priority": "Medium",
+    "target_role": "librarian",
+    "module": "Library",
+    "is_read": false,
+    "created_at": "2026-08-01T11:00:00Z",
+    "created_by": "Finance Office"
+  },
+  {
+    "id": "LB-002",
+    "title": "Overdue Book Alert",
+    "message": "12 books issued on July 15 are overdue. Automatic fine notices sent.",
+    "type": "Reminder",
+    "priority": "Medium",
+    "target_role": "librarian",
+    "module": "Library",
+    "is_read": false,
+    "created_at": "2026-08-01T09:00:00Z",
+    "created_by": "Library Automation"
+  },
+  {
+    "id": "LB-003",
+    "title": "Inventory Audit Pending",
+    "message": "Annual library inventory audit must be submitted by August 15.",
+    "type": "Warning",
+    "priority": "High",
+    "target_role": "librarian",
+    "module": "Library",
+    "is_read": true,
+    "created_at": "2026-07-31T14:30:00Z",
+    "created_by": "Dean Academics"
+  }
+]

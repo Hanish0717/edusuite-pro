@@ -53,6 +53,8 @@ import {
 } from "@/config/roles";
 import { useRole } from "@/context/role-context";
 import { notifications } from "@/data/mock";
+import { notificationService } from "@/shared/services/NotificationService";
+import type { Notification } from "@/shared/types/notification.types";
 
 function useCrumbs() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
@@ -78,12 +80,44 @@ export function Topbar() {
     setExternalPersona,
   } = useRole();
   const [dark, setDark] = useState(false);
+  const [notifs, setNotifs] = useState<Notification[]>([]);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
 
-  const unread = notifications.filter((n) => n.unread).length;
+  const getTargetNotifRole = (): string => {
+    if (role === "student") return "student";
+    if (role === "parent") return "parent";
+    if (role === "super-admin" || role === "super_admin") return "super-admin";
+    if (role === "staff") {
+      if (flags.includes("isHod")) return "hod";
+      if (flags.includes("isLibraryAdmin")) return "librarian";
+      if (flags.includes("isPlacementOfficer")) return "placement";
+      if (flags.includes("isExamController")) return "exam_cell";
+      if (flags.includes("isFinanceOfficer")) return "accounts";
+      if (flags.includes("isHostelWarden")) return "warden";
+      if (flags.includes("isTransportOfficer")) return "transport";
+      return "faculty";
+    }
+    return "external-user";
+  };
+
+  const activeNotifRole = getTargetNotifRole();
+
+  useEffect(() => {
+    let active = true;
+    notificationService.getNotificationsForRole(activeNotifRole).then((data) => {
+      if (active) {
+        setNotifs(data);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [activeNotifRole]);
+
+  const unread = notifs.filter((n) => !n.is_read).length;
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
@@ -237,21 +271,52 @@ export function Topbar() {
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-full sm:max-w-sm">
-              <SheetHeader>
+            <SheetContent className="w-full sm:max-w-sm flex flex-col h-full p-6">
+              <SheetHeader className="mb-4 shrink-0">
                 <SheetTitle>Notifications</SheetTitle>
                 <SheetDescription>Campus updates for {profile.personaName}</SheetDescription>
               </SheetHeader>
-              <div className="mt-4 space-y-2 px-4 pb-4">
-                {notifications.map((n) => (
-                  <div
-                    key={n.title}
-                    className="rounded-xl border border-border bg-card p-3 shadow-card transition-colors hover:bg-accent/40"
-                  >
-                    <p className="text-sm font-medium">{n.title}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{n.meta}</p>
+              <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+                {notifs.length === 0 ? (
+                  <div className="text-center py-10 text-sm text-muted-foreground">
+                    No notifications for this role.
                   </div>
-                ))}
+                ) : (
+                  notifs.map((n) => (
+                    <div
+                      key={n.id}
+                      onClick={async () => {
+                        await notificationService.markNotificationAsRead(n.id);
+                        setNotifs((prev) =>
+                          prev.map((x) => (x.id === n.id ? { ...x, is_read: true } : x))
+                        );
+                      }}
+                      className={`rounded-xl border border-border bg-card p-3 shadow-card transition-colors hover:bg-accent/40 cursor-pointer ${
+                        !n.is_read ? "border-l-4 border-l-primary" : ""
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`text-[0.65rem] px-2 py-0.5 rounded font-semibold ${
+                          n.type === "Warning" ? "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300" :
+                          n.type === "Error" || n.type === "Emergency" ? "bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300" :
+                          n.type === "Success" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300" :
+                          "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300"
+                        }`}>
+                          {n.type}
+                        </span>
+                        <span className="text-[0.65rem] text-muted-foreground font-mono">
+                          {n.module}
+                        </span>
+                      </div>
+                      <p className="text-sm font-semibold mt-1.5">{n.title}</p>
+                      <p className="mt-1 text-xs text-muted-foreground leading-normal">{n.message}</p>
+                      <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-border/40 text-[0.65rem] text-muted-foreground">
+                        <span>By: {n.created_by}</span>
+                        <span>{new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </SheetContent>
           </Sheet>
