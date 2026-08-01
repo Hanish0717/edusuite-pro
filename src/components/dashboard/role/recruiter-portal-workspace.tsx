@@ -665,6 +665,57 @@ Bengaluru, Karnataka
     toast.success("Dismissed notification.");
   };
 
+  // Support Tickets State
+  const MOCK_SUPPORT_TICKETS = [
+    {
+      id: "TCK-801",
+      subject: "Proctoring Auto-Submit Audit Request for Candidate 2022CSE104",
+      category: "Assessment Proctoring",
+      priority: "High",
+      status: "In Progress",
+      createdDate: "2026-08-01",
+      assignedAgent: "TPO Tech Desk (Mr. Suresh Nair)",
+      description: "Candidate reached tab switch limit during Google Cloud Systems test. Requesting TPO manual review log.",
+    },
+    {
+      id: "TCK-802",
+      subject: "Campus Placement Interview Slot Schedule Confirmation",
+      category: "Interview Scheduling",
+      priority: "Medium",
+      status: "Resolved",
+      createdDate: "2026-07-30",
+      assignedAgent: "Placement Officer (Dr. Ramesh Kumar)",
+      description: "Confirmed Google Meet room links and interviewer panel assignments for Aug 05 drive.",
+    },
+  ];
+
+  const [supportTickets, setSupportTickets] = useState(MOCK_SUPPORT_TICKETS);
+  const [isCreateTicketModalOpen, setIsCreateTicketModalOpen] = useState(false);
+  const [ticketSubject, setTicketSubject] = useState("");
+  const [ticketCategory, setTicketCategory] = useState("Assessment Proctoring");
+  const [ticketPriority, setTicketPriority] = useState<"High" | "Medium" | "Low">("High");
+  const [ticketDescription, setTicketDescription] = useState("");
+
+  const handleCreateTicketSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newTicket = {
+      id: `TCK-${Math.floor(100 + Math.random() * 900)}`,
+      subject: ticketSubject || "Corporate Placement Query",
+      category: ticketCategory,
+      priority: ticketPriority,
+      status: "Open",
+      createdDate: new Date().toISOString().split("T")[0],
+      assignedAgent: "TPO Support Helpdesk",
+      description: ticketDescription || "Query submitted to college placement administration.",
+    };
+
+    setSupportTickets((prev) => [newTicket, ...prev]);
+    setIsCreateTicketModalOpen(false);
+    setTicketSubject("");
+    setTicketDescription("");
+    toast.success(`Submitted support ticket ${newTicket.id} to Placement Helpdesk!`);
+  };
+
   // Preview Assessment Modal State
   const [selectedPreviewAst, setSelectedPreviewAst] = useState<RecruiterAssessment | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -2141,7 +2192,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                         <Button
                           size="sm"
                           onClick={() => {
-                            setActiveModule(notif.targetModule);
+                            setActiveModule(notif.targetModule as RecruiterPageModule);
                             setNotificationsList((prev) =>
                               prev.map((n) => (n.id === notif.id ? { ...n, isUnread: false } : n))
                             );
@@ -2162,6 +2213,174 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                       </div>
                     </div>
                   ))}
+              </div>
+            </div>
+          </Panel>
+        </div>
+      )}
+
+      {/* ===================================================================== */}
+      {/* 11. RECRUITER SUPPORT & PLACEMENT ASSISTANCE CENTER                   */}
+      {/* ===================================================================== */}
+      {activeModule === "support" && (
+        <div className="space-y-6">
+          <Panel
+            title="Recruiter Placement Desk Help & Technical Support Center"
+            action={
+              <Button onClick={() => setIsCreateTicketModalOpen(true)} className="bg-brand-gradient shadow-glow font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5">
+                <Plus className="size-3.5" /> Submit Support Ticket
+              </Button>
+            }
+          >
+            <div className="space-y-6 pt-1">
+              {/* QUICK SUPPORT INFO CARDS */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-sans">
+                <div className="p-4 rounded-2xl border bg-card space-y-1.5">
+                  <div className="flex items-center gap-2 text-blue-600 font-bold text-xs">
+                    <Phone className="size-4" /> Dedicated TPO Hot-line
+                  </div>
+                  <p className="text-base font-extrabold text-foreground font-mono">+91 80 2841 2345</p>
+                  <p className="text-[0.68rem] text-muted-foreground">Mon–Sat, 09:00 AM – 06:00 PM IST</p>
+                </div>
+                <div className="p-4 rounded-2xl border bg-card space-y-1.5">
+                  <div className="flex items-center gap-2 text-purple-600 font-bold text-xs">
+                    <Mail className="size-4" /> TPO Desk Support Email
+                  </div>
+                  <p className="text-sm font-extrabold text-foreground font-mono">tpo-desk@college.edu.in</p>
+                  <p className="text-[0.68rem] text-muted-foreground">Average Response: &lt; 2 Hours</p>
+                </div>
+                <div className="p-4 rounded-2xl border bg-card space-y-1.5">
+                  <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs">
+                    <FileText className="size-4" /> MoU &amp; Placement Policy FAQs
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => toast.success("Downloaded Corporate Placement MoU Guidelines PDF!")}
+                    className="h-7 text-xs rounded-xl cursor-pointer mt-1"
+                  >
+                    <Download className="size-3 mr-1" /> Download Policy Handbook
+                  </Button>
+                </div>
+              </div>
+
+              {/* LIVE TICKET DIRECTORY TABLE */}
+              <div className="space-y-3">
+                <p className="font-sans font-bold text-xs text-foreground">🎫 Active Corporate Support Tickets &amp; Inquiries:</p>
+                <div className="overflow-x-auto border rounded-2xl">
+                  <table className="w-full text-left text-xs font-sans">
+                    <thead>
+                      <tr className="border-b border-border bg-muted/40 text-muted-foreground font-mono uppercase text-[0.65rem]">
+                        <th className="p-3">Ticket ID</th>
+                        <th className="p-3">Subject / Issue Title</th>
+                        <th className="p-3">Category</th>
+                        <th className="p-3">Priority</th>
+                        <th className="p-3">Assigned Desk</th>
+                        <th className="p-3">Status</th>
+                        <th className="p-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/50 font-mono text-[0.72rem]">
+                      {supportTickets.map((tck) => (
+                        <tr key={tck.id} className="hover:bg-muted/30 transition-colors">
+                          <td className="p-3 font-bold text-purple-600">{tck.id}</td>
+                          <td className="p-3 font-sans font-bold text-foreground max-w-xs truncate">{tck.subject}</td>
+                          <td className="p-3 text-muted-foreground">{tck.category}</td>
+                          <td className="p-3">
+                            <Badge className={tck.priority === "High" ? "bg-rose-500/10 text-rose-600 text-[0.62rem]" : "bg-amber-500/10 text-amber-600 text-[0.62rem]"}>
+                              {tck.priority}
+                            </Badge>
+                          </td>
+                          <td className="p-3 text-muted-foreground">{tck.assignedAgent}</td>
+                          <td className="p-3">
+                            <Badge className={tck.status === "Resolved" ? "bg-emerald-600 text-white text-[0.62rem]" : "bg-blue-600 text-white text-[0.62rem]"}>
+                              ● {tck.status}
+                            </Badge>
+                          </td>
+                          <td className="p-3 text-right">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => toast.info(`Ticket Details: ${tck.description}`)}
+                              className="h-7 text-xs rounded-xl cursor-pointer"
+                            >
+                              View Ticket
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </Panel>
+        </div>
+      )}
+
+      {/* ===================================================================== */}
+      {/* 12. RECRUITER PROFILE & SECURITY WORKSPACE                            */}
+      {/* ===================================================================== */}
+      {activeModule === "profile" && (
+        <div className="space-y-6">
+          <Panel title="Corporate Recruiter Profile & Security Settings">
+            <div className="space-y-6 pt-1 font-sans">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-2xl bg-muted/30 border">
+                <div className="size-16 rounded-2xl bg-brand-gradient text-white font-black text-2xl grid place-items-center shadow-glow">
+                  DM
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-base font-extrabold text-foreground">David Miller</h3>
+                  <p className="text-xs text-muted-foreground font-mono">Staff Recruiter • Google Cloud Systems India</p>
+                  <div className="flex items-center gap-2 pt-1">
+                    <Badge className="bg-emerald-600 text-white text-[0.62rem]">Verified Corporate HR</Badge>
+                    <Badge variant="outline" className="text-[0.62rem] font-mono">ID: HR-GGL-8842</Badge>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+                <div className="p-4 rounded-2xl border bg-card space-y-3">
+                  <h4 className="font-bold text-foreground font-sans text-xs">🏢 Corporate Entity Details</h4>
+                  <div className="space-y-2">
+                    <div>
+                      <p className="text-muted-foreground text-[0.65rem]">Company Name</p>
+                      <p className="font-bold text-foreground">{companyName}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-[0.65rem]">Official Website</p>
+                      <p className="font-bold text-blue-600">{website}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-[0.65rem]">Head Office Location</p>
+                      <p className="font-bold text-foreground">{headOffice}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl border bg-card space-y-3">
+                  <h4 className="font-bold text-foreground font-sans text-xs">🔒 Account Security &amp; Authentication</h4>
+                  <div className="space-y-2">
+                    <div>
+                      <p className="text-muted-foreground text-[0.65rem]">Primary Email</p>
+                      <p className="font-bold text-foreground">david.miller@google.com</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground text-[0.65rem]">Two-Factor Authentication (2FA)</p>
+                      <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.62rem] mt-0.5">● Enabled (Google Authenticator)</Badge>
+                    </div>
+                    <div className="pt-1">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => toast.success("Password reset link sent to david.miller@google.com!")}
+                        className="h-8 text-xs rounded-xl cursor-pointer gap-1.5"
+                      >
+                        <Lock className="size-3.5" /> Reset Recruiter Password
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </Panel>
@@ -2231,6 +2450,87 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
           </Panel>
         </div>
       )}
+
+      {/* CREATE SUPPORT TICKET MODAL DIALOG */}
+      <Dialog open={isCreateTicketModalOpen} onOpenChange={setIsCreateTicketModalOpen}>
+        <DialogContent className="sm:max-w-lg rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-purple-600 text-white grid place-items-center shadow-glow">
+                <HelpCircle className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Submit Support Ticket / Inquiry</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  Submit query directly to College Placement Officer Desk &amp; Technical Support Team.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateTicketSubmit} className="space-y-4 pt-2 text-xs font-sans">
+            <div className="space-y-1.5">
+              <label className="font-bold text-foreground">Subject / Title</label>
+              <Input
+                value={ticketSubject}
+                onChange={(e) => setTicketSubject(e.target.value)}
+                placeholder="e.g. Requesting Proctoring Audit Log for Student 2022CSE104"
+                required
+                className="h-9 text-xs rounded-xl font-sans"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Category</label>
+                <select
+                  value={ticketCategory}
+                  onChange={(e) => setTicketCategory(e.target.value)}
+                  className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold cursor-pointer font-mono"
+                >
+                  <option value="Assessment Proctoring">Assessment Proctoring</option>
+                  <option value="Interview Scheduling">Interview Scheduling</option>
+                  <option value="Student Shortlist Inquiry">Student Shortlist Inquiry</option>
+                  <option value="MoU Compliance">MoU Compliance</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Priority Level</label>
+                <select
+                  value={ticketPriority}
+                  onChange={(e) => setTicketPriority(e.target.value as any)}
+                  className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold cursor-pointer font-mono"
+                >
+                  <option value="High">High (Urgent Drive Impact)</option>
+                  <option value="Medium">Medium (General Inquiry)</option>
+                  <option value="Low">Low (Administrative Request)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="font-bold text-foreground">Detailed Description</label>
+              <textarea
+                value={ticketDescription}
+                onChange={(e) => setTicketDescription(e.target.value)}
+                rows={4}
+                required
+                placeholder="Describe your issue or request in detail..."
+                className="w-full rounded-xl border border-input bg-card px-3 py-2 text-xs font-sans resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+              />
+            </div>
+
+            <DialogFooter className="pt-2 gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsCreateTicketModalOpen(false)} className="rounded-xl text-xs">
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1.5">
+                <Send className="size-3.5" /> Submit Ticket to TPO Desk
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* UPLOAD CANDIDATE OFFER LETTER MODAL DIALOG */}
       <Dialog open={isUploadOfferModalOpen} onOpenChange={setIsUploadOfferModalOpen}>
