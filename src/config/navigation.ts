@@ -325,6 +325,11 @@ export const RECRUITER_NAVIGATION: NavSection[] = [
 ];
 
 export function navigationForUser(user: UserPermissionContext): NavSection[] {
+  // Student Portal Navigation
+  if (user.role === "student") {
+    return studentNavigation;
+  }
+
   // Placement Officer specific navigation menu
   if (user.role !== "super-admin" && (user.role === "placement" || user.flags.includes("isPlacementOfficer"))) {
     return PLACEMENT_OFFICER_NAVIGATION;
