@@ -603,6 +603,68 @@ Bengaluru, Karnataka
     toast.success("Downloaded Recruiter Campus Hiring Analytics CSV report!");
   };
 
+  // Notifications State & Activity Stream
+  const INITIAL_NOTIFICATIONS = [
+    {
+      id: "NOTIF-01",
+      title: "Assessment Drive Approved by TPO",
+      message: "Placement Officer Dr. Ramesh Kumar approved 'Google Cloud Systems & Coding Assessment 2026' for campus drive execution.",
+      timestamp: "10 Mins Ago",
+      category: "TPO Approvals",
+      isUnread: true,
+      targetModule: "assessment-requests",
+    },
+    {
+      id: "NOTIF-02",
+      title: "New Student Test Submission Received",
+      message: "Candidate 23341a4229@college.edu.in submitted 'Google Cloud Systems & Coding Assessment 2026' with 90% score (18/20 MCQ, 45/50 Coding).",
+      timestamp: "25 Mins Ago",
+      category: "Submissions",
+      isUnread: true,
+      targetModule: "reports",
+    },
+    {
+      id: "NOTIF-03",
+      title: "Corporate Offer Letter Accepted",
+      message: "Aditya Sharma (2022CSE188) formally accepted the Software Engineer I offer letter of ₹32.0 LPA!",
+      timestamp: "1 Hour Ago",
+      category: "Offers",
+      isUnread: true,
+      targetModule: "offers",
+    },
+    {
+      id: "NOTIF-04",
+      title: "Assessment Changes Requested by TPO",
+      message: "TPO requested updates on 'Google Cloud Infrastructure MCQ Test' - Please include 2 SQL database problems.",
+      timestamp: "3 Hours Ago",
+      category: "TPO Approvals",
+      isUnread: false,
+      targetModule: "assessment-requests",
+    },
+    {
+      id: "NOTIF-05",
+      title: "Interview Slot Confirmed",
+      message: "Interview slot confirmed for Sneha Reddy (2022ECE042) on Panel 1 (Cloud Core) for 02:00 PM.",
+      timestamp: "5 Hours Ago",
+      category: "Interviews",
+      isUnread: false,
+      targetModule: "interviews",
+    },
+  ];
+
+  const [notificationsList, setNotificationsList] = useState(INITIAL_NOTIFICATIONS);
+  const [notifFilterTab, setNotifFilterTab] = useState<"All" | "Unread" | "TPO Approvals" | "Submissions" | "Offers">("All");
+
+  const handleMarkAllAsRead = () => {
+    setNotificationsList((prev) => prev.map((n) => ({ ...n, isUnread: false })));
+    toast.success("Marked all recruiter notifications as read!");
+  };
+
+  const handleDeleteNotification = (id: string) => {
+    setNotificationsList((prev) => prev.filter((n) => n.id !== id));
+    toast.success("Dismissed notification.");
+  };
+
   // Preview Assessment Modal State
   const [selectedPreviewAst, setSelectedPreviewAst] = useState<RecruiterAssessment | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -1990,6 +2052,112 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                     <p className="text-[0.68rem] text-muted-foreground">12 candidates reached tab switch limit &amp; auto-submitted for TPO audit.</p>
                   </div>
                 </div>
+              </div>
+            </div>
+      {/* ===================================================================== */}
+      {/* 10. RECRUITER NOTIFICATIONS CENTER WORKSPACE                          */}
+      {/* ===================================================================== */}
+      {activeModule === "notifications" && (
+        <div className="space-y-6">
+          <Panel
+            title="Recruiter Real-Time System Notifications &amp; Drive Activity Feed"
+            action={
+              <Button onClick={handleMarkAllAsRead} variant="outline" className="h-8 text-xs rounded-xl cursor-pointer gap-1.5 font-bold">
+                <CheckCheck className="size-3.5 text-emerald-600" /> Mark All as Read
+              </Button>
+            }
+          >
+            <div className="space-y-6 pt-1">
+              {/* UNREAD BADGE BAR & CATEGORY TABS */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2 font-mono text-xs">
+                  <span className="font-bold text-foreground font-sans">Active Notifications:</span>
+                  <Badge className="bg-purple-600 text-white text-[0.68rem]">
+                    {notificationsList.filter((n) => n.isUnread).length} Unread Alerts
+                  </Badge>
+                </div>
+
+                <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-xl text-xs font-mono">
+                  {(["All", "Unread", "TPO Approvals", "Submissions", "Offers"] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => setNotifFilterTab(tab)}
+                      className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                        notifFilterTab === tab ? "bg-card text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* NOTIFICATION FEED CARDS */}
+              <div className="space-y-3 font-sans">
+                {notificationsList
+                  .filter((n) => {
+                    if (notifFilterTab === "Unread") return n.isUnread;
+                    if (notifFilterTab !== "All") return n.category === notifFilterTab;
+                    return true;
+                  })
+                  .map((notif) => (
+                    <div
+                      key={notif.id}
+                      className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                        notif.isUnread
+                          ? "bg-purple-500/5 border-purple-500/30 shadow-xs"
+                          : "bg-card border-border/70 text-muted-foreground"
+                      }`}
+                    >
+                      <div className="space-y-1.5 max-w-2xl">
+                        <div className="flex items-center gap-2">
+                          {notif.isUnread && (
+                            <span className="size-2 rounded-full bg-purple-600 animate-pulse shrink-0" />
+                          )}
+                          <Badge
+                            variant="outline"
+                            className={`text-[0.62rem] ${
+                              notif.category === "TPO Approvals"
+                                ? "border-purple-300 text-purple-700 bg-purple-50"
+                                : notif.category === "Submissions"
+                                ? "border-blue-300 text-blue-700 bg-blue-50"
+                                : "border-emerald-300 text-emerald-700 bg-emerald-50"
+                            }`}
+                          >
+                            {notif.category}
+                          </Badge>
+                          <span className="font-bold text-foreground text-sm">{notif.title}</span>
+                          <span className="text-[0.65rem] text-muted-foreground font-mono ml-auto sm:ml-0">• {notif.timestamp}</span>
+                        </div>
+                        <p className="text-xs text-foreground/80 leading-relaxed font-sans">{notif.message}</p>
+                      </div>
+
+                      <div className="flex items-center gap-2 font-mono shrink-0">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setActiveModule(notif.targetModule);
+                            setNotificationsList((prev) =>
+                              prev.map((n) => (n.id === notif.id ? { ...n, isUnread: false } : n))
+                            );
+                          }}
+                          className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl cursor-pointer gap-1"
+                        >
+                          <ChevronRight className="size-3.5" /> View Section
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleDeleteNotification(notif.id)}
+                          className="h-8 text-xs text-rose-600 border-rose-200 hover:bg-rose-50 rounded-xl cursor-pointer"
+                          title="Dismiss Notification"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
               </div>
             </div>
           </Panel>
