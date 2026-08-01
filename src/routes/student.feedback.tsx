@@ -3,7 +3,7 @@ import { StudentFeedbackModule } from "@/components/student-feedback";
 
 export const Route = createFileRoute("/student/feedback")({
   head: () => ({
-    meta: [{ title: "Feedback & Grievance Portal — EduSuite Pro" }],
+    meta: [{ title: "Feedback & Student Services — EduSuite Pro" }],
   }),
   component: StudentFeedbackRoute,
 });

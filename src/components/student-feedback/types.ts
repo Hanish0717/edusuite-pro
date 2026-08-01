@@ -1,47 +1,80 @@
 export interface FacultyFeedbackForm {
   facultyName: string;
   subject: string;
+  semester: string;
   teachingQuality: number;
   communication: number;
-  knowledge: number;
-  interaction: number;
   punctuality: number;
+  courseCoverage: number;
   comments: string;
 }
 
 export interface CourseFeedbackForm {
-  courseCode: string;
   courseName: string;
-  courseContent: number;
-  lab: number;
+  laboratory: number;
   assignments: number;
-  resources: number;
+  courseMaterial: number;
   difficulty: number;
-  overallExperience: number;
-  suggestions: string;
+  overallRating: number;
+  remarks: string;
 }
 
 export interface FeedbackSummaryKPIs {
-  feedbackSubmitted: number;
+  facultyFeedbackSubmitted: number;
   pendingFeedback: number;
-  averageRating: number;
-  activeSurveys: number;
+  openGrievances: number;
+  serviceRequests: number;
 }
 
 export interface ActiveSurveyItem {
   id: string;
   title: string;
-  type: "Faculty" | "Course" | "Institutional";
+  facultyName: string;
+  subject: string;
+  semester: string;
   dueDate: string;
-  target: string;
   status: "Pending" | "Completed";
+  type: "Faculty" | "Course";
 }
 
-export interface PreviousFeedbackRecord {
+export interface GrievanceCategoryItem {
   id: string;
-  date: string;
+  name: string;
+  iconName: string;
+  description: string;
+  badge: string;
+}
+
+export interface GrievanceRecord {
+  id: string;
+  category: string;
+  priority: "Low" | "Medium" | "High" | "Urgent";
   title: string;
-  type: "Faculty Feedback" | "Course Feedback";
-  rating: number;
-  status: "Submitted";
+  description: string;
+  date: string;
+  status: "Submitted" | "Under Review" | "Committee Assigned" | "Resolved";
+  department: string;
+  attachmentName?: string;
+}
+
+export interface StudentServiceItem {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  iconName: string;
+  fee: string;
+  estimatedDays: string;
+  department: string;
+}
+
+export interface HistoryRecord {
+  id: string;
+  type: "Faculty Feedback" | "Course Feedback" | "Grievance" | "Service Request";
+  title: string;
+  date: string;
+  status: "Pending" | "In Progress" | "Approved" | "Resolved" | "Submitted" | "Rejected";
+  department: string;
+  referenceId: string;
+  details?: string;
 }

@@ -79,7 +79,6 @@ export const studentNavigation: NavSection[] = [
       { title: "Discussion Forum", url: "/student/discussion-forum", icon: MessageCircle },
       { title: "Payments", url: "/student/finance", icon: CreditCard },
       { title: "OPAC", url: "/student/library", icon: Library },
-      { title: "Campus Helpdesk", url: "/grievance", icon: HelpCircle },
       { title: "Updates", url: "/communication", icon: Bell },
       { title: "Webinars", url: "/student/lms", icon: Video },
     ],
