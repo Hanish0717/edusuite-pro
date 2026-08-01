@@ -2050,6 +2050,9 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                   <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-200 space-y-1">
                     <p className="font-bold">⚠️ Flagged Submissions (Violations Logged):</p>
                     <p className="text-[0.68rem] text-muted-foreground">12 candidates reached tab switch limit &amp; auto-submitted for TPO audit.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </Panel>
         </div>
