@@ -44,7 +44,7 @@ class ApiClient {
         }
       }
 
-      let data: any = {};
+      let data: any = null;
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
         data = await response.json();

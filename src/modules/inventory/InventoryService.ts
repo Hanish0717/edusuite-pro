@@ -12,17 +12,19 @@ export interface InventoryItem {
 }
 
 export async function fetchInventoryItems(): Promise<InventoryItem[]> {
+  const fallback: InventoryItem[] = [
+    { id: "INV-101", name: "Dell OptiPlex Desktop Workstations", category: "IT Hardware", quantity: 45, minThreshold: 10, unitCost: 54000, location: "CSE Lab 3", status: "In Stock" },
+    { id: "INV-102", name: "Tektronix Digital Storage Oscilloscopes", category: "Lab Equipment", quantity: 8, minThreshold: 12, unitCost: 85000, location: "ECE VLSI Lab", status: "Low Stock" },
+    { id: "INV-103", name: "Ergonomic Faculty Chairs", category: "Furniture", quantity: 120, minThreshold: 20, unitCost: 6500, location: "Staff Rooms", status: "In Stock" },
+    { id: "INV-104", name: "A4 Printing Paper Reams", category: "Stationery", quantity: 0, minThreshold: 30, unitCost: 320, location: "Central Stores", status: "Out of Stock" },
+  ];
   try {
-    const { data } = await api.get("/api/inventory");
-    return data;
-  } catch {
-    return [
-      { id: "INV-101", name: "Dell OptiPlex Desktop Workstations", category: "IT Hardware", quantity: 45, minThreshold: 10, unitCost: 54000, location: "CSE Lab 3", status: "In Stock" },
-      { id: "INV-102", name: "Tektronix Digital Storage Oscilloscopes", category: "Lab Equipment", quantity: 8, minThreshold: 12, unitCost: 85000, location: "ECE VLSI Lab", status: "Low Stock" },
-      { id: "INV-103", name: "Ergonomic Faculty Chairs", category: "Furniture", quantity: 120, minThreshold: 20, unitCost: 6500, location: "Staff Rooms", status: "In Stock" },
-      { id: "INV-104", name: "A4 Printing Paper Reams", category: "Stationery", quantity: 0, minThreshold: 30, unitCost: 320, location: "Central Stores", status: "Out of Stock" },
-    ];
-  }
+    const res = await api.get("/api/inventory");
+    if (res && Array.isArray(res.data) && res.data.length > 0) {
+      return res.data;
+    }
+  } catch {}
+  return fallback;
 }
 
 export async function addInventoryItem(itemData: Partial<InventoryItem>): Promise<InventoryItem> {
