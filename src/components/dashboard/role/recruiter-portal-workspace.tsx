@@ -439,6 +439,41 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const [newAstDuration, setNewAstDuration] = useState("90 Mins");
   const [newAstPassingPct, setNewAstPassingPct] = useState("75");
 
+  // Placement Drives State
+  const [drivesList, setDrivesList] = useState<RecruiterDrive[]>(MOCK_RECRUITER_DRIVES);
+  const [isCreateDriveModalOpen, setIsCreateDriveModalOpen] = useState(false);
+  const [driveTitle, setDriveTitle] = useState("");
+  const [driveRole, setDriveRole] = useState("Software Engineer I (Cloud Solutions)");
+  const [driveCtc, setDriveCtc] = useState("₹32.0 LPA");
+  const [driveLocation, setDriveLocation] = useState("Bengaluru / Hyderabad");
+
+  // View Drive Applicants Modal State
+  const [selectedDriveForApplicants, setSelectedDriveForApplicants] = useState<RecruiterDrive | null>(null);
+  const [isApplicantsModalOpen, setIsApplicantsModalOpen] = useState(false);
+
+  const handleCreateDriveSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newDrive: RecruiterDrive = {
+      id: `DRV-GGL-${Date.now().toString().slice(-3)}`,
+      driveCode: `DRV-2026-GGL-0${drivesList.length + 1}`,
+      title: driveTitle || "Google Cloud Systems & AI Placement Drive",
+      role: driveRole,
+      ctc: driveCtc,
+      location: driveLocation,
+      applicationsCount: 150,
+      shortlistedCount: 120,
+      interviewedCount: 0,
+      offersCount: 0,
+      status: "Active Registration",
+      progressPct: 25,
+    };
+
+    setDrivesList((prev) => [newDrive, ...prev]);
+    setIsCreateDriveModalOpen(false);
+    setDriveTitle("");
+    toast.success(`Successfully launched placement drive: ${newDrive.title}!`);
+  };
+
   // Interview Management & Scorecard State
   const [interviewList, setInterviewList] = useState<InterviewCandidate[]>(MOCK_INTERVIEW_CANDIDATES);
 
@@ -717,7 +752,7 @@ Bengaluru, Karnataka
       category: ticketCategory,
       priority: ticketPriority,
       status: "Open",
-      createdDate: new Date().toISOString().split("T")[0],
+      createdDate: new Date().toISOString().slice(0, 10),
       assignedAgent: "TPO Support Helpdesk",
       description: ticketDescription || "Query submitted to college placement administration.",
     };
@@ -1373,7 +1408,98 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
       )}
 
       {/* ===================================================================== */}
-      {/* 2. COMPANY PROFILE WORKSPACE                                          */}
+      {/* 2. PLACEMENT DRIVES WORKSPACE                                         */}
+      {/* ===================================================================== */}
+      {activeModule === "placement-drives" && (
+        <div className="space-y-6">
+          <Panel
+            title="Corporate Campus Recruitment Drives Management"
+            action={
+              <Button onClick={() => setIsCreateDriveModalOpen(true)} className="bg-brand-gradient shadow-glow font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5">
+                <Plus className="size-3.5" /> + Launch New Placement Drive
+              </Button>
+            }
+          >
+            <div className="space-y-6 pt-1 font-sans">
+              {/* DRIVES GRID CARDS */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {drivesList.map((drv) => (
+                  <div key={drv.id} className="p-5 rounded-2xl border bg-card space-y-4 shadow-xs hover:border-primary/40 transition-all">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-blue-600 text-white text-[0.65rem] font-mono">{drv.driveCode}</Badge>
+                        <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">● {drv.status}</Badge>
+                      </div>
+                      <span className="font-extrabold text-emerald-600 text-sm font-mono">{drv.ctc}</span>
+                    </div>
+
+                    <div className="space-y-1">
+                      <h3 className="font-extrabold text-foreground text-base">{drv.title}</h3>
+                      <p className="text-xs text-muted-foreground font-mono">Role: <strong className="text-foreground">{drv.role}</strong> • Location: {drv.location}</p>
+                    </div>
+
+                    {/* CONVERSION & APPLICATIONS SUMMARY */}
+                    <div className="grid grid-cols-4 gap-2 p-3 rounded-xl bg-muted/30 border text-center font-mono text-[0.7rem]">
+                      <div>
+                        <span className="text-muted-foreground text-[0.62rem] block">Applied</span>
+                        <strong className="text-foreground text-sm font-sans font-extrabold">{drv.applicationsCount}</strong>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground text-[0.62rem] block">Shortlisted</span>
+                        <strong className="text-purple-600 text-sm font-sans font-extrabold">{drv.shortlistedCount}</strong>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground text-[0.62rem] block">Interviewed</span>
+                        <strong className="text-blue-600 text-sm font-sans font-extrabold">{drv.interviewedCount}</strong>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground text-[0.62rem] block">Offers</span>
+                        <strong className="text-emerald-600 text-sm font-sans font-extrabold">{drv.offersCount}</strong>
+                      </div>
+                    </div>
+
+                    {/* PROGRESS BAR */}
+                    <div className="space-y-1 text-[0.68rem] font-mono">
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Drive Completion Milestone</span>
+                        <span className="font-bold text-foreground">{drv.progressPct}%</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-brand-gradient rounded-full" style={{ width: `${drv.progressPct}%` }} />
+                      </div>
+                    </div>
+
+                    {/* ACTION BUTTONS */}
+                    <div className="flex items-center justify-between pt-1 gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedDriveForApplicants(drv);
+                          setIsApplicantsModalOpen(true);
+                        }}
+                        className="h-8 text-xs rounded-xl cursor-pointer gap-1"
+                      >
+                        <Users className="size-3.5 text-purple-600" /> View Applicants ({drv.applicationsCount})
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => setIsCreateAssessmentModalOpen(true)}
+                        className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl cursor-pointer gap-1"
+                      >
+                        <Plus className="size-3.5" /> Create Assessment
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Panel>
+        </div>
+      )}
+
+      {/* ===================================================================== */}
+      {/* 3. COMPANY PROFILE WORKSPACE                                          */}
       {/* ===================================================================== */}
       {activeModule === "company-profile" && (
         <div className="space-y-6">
@@ -2463,6 +2589,173 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
           </Panel>
         </div>
       )}
+
+      {/* LAUNCH PLACEMENT DRIVE MODAL DIALOG */}
+      <Dialog open={isCreateDriveModalOpen} onOpenChange={setIsCreateDriveModalOpen}>
+        <DialogContent className="sm:max-w-lg rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-blue-600 text-white grid place-items-center shadow-glow">
+                <Briefcase className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Launch New Campus Placement Drive</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  Configure job position, compensation package, and eligibility criteria for campus students.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateDriveSubmit} className="space-y-4 pt-2 text-xs font-sans">
+            <div className="space-y-1.5">
+              <label className="font-bold text-foreground">Drive Title</label>
+              <Input
+                value={driveTitle}
+                onChange={(e) => setDriveTitle(e.target.value)}
+                placeholder="e.g. Google Cloud Systems & SDE Hiring Drive 2026"
+                required
+                className="h-9 text-xs rounded-xl font-sans"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Job Designation / Role</label>
+                <Input
+                  value={driveRole}
+                  onChange={(e) => setDriveRole(e.target.value)}
+                  placeholder="Software Engineer I (Cloud)"
+                  required
+                  className="h-9 text-xs rounded-xl font-sans"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Offered CTC Package</label>
+                <Input
+                  value={driveCtc}
+                  onChange={(e) => setDriveCtc(e.target.value)}
+                  placeholder="₹32.0 LPA"
+                  required
+                  className="h-9 text-xs rounded-xl font-mono text-emerald-600 font-bold"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Office Location</label>
+                <Input
+                  value={driveLocation}
+                  onChange={(e) => setDriveLocation(e.target.value)}
+                  placeholder="Bengaluru / Hyderabad"
+                  required
+                  className="h-9 text-xs rounded-xl font-sans"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Minimum CGPA Cutoff</label>
+                <Input
+                  placeholder="7.5 CGPA"
+                  defaultValue="7.5"
+                  required
+                  className="h-9 text-xs rounded-xl font-mono"
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="pt-2 gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsCreateDriveModalOpen(false)} className="rounded-xl text-xs">
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1.5">
+                <Briefcase className="size-3.5" /> Launch Campus Drive
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* VIEW DRIVE APPLICANTS MODAL DIALOG */}
+      <Dialog open={isApplicantsModalOpen} onOpenChange={setIsApplicantsModalOpen}>
+        <DialogContent className="sm:max-w-xl rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-purple-600 text-white grid place-items-center shadow-glow">
+                <Users className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Placement Drive Registered Applicants</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  {selectedDriveForApplicants?.driveCode} • {selectedDriveForApplicants?.title}
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {selectedDriveForApplicants && (
+            <div className="space-y-4 pt-2 text-xs font-sans">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-muted/40 font-mono text-[0.7rem]">
+                <span>Total Applications: <strong className="text-purple-600 font-bold">{selectedDriveForApplicants.applicationsCount}</strong></span>
+                <span>Offered CTC: <strong className="text-emerald-600 font-bold">{selectedDriveForApplicants.ctc}</strong></span>
+              </div>
+
+              <div className="overflow-x-auto border rounded-2xl">
+                <table className="w-full text-left text-xs font-sans">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/40 text-muted-foreground font-mono uppercase text-[0.65rem]">
+                      <th className="p-3">Candidate</th>
+                      <th className="p-3">Dept</th>
+                      <th className="p-3">CGPA</th>
+                      <th className="p-3">College Email</th>
+                      <th className="p-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50 font-mono text-[0.72rem]">
+                    <tr className="hover:bg-muted/30 transition-colors">
+                      <td className="p-3 font-sans font-bold text-foreground">Aditya Sharma (2022CSE188)</td>
+                      <td className="p-3">CSE</td>
+                      <td className="p-3 font-bold text-purple-600">9.2</td>
+                      <td className="p-3 text-blue-600">2022cse188@college.edu.in</td>
+                      <td className="p-3"><Badge className="bg-emerald-600 text-white text-[0.62rem]">Shortlisted</Badge></td>
+                    </tr>
+                    <tr className="hover:bg-muted/30 transition-colors">
+                      <td className="p-3 font-sans font-bold text-foreground">Rohan Varma (2022CSE104)</td>
+                      <td className="p-3">CSE</td>
+                      <td className="p-3 font-bold text-purple-600">8.9</td>
+                      <td className="p-3 text-blue-600">2022cse104@college.edu.in</td>
+                      <td className="p-3"><Badge className="bg-blue-600 text-white text-[0.62rem]">Assessment Complete</Badge></td>
+                    </tr>
+                    <tr className="hover:bg-muted/30 transition-colors">
+                      <td className="p-3 font-sans font-bold text-foreground">Sneha Reddy (2022ECE042)</td>
+                      <td className="p-3">ECE</td>
+                      <td className="p-3 font-bold text-purple-600">8.4</td>
+                      <td className="p-3 text-blue-600">2022ece042@college.edu.in</td>
+                      <td className="p-3"><Badge className="bg-purple-600 text-white text-[0.62rem]">Interview Scheduled</Badge></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button type="button" variant="outline" onClick={() => setIsApplicantsModalOpen(false)} className="rounded-xl text-xs">
+                  Close Roster
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    handleExportRecruiterReportCsv();
+                    setIsApplicantsModalOpen(false);
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1.5"
+                >
+                  <Download className="size-3.5" /> Export Applicant Roster CSV
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* CREATE SUPPORT TICKET MODAL DIALOG */}
       <Dialog open={isCreateTicketModalOpen} onOpenChange={setIsCreateTicketModalOpen}>
