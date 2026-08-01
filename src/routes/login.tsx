@@ -57,7 +57,7 @@ export function LoginPage() {
 
   // Get active core role definition
   const activeCoreRoleDef =
-    CORE_5_LOGIN_ROLES.find((r) => r.id === step1CoreRole) || CORE_5_LOGIN_ROLES[1];
+    (CORE_5_LOGIN_ROLES.find((r) => r.id === step1CoreRole) || CORE_5_LOGIN_ROLES[1])!;
 
   // Handler when 1st dropdown changes
   const handleStep1Change = (newCoreRole: CoreRoleKey) => {

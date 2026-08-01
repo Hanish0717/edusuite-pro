@@ -28,11 +28,11 @@ export const Route = createFileRoute("/approval-workflows")({
 interface WorkflowStep {
   role: string;
   label: string;
-  flagRequired?: string;
+  flagRequired?: string | undefined;
   status: "completed" | "active" | "pending" | "rejected";
-  actor?: string;
-  timestamp?: string;
-  notes?: string;
+  actor?: string | undefined;
+  timestamp?: string | undefined;
+  notes?: string | undefined;
 }
 
 interface WorkflowItem {
@@ -234,32 +234,39 @@ export function ApprovalWorkflowsPage() {
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string>("WF-ATT-1029");
   const [actionNotes, setActionNotes] = useState<string>("");
 
-  const activeWorkflow = items.find((w) => w.id === selectedWorkflowId) || items[0];
+  const activeWorkflow = (items.find((w) => w.id === selectedWorkflowId) || items[0]) as WorkflowItem;
 
   const handleApprove = () => {
     if (!activeWorkflow) return;
     const currIdx = activeWorkflow.currentStepIndex;
+    const currentStepDef = activeWorkflow.steps[currIdx];
 
-    if (currIdx >= activeWorkflow.steps.length - 1 && activeWorkflow.steps[currIdx].status === "completed") {
+    if (currIdx >= activeWorkflow.steps.length - 1 && currentStepDef?.status === "completed") {
       toast.info("This approval workflow has already been fully processed!");
       return;
     }
 
     const updatedSteps = [...activeWorkflow.steps];
-    updatedSteps[currIdx] = {
-      ...updatedSteps[currIdx],
-      status: "completed",
-      actor: `${profile.personaName} (${profile.label})`,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      notes: actionNotes || "Approved step according to institutional delegated authority.",
-    };
+    const stepToApprove = updatedSteps[currIdx];
+    if (stepToApprove) {
+      updatedSteps[currIdx] = {
+        ...stepToApprove,
+        status: "completed",
+        actor: `${profile.personaName} (${profile.label})`,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        notes: actionNotes || "Approved step according to institutional delegated authority.",
+      };
+    }
 
     const nextIdx = Math.min(currIdx + 1, updatedSteps.length - 1);
     if (nextIdx > currIdx && nextIdx < updatedSteps.length) {
-      updatedSteps[nextIdx] = {
-        ...updatedSteps[nextIdx],
-        status: "active",
-      };
+      const nextStepDef = updatedSteps[nextIdx];
+      if (nextStepDef) {
+        updatedSteps[nextIdx] = {
+          ...nextStepDef,
+          status: "active",
+        };
+      }
     }
 
     const updatedItems = items.map((w) =>
@@ -282,13 +289,16 @@ export function ApprovalWorkflowsPage() {
     const currIdx = activeWorkflow.currentStepIndex;
 
     const updatedSteps = [...activeWorkflow.steps];
-    updatedSteps[currIdx] = {
-      ...updatedSteps[currIdx],
-      status: "rejected",
-      actor: `${profile.personaName} (${profile.label})`,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      notes: actionNotes || "Request rejected during review.",
-    };
+    const stepToReject = updatedSteps[currIdx];
+    if (stepToReject) {
+      updatedSteps[currIdx] = {
+        ...stepToReject,
+        status: "rejected",
+        actor: `${profile.personaName} (${profile.label})`,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        notes: actionNotes || "Request rejected during review.",
+      };
+    }
 
     const updatedItems = items.map((w) =>
       w.id === activeWorkflow.id
@@ -304,10 +314,11 @@ export function ApprovalWorkflowsPage() {
     toast.error(`Workflow request ${activeWorkflow.id} marked as Rejected.`);
   };
 
-  const currentStep = activeWorkflow.steps[activeWorkflow.currentStepIndex];
+  const currentStep = activeWorkflow.steps[activeWorkflow.currentStepIndex] as WorkflowStep | undefined;
   const isSuperAdmin = role === "super-admin";
   const userCanApprove =
     isSuperAdmin ||
+    !currentStep ||
     !currentStep.flagRequired ||
     hasFlag(currentStep.flagRequired);
 
