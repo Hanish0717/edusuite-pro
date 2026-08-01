@@ -100,6 +100,8 @@ export const navigation: NavSection[] = [
       { title: "Transport", url: "/transport", icon: Bus, moduleId: "transport" },
       { title: "Placements", url: "/placements", icon: Briefcase, moduleId: "placement" },
       { title: "Inventory", url: "/inventory", icon: Package, moduleId: "inventory" },
+      { title: "Procurement", url: "/procurement", icon: Package, moduleId: "procurement" },
+      { title: "Campus Events", url: "/campus-events", icon: CalendarRange, moduleId: "events" },
       { title: "Grievances", url: "/grievance", icon: ShieldAlert, moduleId: "grievance" },
       { title: "Alumni Network", url: "/alumni", icon: Globe, moduleId: "alumni" },
     ],
@@ -107,6 +109,9 @@ export const navigation: NavSection[] = [
   {
     label: "Administration",
     items: [
+      { title: "Employee Management", url: "/employee-management", icon: UserCog, moduleId: "hrms" },
+      { title: "Leave Management", url: "/leave", icon: CalendarCheck, moduleId: "hrms" },
+      { title: "Payroll", url: "/payroll", icon: Wallet, moduleId: "finance" },
       { title: "Finance", url: "/finance", icon: Wallet, moduleId: "finance" },
       { title: "HR", url: "/hr", icon: UserCog, moduleId: "hrms" },
       { title: "Accreditation", url: "/accreditation", icon: Award, moduleId: "accreditation" },

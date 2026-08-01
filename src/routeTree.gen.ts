@@ -17,10 +17,12 @@ import { Route as AdmissionRouteImport } from './routes/admission'
 import { Route as AlumniRouteImport } from './routes/alumni'
 import { Route as ApprovalWorkflowsRouteImport } from './routes/approval-workflows'
 import { Route as AttendanceRouteImport } from './routes/attendance'
+import { Route as CampusEventsRouteImport } from './routes/campus-events'
 import { Route as CommunicationRouteImport } from './routes/communication'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DeanRouteImport } from './routes/dean'
+import { Route as EmployeeManagementRouteImport } from './routes/employee-management'
 import { Route as ExaminationRouteImport } from './routes/examination'
 import { Route as ExaminationsRouteImport } from './routes/examinations'
 import { Route as ExternalUserRouteImport } from './routes/external-user'
@@ -33,13 +35,16 @@ import { Route as HodRouteImport } from './routes/hod'
 import { Route as HostelRouteImport } from './routes/hostel'
 import { Route as HrRouteImport } from './routes/hr'
 import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as LeaveRouteImport } from './routes/leave'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LmsRouteImport } from './routes/lms'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ParentRouteImport } from './routes/parent'
+import { Route as PayrollRouteImport } from './routes/payroll'
 import { Route as PlacementRouteImport } from './routes/placement'
 import { Route as PlacementsRouteImport } from './routes/placements'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as ProcurementRouteImport } from './routes/procurement'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -152,6 +157,11 @@ const AttendanceRoute = AttendanceRouteImport.update({
   path: '/attendance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CampusEventsRoute = CampusEventsRouteImport.update({
+  id: '/campus-events',
+  path: '/campus-events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CommunicationRoute = CommunicationRouteImport.update({
   id: '/communication',
   path: '/communication',
@@ -170,6 +180,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const DeanRoute = DeanRouteImport.update({
   id: '/dean',
   path: '/dean',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployeeManagementRoute = EmployeeManagementRouteImport.update({
+  id: '/employee-management',
+  path: '/employee-management',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExaminationRoute = ExaminationRouteImport.update({
@@ -232,6 +247,11 @@ const InventoryRoute = InventoryRouteImport.update({
   path: '/inventory',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeaveRoute = LeaveRouteImport.update({
+  id: '/leave',
+  path: '/leave',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LibraryRoute = LibraryRouteImport.update({
   id: '/library',
   path: '/library',
@@ -252,6 +272,11 @@ const ParentRoute = ParentRouteImport.update({
   path: '/parent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PayrollRoute = PayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlacementRoute = PlacementRouteImport.update({
   id: '/placement',
   path: '/placement',
@@ -265,6 +290,11 @@ const PlacementsRoute = PlacementsRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProcurementRoute = ProcurementRouteImport.update({
+  id: '/procurement',
+  path: '/procurement',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportsRoute = ReportsRouteImport.update({
@@ -632,10 +662,12 @@ export interface FileRoutesByFullPath {
   '/alumni': typeof AlumniRoute
   '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
+  '/campus-events': typeof CampusEventsRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/dean': typeof DeanRouteWithChildren
+  '/employee-management': typeof EmployeeManagementRoute
   '/examination': typeof ExaminationRouteWithChildren
   '/examinations': typeof ExaminationsRoute
   '/external-user': typeof ExternalUserRouteWithChildren
@@ -648,13 +680,16 @@ export interface FileRoutesByFullPath {
   '/hostel': typeof HostelRouteWithChildren
   '/hr': typeof HrRouteWithChildren
   '/inventory': typeof InventoryRoute
+  '/leave': typeof LeaveRoute
   '/library': typeof LibraryRouteWithChildren
   '/lms': typeof LmsRoute
   '/login': typeof LoginRoute
   '/parent': typeof ParentRouteWithChildren
+  '/payroll': typeof PayrollRoute
   '/placement': typeof PlacementRouteWithChildren
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
+  '/procurement': typeof ProcurementRoute
   '/reports': typeof ReportsRoute
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
@@ -736,18 +771,23 @@ export interface FileRoutesByTo {
   '/alumni': typeof AlumniRoute
   '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
+  '/campus-events': typeof CampusEventsRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/employee-management': typeof EmployeeManagementRoute
   '/examinations': typeof ExaminationsRoute
   '/features': typeof FeaturesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/grievance': typeof GrievanceRoute
   '/inventory': typeof InventoryRoute
+  '/leave': typeof LeaveRoute
   '/lms': typeof LmsRoute
   '/login': typeof LoginRoute
+  '/payroll': typeof PayrollRoute
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
+  '/procurement': typeof ProcurementRoute
   '/reports': typeof ReportsRoute
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
@@ -827,10 +867,12 @@ export interface FileRoutesById {
   '/alumni': typeof AlumniRoute
   '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
+  '/campus-events': typeof CampusEventsRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/dean': typeof DeanRouteWithChildren
+  '/employee-management': typeof EmployeeManagementRoute
   '/examination': typeof ExaminationRouteWithChildren
   '/examinations': typeof ExaminationsRoute
   '/external-user': typeof ExternalUserRouteWithChildren
@@ -843,13 +885,16 @@ export interface FileRoutesById {
   '/hostel': typeof HostelRouteWithChildren
   '/hr': typeof HrRouteWithChildren
   '/inventory': typeof InventoryRoute
+  '/leave': typeof LeaveRoute
   '/library': typeof LibraryRouteWithChildren
   '/lms': typeof LmsRoute
   '/login': typeof LoginRoute
   '/parent': typeof ParentRouteWithChildren
+  '/payroll': typeof PayrollRoute
   '/placement': typeof PlacementRouteWithChildren
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
+  '/procurement': typeof ProcurementRoute
   '/reports': typeof ReportsRoute
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
@@ -933,10 +978,12 @@ export interface FileRouteTypes {
     | '/alumni'
     | '/approval-workflows'
     | '/attendance'
+    | '/campus-events'
     | '/communication'
     | '/contact'
     | '/dashboard'
     | '/dean'
+    | '/employee-management'
     | '/examination'
     | '/examinations'
     | '/external-user'
@@ -949,13 +996,16 @@ export interface FileRouteTypes {
     | '/hostel'
     | '/hr'
     | '/inventory'
+    | '/leave'
     | '/library'
     | '/lms'
     | '/login'
     | '/parent'
+    | '/payroll'
     | '/placement'
     | '/placements'
     | '/pricing'
+    | '/procurement'
     | '/reports'
     | '/results'
     | '/settings'
@@ -1037,18 +1087,23 @@ export interface FileRouteTypes {
     | '/alumni'
     | '/approval-workflows'
     | '/attendance'
+    | '/campus-events'
     | '/communication'
     | '/contact'
     | '/dashboard'
+    | '/employee-management'
     | '/examinations'
     | '/features'
     | '/forgot-password'
     | '/grievance'
     | '/inventory'
+    | '/leave'
     | '/lms'
     | '/login'
+    | '/payroll'
     | '/placements'
     | '/pricing'
+    | '/procurement'
     | '/reports'
     | '/results'
     | '/settings'
@@ -1127,10 +1182,12 @@ export interface FileRouteTypes {
     | '/alumni'
     | '/approval-workflows'
     | '/attendance'
+    | '/campus-events'
     | '/communication'
     | '/contact'
     | '/dashboard'
     | '/dean'
+    | '/employee-management'
     | '/examination'
     | '/examinations'
     | '/external-user'
@@ -1143,13 +1200,16 @@ export interface FileRouteTypes {
     | '/hostel'
     | '/hr'
     | '/inventory'
+    | '/leave'
     | '/library'
     | '/lms'
     | '/login'
     | '/parent'
+    | '/payroll'
     | '/placement'
     | '/placements'
     | '/pricing'
+    | '/procurement'
     | '/reports'
     | '/results'
     | '/settings'
@@ -1232,10 +1292,12 @@ export interface RootRouteChildren {
   AlumniRoute: typeof AlumniRoute
   ApprovalWorkflowsRoute: typeof ApprovalWorkflowsRoute
   AttendanceRoute: typeof AttendanceRoute
+  CampusEventsRoute: typeof CampusEventsRoute
   CommunicationRoute: typeof CommunicationRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   DeanRoute: typeof DeanRouteWithChildren
+  EmployeeManagementRoute: typeof EmployeeManagementRoute
   ExaminationRoute: typeof ExaminationRouteWithChildren
   ExaminationsRoute: typeof ExaminationsRoute
   ExternalUserRoute: typeof ExternalUserRouteWithChildren
@@ -1248,13 +1310,16 @@ export interface RootRouteChildren {
   HostelRoute: typeof HostelRouteWithChildren
   HrRoute: typeof HrRouteWithChildren
   InventoryRoute: typeof InventoryRoute
+  LeaveRoute: typeof LeaveRoute
   LibraryRoute: typeof LibraryRouteWithChildren
   LmsRoute: typeof LmsRoute
   LoginRoute: typeof LoginRoute
   ParentRoute: typeof ParentRouteWithChildren
+  PayrollRoute: typeof PayrollRoute
   PlacementRoute: typeof PlacementRouteWithChildren
   PlacementsRoute: typeof PlacementsRoute
   PricingRoute: typeof PricingRoute
+  ProcurementRoute: typeof ProcurementRoute
   ReportsRoute: typeof ReportsRoute
   ResultsRoute: typeof ResultsRoute
   SettingsRoute: typeof SettingsRoute
@@ -1325,6 +1390,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AttendanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/campus-events': {
+      id: '/campus-events'
+      path: '/campus-events'
+      fullPath: '/campus-events'
+      preLoaderRoute: typeof CampusEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/communication': {
       id: '/communication'
       path: '/communication'
@@ -1351,6 +1423,13 @@ declare module '@tanstack/react-router' {
       path: '/dean'
       fullPath: '/dean'
       preLoaderRoute: typeof DeanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employee-management': {
+      id: '/employee-management'
+      path: '/employee-management'
+      fullPath: '/employee-management'
+      preLoaderRoute: typeof EmployeeManagementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/examination': {
@@ -1437,6 +1516,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/leave': {
+      id: '/leave'
+      path: '/leave'
+      fullPath: '/leave'
+      preLoaderRoute: typeof LeaveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/library': {
       id: '/library'
       path: '/library'
@@ -1465,6 +1551,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ParentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/payroll': {
+      id: '/payroll'
+      path: '/payroll'
+      fullPath: '/payroll'
+      preLoaderRoute: typeof PayrollRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/placement': {
       id: '/placement'
       path: '/placement'
@@ -1484,6 +1577,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/procurement': {
+      id: '/procurement'
+      path: '/procurement'
+      fullPath: '/procurement'
+      preLoaderRoute: typeof ProcurementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reports': {
@@ -2245,10 +2345,12 @@ const rootRouteChildren: RootRouteChildren = {
   AlumniRoute: AlumniRoute,
   ApprovalWorkflowsRoute: ApprovalWorkflowsRoute,
   AttendanceRoute: AttendanceRoute,
+  CampusEventsRoute: CampusEventsRoute,
   CommunicationRoute: CommunicationRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   DeanRoute: DeanRouteWithChildren,
+  EmployeeManagementRoute: EmployeeManagementRoute,
   ExaminationRoute: ExaminationRouteWithChildren,
   ExaminationsRoute: ExaminationsRoute,
   ExternalUserRoute: ExternalUserRouteWithChildren,
@@ -2261,13 +2363,16 @@ const rootRouteChildren: RootRouteChildren = {
   HostelRoute: HostelRouteWithChildren,
   HrRoute: HrRouteWithChildren,
   InventoryRoute: InventoryRoute,
+  LeaveRoute: LeaveRoute,
   LibraryRoute: LibraryRouteWithChildren,
   LmsRoute: LmsRoute,
   LoginRoute: LoginRoute,
   ParentRoute: ParentRouteWithChildren,
+  PayrollRoute: PayrollRoute,
   PlacementRoute: PlacementRouteWithChildren,
   PlacementsRoute: PlacementsRoute,
   PricingRoute: PricingRoute,
+  ProcurementRoute: ProcurementRoute,
   ReportsRoute: ReportsRoute,
   ResultsRoute: ResultsRoute,
   SettingsRoute: SettingsRoute,
