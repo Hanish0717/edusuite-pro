@@ -156,20 +156,12 @@ export function Topbar() {
               </Select>
             </>
           )}
-              </Select>
-            </>
-          )}
 
           {/* Dynamic Sub-Fields Dropdown for External User */}
           {role === "external-user" && (
             <Select
-<<<<<<< HEAD
               value={externalPersona || "recruiter"}
-              onValueChange={(v) => setExternalPersona(v as ExternalPersona)}
-=======
-              value={externalPersona || ""}
               onValueChange={(v) => setExternalPersona((v || undefined) as ExternalPersona)}
->>>>>>> 2611cb66c0b5138816c1419435dd4adb46b9fa35
             >
               <SelectTrigger className="h-9 w-[160px] text-xs font-medium bg-card" aria-label="External Persona">
                 <SelectValue placeholder="External Persona" />
