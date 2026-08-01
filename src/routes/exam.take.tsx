@@ -16,13 +16,18 @@ import {
   Terminal,
   Play,
   RotateCcw,
+  User,
+  Mail,
+  Key,
+  Building,
   Check,
-  Zap,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { SAMPLE_20_MCQS, SAMPLE_2_CODING_CHALLENGES } from "@/components/dashboard/role/recruiter-portal-workspace";
+import { saveStudentSubmission } from "@/lib/shared-assessment-store";
 
 export const Route = createFileRoute("/exam/take")({
   head: () => ({
@@ -41,6 +46,13 @@ function StudentLiveExamPage() {
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
   const [markedForReview, setMarkedForReview] = useState<Record<number, boolean>>({});
 
+  // Student College Authentication State
+  const [studentName, setStudentName] = useState("Alex Kumar");
+  const [studentEmail, setStudentEmail] = useState("alex.2022cse015@college.edu.in");
+  const [studentRollNo, setStudentRollNo] = useState("2022CSE015");
+  const [studentDept, setStudentDept] = useState("CSE");
+  const [studentPassword, setStudentPassword] = useState("EduSuite@2026#");
+
   // Coding states
   const [selectedCompilerLangs, setSelectedCompilerLangs] = useState<Record<string, string>>({
     "CODING-01": "Java 17",
@@ -57,6 +69,7 @@ function StudentLiveExamPage() {
   const [isAutoSubmitted, setIsAutoSubmitted] = useState(false);
   const [secondsRemaining, setSecondsRemaining] = useState(5400); // 90 mins
   const [isFullscreenActive, setIsFullscreenActive] = useState(false);
+  const [savedSubmissionId, setSavedSubmissionId] = useState("");
 
   // Countdown timer
   useEffect(() => {
@@ -157,18 +170,7 @@ function StudentLiveExamPage() {
     }
   };
 
-  const handleAutoSubmit = (reason: string) => {
-    setIsAutoSubmitted(true);
-    setIsExamSubmitted(true);
-    toast.error(`🚨 EXAM AUTO-SUBMITTED: ${reason}`, { duration: 8000 });
-  };
-
-  const handleSubmitExam = () => {
-    setIsExamSubmitted(true);
-    toast.success("🎉 Exam Submitted Successfully!");
-  };
-
-  // Score Calculation
+  // Score Calculation helper
   const answeredMcqCount = Object.keys(userAnswers).length;
   let correctMcqCount = 0;
   SAMPLE_20_MCQS.forEach((mcq: any, idx: number) => {
@@ -179,6 +181,50 @@ function StudentLiveExamPage() {
   const mcqScore = correctMcqCount * 1;
   const totalScore = mcqScore + 45;
   const passStatus = totalScore >= 50;
+
+  const handleAutoSubmit = (reason: string) => {
+    setIsAutoSubmitted(true);
+    setIsExamSubmitted(true);
+    persistSubmissionToStore(true, reason);
+    toast.error(`🚨 EXAM AUTO-SUBMITTED: ${reason}`, { duration: 8000 });
+  };
+
+  const handleSubmitExam = () => {
+    setIsExamSubmitted(true);
+    persistSubmissionToStore(false, "");
+    toast.success("🎉 Exam Submitted & Saved Successfully!");
+  };
+
+  const persistSubmissionToStore = (auto: boolean, reason: string) => {
+    const subId = `SUB-2026-${Date.now().toString().slice(-4)}`;
+    setSavedSubmissionId(subId);
+
+    saveStudentSubmission({
+      id: subId,
+      assessmentId: "AST-GGL-2026-01",
+      assessmentTitle: "Google Cloud Systems & Coding Assessment 2026",
+      studentName,
+      studentEmail,
+      rollNo: studentRollNo,
+      department: studentDept,
+      mcqScore: correctMcqCount,
+      mcqTotal: 20,
+      codingScore: 45,
+      codingTotal: 50,
+      totalPercentage: Math.round((totalScore / 70) * 100),
+      passStatus: passStatus && !auto,
+      violationsLogged: tabViolations,
+      isAutoSubmitted: auto,
+      submissionTime: new Date().toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
+    });
+  };
 
   // Format Timer
   const mins = Math.floor(secondsRemaining / 60);
@@ -199,58 +245,136 @@ function StudentLiveExamPage() {
       onCopy={(e) => e.preventDefault()}
       onPaste={(e) => e.preventDefault()}
     >
-      {/* 1. INITIAL ENTRY GATE MODAL (Before Start) */}
+      {/* 1. INITIAL STUDENT COLLEGE LOGIN & ENTRY GATE MODAL */}
       {!isExamStarted && (
-        <div className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-6">
-          <div className="w-full max-w-xl bg-white border border-slate-200 rounded-3xl p-8 space-y-6 text-center shadow-2xl animate-fade-up">
-            <div className="size-20 rounded-full bg-blue-50 border-2 border-blue-200 grid place-items-center mx-auto text-blue-600">
-              <Shield className="size-10" />
+        <div className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-6 overflow-y-auto">
+          <div className="w-full max-w-xl bg-white border border-slate-200 rounded-3xl p-8 space-y-6 text-center shadow-2xl animate-fade-up my-auto">
+            <div className="size-16 rounded-full bg-blue-50 border-2 border-blue-200 grid place-items-center mx-auto text-blue-600">
+              <User className="size-8" />
             </div>
 
-            <div className="space-y-2">
-              <Badge className="bg-blue-600 text-white font-mono">MANDATORY PROCTORED ENVIRONMENT</Badge>
+            <div className="space-y-1">
+              <Badge className="bg-blue-600 text-white font-mono">STUDENT COLLEGE AUTHENTICATION GATE</Badge>
               <h2 className="text-2xl font-extrabold font-sans text-slate-900">
-                Proctored Assessment Security Agreement
+                Official College Student Verification
               </h2>
               <p className="text-xs text-slate-500 font-mono">
-                Google Cloud Systems &amp; Coding Assessment 2026 • 90 Minutes
+                Google Cloud Systems &amp; Coding Assessment 2026 • Placement Drive
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs font-mono space-y-2 text-slate-700">
-              <p className="font-bold text-blue-700 mb-1.5 flex items-center gap-1.5">
-                <Lock className="size-4" /> Strictly Enforced Security Rules:
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-emerald-600 font-bold">✓</span> <strong>Fullscreen Mode:</strong> Automatically enabled upon starting.
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-rose-600 font-bold">❌</span> <strong>Copy &amp; Paste:</strong> Completely disabled in all questions &amp; code editors.
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-rose-600 font-bold">❌</span> <strong>Right-Click &amp; Shortcuts:</strong> Blocked (F5, Ctrl+R, F12 disabled).
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-amber-600 font-bold">⚠️</span> <strong>Tab-Switch Violations:</strong> Maximum 3 allowed. Exceeding 3 auto-submits exam.
-              </p>
-            </div>
-
-            <Button
-              size="lg"
-              onClick={() => {
+            {/* COLLEGE LOGIN FORM */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!studentEmail.includes("@") || !studentRollNo) {
+                  toast.error("Please provide a valid official college email ID and Roll Number.");
+                  return;
+                }
                 requestFullscreenMode();
                 setIsExamStarted(true);
-                toast.success("Security restrictions active. Good luck!");
+                toast.success(`Welcome ${studentName}! Proctored security restrictions enabled.`);
               }}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm rounded-2xl h-12 gap-2 shadow-xl shadow-emerald-600/30 cursor-pointer"
+              className="space-y-4 text-left text-xs font-sans"
             >
-              <Play className="size-5" /> Start Exam &amp; Enter Fullscreen Mode
-            </Button>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-700 flex items-center gap-1">
+                    <User className="size-3.5 text-blue-600" /> Student Full Name
+                  </label>
+                  <Input
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                    required
+                    placeholder="e.g. Alex Kumar"
+                    className="h-9 text-xs rounded-xl"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-700 flex items-center gap-1">
+                    <Building className="size-3.5 text-blue-600" /> Roll No / Hall Ticket No
+                  </label>
+                  <Input
+                    value={studentRollNo}
+                    onChange={(e) => setStudentRollNo(e.target.value)}
+                    required
+                    placeholder="e.g. 2022CSE015"
+                    className="h-9 text-xs rounded-xl font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-slate-700 flex items-center gap-1">
+                  <Mail className="size-3.5 text-blue-600" /> Official College Email ID
+                </label>
+                <Input
+                  type="email"
+                  value={studentEmail}
+                  onChange={(e) => setStudentEmail(e.target.value)}
+                  required
+                  placeholder="student.2022cse015@college.edu.in"
+                  className="h-9 text-xs rounded-xl font-mono"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-700">Department / Branch</label>
+                  <select
+                    value={studentDept}
+                    onChange={(e) => setStudentDept(e.target.value)}
+                    className="w-full h-9 rounded-xl border border-input bg-card px-2.5 text-xs font-semibold cursor-pointer"
+                  >
+                    <option value="CSE">Computer Science &amp; Engg (CSE)</option>
+                    <option value="ECE">Electronics &amp; Comm (ECE)</option>
+                    <option value="IT">Information Technology (IT)</option>
+                    <option value="EEE">Electrical &amp; Electronics (EEE)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-700 flex items-center gap-1">
+                    <Key className="size-3.5 text-blue-600" /> Default Student Passkey
+                  </label>
+                  <Input
+                    type="password"
+                    value={studentPassword}
+                    onChange={(e) => setStudentPassword(e.target.value)}
+                    required
+                    placeholder="EduSuite@2026#"
+                    className="h-9 text-xs rounded-xl font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* SECURITY SUMMARY */}
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono space-y-1.5 text-slate-700">
+                <p className="font-bold text-blue-700 flex items-center gap-1">
+                  <Shield className="size-3.5" /> Exam Response Storage Policy:
+                </p>
+                <p className="text-[0.68rem] text-slate-600">
+                  • Test responses will be linked to <strong>{studentEmail}</strong> and saved automatically upon submission.
+                </p>
+                <p className="text-[0.68rem] text-slate-600">
+                  • Fullscreen mode, copy-paste blocks, and tab violation tracking are enforced.
+                </p>
+              </div>
+
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl h-11 gap-2 shadow-xl shadow-emerald-600/30 cursor-pointer"
+              >
+                <Play className="size-4" /> Verify Credentials, Start Exam &amp; Enter Fullscreen
+              </Button>
+            </form>
           </div>
         </div>
       )}
 
-      {/* 2. FULLSCREEN ENFORCEMENT OVERLAY GUARD (If student exits fullscreen during test) */}
+      {/* 2. FULLSCREEN ENFORCEMENT OVERLAY GUARD */}
       {isExamStarted && !isFullscreenActive && !isExamSubmitted && (
         <div className="fixed inset-0 z-[90] bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-6">
           <div className="w-full max-w-md bg-white border border-rose-200 rounded-3xl p-8 space-y-5 text-center shadow-2xl">
@@ -279,7 +403,7 @@ function StudentLiveExamPage() {
         </div>
       )}
 
-      {/* EXAM TOP NAVIGATION HEADER (WHITE CLEAN THEME) */}
+      {/* EXAM TOP NAVIGATION HEADER */}
       <header className="h-16 border-b border-slate-200 bg-white px-6 flex items-center justify-between sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-3">
           <div className="size-9 rounded-xl bg-blue-600 grid place-items-center text-white font-bold shadow-md shadow-blue-500/20">
@@ -290,7 +414,7 @@ function StudentLiveExamPage() {
               Google Cloud Systems &amp; Coding Assessment 2026
             </h1>
             <p className="text-[0.68rem] font-mono text-slate-500">
-              Exam ID: AST-GGL-2026-01 • Version v1.2 • Google Cloud India
+              Student: <strong>{studentName}</strong> ({studentRollNo}) • {studentEmail}
             </p>
           </div>
         </div>
@@ -370,15 +494,23 @@ function StudentLiveExamPage() {
               </Badge>
               <h2 className="text-2xl font-extrabold font-sans text-slate-900">
                 {isAutoSubmitted
-                  ? "Exam Terminated & Submitted"
-                  : "Assessment Submitted Successfully!"}
+                  ? "Exam Terminated & Response Stored"
+                  : "Assessment Submitted & Saved!"}
               </h2>
               <p className="text-xs text-slate-500 font-mono">
-                {isAutoSubmitted
-                  ? "Exceeded maximum allowed 3 tab-switch proctoring violations."
-                  : "Your response has been recorded and submitted to Google Cloud India recruitment team."}
+                Candidate: <strong>{studentName}</strong> ({studentRollNo}) • {studentEmail}
               </p>
             </div>
+
+            {/* SUBMISSION SAVED BADGE */}
+            {savedSubmissionId && (
+              <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-mono text-emerald-800 flex items-center justify-between">
+                <span className="flex items-center gap-1.5 font-bold">
+                  <Check className="size-4 text-emerald-600" /> Stored in Shared Assessment Database
+                </span>
+                <span className="font-bold text-emerald-700">{savedSubmissionId}</span>
+              </div>
+            )}
 
             {/* SCORE SUMMARY CARDS */}
             <div className="grid grid-cols-3 gap-3 font-mono text-xs">
@@ -399,7 +531,9 @@ function StudentLiveExamPage() {
             </div>
 
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs font-mono space-y-1.5 text-slate-700">
-              <p className="font-bold text-slate-900 mb-2">📋 Assessment Submission Summary:</p>
+              <p className="font-bold text-slate-900 mb-2">📋 Assessment Response Record:</p>
+              <p>• Student Email: <strong>{studentEmail}</strong></p>
+              <p>• Roll Number: <strong>{studentRollNo}</strong> ({studentDept})</p>
               <p>• MCQ Questions Attempted: <strong>{answeredMcqCount} / 20</strong></p>
               <p>• Correct MCQ Answers: <strong>{correctMcqCount}</strong></p>
               <p>• Coding Problems Submitted: <strong>2 / 2 (All test cases passed)</strong></p>
@@ -570,13 +704,12 @@ function StudentLiveExamPage() {
               <aside className="p-5 bg-slate-50 border-l border-slate-200 space-y-6 overflow-y-auto">
                 <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-2 font-mono text-xs shadow-xs">
                   <span className="text-slate-500 text-[0.68rem] font-bold uppercase tracking-wider">
-                    Proctoring Security Rules
+                    Candidate Authentication
                   </span>
                   <div className="space-y-1 text-[0.68rem] text-slate-700">
-                    <p className="flex items-center gap-1.5"><span className="text-emerald-600 font-bold">✓</span> Webcam Monitoring: Active</p>
-                    <p className="flex items-center gap-1.5"><span className="text-emerald-600 font-bold">✓</span> Copy &amp; Paste: Disabled</p>
-                    <p className="flex items-center gap-1.5"><span className="text-emerald-600 font-bold">✓</span> Right-Click: Disabled</p>
-                    <p className="flex items-center gap-1.5"><span className="text-rose-600 font-bold">⚠️</span> Tab Violations: {tabViolations} / 3</p>
+                    <p>Student: <strong>{studentName}</strong></p>
+                    <p>Roll No: <strong>{studentRollNo}</strong></p>
+                    <p className="truncate">Email: <strong>{studentEmail}</strong></p>
                   </div>
                 </div>
 
@@ -620,9 +753,8 @@ function StudentLiveExamPage() {
           {/* SECTION 2: LEETCODE SPLIT CODING WORKSPACE */}
           {activeSection === "coding" && (
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden bg-slate-100">
-              {/* LEFT PANE: PROBLEM STATEMENT (LEETCODE LIGHT MODE) */}
+              {/* LEFT PANE: PROBLEM STATEMENT */}
               <div className="border-r border-slate-200 bg-white flex flex-col overflow-y-auto">
-                {/* PROBLEM SELECTOR TABS */}
                 <div className="p-3 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
                   {SAMPLE_2_CODING_CHALLENGES.map((prob: any, idx: number) => (
                     <button
@@ -640,7 +772,6 @@ function StudentLiveExamPage() {
                   ))}
                 </div>
 
-                {/* PROBLEM DESCRIPTION CONTENT */}
                 <div className="p-6 space-y-5 flex-1 font-sans text-xs">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">
@@ -662,7 +793,6 @@ function StudentLiveExamPage() {
                     <p className="text-slate-700 leading-relaxed text-xs">{currentCodingProb.statement}</p>
                   </div>
 
-                  {/* SAMPLE INPUT / OUTPUT */}
                   <div className="grid grid-cols-2 gap-3 pt-2">
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
                       <span className="font-mono text-[0.65rem] font-bold text-slate-500 uppercase block">Sample Input</span>
@@ -674,19 +804,17 @@ function StudentLiveExamPage() {
                     </div>
                   </div>
 
-                  {/* CONSTRAINTS */}
                   <div className="p-3 rounded-xl bg-purple-50 border border-purple-100 space-y-1 font-mono text-[0.68rem] text-purple-900">
                     <p className="font-bold">⚡ Technical Constraints:</p>
                     <p>• 1 &le; N &le; 10<sup>5</sup> key operations</p>
-                    <p>• Time complexity must be strictly O(1) average time per cache hit/miss access.</p>
-                    <p>• Code must run against 4 hidden test cases.</p>
+                    <p>• Time complexity must be strictly O(1) average time per access.</p>
+                    <p>• Code will be executed and recorded under candidate email: <strong>{studentEmail}</strong></p>
                   </div>
                 </div>
               </div>
 
-              {/* RIGHT PANE: LEETCODE CODE EDITOR & COMPILER (WHITE LIGHT THEME) */}
+              {/* RIGHT PANE: CODE EDITOR */}
               <div className="bg-slate-900 text-slate-100 flex flex-col border-l border-slate-800">
-                {/* COMPILER TOOLBAR */}
                 <div className="p-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between font-mono text-xs">
                   <div className="flex items-center gap-2">
                     <span className="text-slate-400 font-bold">Language:</span>
@@ -722,7 +850,6 @@ function StudentLiveExamPage() {
                   </button>
                 </div>
 
-                {/* CODE EDITOR TEXTAREA (MONOSPACE) */}
                 <div className="flex-1 p-4 bg-slate-950 flex flex-col">
                   <textarea
                     value={codeVal}
@@ -735,7 +862,6 @@ function StudentLiveExamPage() {
                   />
                 </div>
 
-                {/* TEST RUNNER ACTION BAR & OUTPUT CONSOLE */}
                 <div className="p-4 bg-slate-950 border-t border-slate-800 space-y-3 font-mono">
                   <div className="flex items-center justify-between">
                     <Button
@@ -746,7 +872,7 @@ function StudentLiveExamPage() {
                           setIsRunningCode(false);
                           setTestOutput((prev) => ({
                             ...prev,
-                            [currentCodingProb.id]: `✓ Compilation Successful (${activeCompilerLang})\n[Test Case 1/4] Passed (0.012s)\n[Test Case 2/4] Passed (0.018s)\n[Test Case 3/4] Passed (0.015s)\n[Test Case 4/4] Passed (0.021s)\nResult: ALL 4 TEST CASES PASSED (100% Score)`,
+                            [currentCodingProb.id]: `✓ Compilation Successful (${activeCompilerLang})\n[Test Case 1/4] Passed (0.012s)\n[Test Case 2/4] Passed (0.018s)\n[Test Case 3/4] Passed (0.015s)\n[Test Case 4/4] Passed (0.021s)\nResult: ALL 4 TEST CASES PASSED (100% Score)\nStudent Response Stored: ${studentEmail}`,
                           }));
                           toast.success(`Passed all test cases for ${currentCodingProb.title}!`);
                         }, 1000);

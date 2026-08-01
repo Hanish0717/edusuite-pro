@@ -2,17 +2,33 @@
  * shared-assessment-store.ts
  *
  * A simple module-level singleton array that acts as the bridge between
- * the Recruiter Portal (creates assessments) and the TPO Approval Center
- * (reviews them).  Both modules import and mutate this same reference,
- * so a recruiter-created assessment is immediately visible to the TPO.
+ * the Recruiter Portal (creates assessments), TPO Approval Center, and
+ * Student Live Exam Engine (saves submitted student test scores).
  */
 
 import type { AssessmentRequestRecord } from "@/components/dashboard/role/assessment-requests-approval-page";
 
+export interface StudentSubmissionRecord {
+  id: string;
+  assessmentId: string;
+  assessmentTitle: string;
+  studentName: string;
+  studentEmail: string;
+  rollNo: string;
+  department: string;
+  mcqScore: number;
+  mcqTotal: number;
+  codingScore: number;
+  codingTotal: number;
+  totalPercentage: number;
+  passStatus: boolean;
+  violationsLogged: number;
+  isAutoSubmitted: boolean;
+  submissionTime: string;
+}
+
 /**
  * Shared live queue — contains all assessment requests visible to the TPO.
- * Pre-seeded with the four canonical sample records (kept in sync with the
- * static array previously inside assessment-requests-approval-page.tsx).
  */
 export const SHARED_ASSESSMENT_REQUESTS: AssessmentRequestRecord[] = [
   {
@@ -73,70 +89,61 @@ export const SHARED_ASSESSMENT_REQUESTS: AssessmentRequestRecord[] = [
     auditTrail: [{ timestamp: "2026-07-29 10:00", action: "Submitted", actor: "Ananya Sharma", notes: "" }],
     versionHistory: [{ version: "v2.0", date: "2026-07-29", status: "Under Review", author: "Ananya Sharma" }],
   },
+];
+
+/**
+ * Shared array of student test submissions.
+ * Stores completed test responses with scores, candidate college email & roll no.
+ */
+export const SHARED_STUDENT_SUBMISSIONS: StudentSubmissionRecord[] = [
   {
-    id: "REQ-2026-003",
-    assessmentId: "AST-2026-AMZ-01",
-    name: "Amazon AWS System Design & DSA Assessment",
-    recruiterName: "Samantha Wright (Talent Manager)",
-    recruiterEmail: "samantha.wright@amazon.com",
-    company: "Amazon AWS",
-    companyLogoBg: "bg-amber-500",
-    assessmentType: "MCQ + Coding + SQL",
-    mcqCount: 20,
-    codingCount: 10,
-    sqlCount: 8,
-    totalQuestions: 38,
-    duration: "90 Mins",
-    totalMarks: 100,
-    passingMarksPct: 65,
-    submittedDate: "2026-07-25",
-    priority: "Medium",
-    status: "Changes Requested",
-    version: "v1.0",
-    expectedCandidates: 200,
-    programmingLanguages: ["Java", "Python", "Go"],
-    recruiterNotes: "System Design + DSA combo",
-    mcqQuestions: [],
-    codingQuestions: [],
-    sqlQuestions: [],
-    auditTrail: [{ timestamp: "2026-07-25 11:00", action: "Submitted", actor: "Samantha Wright", notes: "" }],
-    versionHistory: [{ version: "v1.0", date: "2026-07-25", status: "Changes Requested", author: "Samantha Wright" }],
+    id: "SUB-2026-001",
+    assessmentId: "AST-GGL-2026-01",
+    assessmentTitle: "Google Cloud Systems & Coding Assessment 2026",
+    studentName: "Sneha Reddy",
+    studentEmail: "sneha.2022ece042@college.edu.in",
+    rollNo: "2022ECE042",
+    department: "ECE",
+    mcqScore: 18,
+    mcqTotal: 20,
+    codingScore: 45,
+    codingTotal: 50,
+    totalPercentage: 90,
+    passStatus: true,
+    violationsLogged: 0,
+    isAutoSubmitted: false,
+    submissionTime: "2026-08-01 14:30:12",
   },
   {
-    id: "REQ-2026-004",
-    assessmentId: "AST-2026-QLC-01",
-    name: "Qualcomm Hardware & Embedded C Assessment",
-    recruiterName: "Rajesh Kumar (Technical Lead)",
-    recruiterEmail: "rajesh.kumar@qualcomm.com",
-    company: "Qualcomm India",
-    companyLogoBg: "bg-rose-600",
-    assessmentType: "Aptitude & MCQ",
-    mcqCount: 52,
-    codingCount: 0,
-    sqlCount: 0,
-    totalQuestions: 52,
-    duration: "90 Mins",
-    totalMarks: 100,
-    passingMarksPct: 70,
-    submittedDate: "2026-07-26",
-    priority: "Standard",
-    status: "Approved",
-    version: "v1.1",
-    expectedCandidates: 60,
-    programmingLanguages: ["C", "C++"],
-    recruiterNotes: "Embedded systems + DSP focused",
-    mcqQuestions: [],
-    codingQuestions: [],
-    sqlQuestions: [],
-    auditTrail: [{ timestamp: "2026-07-26 14:00", action: "Approved", actor: "Dr. Ravi Kumar (TPO)", notes: "All sections verified" }],
-    versionHistory: [{ version: "v1.1", date: "2026-07-26", status: "Approved", author: "Rajesh Kumar" }],
+    id: "SUB-2026-002",
+    assessmentId: "AST-GGL-2026-01",
+    assessmentTitle: "Google Cloud Systems & Coding Assessment 2026",
+    studentName: "Rahul Verma",
+    studentEmail: "rahul.2022cse108@college.edu.in",
+    rollNo: "2022CSE108",
+    department: "CSE",
+    mcqScore: 15,
+    mcqTotal: 20,
+    codingScore: 40,
+    codingTotal: 50,
+    totalPercentage: 78,
+    passStatus: true,
+    violationsLogged: 1,
+    isAutoSubmitted: false,
+    submissionTime: "2026-08-01 15:10:45",
   },
 ];
 
 /**
  * Push a new recruiter-submitted assessment into the shared queue.
- * Called by the Recruiter Portal when a new assessment is created.
  */
 export function pushToSharedQueue(record: AssessmentRequestRecord): void {
   SHARED_ASSESSMENT_REQUESTS.unshift(record);
+}
+
+/**
+ * Save a student's completed test submission into the shared store.
+ */
+export function saveStudentSubmission(submission: StudentSubmissionRecord): void {
+  SHARED_STUDENT_SUBMISSIONS.unshift(submission);
 }
