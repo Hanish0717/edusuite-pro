@@ -12,6 +12,10 @@ import {
   GraduationCap,
   ShieldCheck,
   RefreshCw,
+  FileSpreadsheet,
+  Users,
+  CheckCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -19,6 +23,7 @@ import { Panel } from "@/components/dashboard/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SHARED_STUDENT_SUBMISSIONS } from "@/lib/shared-assessment-store";
 
 export interface InstitutionalReportItem {
   id: string;
@@ -71,6 +76,7 @@ const REPORTS_LIST: InstitutionalReportItem[] = [
 
 export function PlacementReportsWorkspace() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [studentSearchQuery, setStudentSearchQuery] = useState("");
 
   const handleGenerateNaac = () => {
     toast.success("Generated NAAC Criterion 5.2 Accreditation Audit Report PDF!");
@@ -80,9 +86,65 @@ export function PlacementReportsWorkspace() {
     toast.success("Generated NIRF Data Submission Report PDF!");
   };
 
+  const handleExportExcelResults = () => {
+    const headers = [
+      "Submission ID",
+      "Roll Number",
+      "Student Email ID",
+      "Department",
+      "Assessment Title",
+      "MCQ Score",
+      "Coding Marks",
+      "Total Percentage",
+      "Result Status",
+      "Proctoring Violations",
+      "Submission Timestamp",
+    ];
+
+    const rows = SHARED_STUDENT_SUBMISSIONS.map((sub) => [
+      sub.id,
+      sub.rollNo,
+      sub.studentEmail,
+      sub.department,
+      sub.assessmentTitle,
+      `${sub.mcqScore}/${sub.mcqTotal}`,
+      `${sub.codingScore}/${sub.codingTotal}`,
+      `${sub.totalPercentage}%`,
+      sub.isAutoSubmitted ? "Auto-Submitted (Flagged)" : sub.passStatus ? "Passed Cutoff" : "Completed",
+      `${sub.violationsLogged}/3`,
+      sub.submissionTime,
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const filename = `tpo_student_assessment_results_${new Date().toISOString().split("T")[0]}.csv`;
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast.success(`Exported ${SHARED_STUDENT_SUBMISSIONS.length} student assessment results to Excel CSV!`);
+  };
+
   const filteredReports = REPORTS_LIST.filter((r) =>
     r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     r.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredStudentSubmissions = SHARED_STUDENT_SUBMISSIONS.filter(
+    (sub) =>
+      sub.studentEmail.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
+      sub.rollNo.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
+      sub.department.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
+      sub.assessmentTitle.toLowerCase().includes(studentSearchQuery.toLowerCase())
   );
 
   return (
@@ -104,46 +166,118 @@ export function PlacementReportsWorkspace() {
                 </Badge>
               </div>
               <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Institutional Reports & Audit Center
+                Institutional Reports &amp; Assessment Scorecard Repository
               </h1>
               <p className="text-xs text-muted-foreground font-mono">
-                Generate, verify, and export official placement documents for NAAC accreditation, NIRF ranking, and board audits.
+                View auto-graded student test responses, proctoring violation logs, and export Excel results for TPO records.
               </p>
             </div>
           </div>
 
-          {/* ACTION BUTTONS — NO GENERIC CREATE MODAL */}
+          {/* ACTION BUTTONS */}
           <div className="flex flex-wrap items-center gap-2.5">
             <Button
-              onClick={handleGenerateNaac}
-              className="bg-brand-gradient shadow-glow font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5"
+              onClick={handleExportExcelResults}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-md"
             >
-              <Printer className="size-4" /> Generate NAAC Report
+              <FileSpreadsheet className="size-4" /> Export Student Results to Excel (.csv)
             </Button>
             <Button
-              onClick={handleGenerateNirf}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5"
+              onClick={handleGenerateNaac}
+              variant="outline"
+              className="font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5"
             >
-              <ShieldCheck className="size-4" /> Generate NIRF Report
+              <Printer className="size-4" /> Generate NAAC Report
             </Button>
           </div>
         </div>
       </div>
 
-      {/* SEARCH BAR */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-xs">
-        <div className="relative flex-1 w-full">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search institutional report by title or compliance category..."
-            className="h-10 border-input bg-background/60 pl-9 text-xs focus-visible:ring-primary rounded-xl"
-          />
-        </div>
-      </div>
+      {/* ── NEW SECTION: TPO STUDENT ASSESSMENT RESULTS STORED EXCEL VIEW ── */}
+      <Panel
+        title="Student Assessment Submissions & Auto-Graded Scorecards"
+        action={
+          <Button
+            size="sm"
+            onClick={handleExportExcelResults}
+            className="h-8 text-xs bg-emerald-600 text-white font-bold rounded-xl cursor-pointer gap-1"
+          >
+            <FileSpreadsheet className="size-3.5" /> Export Excel CSV
+          </Button>
+        }
+      >
+        <div className="space-y-4 pt-1">
+          {/* SEARCH BAR FOR STUDENT RESULTS */}
+          <div className="relative flex-1 w-full">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={studentSearchQuery}
+              onChange={(e) => setStudentSearchQuery(e.target.value)}
+              placeholder="Search by Roll No (e.g. 23341A4229), Student Email, Department, or Test Title..."
+              className="h-9 border-input bg-background/60 pl-9 text-xs focus-visible:ring-primary rounded-xl font-mono"
+            />
+          </div>
 
-      {/* REPORTS LIST TABLE */}
+          {/* RESULTS TABLE */}
+          <div className="overflow-x-auto border border-border/70 rounded-2xl">
+            <table className="w-full text-left text-xs font-sans">
+              <thead>
+                <tr className="border-b border-border bg-muted/40 text-muted-foreground font-mono uppercase text-[0.65rem]">
+                  <th className="p-3">Roll No &amp; Email ID</th>
+                  <th className="p-3">Dept</th>
+                  <th className="p-3">Assessment Title</th>
+                  <th className="p-3">MCQ Score</th>
+                  <th className="p-3">Coding Marks</th>
+                  <th className="p-3">Total %</th>
+                  <th className="p-3">Proctoring</th>
+                  <th className="p-3">Result Status</th>
+                  <th className="p-3 text-right">Submitted Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/50 font-medium font-mono text-[0.72rem]">
+                {filteredStudentSubmissions.map((sub) => (
+                  <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
+                    <td className="p-3">
+                      <div className="font-bold text-foreground">{sub.rollNo}</div>
+                      <div className="text-[0.65rem] text-blue-600 font-mono">{sub.studentEmail}</div>
+                    </td>
+                    <td className="p-3">
+                      <Badge variant="outline" className="text-[0.65rem]">{sub.department}</Badge>
+                    </td>
+                    <td className="p-3 font-sans font-semibold text-foreground max-w-xs truncate">
+                      {sub.assessmentTitle}
+                    </td>
+                    <td className="p-3 font-bold text-slate-700 dark:text-slate-200">
+                      {sub.mcqScore} / {sub.mcqTotal}
+                    </td>
+                    <td className="p-3 font-bold text-purple-600">
+                      {sub.codingScore} / {sub.codingTotal}
+                    </td>
+                    <td className="p-3 font-bold text-emerald-600">
+                      {sub.totalPercentage}%
+                    </td>
+                    <td className="p-3">
+                      <span className={`px-2 py-0.5 rounded-md text-[0.62rem] font-bold ${sub.violationsLogged > 0 ? "bg-amber-500/15 text-amber-600" : "bg-emerald-500/15 text-emerald-600"}`}>
+                        {sub.violationsLogged > 0 ? `⚠️ ${sub.violationsLogged}/3 Violations` : "✓ Clean"}
+                      </span>
+                    </td>
+                    <td className="p-3">
+                      <Badge className={sub.isAutoSubmitted ? "bg-rose-600 text-white" : sub.passStatus ? "bg-emerald-600 text-white" : "bg-amber-600 text-white"}>
+                        {sub.isAutoSubmitted ? "Auto-Submitted" : sub.passStatus ? "Passed Cutoff" : "Completed"}
+                      </Badge>
+                    </td>
+                    <td className="p-3 text-right text-muted-foreground text-[0.65rem]">
+                      {sub.submissionTime}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </Panel>
+
+      {/* INSTITUTIONAL REPORTS DIRECTORY */}
       <Panel title="Official Institutional Reports Directory">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
