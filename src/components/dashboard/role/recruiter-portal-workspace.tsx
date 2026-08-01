@@ -437,8 +437,71 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const [newAstDuration, setNewAstDuration] = useState("90 Mins");
   const [newAstPassingPct, setNewAstPassingPct] = useState("75");
 
-  // Schedule Interview Modal State
+  // Interview Management & Scorecard State
+  const [interviewList, setInterviewList] = useState<InterviewCandidate[]>(MOCK_INTERVIEW_CANDIDATES);
+
+  // Schedule Interview Form State
   const [isScheduleInterviewModalOpen, setIsScheduleInterviewModalOpen] = useState(false);
+  const [schedCandName, setSchedCandName] = useState("");
+  const [schedRollNo, setSchedRollNo] = useState("");
+  const [schedDept, setSchedDept] = useState("CSE");
+  const [schedSlotTime, setSchedSlotTime] = useState("10:00 AM – 10:45 AM");
+  const [schedPanel, setSchedPanel] = useState("Panel 1 (Cloud Core)");
+  const [schedInterviewer, setSchedInterviewer] = useState("David Miller (Staff Recruiter)");
+  const [schedMeetUrl, setSchedMeetUrl] = useState("https://meet.google.com/ggl-recruiter-01");
+
+  // Scorecard Modal State
+  const [isScorecardModalOpen, setIsScorecardModalOpen] = useState(false);
+  const [selectedScorecardCand, setSelectedScorecardCand] = useState<InterviewCandidate | null>(null);
+  const [scorecardRating, setScorecardRating] = useState("90");
+  const [scorecardStatus, setScorecardStatus] = useState<"Recommended" | "Scheduled" | "Completed" | "Rejected">("Recommended");
+  const [scorecardRemarks, setScorecardRemarks] = useState("");
+
+  const handleCreateInterviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newCand: InterviewCandidate = {
+      id: `INT-${Date.now().toString().slice(-3)}`,
+      name: schedCandName || "Kavya Patel",
+      rollNo: schedRollNo || `2023${schedDept}045`,
+      department: schedDept,
+      cgpa: 8.8,
+      slotTime: schedSlotTime,
+      panelAssigned: schedPanel,
+      interviewer: schedInterviewer,
+      status: "Scheduled",
+      scorecardMarks: undefined,
+      feedbackRemarks: "Interview slot scheduled. Awaiting interviewer evaluation.",
+    };
+
+    setInterviewList((prev) => [newCand, ...prev]);
+    setIsScheduleInterviewModalOpen(false);
+    setSchedCandName("");
+    setSchedRollNo("");
+    toast.success(`Successfully scheduled interview slot for ${newCand.name}!`);
+  };
+
+  const handleSaveScorecardSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedScorecardCand) return;
+
+    const marksNum = parseInt(scorecardRating) || 85;
+    setInterviewList((prev) =>
+      prev.map((c) =>
+        c.id === selectedScorecardCand.id
+          ? {
+              ...c,
+              scorecardMarks: marksNum,
+              status: scorecardStatus,
+              feedbackRemarks: scorecardRemarks || "Evaluated by recruiter panel.",
+            }
+          : c
+      )
+    );
+
+    setIsScorecardModalOpen(false);
+    setSelectedScorecardCand(null);
+    toast.success(`Updated interview scorecard for ${selectedScorecardCand.name}!`);
+  };
 
   // Preview Assessment Modal State
   const [selectedPreviewAst, setSelectedPreviewAst] = useState<RecruiterAssessment | null>(null);
@@ -1662,17 +1725,38 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/50">
-                  {MOCK_INTERVIEW_CANDIDATES.map((cand) => (
+                  {interviewList.map((cand) => (
                     <tr key={cand.id} className="hover:bg-muted/30 transition-colors">
                       <td className="p-3 font-bold font-sans text-foreground">{cand.name} ({cand.rollNo})</td>
                       <td className="p-3 text-primary">{cand.slotTime}</td>
                       <td className="p-3 text-muted-foreground">{cand.panelAssigned} • {cand.interviewer}</td>
                       <td className="p-3 font-bold text-purple-600">{cand.scorecardMarks ? `${cand.scorecardMarks} / 100` : "Pending"}</td>
                       <td className="p-3">
-                        <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.62rem]">● {cand.status}</Badge>
+                        <Badge
+                          className={
+                            cand.status === "Recommended"
+                              ? "bg-emerald-500/10 text-emerald-600 text-[0.62rem]"
+                              : cand.status === "Rejected"
+                              ? "bg-rose-500/10 text-rose-600 text-[0.62rem]"
+                              : "bg-blue-500/10 text-blue-600 text-[0.62rem]"
+                          }
+                        >
+                          ● {cand.status}
+                        </Badge>
                       </td>
                       <td className="p-3 text-right">
-                        <Button size="sm" variant="ghost" onClick={() => toast.info(`Opened feedback scorecard for ${cand.name}`)} className="h-7 text-xs rounded-lg cursor-pointer">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedScorecardCand(cand);
+                            setScorecardRating(cand.scorecardMarks ? cand.scorecardMarks.toString() : "90");
+                            setScorecardStatus(cand.status as any);
+                            setScorecardRemarks(cand.feedbackRemarks || "");
+                            setIsScorecardModalOpen(true);
+                          }}
+                          className="h-7 text-xs rounded-xl cursor-pointer"
+                        >
                           Scorecard
                         </Button>
                       </td>
@@ -1735,6 +1819,208 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
           </Panel>
         </div>
       )}
+
+      {/* SCHEDULE INTERVIEW SLOT MODAL DIALOG */}
+      <Dialog open={isScheduleInterviewModalOpen} onOpenChange={setIsScheduleInterviewModalOpen}>
+        <DialogContent className="sm:max-w-lg rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-blue-600 text-white grid place-items-center shadow-glow">
+                <Video className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Schedule Interview Slot</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  Assign interview panel, candidate, time slot, and video conferencing meeting room.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateInterviewSubmit} className="space-y-4 pt-2 text-xs font-sans">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Candidate Full Name</label>
+                <Input
+                  value={schedCandName}
+                  onChange={(e) => setSchedCandName(e.target.value)}
+                  placeholder="e.g. Kavya Patel"
+                  required
+                  className="h-9 text-xs rounded-xl font-sans"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Roll Number / Student ID</label>
+                <Input
+                  value={schedRollNo}
+                  onChange={(e) => setSchedRollNo(e.target.value)}
+                  placeholder="e.g. 2023CSE045"
+                  required
+                  className="h-9 text-xs rounded-xl font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Department</label>
+                <select
+                  value={schedDept}
+                  onChange={(e) => setSchedDept(e.target.value)}
+                  className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold font-mono cursor-pointer"
+                >
+                  <option value="CSE">Computer Science (CSE)</option>
+                  <option value="CSM">AI &amp; ML (CSM)</option>
+                  <option value="ECE">Electronics (ECE)</option>
+                  <option value="EEE">Electrical (EEE)</option>
+                  <option value="MECH">Mechanical (MECH)</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Slot Time</label>
+                <select
+                  value={schedSlotTime}
+                  onChange={(e) => setSchedSlotTime(e.target.value)}
+                  className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold font-mono cursor-pointer"
+                >
+                  <option value="10:00 AM – 10:45 AM">10:00 AM – 10:45 AM (Morning)</option>
+                  <option value="11:00 AM – 11:45 AM">11:00 AM – 11:45 AM (Morning)</option>
+                  <option value="02:00 PM – 02:45 PM">02:00 PM – 02:45 PM (Afternoon)</option>
+                  <option value="03:30 PM – 04:15 PM">03:30 PM – 04:15 PM (Afternoon)</option>
+                  <option value="05:00 PM – 05:45 PM">05:00 PM – 05:45 PM (Evening)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Interviewer Panel</label>
+                <select
+                  value={schedPanel}
+                  onChange={(e) => setSchedPanel(e.target.value)}
+                  className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold cursor-pointer"
+                >
+                  <option value="Panel 1 (Cloud Core)">Panel 1 (Cloud Core)</option>
+                  <option value="Panel 2 (Algorithms)">Panel 2 (Algorithms)</option>
+                  <option value="Panel 3 (System Design)">Panel 3 (System Design)</option>
+                  <option value="Panel 4 (HR & Culture)">Panel 4 (HR &amp; Culture)</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Assigned Interviewer</label>
+                <Input
+                  value={schedInterviewer}
+                  onChange={(e) => setSchedInterviewer(e.target.value)}
+                  placeholder="David Miller (Staff Recruiter)"
+                  required
+                  className="h-9 text-xs rounded-xl font-sans"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="font-bold text-foreground">Video Conferencing URL (Google Meet / Teams)</label>
+              <Input
+                value={schedMeetUrl}
+                onChange={(e) => setSchedMeetUrl(e.target.value)}
+                placeholder="https://meet.google.com/abc-defg-hij"
+                className="h-9 text-xs rounded-xl font-mono text-blue-600"
+              />
+            </div>
+
+            <DialogFooter className="pt-2 gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsScheduleInterviewModalOpen(false)} className="rounded-xl text-xs">
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1.5">
+                <Video className="size-3.5" /> Confirm &amp; Schedule Slot
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* CANDIDATE SCORECARD & FEEDBACK MODAL DIALOG */}
+      <Dialog open={isScorecardModalOpen} onOpenChange={setIsScorecardModalOpen}>
+        <DialogContent className="sm:max-w-lg rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-purple-600 text-white grid place-items-center shadow-glow">
+                <Award className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Candidate Scorecard &amp; Interview Evaluation</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  {selectedScorecardCand?.name} ({selectedScorecardCand?.rollNo}) • {selectedScorecardCand?.department}
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {selectedScorecardCand && (
+            <form onSubmit={handleSaveScorecardSubmit} className="space-y-4 pt-2 text-xs font-sans">
+              <div className="grid grid-cols-2 gap-3 font-mono">
+                <div className="p-3.5 rounded-xl border bg-card space-y-1">
+                  <span className="text-muted-foreground text-[0.65rem] uppercase font-bold">Candidate CGPA</span>
+                  <p className="text-lg font-extrabold text-foreground">{selectedScorecardCand.cgpa} / 10.0</p>
+                </div>
+                <div className="p-3.5 rounded-xl border bg-card space-y-1">
+                  <span className="text-muted-foreground text-[0.65rem] uppercase font-bold">Assigned Panel</span>
+                  <p className="text-xs font-bold text-purple-600 truncate">{selectedScorecardCand.panelAssigned}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="font-bold text-foreground">Scorecard Rating (out of 100)</label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={scorecardRating}
+                    onChange={(e) => setScorecardRating(e.target.value)}
+                    required
+                    className="h-9 text-xs rounded-xl font-mono font-bold text-purple-600"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="font-bold text-foreground">Evaluation Status</label>
+                  <select
+                    value={scorecardStatus}
+                    onChange={(e) => setScorecardStatus(e.target.value as any)}
+                    className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold cursor-pointer"
+                  >
+                    <option value="Recommended">Recommended (Selected)</option>
+                    <option value="Scheduled">Scheduled (In Progress)</option>
+                    <option value="Completed">Completed (Reviewed)</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Interviewer Feedback &amp; Remarks</label>
+                <textarea
+                  value={scorecardRemarks}
+                  onChange={(e) => setScorecardRemarks(e.target.value)}
+                  rows={4}
+                  placeholder="Enter detailed technical feedback, strengths, and areas for improvement..."
+                  className="w-full rounded-xl border border-input bg-card px-3 py-2 text-xs font-sans resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/30"
+                />
+              </div>
+
+              <DialogFooter className="pt-2 gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsScorecardModalOpen(false)} className="rounded-xl text-xs">
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1.5">
+                  <Check className="size-3.5" /> Save Candidate Scorecard
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* AUDIT TIMELINE MODAL DIALOG */}
       <Dialog open={isAuditTimelineModalOpen} onOpenChange={setIsAuditTimelineModalOpen}>
