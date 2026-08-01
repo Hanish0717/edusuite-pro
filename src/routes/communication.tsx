@@ -5,13 +5,13 @@ import { StudentNoticeBoard } from "@/components/notice-board/student-noticeboar
 export const Route = createFileRoute("/communication")({
   head: () => ({
     meta: [
-      { title: "Updates — EduSuite Pro" },
+      { title: "Digital Notice Board — EduSuite Pro" },
       {
         name: "description",
-        content: "Stay informed with the latest academic announcements, examination updates, placement notifications, scholarships, campus events, and departmental circulars.",
+        content: "Official notices published by the college for academics, examinations, placements, scholarships, and events.",
       },
-      { property: "og:title", content: "Updates — EduSuite Pro" },
-      { property: "og:description", content: "Stay informed with the latest academic announcements, examination updates, placement notifications, scholarships, campus events, and departmental circulars." },
+      { property: "og:title", content: "Digital Notice Board — EduSuite Pro" },
+      { property: "og:description", content: "Official notices published by the college for academics, examinations, placements, scholarships, and events." },
     ],
   }),
   component: Page,

@@ -1,5 +1,5 @@
 export type NoticeCategory =
-  | "All Updates"
+  | "All Notices"
   | "Academics"
   | "Examinations"
   | "Placements"

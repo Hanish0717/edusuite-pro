@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 
 export const StudentNoticeBoard: React.FC = () => {
   const [notices, setNotices] = useState<NoticeItem[]>(() => generateMockNotices());
-  const [activeTab, setActiveTab] = useState<NoticeCategory>("All Updates");
+  const [activeTab, setActiveTab] = useState<NoticeCategory>("All Notices");
   const [searchQuery, setSearchQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
   const [departmentFilter, setDepartmentFilter] = useState("ALL");
@@ -47,7 +47,7 @@ export const StudentNoticeBoard: React.FC = () => {
   const filteredNotices = useMemo(() => {
     return notices.filter((notice) => {
       // 1. Tab / Category Filter
-      if (activeTab !== "All Updates" && notice.category !== activeTab) {
+      if (activeTab !== "All Notices" && notice.category !== activeTab) {
         return false;
       }
 
@@ -72,7 +72,7 @@ export const StudentNoticeBoard: React.FC = () => {
         return false;
       }
 
-      // 5. Unread Filter
+      // 5. Unread Only Filter
       if (unreadOnly && notice.read) {
         return false;
       }
@@ -108,7 +108,7 @@ export const StudentNoticeBoard: React.FC = () => {
   };
 
   const handleResetFilters = () => {
-    setActiveTab("All Updates");
+    setActiveTab("All Notices");
     setSearchQuery("");
     setPriorityFilter("ALL");
     setDepartmentFilter("ALL");
@@ -138,17 +138,17 @@ export const StudentNoticeBoard: React.FC = () => {
         <span>&gt;</span>
         <span>Student</span>
         <span>&gt;</span>
-        <span className="text-foreground font-semibold">Updates</span>
+        <span className="text-foreground font-semibold">Digital Notice Board</span>
       </div>
 
       {/* Module Title Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border">
         <div>
           <h1 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
-            <Bell className="h-6 w-6 text-primary" /> Updates
+            <Bell className="h-6 w-6 text-primary" /> Digital Notice Board
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Stay informed with the latest academic announcements, examination updates, placement notifications, scholarships, campus events, and departmental circulars.
+            Official notices published by the college. Stay informed with academic circulars, exam notifications, and campus updates.
           </p>
         </div>
         <Button
@@ -157,17 +157,17 @@ export const StudentNoticeBoard: React.FC = () => {
           onClick={handleRefresh}
           className="gap-2 self-start sm:self-auto text-xs"
         >
-          <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} /> Refresh Updates
+          <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} /> Refresh Notices
         </Button>
       </div>
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* KPI 1: Total Updates */}
+        {/* KPI 1: Total Notices */}
         <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md hover:border-primary/40">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Total Updates
+              Total Notices
             </span>
             <div className="p-2.5 rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
               <Bell className="h-5 w-5" />
@@ -181,11 +181,11 @@ export const StudentNoticeBoard: React.FC = () => {
           </div>
         </div>
 
-        {/* KPI 2: New Updates */}
+        {/* KPI 2: Unread Notices */}
         <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md hover:border-blue-500/40">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              New Updates
+              Unread Notices
             </span>
             <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 transition-transform group-hover:scale-110">
               <MailWarning className="h-5 w-5" />

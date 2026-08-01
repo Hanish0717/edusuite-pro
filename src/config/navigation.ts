@@ -68,7 +68,7 @@ export const studentNavigation: NavSection[] = [
     label: "Student Workspace",
     items: [
       { title: "Dashboard", url: "/student/dashboard", icon: LayoutDashboard },
-      { title: "Updates", url: "/communication", icon: Bell },
+      { title: "Digital Notice Board", url: "/communication", icon: ClipboardList },
       { title: "My Profile", url: "/student/profile", icon: User },
       { title: "Learning Management", url: "/student/lms", icon: BookOpen },
       { title: "Timetable", url: "/student/timetable", icon: CalendarRange },
@@ -78,6 +78,7 @@ export const studentNavigation: NavSection[] = [
       { title: "Discussion Forum", url: "/student/discussion-forum", icon: MessageCircle },
       { title: "Payments", url: "/student/finance", icon: CreditCard },
       { title: "OPAC", url: "/student/library", icon: Library },
+      { title: "Updates", url: "/student/updates", icon: Sparkles },
       { title: "Webinars", url: "/student/lms", icon: Video },
     ],
   },
