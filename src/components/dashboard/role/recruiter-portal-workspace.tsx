@@ -571,7 +571,7 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
         setParsedQuestions([
           { id: `QB-UP-1`, type: "Coding", subject: "Data Structures & Algorithms", title: "Rate Limiter Leaky Bucket Algorithm", optionsOrConstraints: "Java 17, Python 3.11", difficulty: "Medium", marks: 20 },
           { id: `QB-UP-2`, type: "SQL", subject: "Database Management Systems (DBMS)", title: "Monthly Recurring Revenue (MRR) Churn Rate", optionsOrConstraints: "PostgreSQL 15", difficulty: "Hard", marks: 15 },
-          { id: `QB-UP-3`, type: "MCQ", subject: "Operating Systems", title: "Process Control Block (PCB) Context Switch Latency", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
+          { id: `QB-UP-3`, type: "MCQ", subject: "Core Systems (OS & Networks)", title: "Process Control Block (PCB) Context Switch Latency", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
         ]);
       } else {
         setParsedQuestions(parsed);
