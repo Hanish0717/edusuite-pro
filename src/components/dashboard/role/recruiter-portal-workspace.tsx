@@ -502,6 +502,87 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
     toast.success(`Updated interview scorecard for ${selectedScorecardCand.name}!`);
   };
 
+  // Offer Management State
+  const [offerList, setOfferList] = useState<CandidateOffer[]>(MOCK_CANDIDATE_OFFERS);
+
+  // Upload Offer Form State
+  const [isUploadOfferModalOpen, setIsUploadOfferModalOpen] = useState(false);
+  const [offerCandName, setOfferCandName] = useState("");
+  const [offerRollNo, setOfferRollNo] = useState("");
+  const [offerDept, setOfferDept] = useState("CSE");
+  const [offerJobRole, setOfferJobRole] = useState("Software Engineer I (Cloud Solutions)");
+  const [offerCtc, setOfferCtc] = useState("₹32.0 LPA");
+  const [offerJoiningDate, setOfferJoiningDate] = useState("2026-09-01");
+  const [offerLocation, setOfferLocation] = useState("Bengaluru, KA");
+  const [uploadedPdfName, setUploadedPdfName] = useState("");
+
+  // View/Download Offer Modal State
+  const [selectedViewOffer, setSelectedViewOffer] = useState<CandidateOffer | null>(null);
+  const [isViewOfferModalOpen, setIsViewOfferModalOpen] = useState(false);
+
+  const handleUploadOfferSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newOffer: CandidateOffer = {
+      id: `OFR-${Date.now().toString().slice(-3)}`,
+      candidateName: offerCandName || "Kavya Patel",
+      rollNo: offerRollNo || `2023${offerDept}045`,
+      department: offerDept,
+      jobRole: offerJobRole,
+      ctc: offerCtc,
+      joiningDate: offerJoiningDate || "2026-09-01",
+      location: offerLocation,
+      offerStatus: "Verification Pending",
+    };
+
+    setOfferList((prev) => [newOffer, ...prev]);
+    setIsUploadOfferModalOpen(false);
+    setOfferCandName("");
+    setOfferRollNo("");
+    setUploadedPdfName("");
+    toast.success(`Successfully uploaded corporate offer letter for ${newOffer.candidateName}!`);
+  };
+
+  const handleDownloadOfferDocument = (ofr: CandidateOffer) => {
+    const documentText = `========================================================================
+                    GOOGLE CLOUD INDIA - CORPORATE OFFER LETTER
+========================================================================
+
+Date: ${new Date().toLocaleDateString()}
+Offer Reference ID: ${ofr.id}
+
+To:
+Candidate Name : ${ofr.candidateName}
+Student ID / Roll No: ${ofr.rollNo}
+Department      : ${ofr.department}
+
+Dear ${ofr.candidateName},
+
+We are pleased to extend an offer of employment for the position of:
+Designation     : ${ofr.jobRole}
+Offered CTC     : ${ofr.ctc} (Per Annum)
+Work Location   : ${ofr.location}
+Expected Joining Date : ${ofr.joiningDate}
+
+Status: ${ofr.offerStatus}
+
+Sincerely,
+Corporate HR Recruitment Team
+Google Cloud Systems India Pvt Ltd
+Bengaluru, Karnataka
+========================================================================`;
+
+    const blob = new Blob([documentText], { type: "text/plain;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Official_Offer_Letter_${ofr.rollNo}.txt`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded official offer letter document for ${ofr.candidateName}!`);
+  };
+
   // Preview Assessment Modal State
   const [selectedPreviewAst, setSelectedPreviewAst] = useState<RecruiterAssessment | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -1794,7 +1875,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/50">
-                  {MOCK_CANDIDATE_OFFERS.map((ofr) => (
+                  {offerList.map((ofr) => (
                     <tr key={ofr.id} className="hover:bg-muted/30 transition-colors">
                       <td className="p-3 font-bold font-sans text-foreground">{ofr.candidateName} ({ofr.rollNo})</td>
                       <td className="p-3 text-muted-foreground">{ofr.jobRole}</td>
@@ -1806,9 +1887,26 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                         </Badge>
                       </td>
                       <td className="p-3 text-right">
-                        <Button size="sm" variant="ghost" onClick={() => toast.success(`Downloaded offer letter PDF for ${ofr.candidateName}`)} className="h-7 text-xs rounded-lg cursor-pointer">
-                          PDF
-                        </Button>
+                        <div className="flex items-center justify-end gap-1 font-sans">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedViewOffer(ofr);
+                              setIsViewOfferModalOpen(true);
+                            }}
+                            className="h-7 text-xs rounded-xl cursor-pointer gap-1"
+                          >
+                            <FileText className="size-3" /> View
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => handleDownloadOfferDocument(ofr)}
+                            className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl cursor-pointer gap-1"
+                          >
+                            <Download className="size-3" /> PDF
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -1818,6 +1916,200 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
           </Panel>
         </div>
       )}
+
+      {/* UPLOAD CANDIDATE OFFER LETTER MODAL DIALOG */}
+      <Dialog open={isUploadOfferModalOpen} onOpenChange={setIsUploadOfferModalOpen}>
+        <DialogContent className="sm:max-w-lg rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-emerald-600 text-white grid place-items-center shadow-glow">
+                <Upload className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Upload Candidate Offer Letter</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  Dispatch official corporate employment offer letter PDF to selected candidate.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <form onSubmit={handleUploadOfferSubmit} className="space-y-4 pt-2 text-xs font-sans">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Candidate Full Name</label>
+                <Input
+                  value={offerCandName}
+                  onChange={(e) => setOfferCandName(e.target.value)}
+                  placeholder="e.g. Aditya Sharma"
+                  required
+                  className="h-9 text-xs rounded-xl font-sans"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Roll Number / Student ID</label>
+                <Input
+                  value={offerRollNo}
+                  onChange={(e) => setOfferRollNo(e.target.value)}
+                  placeholder="e.g. 2022CSE188"
+                  required
+                  className="h-9 text-xs rounded-xl font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Job Role / Designation</label>
+                <Input
+                  value={offerJobRole}
+                  onChange={(e) => setOfferJobRole(e.target.value)}
+                  placeholder="Software Engineer I (Cloud Solutions)"
+                  required
+                  className="h-9 text-xs rounded-xl font-sans"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Offered Package (CTC)</label>
+                <Input
+                  value={offerCtc}
+                  onChange={(e) => setOfferCtc(e.target.value)}
+                  placeholder="e.g. ₹32.0 LPA"
+                  required
+                  className="h-9 text-xs rounded-xl font-mono text-emerald-600 font-bold"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Expected Joining Date</label>
+                <Input
+                  type="date"
+                  value={offerJoiningDate}
+                  onChange={(e) => setOfferJoiningDate(e.target.value)}
+                  required
+                  className="h-9 text-xs rounded-xl font-mono"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="font-bold text-foreground">Work Location</label>
+                <Input
+                  value={offerLocation}
+                  onChange={(e) => setOfferLocation(e.target.value)}
+                  placeholder="Bengaluru, KA"
+                  required
+                  className="h-9 text-xs rounded-xl font-sans"
+                />
+              </div>
+            </div>
+
+            {/* PDF DROPZONE */}
+            <div className="p-4 border-2 border-dashed border-emerald-400/50 rounded-2xl bg-muted/20 text-center space-y-2 relative hover:bg-muted/40 transition-all">
+              <FileText className="size-6 text-emerald-600 mx-auto" />
+              <p className="font-bold text-foreground">Upload Offer Letter Document (PDF)</p>
+              <p className="text-[0.68rem] text-muted-foreground font-mono">Max file size: 5 MB</p>
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setUploadedPdfName(e.target.files[0].name);
+                    toast.success(`Selected offer PDF: ${e.target.files[0].name}`);
+                  }
+                }}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+              {uploadedPdfName && (
+                <Badge className="bg-emerald-600 text-white text-[0.65rem] mt-1">✓ {uploadedPdfName}</Badge>
+              )}
+            </div>
+
+            <DialogFooter className="pt-2 gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsUploadOfferModalOpen(false)} className="rounded-xl text-xs">
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1.5">
+                <Upload className="size-3.5" /> Upload &amp; Dispatch Offer Letter
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* CORPORATE OFFER LETTER PREVIEW & VIEW MODAL DIALOG */}
+      <Dialog open={isViewOfferModalOpen} onOpenChange={setIsViewOfferModalOpen}>
+        <DialogContent className="sm:max-w-xl rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-emerald-600 text-white grid place-items-center shadow-glow">
+                <FileText className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Corporate Offer Letter Document</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  {selectedViewOffer?.id} • Official Employment Contract
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {selectedViewOffer && (
+            <div className="space-y-4 pt-2 text-xs font-sans">
+              {/* FORMAL OFFER LETTER PREVIEW BOX */}
+              <div className="p-6 rounded-2xl border bg-slate-950 text-slate-100 font-mono text-[0.72rem] space-y-4 shadow-xl">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="size-7 rounded-lg bg-blue-600 text-white font-extrabold grid place-items-center text-sm">G</span>
+                    <span className="font-bold text-white text-sm font-sans">Google Cloud Systems India</span>
+                  </div>
+                  <Badge className="bg-emerald-600 text-white text-[0.62rem]">● {selectedViewOffer.offerStatus}</Badge>
+                </div>
+
+                <div className="space-y-1 text-slate-300">
+                  <p>Candidate Name : <strong className="text-white">{selectedViewOffer.candidateName}</strong></p>
+                  <p>Student Roll No : <strong>{selectedViewOffer.rollNo}</strong> ({selectedViewOffer.department})</p>
+                  <p>Job Designation : <strong className="text-purple-400">{selectedViewOffer.jobRole}</strong></p>
+                  <p>Offered Package  : <strong className="text-emerald-400 font-bold text-sm">{selectedViewOffer.ctc}</strong></p>
+                  <p>Work Location    : <strong>{selectedViewOffer.location}</strong></p>
+                  <p>Joining Date     : <strong className="text-amber-400">{selectedViewOffer.joiningDate}</strong></p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-[0.68rem] text-slate-400 space-y-1">
+                  <p className="text-slate-200 font-bold">📄 Contract Terms Summary:</p>
+                  <p>• Standard 6-month probation followed by full-time corporate appointment.</p>
+                  <p>• Full medical coverage, annual performance bonus &amp; cloud learning credits.</p>
+                </div>
+
+                <div className="flex items-center justify-between text-[0.65rem] text-slate-500 pt-2 border-t border-slate-800">
+                  <span>Authorized Signature: David Miller (Staff Recruiter)</span>
+                  <span>Seal: Verified MoUs</span>
+                </div>
+              </div>
+
+              <DialogFooter className="pt-2 gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    toast.success(`Resent offer letter notification to ${selectedViewOffer.candidateName}'s email!`);
+                  }}
+                  className="rounded-xl text-xs gap-1 cursor-pointer"
+                >
+                  <Send className="size-3.5" /> Resend Offer Email
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => handleDownloadOfferDocument(selectedViewOffer)}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1.5"
+                >
+                  <Download className="size-3.5" /> Download Official Offer Document
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* SCHEDULE INTERVIEW SLOT MODAL DIALOG */}
       <Dialog open={isScheduleInterviewModalOpen} onOpenChange={setIsScheduleInterviewModalOpen}>
