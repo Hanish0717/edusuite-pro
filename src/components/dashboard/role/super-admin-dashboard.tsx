@@ -306,8 +306,8 @@ export function SuperAdminDashboard() {
                     <TableCell className="text-xs">{item.amt}</TableCell>
                     <TableCell>
                       <Badge
-                        variant={item.status === "Completed" ? "default" : "warning"}
-                        className="text-[0.65rem]"
+                        variant={item.status === "Completed" ? "default" : "outline"}
+                        className={`text-[0.65rem] ${item.status !== "Completed" ? "bg-amber-500/10 text-amber-600 border-amber-500/30" : ""}`}
                       >
                         {item.status}
                       </Badge>

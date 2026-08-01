@@ -1,17 +1,18 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useRole } from "@/context/role-context";
-import { getDefaultRouteForUser } from "@/config/roles";
+import { createFileRoute } from "@tanstack/react-router";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { RoleDashboardDispatcher } from "@/components/dashboard/role/role-dashboard-dispatcher";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
-    meta: [{ title: "Redirecting — EduSuite Pro" }],
+    meta: [{ title: "Dashboard — EduSuite Pro" }],
   }),
   component: DashboardPage,
 });
 
 function DashboardPage() {
-  const { role, flags } = useRole();
-  const defaultRoute = getDefaultRouteForUser(role, flags);
-
-  return <Navigate to={defaultRoute} replace />;
+  return (
+    <DashboardLayout>
+      <RoleDashboardDispatcher />
+    </DashboardLayout>
+  );
 }

@@ -359,11 +359,12 @@ function VendorView() {
                     <Badge
                       variant={
                         po.status === "In Progress"
-                          ? "warning"
+                          ? "outline"
                           : po.status === "Delivered"
                             ? "default"
                             : "secondary"
                       }
+                      className={po.status === "In Progress" ? "bg-amber-500/10 text-amber-600 border-amber-500/30" : ""}
                     >
                       {po.status}
                     </Badge>

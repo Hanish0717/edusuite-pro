@@ -16,6 +16,10 @@ import {
   BarChart3,
   MessageSquare,
   Settings,
+  GitBranch,
+  Package,
+  ShieldAlert,
+  Globe,
   type LucideIcon,
 } from "lucide-react";
 
@@ -32,7 +36,7 @@ export interface NavItem {
   moduleId?: string;
   requiredPermission?: "read" | "create" | "update" | "delete" | "approve";
   badge?: string;
-  children?: { title: string; url: string; moduleId?: string }[];
+  children?: { title: string; url: string; moduleId?: string }[] | undefined;
 }
 
 export interface NavSection {
@@ -43,11 +47,15 @@ export interface NavSection {
 export const navigation: NavSection[] = [
   {
     label: "Overview",
-    items: [{ title: "Dashboard", url: "/dashboard", icon: LayoutDashboard }],
+    items: [
+      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
+    ],
   },
   {
     label: "Academics",
     items: [
+      { title: "Admissions", url: "/admission", icon: GraduationCap, moduleId: "admission" },
       {
         title: "Academics",
         url: "/academics",
@@ -91,6 +99,9 @@ export const navigation: NavSection[] = [
       { title: "Hostel", url: "/hostel", icon: BedDouble, moduleId: "hostel" },
       { title: "Transport", url: "/transport", icon: Bus, moduleId: "transport" },
       { title: "Placements", url: "/placements", icon: Briefcase, moduleId: "placement" },
+      { title: "Inventory", url: "/inventory", icon: Package, moduleId: "inventory" },
+      { title: "Grievances", url: "/grievance", icon: ShieldAlert, moduleId: "grievance" },
+      { title: "Alumni Network", url: "/alumni", icon: Globe, moduleId: "alumni" },
     ],
   },
   {
@@ -98,6 +109,7 @@ export const navigation: NavSection[] = [
     items: [
       { title: "Finance", url: "/finance", icon: Wallet, moduleId: "finance" },
       { title: "HR", url: "/hr", icon: UserCog, moduleId: "hrms" },
+      { title: "Accreditation", url: "/accreditation", icon: Award, moduleId: "accreditation" },
       { title: "Reports", url: "/reports", icon: BarChart3, moduleId: "student-info", roles: ["super-admin", "staff"] },
       {
         title: "Communication",
