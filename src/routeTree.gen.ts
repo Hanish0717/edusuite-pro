@@ -125,6 +125,7 @@ import { Route as StudentLmsRouteImport } from './routes/student.lms'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentResultsRouteImport } from './routes/student.results'
 import { Route as StudentTimetableRouteImport } from './routes/student.timetable'
+import { Route as StudentUpdatesRouteImport } from './routes/student.updates'
 import { Route as SuperAdminIndexRouteImport } from './routes/super-admin.index'
 import { Route as SuperAdminCoursesRouteImport } from './routes/super-admin.courses'
 import { Route as SuperAdminDashboardRouteImport } from './routes/super-admin.dashboard'
@@ -719,6 +720,11 @@ const StudentTimetableRoute = StudentTimetableRouteImport.update({
   path: '/timetable',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentUpdatesRoute = StudentUpdatesRouteImport.update({
+  id: '/updates',
+  path: '/updates',
+  getParentRoute: () => StudentRoute,
+} as any)
 const SuperAdminIndexRoute = SuperAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -880,6 +886,7 @@ export interface FileRoutesByFullPath {
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
   '/student/timetable': typeof StudentTimetableRoute
+  '/student/updates': typeof StudentUpdatesRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -995,6 +1002,7 @@ export interface FileRoutesByTo {
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
   '/student/timetable': typeof StudentTimetableRoute
+  '/student/updates': typeof StudentUpdatesRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -1125,6 +1133,7 @@ export interface FileRoutesById {
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
   '/student/timetable': typeof StudentTimetableRoute
+  '/student/updates': typeof StudentUpdatesRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -1256,6 +1265,7 @@ export interface FileRouteTypes {
     | '/student/profile'
     | '/student/results'
     | '/student/timetable'
+    | '/student/updates'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -1371,6 +1381,7 @@ export interface FileRouteTypes {
     | '/student/profile'
     | '/student/results'
     | '/student/timetable'
+    | '/student/updates'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -1500,6 +1511,7 @@ export interface FileRouteTypes {
     | '/student/profile'
     | '/student/results'
     | '/student/timetable'
+    | '/student/updates'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -2389,6 +2401,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentTimetableRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/updates': {
+      id: '/student/updates'
+      path: '/updates'
+      fullPath: '/student/updates'
+      preLoaderRoute: typeof StudentUpdatesRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/super-admin/': {
       id: '/super-admin/'
       path: '/'
@@ -2694,6 +2713,7 @@ interface StudentRouteChildren {
   StudentProfileRoute: typeof StudentProfileRoute
   StudentResultsRoute: typeof StudentResultsRoute
   StudentTimetableRoute: typeof StudentTimetableRoute
+  StudentUpdatesRoute: typeof StudentUpdatesRoute
   StudentIndexRoute: typeof StudentIndexRoute
 }
 
@@ -2711,6 +2731,7 @@ const StudentRouteChildren: StudentRouteChildren = {
   StudentProfileRoute: StudentProfileRoute,
   StudentResultsRoute: StudentResultsRoute,
   StudentTimetableRoute: StudentTimetableRoute,
+  StudentUpdatesRoute: StudentUpdatesRoute,
   StudentIndexRoute: StudentIndexRoute,
 }
 

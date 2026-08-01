@@ -27,7 +27,7 @@ export const NoticeSidebar: React.FC<NoticeSidebarProps> = ({
       {pinnedNotices.length > 0 && (
         <div className="rounded-xl border border-border bg-card p-4 space-y-3">
           <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-            <Pin className="h-3.5 w-3.5 text-amber-500 fill-amber-500" /> Featured Updates
+            <Pin className="h-3.5 w-3.5 text-amber-500 fill-amber-500" /> Pinned Notices
           </h3>
           <div className="space-y-2">
             {pinnedNotices.slice(0, 4).map((notice) => (

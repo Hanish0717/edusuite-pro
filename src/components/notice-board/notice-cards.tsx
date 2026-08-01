@@ -176,7 +176,7 @@ export const NoticeCards: React.FC<NoticeCardsProps> = ({
                   className="h-8 text-xs gap-1"
                 >
                   <Eye className="h-3.5 w-3.5" />
-                  View Update
+                  View Notice
                 </Button>
               </div>
             </div>
