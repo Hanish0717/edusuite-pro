@@ -1,8 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { AcademicsModuleView } from "@/modules/academics";
 
+const academicsSearchSchema = z.object({
+  tab: z.enum(["courses", "departments", "curriculum"]).optional(),
+});
+
 export const Route = createFileRoute("/academics")({
+  validateSearch: (search) => academicsSearchSchema.parse(search),
   head: () => ({
     meta: [{ title: "Academics & Curriculum — EduSuite Pro" }],
   }),
@@ -10,9 +16,10 @@ export const Route = createFileRoute("/academics")({
 });
 
 export function AcademicsPage() {
+  const { tab } = Route.useSearch();
   return (
     <DashboardLayout>
-      <AcademicsModuleView />
+      <AcademicsModuleView initialTab={tab || "departments"} />
     </DashboardLayout>
   );
 }

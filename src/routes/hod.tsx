@@ -10,8 +10,9 @@ export const Route = createFileRoute("/hod")({
 
 function HodLayout() {
   const { role, flags } = useRole();
+  const isSuperAdmin = role === "super-admin" || role === "super_admin";
 
-  if (role !== "staff" || !flags.includes("isHod")) {
+  if (!isSuperAdmin && (role !== "staff" || !flags.includes("isHod"))) {
     return (
       <div className="flex h-screen items-center justify-center p-4 bg-background">
         <div className="text-center max-w-md border border-destructive/20 bg-destructive/5 rounded-2xl p-6">

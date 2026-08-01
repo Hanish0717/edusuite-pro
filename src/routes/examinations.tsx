@@ -8,8 +8,8 @@ export const Route = createFileRoute("/examinations")({
 function ExaminationsRedirect() {
   const { role, flags } = useRole();
 
-  if (role === "super-admin") {
-    return <Navigate to="/super-admin/dashboard" replace />;
+  if (role === "super-admin" || role === "super_admin") {
+    return <Navigate to="/faculty/examinations" replace />;
   }
   if (role === "staff") {
     if (flags.includes("isExamController")) {

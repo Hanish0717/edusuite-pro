@@ -91,7 +91,9 @@ export function AppSidebar() {
                               {item.children.map((child) => (
                                 <SidebarMenuSubItem key={child.title}>
                                   <SidebarMenuSubButton asChild>
-                                    <Link to={child.url}>{child.title}</Link>
+                                    <Link to={child.url} search={child.search}>
+                                      {child.title}
+                                    </Link>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
                               ))}

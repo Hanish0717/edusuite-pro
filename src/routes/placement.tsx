@@ -10,8 +10,9 @@ export const Route = createFileRoute("/placement")({
 
 function PlacementLayout() {
   const { role, flags } = useRole();
+  const isSuperAdmin = role === "super-admin" || role === "super_admin";
 
-  if (role !== "super-admin" && (role !== "staff" || !flags.includes("isPlacementOfficer"))) {
+  if (!isSuperAdmin && (role !== "staff" || !flags.includes("isPlacementOfficer"))) {
     return (
       <div className="flex h-screen items-center justify-center p-4 bg-background">
         <div className="text-center max-w-md border border-destructive/20 bg-destructive/5 rounded-2xl p-6">

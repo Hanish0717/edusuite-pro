@@ -10,8 +10,9 @@ export const Route = createFileRoute("/faculty")({
 
 function FacultyLayout() {
   const { role } = useRole();
+  const isSuperAdmin = role === "super-admin" || role === "super_admin";
 
-  if (role !== "staff") {
+  if (role !== "staff" && !isSuperAdmin) {
     return (
       <div className="flex h-screen items-center justify-center p-4 bg-background">
         <div className="text-center max-w-md border border-destructive/20 bg-destructive/5 rounded-2xl p-6">

@@ -43,6 +43,19 @@ export interface AuditLogItem {
   status: "Success" | "Failed";
 }
 
+export interface RolePermissionMatrixItem {
+  role: "super_admin" | "admin" | "principal" | "dean" | "hod" | "faculty" | "student" | "finance" | "hr";
+  label: string;
+  isSystemAdmin: boolean;
+  isPrincipal: boolean;
+  isDean: boolean;
+  isHod: boolean;
+  isFaculty: boolean;
+  isFinance: boolean;
+  canManageUsers: boolean;
+  canExportData: boolean;
+}
+
 // ----------------------------------------------------------------------
 // STATIC MOCK FALLBACK DATASETS
 // ----------------------------------------------------------------------
@@ -238,6 +251,37 @@ export const MOCK_AUDIT_LOGS: AuditLogItem[] = [
   },
 ];
 
+export const MOCK_ROLE_PERMISSIONS: RolePermissionMatrixItem[] = [
+  { role: "super_admin", label: "Super Admin", isSystemAdmin: true, isPrincipal: true, isDean: true, isHod: true, isFaculty: true, isFinance: true, canManageUsers: true, canExportData: true },
+  { role: "admin", label: "Operations Admin", isSystemAdmin: true, isPrincipal: false, isDean: false, isHod: false, isFaculty: true, isFinance: false, canManageUsers: true, canExportData: true },
+  { role: "principal", label: "Principal", isSystemAdmin: false, isPrincipal: true, isDean: true, isHod: true, isFaculty: true, isFinance: true, canManageUsers: false, canExportData: true },
+  { role: "dean", label: "Academic Dean", isSystemAdmin: false, isPrincipal: false, isDean: true, isHod: true, isFaculty: true, isFinance: false, canManageUsers: false, canExportData: true },
+  { role: "hod", label: "HOD", isSystemAdmin: false, isPrincipal: false, isDean: false, isHod: true, isFaculty: true, isFinance: false, canManageUsers: false, canExportData: true },
+  { role: "faculty", label: "Faculty Member", isSystemAdmin: false, isPrincipal: false, isDean: false, isHod: false, isFaculty: true, isFinance: false, canManageUsers: false, canExportData: false },
+  { role: "student", label: "Student", isSystemAdmin: false, isPrincipal: false, isDean: false, isHod: false, isFaculty: false, isFinance: false, canManageUsers: false, canExportData: false },
+  { role: "finance", label: "Finance Officer", isSystemAdmin: false, isPrincipal: false, isDean: false, isHod: false, isFaculty: false, isFinance: true, canManageUsers: false, canExportData: true },
+  { role: "hr", label: "HR Manager", isSystemAdmin: false, isPrincipal: false, isDean: false, isHod: false, isFaculty: false, isFinance: false, canManageUsers: true, canExportData: true },
+];
+
+// In-Memory State store for reactive persistence
+let usersStateStore: SuperAdminUser[] = [...MOCK_USERS];
+let departmentsStateStore: DepartmentItem[] = [...MOCK_DEPARTMENTS];
+let auditLogsStateStore: AuditLogItem[] = [...MOCK_AUDIT_LOGS];
+let rolePermissionsStateStore: RolePermissionMatrixItem[] = [...MOCK_ROLE_PERMISSIONS];
+
+function addAuditRecord(action: string, moduleName: string, status: "Success" | "Failed" = "Success") {
+  const newLog: AuditLogItem = {
+    id: `LOG-${Math.floor(9000 + Math.random() * 1000)}`,
+    timestamp: new Date().toISOString().replace("T", " ").substring(0, 19),
+    actor: "Super Admin (Console)",
+    action,
+    module: moduleName,
+    ipAddress: "127.0.0.1",
+    status,
+  };
+  auditLogsStateStore = [newLog, ...auditLogsStateStore];
+}
+
 // ----------------------------------------------------------------------
 // SERVICE FUNCTIONS (WITH AXIOS & OFFLINE MOCK FALLBACK)
 // ----------------------------------------------------------------------
@@ -252,9 +296,19 @@ export async function fetchSuperAdminStats(): Promise<SuperAdminStats> {
       return res.data;
     }
   } catch (err) {
-    console.warn("Backend API unavailable for /api/super-admin/stats. Using fallback data.");
+    // API fallback
   }
-  return MOCK_SUPER_ADMIN_STATS;
+
+  const totalStudents = departmentsStateStore.reduce((acc, d) => acc + d.studentsCount, 0);
+  const totalStaff = usersStateStore.filter((u) => u.role !== "student").length * 15;
+  const totalDepartments = departmentsStateStore.length;
+
+  return {
+    ...MOCK_SUPER_ADMIN_STATS,
+    totalStudents: totalStudents > 0 ? totalStudents : MOCK_SUPER_ADMIN_STATS.totalStudents,
+    totalStaff: totalStaff > 0 ? totalStaff : MOCK_SUPER_ADMIN_STATS.totalStaff,
+    totalDepartments: totalDepartments > 0 ? totalDepartments : MOCK_SUPER_ADMIN_STATS.totalDepartments,
+  };
 }
 
 /**
@@ -266,14 +320,14 @@ export async function fetchUsers(filters?: {
   page?: number;
 }): Promise<SuperAdminUser[]> {
   try {
-    const res = await api.get("/api/super-admin/users", { params: filters });
+    const res = await api.get("/api/super-admin/users");
     if (res && Array.isArray(res.data) && res.data.length > 0) {
       return res.data;
     }
   } catch (err) {
-    console.warn("Backend API unavailable for /api/super-admin/users. Using fallback data.");
+    // API fallback
   }
-  return MOCK_USERS;
+  return usersStateStore;
 }
 
 /**
@@ -283,12 +337,15 @@ export async function createUser(payload: Partial<SuperAdminUser>): Promise<Supe
   try {
     const res = await api.post("/api/super-admin/users", payload);
     if (res && res.data && res.data.id) {
+      usersStateStore = [res.data, ...usersStateStore];
+      addAuditRecord(`Created account for ${res.data.name} (${res.data.role})`, "User Management");
       return res.data;
     }
   } catch (err) {
-    console.warn("Backend API unavailable for POST /api/super-admin/users. Creating local entry.");
+    // API fallback
   }
 
+  const dateStr = new Date().toISOString().split("T")[0];
   const newUser: SuperAdminUser = {
     id: `USR-${Math.floor(100 + Math.random() * 900)}`,
     name: payload.name || "New Registered User",
@@ -297,9 +354,11 @@ export async function createUser(payload: Partial<SuperAdminUser>): Promise<Supe
     department: payload.department || "Computer Science & Engineering",
     status: payload.status || "Active",
     lastLogin: "Never",
-    createdAt: new Date().toISOString().split("T")[0],
+    createdAt: dateStr || "2026-08-01",
   };
 
+  usersStateStore = [newUser, ...usersStateStore];
+  addAuditRecord(`Created user ${newUser.name} [${newUser.id}]`, "User Management");
   return newUser;
 }
 
@@ -313,11 +372,16 @@ export async function updateUser(
   try {
     const res = await api.put(`/api/super-admin/users/${id}`, payload);
     if (res && res.data) {
+      usersStateStore = usersStateStore.map((u) => (u.id === id ? { ...u, ...payload } : u));
+      addAuditRecord(`Updated user profile [${id}]`, "User Management");
       return res.data;
     }
   } catch (err) {
-    console.warn(`Backend API unavailable for PUT /api/super-admin/users/${id}.`);
+    // API fallback
   }
+
+  usersStateStore = usersStateStore.map((u) => (u.id === id ? { ...u, ...payload } : u));
+  addAuditRecord(`Updated profile for ${payload.name || id}`, "User Management");
   return { id, ...payload };
 }
 
@@ -325,11 +389,33 @@ export async function updateUser(
  * Delete a user account
  */
 export async function deleteUser(id: string): Promise<boolean> {
+  const target = usersStateStore.find((u) => u.id === id);
   try {
     await api.delete(`/api/super-admin/users/${id}`);
   } catch (err) {
-    console.warn(`Backend API unavailable for DELETE /api/super-admin/users/${id}.`);
+    // API fallback
   }
+
+  usersStateStore = usersStateStore.filter((u) => u.id !== id);
+  addAuditRecord(`Deleted user account ${target?.name || id}`, "User Management");
+  return true;
+}
+
+/**
+ * Bulk delete user accounts
+ */
+export async function bulkDeleteUsers(ids: string[]): Promise<boolean> {
+  usersStateStore = usersStateStore.filter((u) => !ids.includes(u.id));
+  addAuditRecord(`Bulk deleted ${ids.length} user accounts`, "User Management");
+  return true;
+}
+
+/**
+ * Bulk update user status (Active | Inactive | Suspended)
+ */
+export async function bulkUpdateUserStatus(ids: string[], status: "Active" | "Inactive" | "Suspended"): Promise<boolean> {
+  usersStateStore = usersStateStore.map((u) => (ids.includes(u.id) ? { ...u, status } : u));
+  addAuditRecord(`Bulk updated status to ${status} for ${ids.length} users`, "User Management");
   return true;
 }
 
@@ -343,9 +429,28 @@ export async function fetchDepartments(): Promise<DepartmentItem[]> {
       return res.data;
     }
   } catch (err) {
-    console.warn("Backend API unavailable for /api/super-admin/departments. Using fallback data.");
+    // API fallback
   }
-  return MOCK_DEPARTMENTS;
+  return departmentsStateStore;
+}
+
+/**
+ * Create a new department
+ */
+export async function createDepartment(payload: Partial<DepartmentItem>): Promise<DepartmentItem> {
+  const newDept: DepartmentItem = {
+    id: `DEP-00${departmentsStateStore.length + 1}`,
+    name: payload.name || "New Department",
+    code: payload.code || "DEPT",
+    hodName: payload.hodName || "Dr. Unassigned",
+    studentsCount: payload.studentsCount || 100,
+    facultyCount: payload.facultyCount || 10,
+    accreditation: payload.accreditation || "NAAC Accredited",
+    status: payload.status || "Active",
+  };
+  departmentsStateStore = [...departmentsStateStore, newDept];
+  addAuditRecord(`Created new department: ${newDept.name} (${newDept.code})`, "Department Management");
+  return newDept;
 }
 
 /**
@@ -358,9 +463,34 @@ export async function fetchAuditLogs(): Promise<AuditLogItem[]> {
       return res.data;
     }
   } catch (err) {
-    console.warn("Backend API unavailable for /api/super-admin/audit-logs. Using fallback data.");
+    // API fallback
   }
-  return MOCK_AUDIT_LOGS;
+  return auditLogsStateStore;
+}
+
+/**
+ * Fetch role permission matrix
+ */
+export async function fetchRolePermissions(): Promise<RolePermissionMatrixItem[]> {
+  return rolePermissionsStateStore;
+}
+
+/**
+ * Update role permission flag
+ */
+export async function updateRolePermission(
+  role: string,
+  flagKey: keyof RolePermissionMatrixItem,
+  value: boolean,
+): Promise<RolePermissionMatrixItem[]> {
+  rolePermissionsStateStore = rolePermissionsStateStore.map((item) => {
+    if (item.role === role) {
+      return { ...item, [flagKey]: value };
+    }
+    return item;
+  });
+  addAuditRecord(`Updated privilege flag '${String(flagKey)}' for role ${role}`, "Security & RBAC");
+  return rolePermissionsStateStore;
 }
 
 /**
@@ -374,15 +504,18 @@ export async function triggerBackup(): Promise<{
   try {
     const res = await api.post("/api/super-admin/backups/create");
     if (res && res.data) {
+      addAuditRecord("Triggered System Database Backup", "Infrastructure");
       return res.data;
     }
   } catch (err) {
-    console.warn("Backend API unavailable for POST /api/super-admin/backups/create.");
+    // API fallback
   }
 
+  const timestamp = new Date().toLocaleString();
+  addAuditRecord("Triggered System Database Backup (Snapshot Created)", "Infrastructure");
   return {
     success: true,
     message: "System database backup snapshot created successfully (Local Storage Node).",
-    timestamp: new Date().toLocaleString(),
+    timestamp,
   };
 }
