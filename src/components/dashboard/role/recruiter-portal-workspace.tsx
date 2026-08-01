@@ -469,7 +469,6 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
       panelAssigned: schedPanel,
       interviewer: schedInterviewer,
       status: "Scheduled",
-      scorecardMarks: undefined,
       feedbackRemarks: "Interview slot scheduled. Awaiting interviewer evaluation.",
     };
 
