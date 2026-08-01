@@ -382,22 +382,28 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
     });
   };
 
-  // Initial Question Bank Items
+  // Initial Question Bank Items Divided by Subject
   const INITIAL_QUESTION_BANK: Array<{
     id: string;
     type: "MCQ" | "Coding" | "SQL";
+    subject: "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Operating Systems" | "Computer Networks" | "Aptitude & Reasoning";
     title: string;
     optionsOrConstraints: string;
     difficulty: "Easy" | "Medium" | "Hard";
     marks: number;
   }> = [
-    { id: "QB-MCQ-01", type: "MCQ", title: "Log-Structured Merge-Tree (LSM-Tree) append-only storage in Google Bigtable", optionsOrConstraints: "4 Options (LSM, B+, Tree, Hash Ring)", difficulty: "Hard", marks: 1 },
-    { id: "QB-MCQ-02", type: "MCQ", title: "Google Spanner External Consistency (TrueTime API atomic clocks)", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
-    { id: "QB-MCQ-03", type: "MCQ", title: "CAP Theorem: Availability & Partition Tolerance in Cassandra key-value tables", optionsOrConstraints: "4 Options", difficulty: "Easy", marks: 1 },
-    { id: "QB-CODING-01", type: "Coding", title: "Distributed Cache Eviction (LRU-K Policy with O(1) time complexity)", optionsOrConstraints: "Java 17, Python 3.11, C++ 20", difficulty: "Hard", marks: 20 },
-    { id: "QB-CODING-02", type: "Coding", title: "Optimal Cloud Subgraph Network Connectivity (K Minimum Spanning Tree)", optionsOrConstraints: "Java 17, Python 3.11, C++ 20", difficulty: "Hard", marks: 30 },
-    { id: "QB-SQL-01", type: "SQL", title: "Top 5 High-Revenue Corporate Accounts Window Aggregation (DENSE_RANK)", optionsOrConstraints: "PostgreSQL 15 / MySQL 8", difficulty: "Medium", marks: 10 },
-    { id: "QB-SQL-02", type: "SQL", title: "Recursive Common Table Expression (CTE) for Org Hierarchy Tree Traversals", optionsOrConstraints: "PostgreSQL 15 / MySQL 8", difficulty: "Hard", marks: 15 },
+    { id: "QB-DSA-01", type: "Coding", subject: "Data Structures & Algorithms", title: "Distributed Cache Eviction (LRU-K Policy with O(1) time complexity)", optionsOrConstraints: "Java 17, Python 3.11, C++ 20", difficulty: "Hard", marks: 20 },
+    { id: "QB-DSA-02", type: "Coding", subject: "Data Structures & Algorithms", title: "Optimal Cloud Subgraph Network Connectivity (K Minimum Spanning Tree)", optionsOrConstraints: "Java 17, Python 3.11, C++ 20", difficulty: "Hard", marks: 30 },
+    { id: "QB-DSA-03", type: "MCQ", subject: "Data Structures & Algorithms", title: "Log-Structured Merge-Tree (LSM-Tree) append-only storage in Google Bigtable", optionsOrConstraints: "4 Options (LSM, B+, Tree, Hash Ring)", difficulty: "Hard", marks: 1 },
+    { id: "QB-DBMS-01", type: "SQL", subject: "Database Management Systems (DBMS)", title: "Top 5 High-Revenue Corporate Accounts Window Aggregation (DENSE_RANK)", optionsOrConstraints: "PostgreSQL 15 / MySQL 8", difficulty: "Medium", marks: 10 },
+    { id: "QB-DBMS-02", type: "SQL", subject: "Database Management Systems (DBMS)", title: "Recursive Common Table Expression (CTE) for Org Hierarchy Tree Traversals", optionsOrConstraints: "PostgreSQL 15 / MySQL 8", difficulty: "Hard", marks: 15 },
+    { id: "QB-DBMS-03", type: "MCQ", subject: "Database Management Systems (DBMS)", title: "Google Spanner External Consistency (TrueTime API atomic clocks)", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
+    { id: "QB-OS-01", type: "MCQ", subject: "Operating Systems", title: "Banker's Algorithm Resource Request Deadlock Prevention State Matrix", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
+    { id: "QB-OS-02", type: "MCQ", subject: "Operating Systems", title: "Virtual Memory Page Fault Replacement LRU Stack Implementation", optionsOrConstraints: "4 Options", difficulty: "Easy", marks: 1 },
+    { id: "QB-CN-01", type: "MCQ", subject: "Computer Networks", title: "TCP 3-Way Handshake SYN-ACK Sequence & Acknowledgement Numbering", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
+    { id: "QB-CN-02", type: "MCQ", subject: "Computer Networks", title: "CIDR /26 Subnet Masking Host IP Address Allocation & Broadcast Range", optionsOrConstraints: "4 Options", difficulty: "Easy", marks: 1 },
+    { id: "QB-APT-01", type: "MCQ", subject: "Aptitude & Reasoning", title: "Combinatorics & Permutations for Multi-Region Distributed Server Nodes", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
+    { id: "QB-APT-02", type: "MCQ", subject: "Aptitude & Reasoning", title: "Work & Time Efficiency Pipes and Cistern Rates Ratio Calculation", optionsOrConstraints: "4 Options", difficulty: "Easy", marks: 1 },
   ];
 
   // Password reset alert state
@@ -455,6 +461,7 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const [selectedViewQuestion, setSelectedViewQuestion] = useState<{
     id: string;
     type: "MCQ" | "Coding" | "SQL";
+    subject: string;
     title: string;
     optionsOrConstraints: string;
     difficulty: "Easy" | "Medium" | "Hard";
@@ -467,6 +474,7 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const [qbCounts, setQbCounts] = useState({ mcq: 80, coding: 42, sql: 20, total: 142 });
   const [qbSearchQuery, setQbSearchQuery] = useState("");
   const [qbFilterTab, setQbFilterTab] = useState<"All" | "MCQ" | "Coding" | "SQL">("All");
+  const [qbSubjectFilter, setQbSubjectFilter] = useState("All");
 
   // Bulk Upload Modal State
   const [isBulkUploadModalOpen, setIsBulkUploadModalOpen] = useState(false);
@@ -474,6 +482,7 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const [parsedQuestions, setParsedQuestions] = useState<Array<{
     id: string;
     type: "MCQ" | "Coding" | "SQL";
+    subject: "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Operating Systems" | "Computer Networks" | "Aptitude & Reasoning";
     title: string;
     optionsOrConstraints: string;
     difficulty: "Easy" | "Medium" | "Hard";
@@ -481,11 +490,13 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   }>>([]);
 
   const handleDownloadSampleCsv = () => {
-    const sampleHeaders = "Question Type,Title / Problem Statement,Options / Constraints,Difficulty,Marks\n";
+    const sampleHeaders = "Subject,Question Type,Title / Problem Statement,Options / Constraints,Difficulty,Marks\n";
     const sampleRows = [
-      '"MCQ","What is the default consistency level of Google Spanner?","A. Eventual B. External C. Causal D. Read Uncommitted","Medium","1"',
-      '"Coding","Implement LRU-K Cache Eviction Policy","Java 17, Python 3.11, C++ 20","Hard","20"',
-      '"SQL","Top 5 Revenue Accounts Window Function","PostgreSQL 15 / MySQL 8","Medium","10"',
+      '"Data Structures & Algorithms","Coding","Implement LRU-K Cache Eviction Policy","Java 17, Python 3.11, C++ 20","Hard","20"',
+      '"Database Management Systems (DBMS)","SQL","Top 5 Revenue Accounts Window Function","PostgreSQL 15 / MySQL 8","Medium","10"',
+      '"Operating Systems","MCQ","Bankers Algorithm Deadlock State Matrix","A. Safe B. Unsafe C. Deadlock D. Blocked","Medium","1"',
+      '"Computer Networks","MCQ","TCP 3-Way Handshake SYN-ACK Sequence","4 Options","Medium","1"',
+      '"Aptitude & Reasoning","MCQ","Permutations for Distributed Nodes","4 Options","Easy","1"',
     ].join("\n");
     const blob = new Blob([sampleHeaders + sampleRows], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -496,7 +507,7 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast.success("Downloaded sample CSV template!");
+    toast.success("Downloaded sample CSV template with Subjects!");
   };
 
   const handleFileSelect = (file: File) => {
@@ -508,48 +519,57 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
       const parsed: Array<{
         id: string;
         type: "MCQ" | "Coding" | "SQL";
+        subject: "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Operating Systems" | "Computer Networks" | "Aptitude & Reasoning";
         title: string;
         optionsOrConstraints: string;
         difficulty: "Easy" | "Medium" | "Hard";
         marks: number;
       }> = [];
 
-      const dataLines = lines.length > 1 && lines[0]!.toLowerCase().includes("question type") ? lines.slice(1) : lines;
+      const dataLines = lines.length > 1 && lines[0]!.toLowerCase().includes("subject") ? lines.slice(1) : lines;
       dataLines.forEach((line, idx) => {
         const cols = line.split(",").map((c) => c.replace(/^"|"$/g, "").trim());
         if (cols.length >= 2) {
-          const rawType = (cols[0] || "MCQ").toUpperCase();
+          const rawSubject = cols[0] || "Data Structures & Algorithms";
+          let subject: "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Operating Systems" | "Computer Networks" | "Aptitude & Reasoning" = "Data Structures & Algorithms";
+          if (rawSubject.includes("DBMS") || rawSubject.includes("Database")) subject = "Database Management Systems (DBMS)";
+          else if (rawSubject.includes("Operating") || rawSubject.includes("OS")) subject = "Operating Systems";
+          else if (rawSubject.includes("Networks") || rawSubject.includes("CN")) subject = "Computer Networks";
+          else if (rawSubject.includes("Aptitude") || rawSubject.includes("Reasoning")) subject = "Aptitude & Reasoning";
+
+          const rawType = (cols[1] || "MCQ").toUpperCase();
           const type: "MCQ" | "Coding" | "SQL" = rawType.includes("CODING") ? "Coding" : rawType.includes("SQL") ? "SQL" : "MCQ";
           parsed.push({
             id: `QB-UP-${Date.now()}-${idx}`,
             type,
-            title: cols[1] || `Uploaded Question ${idx + 1}`,
-            optionsOrConstraints: cols[2] || "Standard options / constraints",
-            difficulty: (cols[3] as any) || (type === "Coding" ? "Hard" : "Medium"),
-            marks: parseInt(cols[4] || "10") || (type === "Coding" ? 20 : 1),
+            subject,
+            title: cols[2] || cols[1] || `Uploaded Question ${idx + 1}`,
+            optionsOrConstraints: cols[3] || "Standard options / constraints",
+            difficulty: (cols[4] as any) || (type === "Coding" ? "Hard" : "Medium"),
+            marks: parseInt(cols[5] || "10") || (type === "Coding" ? 20 : 1),
           });
         }
       });
 
       if (parsed.length === 0) {
         setParsedQuestions([
-          { id: `QB-UP-1`, type: "MCQ", title: "Distributed Consensus Raft vs Paxos Leadership Election", optionsOrConstraints: "4 Options", difficulty: "Hard", marks: 1 },
-          { id: `QB-UP-2`, type: "Coding", title: "Rate Limiter Leaky Bucket Algorithm", optionsOrConstraints: "Java 17, Python 3.11", difficulty: "Medium", marks: 20 },
-          { id: `QB-UP-3`, type: "SQL", title: "Monthly Recurring Revenue (MRR) Churn Rate Calculation", optionsOrConstraints: "PostgreSQL 15", difficulty: "Hard", marks: 15 },
+          { id: `QB-UP-1`, type: "Coding", subject: "Data Structures & Algorithms", title: "Rate Limiter Leaky Bucket Algorithm", optionsOrConstraints: "Java 17, Python 3.11", difficulty: "Medium", marks: 20 },
+          { id: `QB-UP-2`, type: "SQL", subject: "Database Management Systems (DBMS)", title: "Monthly Recurring Revenue (MRR) Churn Rate", optionsOrConstraints: "PostgreSQL 15", difficulty: "Hard", marks: 15 },
+          { id: `QB-UP-3`, type: "MCQ", subject: "Operating Systems", title: "Process Control Block (PCB) Context Switch Latency", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
         ]);
       } else {
         setParsedQuestions(parsed);
       }
-      toast.success(`Parsed ${parsed.length || 3} questions from "${file.name}"!`);
+      toast.success(`Parsed ${parsed.length || 3} questions divided by subjects!`);
     };
     reader.readAsText(file);
   };
 
   const handleCommitImport = () => {
     const listToImport = parsedQuestions.length > 0 ? parsedQuestions : [
-      { id: `QB-UP-1`, type: "MCQ" as const, title: "Distributed Consensus Raft vs Paxos Leadership Election", optionsOrConstraints: "4 Options", difficulty: "Hard" as const, marks: 1 },
-      { id: `QB-UP-2`, type: "Coding" as const, title: "Rate Limiter Leaky Bucket Algorithm", optionsOrConstraints: "Java 17, Python 3.11", difficulty: "Medium" as const, marks: 20 },
-      { id: `QB-UP-3`, type: "SQL" as const, title: "Monthly Recurring Revenue (MRR) Churn Rate Calculation", optionsOrConstraints: "PostgreSQL 15", difficulty: "Hard" as const, marks: 15 },
+      { id: `QB-UP-1`, type: "Coding" as const, subject: "Data Structures & Algorithms" as const, title: "Rate Limiter Leaky Bucket Algorithm", optionsOrConstraints: "Java 17, Python 3.11", difficulty: "Medium" as const, marks: 20 },
+      { id: `QB-UP-2`, type: "SQL" as const, subject: "Database Management Systems (DBMS)" as const, title: "Monthly Recurring Revenue (MRR) Churn Rate", optionsOrConstraints: "PostgreSQL 15", difficulty: "Hard" as const, marks: 15 },
+      { id: `QB-UP-3`, type: "MCQ" as const, subject: "Operating Systems" as const, title: "Process Control Block (PCB) Context Switch Latency", optionsOrConstraints: "4 Options", difficulty: "Medium" as const, marks: 1 },
     ];
 
     const mcqAdded = listToImport.filter((q) => q.type === "MCQ").length;
@@ -1201,39 +1221,55 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                 </div>
               </div>
 
-              {/* SEARCH BAR & CATEGORY TABS */}
+              {/* SEARCH BAR & SUBJECT FILTER DROPDOWN */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="relative flex-1">
                   <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     value={qbSearchQuery}
                     onChange={(e) => setQbSearchQuery(e.target.value)}
-                    placeholder="Search question bank by title, category, or keywords..."
+                    placeholder="Search question bank by title, subject, or keywords..."
                     className="h-9 border-input bg-card pl-9 text-xs rounded-xl font-mono"
                   />
                 </div>
 
-                <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-xl text-xs font-mono">
-                  {(["All", "MCQ", "Coding", "SQL"] as const).map((tab) => (
-                    <button
-                      key={tab}
-                      type="button"
-                      onClick={() => setQbFilterTab(tab)}
-                      className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                        qbFilterTab === tab ? "bg-card text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                <div className="flex flex-wrap items-center gap-2">
+                  <select
+                    value={qbSubjectFilter}
+                    onChange={(e) => setQbSubjectFilter(e.target.value)}
+                    className="h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold font-mono cursor-pointer"
+                  >
+                    <option value="All">All Subjects (5 Categories)</option>
+                    <option value="Data Structures & Algorithms">Data Structures &amp; Algorithms</option>
+                    <option value="Database Management Systems (DBMS)">DBMS (Database Systems)</option>
+                    <option value="Operating Systems">Operating Systems (OS)</option>
+                    <option value="Computer Networks">Computer Networks (CN)</option>
+                    <option value="Aptitude & Reasoning">Aptitude &amp; Reasoning</option>
+                  </select>
+
+                  <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-xl text-xs font-mono">
+                    {(["All", "MCQ", "Coding", "SQL"] as const).map((tab) => (
+                      <button
+                        key={tab}
+                        type="button"
+                        onClick={() => setQbFilterTab(tab)}
+                        className={`px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                          qbFilterTab === tab ? "bg-card text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {/* QUESTION BANK TABLE DIRECTORY */}
+              {/* QUESTION BANK TABLE DIRECTORY DIVIDED BY SUBJECT */}
               <div className="overflow-x-auto border rounded-2xl">
                 <table className="w-full text-left text-xs font-sans">
                   <thead>
                     <tr className="border-b border-border bg-muted/40 text-muted-foreground font-mono uppercase text-[0.65rem]">
+                      <th className="p-3">Subject</th>
                       <th className="p-3">Type</th>
                       <th className="p-3">Question Title / Problem Statement</th>
                       <th className="p-3">Options / Compilers</th>
@@ -1247,10 +1283,30 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                       .filter(
                         (q) =>
                           (qbFilterTab === "All" || q.type === qbFilterTab) &&
-                          q.title.toLowerCase().includes(qbSearchQuery.toLowerCase())
+                          (qbSubjectFilter === "All" || q.subject === qbSubjectFilter) &&
+                          (q.title.toLowerCase().includes(qbSearchQuery.toLowerCase()) ||
+                           q.subject.toLowerCase().includes(qbSearchQuery.toLowerCase()))
                       )
                       .map((item) => (
                         <tr key={item.id} className="hover:bg-muted/30 transition-colors">
+                          <td className="p-3">
+                            <Badge
+                              variant="outline"
+                              className={`text-[0.62rem] ${
+                                item.subject.includes("Data Structures")
+                                  ? "border-purple-300 text-purple-700 dark:text-purple-300 bg-purple-500/10"
+                                  : item.subject.includes("Database")
+                                  ? "border-emerald-300 text-emerald-700 dark:text-emerald-300 bg-emerald-500/10"
+                                  : item.subject.includes("Operating")
+                                  ? "border-amber-300 text-amber-700 dark:text-amber-300 bg-amber-500/10"
+                                  : item.subject.includes("Networks")
+                                  ? "border-cyan-300 text-cyan-700 dark:text-cyan-300 bg-cyan-500/10"
+                                  : "border-blue-300 text-blue-700 dark:text-blue-300 bg-blue-500/10"
+                              }`}
+                            >
+                              {item.subject.split("(")[0] || item.subject}
+                            </Badge>
+                          </td>
                           <td className="p-3">
                             <Badge
                               className={
