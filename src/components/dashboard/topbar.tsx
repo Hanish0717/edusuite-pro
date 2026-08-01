@@ -97,91 +97,124 @@ export function Topbar() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2 flex-wrap">
+          {/* Primary 5 Core Login Roles Dropdown */}
           <Select value={role} onValueChange={(v) => setRole(v as LoginRole)}>
-            <SelectTrigger className="h-9 w-[150px]" aria-label="Demo role">
-              <SelectValue />
+            <SelectTrigger className="h-9 w-[160px] font-semibold text-xs border-primary/40 bg-card" aria-label="5 Core Login Roles">
+              <SelectValue placeholder="Core Login Role" />
             </SelectTrigger>
             <SelectContent>
-              {roleOrder.map((r) => (
-                <SelectItem key={r} value={r}>
-                  {roleProfiles[r].label}
-                </SelectItem>
-              ))}
+              <SelectItem value="super-admin">1. Super Admin</SelectItem>
+              <SelectItem value="staff">2. Staff (Faculty)</SelectItem>
+              <SelectItem value="student">3. Student</SelectItem>
+              <SelectItem value="parent">4. Parent</SelectItem>
+              <SelectItem value="external-user">5. External User</SelectItem>
             </SelectContent>
           </Select>
 
+          {/* Dynamic Sub-Fields Dropdown for Staff */}
           {role === "staff" && (
             <>
-              <Select value={department} onValueChange={(v) => setDepartment(v as DepartmentCode)}>
-                <SelectTrigger className="h-9 w-[100px]" aria-label="Department">
+              {/* Primary Staff Privilege Flag Dropdown */}
+              <Select
+                value={flags.find((f) => f.startsWith("is")) || "isMentor"}
+                onValueChange={(flagVal) => {
+                  const otherFlags = flags.filter((f) => !f.startsWith("is") || f === "isMentor");
+                  setFlags(Array.from(new Set([flagVal, ...otherFlags])));
+                }}
+              >
+                <SelectTrigger className="h-9 w-[150px] text-xs font-mono bg-card" aria-label="Staff Flag">
+                  <SelectValue placeholder="Privilege Flag" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="isHod">Flag: isHod (HOD)</SelectItem>
+                  <SelectItem value="isDean">Flag: isDean (Dean)</SelectItem>
+                  <SelectItem value="isExamController">Flag: isExamController</SelectItem>
+                  <SelectItem value="isPlacementOfficer">Flag: isPlacementOfficer</SelectItem>
+                  <SelectItem value="isTransportOfficer">Flag: isTransportOfficer</SelectItem>
+                  <SelectItem value="isHostelWarden">Flag: isHostelWarden</SelectItem>
+                  <SelectItem value="isFinanceOfficer">Flag: isFinanceOfficer</SelectItem>
+                  <SelectItem value="isLibraryAdmin">Flag: isLibraryAdmin</SelectItem>
+                  <SelectItem value="isHRManager">Flag: isHRManager</SelectItem>
+                  <SelectItem value="isPrincipal">Flag: isPrincipal</SelectItem>
+                  <SelectItem value="isVicePrincipal">Flag: isVicePrincipal</SelectItem>
+                  <SelectItem value="isMentor">Flag: isMentor (Default)</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Department Scope Dropdown */}
+              <Select value={department || "CSE"} onValueChange={(v) => setDepartment(v as DepartmentCode)}>
+                <SelectTrigger className="h-9 w-[110px] text-xs font-mono bg-card" aria-label="Department Scope">
                   <SelectValue placeholder="Dept" />
                 </SelectTrigger>
                 <SelectContent>
                   {DEPARTMENTS.map((dept) => (
                     <SelectItem key={dept.code} value={dept.code}>
-                      {dept.code}
+                      Dept: {dept.code}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9 gap-1.5 px-3">
-                    <SettingsIcon className="size-3.5" /> Privileges ({flags.length})
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-64 p-3" align="end">
-                  <h4 className="font-semibold text-sm mb-2 border-b border-border pb-1">
-                    Responsibility Flags
-                  </h4>
-                  <div className="max-h-60 overflow-y-auto space-y-2">
-                    {RESPONSIBILITY_FLAGS.map((f) => {
-                      const active = flags.includes(f.id);
-                      return (
-                        <div key={f.id} className="flex items-center gap-2">
-                          <Checkbox
-                            id={`flag-${f.id}`}
-                            checked={active}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setFlags([...flags, f.id]);
-                              } else {
-                                setFlags(flags.filter((x) => x !== f.id));
-                              }
-                            }}
-                          />
-                          <Label
-                            htmlFor={`flag-${f.id}`}
-                            className="text-xs cursor-pointer select-none truncate"
-                          >
-                            {f.label}
-                          </Label>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </PopoverContent>
-              </Popover>
             </>
           )}
 
+          {/* Dynamic Sub-Fields Dropdown for External User */}
           {role === "external-user" && (
             <Select
-              value={externalPersona}
+              value={externalPersona || "recruiter"}
               onValueChange={(v) => setExternalPersona(v as ExternalPersona)}
             >
-              <SelectTrigger className="h-9 w-[150px]" aria-label="External Persona">
-                <SelectValue />
+              <SelectTrigger className="h-9 w-[160px] text-xs font-medium bg-card" aria-label="External Persona">
+                <SelectValue placeholder="External Persona" />
               </SelectTrigger>
               <SelectContent>
                 {EXTERNAL_PERSONAS.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
-                    {p.label}
+                    Persona: {p.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+          )}
+
+          {role === "staff" && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="h-9 gap-1.5 px-3">
+                  <SettingsIcon className="size-3.5" /> Privileges ({flags.length})
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64 p-3" align="end">
+                <h4 className="font-semibold text-sm mb-2 border-b border-border pb-1">
+                  Responsibility Flags
+                </h4>
+                <div className="max-h-60 overflow-y-auto space-y-2">
+                  {RESPONSIBILITY_FLAGS.map((f) => {
+                    const active = flags.includes(f.id);
+                    return (
+                      <div key={f.id} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`flag-${f.id}`}
+                          checked={active}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setFlags([...flags, f.id]);
+                            } else {
+                              setFlags(flags.filter((x) => x !== f.id));
+                            }
+                          }}
+                        />
+                        <Label
+                          htmlFor={`flag-${f.id}`}
+                          className="text-xs cursor-pointer select-none truncate"
+                        >
+                          {f.label}
+                        </Label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
 
           <Button

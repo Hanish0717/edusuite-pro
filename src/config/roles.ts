@@ -8,11 +8,113 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export type LoginRole = "super-admin" | "staff" | "student" | "parent" | "external-user";
+export type LoginRole =
+  | "super_admin"
+  | "admin"
+  | "principal"
+  | "vice_principal"
+  | "dean"
+  | "hod"
+  | "faculty"
+  | "student"
+  | "parent"
+  | "exam_cell"
+  | "librarian"
+  | "placement"
+  | "warden"
+  | "transport"
+  | "accounts"
+  | "lms"
+  | "alumni_coordinator"
+  | "alumni"
+  | "super-admin"
+  | "staff"
+  | "external-user";
+
+export type CoreRoleKey = "super-admin" | "staff" | "student" | "parent" | "external-user";
 
 export type ExternalPersona = "applicant" | "alumni" | "recruiter" | "vendor" | "guest-faculty";
 
 export type DepartmentCode = "CSE" | "ECE" | "EEE" | "ME" | "Civil" | "MBA";
+
+export interface CoreRoleDefinition {
+  id: CoreRoleKey;
+  number: number;
+  title: string;
+  badgeColor: string;
+  bulletPoints: string[];
+  icon: LucideIcon;
+  subFieldType: "none" | "staff_flags" | "student_dept" | "parent_ward" | "external_persona";
+}
+
+export const CORE_5_LOGIN_ROLES: CoreRoleDefinition[] = [
+  {
+    id: "super-admin",
+    number: 1,
+    title: "SUPER ADMIN",
+    badgeColor: "purple",
+    bulletPoints: [
+      "Full system access",
+      "Manage users, roles, flags",
+      "System configuration",
+      "Audit, overrides, analytics",
+    ],
+    icon: ShieldCheck,
+    subFieldType: "none",
+  },
+  {
+    id: "staff",
+    number: 2,
+    title: "STAFF",
+    badgeColor: "blue",
+    bulletPoints: [
+      "Faculty / Non-Teaching",
+      "Access based on flags",
+      "Department scoped",
+      "Approvals & operations",
+    ],
+    icon: UserCog,
+    subFieldType: "staff_flags",
+  },
+  {
+    id: "student",
+    number: 3,
+    title: "STUDENT",
+    badgeColor: "green",
+    bulletPoints: [
+      "Access academic data",
+      "Self service modules",
+      "View only, limited actions",
+    ],
+    icon: GraduationCap,
+    subFieldType: "student_dept",
+  },
+  {
+    id: "parent",
+    number: 4,
+    title: "PARENT",
+    badgeColor: "amber",
+    bulletPoints: [
+      "View child related data",
+      "Fee, attendance, marks",
+      "Communication & alerts",
+    ],
+    icon: Users,
+    subFieldType: "parent_ward",
+  },
+  {
+    id: "external-user",
+    number: 5,
+    title: "EXTERNAL USER",
+    badgeColor: "cyan",
+    bulletPoints: [
+      "Applicants, Alumni, Recruiters, Vendors, Guest Faculty",
+      "Limited access as per role",
+    ],
+    icon: Globe,
+    subFieldType: "external_persona",
+  },
+];
 
 export interface RoleProfile {
   id: LoginRole;
@@ -88,6 +190,153 @@ export const DEPARTMENTS = [
 ] as const;
 
 export const roleProfiles: Record<LoginRole, RoleProfile> = {
+  super_admin: {
+    id: "super_admin",
+    label: "Super Admin",
+    personaName: "Super Admin",
+    personaMeta: "System Control & Governance",
+    initials: "SA",
+    flags: ["isSystemAdmin", "isPrincipal"],
+  },
+  admin: {
+    id: "admin",
+    label: "Admin / Operations",
+    personaName: "Rajesh Sharma (Admin)",
+    personaMeta: "Daily Operations & Workflows",
+    initials: "AD",
+    flags: ["isSystemAdmin"],
+  },
+  principal: {
+    id: "principal",
+    label: "Principal",
+    personaName: "Dr. Meera Rao",
+    personaMeta: "Executive Oversight & Governance",
+    initials: "PR",
+    flags: ["isPrincipal"],
+  },
+  vice_principal: {
+    id: "vice_principal",
+    label: "Vice Principal",
+    personaName: "Prof. V. K. Murthy",
+    personaMeta: "Operations & Student Conduct",
+    initials: "VP",
+    flags: ["isVicePrincipal"],
+  },
+  dean: {
+    id: "dean",
+    label: "Academic Dean",
+    personaName: "Prof. Anand Kumar",
+    personaMeta: "Academic Leadership & Curriculum",
+    initials: "DN",
+    flags: ["isDean"],
+  },
+  hod: {
+    id: "hod",
+    label: "Head of Department (HOD)",
+    personaName: "Dr. S. K. Gupta",
+    personaMeta: "Department Administration (CSE)",
+    initials: "HD",
+    flags: ["isHod"],
+    department: "CSE",
+  },
+  faculty: {
+    id: "faculty",
+    label: "Faculty / Teacher",
+    personaName: "Dr. Ravi Kumar",
+    personaMeta: "Faculty - Computer Science",
+    initials: "FC",
+    flags: ["isMentor", "isClassAdvisor"],
+    department: "CSE",
+  },
+  student: {
+    id: "student",
+    label: "Student",
+    personaName: "K. Sai Teja",
+    personaMeta: "B.Tech CSE - Roll No. 22CS101",
+    initials: "ST",
+    flags: [],
+    department: "CSE",
+  },
+  parent: {
+    id: "parent",
+    label: "Parent / Guardian",
+    personaName: "S. Anitha",
+    personaMeta: "Parent of Sai Teja (22CS101)",
+    initials: "PT",
+    flags: [],
+  },
+  exam_cell: {
+    id: "exam_cell",
+    label: "Exam Controller",
+    personaName: "Dr. P. V. Ramana",
+    personaMeta: "Examination Management",
+    initials: "EC",
+    flags: ["isExamController"],
+  },
+  librarian: {
+    id: "librarian",
+    label: "Librarian",
+    personaName: "M. N. Swamy",
+    personaMeta: "Library System",
+    initials: "LB",
+    flags: ["isLibraryAdmin"],
+  },
+  placement: {
+    id: "placement",
+    label: "Placement Officer",
+    personaName: "Vikram Malhotra",
+    personaMeta: "Career & Placements",
+    initials: "PO",
+    flags: ["isPlacementOfficer"],
+  },
+  warden: {
+    id: "warden",
+    label: "Hostel Warden",
+    personaName: "Col. R. S. Rathore",
+    personaMeta: "Hostel Management",
+    initials: "HW",
+    flags: ["isHostelWarden"],
+  },
+  transport: {
+    id: "transport",
+    label: "Transport Manager",
+    personaName: "Gurpreet Singh",
+    personaMeta: "Fleet & Logistics",
+    initials: "TM",
+    flags: ["isTransportOfficer"],
+  },
+  accounts: {
+    id: "accounts",
+    label: "Accounts & Finance",
+    personaName: "Ramesh Agarwal",
+    personaMeta: "Financial Operations",
+    initials: "AF",
+    flags: ["isFinanceOfficer"],
+  },
+  lms: {
+    id: "lms",
+    label: "LMS Manager",
+    personaName: "Anita Deshmukh",
+    personaMeta: "E-Learning Management",
+    initials: "LM",
+    flags: [],
+  },
+  alumni_coordinator: {
+    id: "alumni_coordinator",
+    label: "Alumni Coordinator",
+    personaName: "Priya Nair",
+    personaMeta: "Graduate Engagement",
+    initials: "AC",
+    flags: ["isTrainingCoordinator"],
+  },
+  alumni: {
+    id: "alumni",
+    label: "Alumni",
+    personaName: "Sarah Jenkins",
+    personaMeta: "Graduate Network Portal",
+    initials: "AL",
+    flags: [],
+  },
   "super-admin": {
     id: "super-admin",
     label: "Super Admin",
@@ -105,23 +354,6 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     flags: ["isMentor", "isClassAdvisor"],
     department: "CSE",
   },
-  student: {
-    id: "student",
-    label: "Student",
-    personaName: "K. Sai Teja",
-    personaMeta: "B.Tech CSE - Roll No. 22CS101",
-    initials: "ST",
-    flags: [],
-    department: "CSE",
-  },
-  parent: {
-    id: "parent",
-    label: "Parent",
-    personaName: "S. Anitha",
-    personaMeta: "Parent of Sai Teja (22CS101)",
-    initials: "SA",
-    flags: [],
-  },
   "external-user": {
     id: "external-user",
     label: "External User",
@@ -134,11 +366,24 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
 };
 
 export const roleOrder: LoginRole[] = [
-  "super-admin",
-  "staff",
+  "super_admin",
+  "admin",
+  "principal",
+  "vice_principal",
+  "dean",
+  "hod",
+  "faculty",
   "student",
   "parent",
-  "external-user",
+  "exam_cell",
+  "librarian",
+  "placement",
+  "warden",
+  "transport",
+  "accounts",
+  "lms",
+  "alumni_coordinator",
+  "alumni",
 ];
 
 export interface RoleHighlight {

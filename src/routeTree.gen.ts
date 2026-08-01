@@ -12,6 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AcademicsRouteImport } from './routes/academics'
+import { Route as AccreditationRouteImport } from './routes/accreditation'
+import { Route as AdmissionRouteImport } from './routes/admission'
+import { Route as AlumniRouteImport } from './routes/alumni'
+import { Route as ApprovalWorkflowsRouteImport } from './routes/approval-workflows'
 import { Route as AttendanceRouteImport } from './routes/attendance'
 import { Route as CommunicationRouteImport } from './routes/communication'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -24,9 +28,11 @@ import { Route as FacultyRouteImport } from './routes/faculty'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as FinanceRouteImport } from './routes/finance'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as GrievanceRouteImport } from './routes/grievance'
 import { Route as HodRouteImport } from './routes/hod'
 import { Route as HostelRouteImport } from './routes/hostel'
 import { Route as HrRouteImport } from './routes/hr'
+import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LmsRouteImport } from './routes/lms'
 import { Route as LoginRouteImport } from './routes/login'
@@ -121,6 +127,26 @@ const AcademicsRoute = AcademicsRouteImport.update({
   path: '/academics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccreditationRoute = AccreditationRouteImport.update({
+  id: '/accreditation',
+  path: '/accreditation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdmissionRoute = AdmissionRouteImport.update({
+  id: '/admission',
+  path: '/admission',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniRoute = AlumniRouteImport.update({
+  id: '/alumni',
+  path: '/alumni',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApprovalWorkflowsRoute = ApprovalWorkflowsRouteImport.update({
+  id: '/approval-workflows',
+  path: '/approval-workflows',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AttendanceRoute = AttendanceRouteImport.update({
   id: '/attendance',
   path: '/attendance',
@@ -181,6 +207,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GrievanceRoute = GrievanceRouteImport.update({
+  id: '/grievance',
+  path: '/grievance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HodRoute = HodRouteImport.update({
   id: '/hod',
   path: '/hod',
@@ -194,6 +225,11 @@ const HostelRoute = HostelRouteImport.update({
 const HrRoute = HrRouteImport.update({
   id: '/hr',
   path: '/hr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InventoryRoute = InventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LibraryRoute = LibraryRouteImport.update({
@@ -591,6 +627,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/academics': typeof AcademicsRoute
+  '/accreditation': typeof AccreditationRoute
+  '/admission': typeof AdmissionRoute
+  '/alumni': typeof AlumniRoute
+  '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
@@ -603,9 +643,11 @@ export interface FileRoutesByFullPath {
   '/features': typeof FeaturesRoute
   '/finance': typeof FinanceRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
+  '/grievance': typeof GrievanceRoute
   '/hod': typeof HodRouteWithChildren
   '/hostel': typeof HostelRouteWithChildren
   '/hr': typeof HrRouteWithChildren
+  '/inventory': typeof InventoryRoute
   '/library': typeof LibraryRouteWithChildren
   '/lms': typeof LmsRoute
   '/login': typeof LoginRoute
@@ -689,6 +731,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/academics': typeof AcademicsRoute
+  '/accreditation': typeof AccreditationRoute
+  '/admission': typeof AdmissionRoute
+  '/alumni': typeof AlumniRoute
+  '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
@@ -696,6 +742,8 @@ export interface FileRoutesByTo {
   '/examinations': typeof ExaminationsRoute
   '/features': typeof FeaturesRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/grievance': typeof GrievanceRoute
+  '/inventory': typeof InventoryRoute
   '/lms': typeof LmsRoute
   '/login': typeof LoginRoute
   '/placements': typeof PlacementsRoute
@@ -774,6 +822,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/academics': typeof AcademicsRoute
+  '/accreditation': typeof AccreditationRoute
+  '/admission': typeof AdmissionRoute
+  '/alumni': typeof AlumniRoute
+  '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
@@ -786,9 +838,11 @@ export interface FileRoutesById {
   '/features': typeof FeaturesRoute
   '/finance': typeof FinanceRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
+  '/grievance': typeof GrievanceRoute
   '/hod': typeof HodRouteWithChildren
   '/hostel': typeof HostelRouteWithChildren
   '/hr': typeof HrRouteWithChildren
+  '/inventory': typeof InventoryRoute
   '/library': typeof LibraryRouteWithChildren
   '/lms': typeof LmsRoute
   '/login': typeof LoginRoute
@@ -874,6 +928,10 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/academics'
+    | '/accreditation'
+    | '/admission'
+    | '/alumni'
+    | '/approval-workflows'
     | '/attendance'
     | '/communication'
     | '/contact'
@@ -886,9 +944,11 @@ export interface FileRouteTypes {
     | '/features'
     | '/finance'
     | '/forgot-password'
+    | '/grievance'
     | '/hod'
     | '/hostel'
     | '/hr'
+    | '/inventory'
     | '/library'
     | '/lms'
     | '/login'
@@ -972,6 +1032,10 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/academics'
+    | '/accreditation'
+    | '/admission'
+    | '/alumni'
+    | '/approval-workflows'
     | '/attendance'
     | '/communication'
     | '/contact'
@@ -979,6 +1043,8 @@ export interface FileRouteTypes {
     | '/examinations'
     | '/features'
     | '/forgot-password'
+    | '/grievance'
+    | '/inventory'
     | '/lms'
     | '/login'
     | '/placements'
@@ -1056,6 +1122,10 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/academics'
+    | '/accreditation'
+    | '/admission'
+    | '/alumni'
+    | '/approval-workflows'
     | '/attendance'
     | '/communication'
     | '/contact'
@@ -1068,9 +1138,11 @@ export interface FileRouteTypes {
     | '/features'
     | '/finance'
     | '/forgot-password'
+    | '/grievance'
     | '/hod'
     | '/hostel'
     | '/hr'
+    | '/inventory'
     | '/library'
     | '/lms'
     | '/login'
@@ -1155,6 +1227,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AcademicsRoute: typeof AcademicsRoute
+  AccreditationRoute: typeof AccreditationRoute
+  AdmissionRoute: typeof AdmissionRoute
+  AlumniRoute: typeof AlumniRoute
+  ApprovalWorkflowsRoute: typeof ApprovalWorkflowsRoute
   AttendanceRoute: typeof AttendanceRoute
   CommunicationRoute: typeof CommunicationRoute
   ContactRoute: typeof ContactRoute
@@ -1167,9 +1243,11 @@ export interface RootRouteChildren {
   FeaturesRoute: typeof FeaturesRoute
   FinanceRoute: typeof FinanceRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  GrievanceRoute: typeof GrievanceRoute
   HodRoute: typeof HodRouteWithChildren
   HostelRoute: typeof HostelRouteWithChildren
   HrRoute: typeof HrRouteWithChildren
+  InventoryRoute: typeof InventoryRoute
   LibraryRoute: typeof LibraryRouteWithChildren
   LmsRoute: typeof LmsRoute
   LoginRoute: typeof LoginRoute
@@ -1210,6 +1288,34 @@ declare module '@tanstack/react-router' {
       path: '/academics'
       fullPath: '/academics'
       preLoaderRoute: typeof AcademicsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accreditation': {
+      id: '/accreditation'
+      path: '/accreditation'
+      fullPath: '/accreditation'
+      preLoaderRoute: typeof AccreditationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admission': {
+      id: '/admission'
+      path: '/admission'
+      fullPath: '/admission'
+      preLoaderRoute: typeof AdmissionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni': {
+      id: '/alumni'
+      path: '/alumni'
+      fullPath: '/alumni'
+      preLoaderRoute: typeof AlumniRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/approval-workflows': {
+      id: '/approval-workflows'
+      path: '/approval-workflows'
+      fullPath: '/approval-workflows'
+      preLoaderRoute: typeof ApprovalWorkflowsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/attendance': {
@@ -1296,6 +1402,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/grievance': {
+      id: '/grievance'
+      path: '/grievance'
+      fullPath: '/grievance'
+      preLoaderRoute: typeof GrievanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hod': {
       id: '/hod'
       path: '/hod'
@@ -1315,6 +1428,13 @@ declare module '@tanstack/react-router' {
       path: '/hr'
       fullPath: '/hr'
       preLoaderRoute: typeof HrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/library': {
@@ -2120,6 +2240,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AcademicsRoute: AcademicsRoute,
+  AccreditationRoute: AccreditationRoute,
+  AdmissionRoute: AdmissionRoute,
+  AlumniRoute: AlumniRoute,
+  ApprovalWorkflowsRoute: ApprovalWorkflowsRoute,
   AttendanceRoute: AttendanceRoute,
   CommunicationRoute: CommunicationRoute,
   ContactRoute: ContactRoute,
@@ -2132,9 +2256,11 @@ const rootRouteChildren: RootRouteChildren = {
   FeaturesRoute: FeaturesRoute,
   FinanceRoute: FinanceRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  GrievanceRoute: GrievanceRoute,
   HodRoute: HodRouteWithChildren,
   HostelRoute: HostelRouteWithChildren,
   HrRoute: HrRouteWithChildren,
+  InventoryRoute: InventoryRoute,
   LibraryRoute: LibraryRouteWithChildren,
   LmsRoute: LmsRoute,
   LoginRoute: LoginRoute,
