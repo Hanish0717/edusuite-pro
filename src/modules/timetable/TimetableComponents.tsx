@@ -415,7 +415,7 @@ export function TimetableModuleView() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <TableHeader className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
                 <tr>
                   <th className="py-3 px-3">Day & Time</th>
                   <th className="py-3 px-3">Course & Section</th>
@@ -425,7 +425,7 @@ export function TimetableModuleView() {
                   <th className="py-3 px-3">Status</th>
                   <th className="py-3 px-3 text-right pr-4">Actions</th>
                 </tr>
-              </TableHeader>
+              </thead>
               <tbody className="divide-y divide-border/60">
                 {filtered.map((t) => (
                   <tr key={t.id} className="hover:bg-muted/20 transition-colors">
