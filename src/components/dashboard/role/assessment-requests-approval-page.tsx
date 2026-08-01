@@ -672,6 +672,18 @@ export function AssessmentRequestsApprovalWorkspace() {
 
                       <Button
                         size="sm"
+                        onClick={() => {
+                          setDispatchReq(req);
+                          setIsDispatchModalOpen(true);
+                        }}
+                        className="h-7 text-[0.68rem] bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg cursor-pointer font-bold gap-1 shadow-xs"
+                        title="Share Exam Link directly with eligible students"
+                      >
+                        <Send className="size-3" /> Share with Students
+                      </Button>
+
+                      <Button
+                        size="sm"
                         variant="outline"
                         onClick={() => {
                           copyToClipboard(
