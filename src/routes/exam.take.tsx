@@ -51,6 +51,7 @@ function StudentLiveExamPage() {
   const [isRunningCode, setIsRunningCode] = useState(false);
 
   // Security / Proctoring states
+  const [isExamStarted, setIsExamStarted] = useState(false);
   const [tabViolations, setTabViolations] = useState(0);
   const [isExamSubmitted, setIsExamSubmitted] = useState(false);
   const [isAutoSubmitted, setIsAutoSubmitted] = useState(false);
@@ -59,7 +60,7 @@ function StudentLiveExamPage() {
 
   // Countdown timer
   useEffect(() => {
-    if (isExamSubmitted) return;
+    if (!isExamStarted || isExamSubmitted) return;
     const interval = setInterval(() => {
       setSecondsRemaining((prev) => {
         if (prev <= 1) {
@@ -71,11 +72,11 @@ function StudentLiveExamPage() {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [isExamSubmitted]);
+  }, [isExamStarted, isExamSubmitted]);
 
   // Fullscreen & Proctoring Restrictions
   useEffect(() => {
-    if (isExamSubmitted) return;
+    if (!isExamStarted || isExamSubmitted) return;
 
     // Fullscreen status monitor
     const checkFullscreen = () => {
@@ -194,11 +195,91 @@ function StudentLiveExamPage() {
 
   return (
     <div
-      className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none"
+      className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none relative"
       onContextMenu={(e) => e.preventDefault()}
       onCopy={(e) => e.preventDefault()}
       onPaste={(e) => e.preventDefault()}
     >
+      {/* 1. INITIAL ENTRY GATE MODAL (Before Start) */}
+      {!isExamStarted && (
+        <div className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-6">
+          <div className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 text-center shadow-2xl animate-fade-up">
+            <div className="size-20 rounded-full bg-blue-600/15 border-2 border-blue-500/40 grid place-items-center mx-auto text-blue-400">
+              <Shield className="size-10" />
+            </div>
+
+            <div className="space-y-2">
+              <Badge className="bg-blue-600 text-white font-mono">MANDATORY PROCTORED ENVIRONMENT</Badge>
+              <h2 className="text-2xl font-extrabold font-sans text-white">
+                Proctored Assessment Security Agreement
+              </h2>
+              <p className="text-xs text-slate-400 font-mono">
+                Google Cloud Systems &amp; Coding Assessment 2026 • 90 Minutes
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-left text-xs font-mono space-y-2 text-slate-300">
+              <p className="font-bold text-blue-400 mb-1.5 flex items-center gap-1.5">
+                <Lock className="size-4" /> Strictly Enforced Security Rules:
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-emerald-400">✓</span> <strong>Fullscreen Mode:</strong> Automatically enabled upon starting.
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-rose-400">❌</span> <strong>Copy &amp; Paste:</strong> Completely disabled in all questions &amp; code editors.
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-rose-400">❌</span> <strong>Right-Click &amp; Shortcuts:</strong> Blocked (F5, Ctrl+R, F12 disabled).
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-amber-400">⚠️</span> <strong>Tab-Switch Violations:</strong> Maximum 3 allowed. Exceeding 3 auto-submits exam.
+              </p>
+            </div>
+
+            <Button
+              size="lg"
+              onClick={() => {
+                requestFullscreenMode();
+                setIsExamStarted(true);
+                toast.success("Security restrictions active. Good luck!");
+              }}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-2xl h-12 gap-2 shadow-xl shadow-emerald-600/30 cursor-pointer"
+            >
+              <Play className="size-5" /> Start Exam &amp; Enter Fullscreen Mode
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* 2. FULLSCREEN ENFORCEMENT OVERLAY GUARD (If student exits fullscreen during test) */}
+      {isExamStarted && !isFullscreenActive && !isExamSubmitted && (
+        <div className="fixed inset-0 z-[90] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-6">
+          <div className="w-full max-w-md bg-slate-900 border border-rose-500/50 rounded-3xl p-8 space-y-5 text-center shadow-2xl animate-pulse">
+            <div className="size-20 rounded-full bg-rose-500/20 border-2 border-rose-500/50 grid place-items-center mx-auto text-rose-500">
+              <AlertTriangle className="size-10" />
+            </div>
+
+            <div className="space-y-1.5">
+              <Badge className="bg-rose-600 text-white font-mono">PROCTORING ALERT</Badge>
+              <h3 className="text-xl font-extrabold font-sans text-rose-500">
+                Fullscreen Mode Required!
+              </h3>
+              <p className="text-xs text-slate-300 font-mono">
+                You exited fullscreen mode. You must return to fullscreen mode immediately to continue your assessment.
+              </p>
+            </div>
+
+            <Button
+              size="lg"
+              onClick={requestFullscreenMode}
+              className="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-2xl h-11 gap-2 shadow-lg shadow-rose-600/30 cursor-pointer"
+            >
+              <Maximize2 className="size-4" /> Re-enter Fullscreen Mode
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* EXAM TOP NAVIGATION HEADER */}
       <header className="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur px-6 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center gap-3">
