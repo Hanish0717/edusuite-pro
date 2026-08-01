@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { RiskApi } from "../services/risk.api";
+import { riskRepository } from "../repositories/risk.repository";
 import type { StudentRisk } from "../types";
 import type { DepartmentCode } from "@/config/roles";
 
@@ -14,7 +14,7 @@ export function useRiskAnalysis(initialDept?: DepartmentCode) {
     try {
       setLoading(true);
       setError(null);
-      const data = await RiskApi.getRisks(department);
+      const data = await riskRepository.getRisks(department);
       setRisks(data);
     } catch (err: any) {
       setError(err.message || "Failed to load risk analysis records.");
@@ -30,7 +30,7 @@ export function useRiskAnalysis(initialDept?: DepartmentCode) {
   const updateRecommendation = async (studentId: string, notes: string) => {
     try {
       setLoading(true);
-      const success = await RiskApi.updateRecommendation(studentId, notes);
+      const success = await riskRepository.updateRecommendation(studentId, notes);
       if (success) {
         setRisks((prev) =>
           prev.map((r) => (r.studentId === studentId ? { ...r, recommendation: notes } : r))

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { ReportsApi } from "../services/reports.api";
+import { reportsRepository } from "../repositories/reports.repository";
 import type { AnalyticsReport } from "../types";
 
 export function useReports() {
@@ -12,7 +12,7 @@ export function useReports() {
     try {
       setLoading(true);
       setError(null);
-      const data = await ReportsApi.getReports();
+      const data = await reportsRepository.getReports();
       setReports(data);
     } catch (err: any) {
       setError(err.message || "Failed to retrieve reports list.");
@@ -28,7 +28,7 @@ export function useReports() {
   const exportReport = async (reportId: string, format: "PDF" | "Excel" | "CSV") => {
     const report = reports.find((r) => r.id === reportId);
     const title = report ? report.title : "Report";
-    const promise = ReportsApi.exportReport(reportId, format);
+    const promise = reportsRepository.exportReport(reportId, format);
 
     toast.promise(promise, {
       loading: `Compiling ${format} dataset for "${title}"...`,

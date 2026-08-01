@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { ChatbotApi } from "../services/chatbot.api";
+import { chatbotRepository } from "../repositories/chatbot.repository";
 import type { ChatMessage } from "../types";
 
 export function useChatbot() {
@@ -27,7 +27,7 @@ export function useChatbot() {
     setTyping(true);
 
     try {
-      const response = await ChatbotApi.sendMessage(text);
+      const response = await chatbotRepository.sendMessage(text);
       setMessages((prev) => [...prev, response]);
     } catch {
       const errorMsg: ChatMessage = {

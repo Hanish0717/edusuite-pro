@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { NotificationsApi } from "../services/notifications.api";
+import { notificationsRepository } from "../repositories/notifications.repository";
 import type { AITriggerNotification } from "../types";
 
 export function useNotifications() {
@@ -12,7 +12,7 @@ export function useNotifications() {
     try {
       setLoading(true);
       setError(null);
-      const data = await NotificationsApi.getNotifications();
+      const data = await notificationsRepository.getNotifications();
       setAlerts(data);
     } catch (err: any) {
       setError(err.message || "Failed to fetch notification feed.");
@@ -34,7 +34,7 @@ export function useNotifications() {
     message: string
   ) => {
     try {
-      const newAlert = await NotificationsApi.triggerManualNotification(
+      const newAlert = await notificationsRepository.triggerManualNotification(
         studentId,
         studentName,
         triggerType,

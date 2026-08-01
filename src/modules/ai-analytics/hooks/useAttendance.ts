@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
-import { AttendanceApi } from "../services/attendance.api";
+import { attendanceRepository } from "../repositories/attendance.repository";
 import type { AttendancePrediction } from "../types";
 import type { DepartmentCode } from "@/config/roles";
 
@@ -14,7 +14,7 @@ export function useAttendance(initialDept?: DepartmentCode) {
     try {
       setLoading(true);
       setError(null);
-      const data = await AttendanceApi.getPredictions(department);
+      const data = await attendanceRepository.getPredictions(department);
       setPredictions(data);
     } catch (err: any) {
       setError(err.message || "Failed to load attendance predictions.");
@@ -31,7 +31,7 @@ export function useAttendance(initialDept?: DepartmentCode) {
     try {
       const student = predictions.find((p) => p.studentId === studentId);
       const name = student ? student.name : studentId;
-      const promise = AttendanceApi.sendAlert(studentId, recipient);
+      const promise = attendanceRepository.sendAlert(studentId, recipient);
       
       toast.promise(promise, {
         loading: `Sending AI alert to ${recipient} for ${name}...`,
