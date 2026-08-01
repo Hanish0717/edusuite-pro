@@ -582,14 +582,14 @@ function StudentLiveExamPage() {
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
               >
-                <Code2 className="size-3.5" /> Section 2: Coding Challenges (LeetCode View)
+                <Code2 className="size-3.5" /> Section 2: Coding Challenges
               </button>
             </div>
 
             <span className="text-xs font-mono text-slate-500">
               {activeSection === "mcq"
                 ? `MCQ ${currentMcqIdx + 1} of 20`
-                : `Problem ${activeCodingIdx + 1} of 2 (LeetCode Workspace)`}
+                : `Problem ${activeCodingIdx + 1} of 2 (Coding Workspace)`}
             </span>
           </div>
 
@@ -898,7 +898,7 @@ function StudentLiveExamPage() {
                   {testOutput[currentCodingProb.id] && (
                     <div className="p-3 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-400 font-mono text-xs space-y-1">
                       <p className="font-bold flex items-center gap-1 text-emerald-300">
-                        <Terminal className="size-3.5" /> LeetCode Console Output:
+                        <Terminal className="size-3.5" /> Execution Console Output:
                       </p>
                       <pre className="whitespace-pre-wrap text-[0.68rem]">{testOutput[currentCodingProb.id]}</pre>
                     </div>
