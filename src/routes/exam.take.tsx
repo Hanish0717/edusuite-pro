@@ -176,7 +176,7 @@ function StudentLiveExamPage() {
   // Score Calculation
   const answeredMcqCount = Object.keys(userAnswers).length;
   let correctMcqCount = 0;
-  SAMPLE_20_MCQS.forEach((mcq, idx) => {
+  SAMPLE_20_MCQS.forEach((mcq: any, idx: number) => {
     if (userAnswers[idx] === mcq.correct) {
       correctMcqCount++;
     }
@@ -410,7 +410,7 @@ function StudentLiveExamPage() {
 
                   {/* OPTIONS GRID */}
                   <div className="grid gap-3">
-                    {currentMcq.options.map((opt, oIdx) => {
+                    {currentMcq.options.map((opt: string, oIdx: number) => {
                       const isSelected = userAnswers[currentMcqIdx] === oIdx;
                       return (
                         <button
@@ -493,11 +493,11 @@ function StudentLiveExamPage() {
             {/* SECTION 2: CODING WORKSPACE */}
             {activeSection === "coding" && (
               <div className="p-6 space-y-6 flex-1 overflow-y-auto">
-                {SAMPLE_2_CODING_CHALLENGES.map((prob) => {
+                {SAMPLE_2_CODING_CHALLENGES.map((prob: any) => {
                   const activeCompilerLang =
                     selectedCompilerLangs[prob.id] ?? prob.compilers[0]!.name;
                   const activeCompilerObj =
-                    prob.compilers.find((c) => c.name === activeCompilerLang) ?? prob.compilers[0]!;
+                    prob.compilers.find((c: any) => c.name === activeCompilerLang) ?? prob.compilers[0]!;
                   const codeVal = userCode[prob.id] ?? activeCompilerObj.code;
 
                   return (
@@ -525,7 +525,7 @@ function StudentLiveExamPage() {
                           Select Programming Language &amp; Compiler:
                         </label>
                         <div className="flex flex-wrap items-center gap-1.5">
-                          {prob.compilers.map((c) => (
+                          {prob.compilers.map((c: any) => (
                             <button
                               key={c.name}
                               type="button"
@@ -644,7 +644,7 @@ function StudentLiveExamPage() {
               </div>
 
               <div className="grid grid-cols-5 gap-2">
-                {SAMPLE_20_MCQS.map((_, idx) => {
+                {SAMPLE_20_MCQS.map((_: any, idx: number) => {
                   const isAnswered = userAnswers[idx] !== undefined;
                   const isMarked = markedForReview[idx];
                   const isCurrent = currentMcqIdx === idx && activeSection === "mcq";

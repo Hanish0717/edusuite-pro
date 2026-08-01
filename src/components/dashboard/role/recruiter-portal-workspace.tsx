@@ -302,7 +302,7 @@ const MOCK_CANDIDATE_OFFERS: CandidateOffer[] = [
   },
 ];
 
-const SAMPLE_20_MCQS = [
+export const SAMPLE_20_MCQS = [
   { id: 1, question: "Which algorithm is primarily utilized by Google Bigtable for high-throughput append-only distributed key-value storage?", options: ["A. Log-Structured Merge-Tree (LSM-Tree)", "B. B+ Tree Indexing with WAL", "C. Red-Black Balanced Binary Search Tree", "D. Distributed Hash Map Ring"], correct: 0 },
   { id: 2, question: "What is the primary consistency model guarantee in Google Spanner distributed database system globally?", options: ["A. Eventual Consistency", "B. External Consistency (TrueTime API)", "C. Causal Consistency", "D. Read-Uncommitted Isolation"], correct: 1 },
   { id: 3, question: "According to the CAP Theorem, which two guarantees does Apache Cassandra prioritize during network partition?", options: ["A. Consistency & Availability (CA)", "B. Availability & Partition Tolerance (AP)", "C. Consistency & Partition Tolerance (CP)", "D. Durability & Isolation (DI)"], correct: 1 },
@@ -325,7 +325,7 @@ const SAMPLE_20_MCQS = [
   { id: 20, question: "What is the worst-case time complexity of QuickSort when the pivot chosen is consistently the smallest or largest element?", options: ["A. O(N log N)", "B. O(N^2)", "C. O(N)", "D. O(log N)"], correct: 1 },
 ];
 
-const SAMPLE_2_CODING_CHALLENGES = [
+export const SAMPLE_2_CODING_CHALLENGES = [
   {
     id: "CODING-01",
     title: "Problem 1: Distributed Cache Eviction (LRU-K Policy)",
