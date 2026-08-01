@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SHARED_ASSESSMENT_REQUESTS } from "@/lib/shared-assessment-store";
+import { SHARED_ASSESSMENT_REQUESTS, SHARED_STUDENT_SUBMISSIONS } from "@/lib/shared-assessment-store";
 import {
   Code2,
   Search,
@@ -372,6 +372,30 @@ export function AssessmentRequestsApprovalWorkspace() {
     }
   };
 
+  // Dispatch to Students Modal State
+  const [isDispatchModalOpen, setIsDispatchModalOpen] = useState(false);
+  const [dispatchReq, setDispatchReq] = useState<AssessmentRequestRecord | null>(null);
+  const [dispatchSeries, setDispatchSeries] = useState("2022 Series (CSE / ECE / CSM)");
+  const [dispatchMinCgpa, setDispatchMinCgpa] = useState("7.5");
+
+  const handleExportStudentResultsCsv = () => {
+    const headers = "Student Roll No,College Email,Department,Assessment Title,MCQ Score,Coding Score,Total Percentage,Status,Proctoring Warnings,Submission Timestamp\n";
+    const rows = SHARED_STUDENT_SUBMISSIONS.map((sub) =>
+      `"${sub.rollNo}","${sub.studentEmail}","${sub.department}","${sub.assessmentTitle}","${sub.mcqScore}/${sub.mcqTotal}","${sub.codingScore}/${sub.codingTotal}","${sub.totalPercentage}%","${sub.passStatus ? "PASSED" : "FAILED"}","${sub.violationsLogged} Warnings","${sub.submissionTime}"`
+    ).join("\n");
+
+    const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "tpo_student_assessment_results_2026.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("Exported TPO student assessment results to Excel CSV!");
+  };
+
   // Handlers
   const handleConfirmApprove = () => {
     if (!selectedReq) return;
@@ -695,6 +719,64 @@ export function AssessmentRequestsApprovalWorkspace() {
         </div>
       </Panel>
 
+      {/* 6. TPO STORED STUDENT ASSESSMENT RESULTS TABLE & EXCEL EXPORT */}
+      <Panel
+        title="TPO Central Stored Student Assessment Results & Scorecards"
+        action={
+          <Button onClick={handleExportStudentResultsCsv} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs">
+            <FileSpreadsheet className="size-3.5" /> Export Stored Results to Excel (.csv)
+          </Button>
+        }
+      >
+        <div className="space-y-4 pt-1 font-sans">
+          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono flex items-center justify-between">
+            <span className="font-bold text-emerald-800 dark:text-emerald-200">
+              📊 Live Stored Test Submissions ({SHARED_STUDENT_SUBMISSIONS.length} Students Submitted)
+            </span>
+            <span className="text-muted-foreground text-[0.68rem]">
+              Auto-stored upon candidate completion at http://192.168.1.122:8082/exam/take
+            </span>
+          </div>
+
+          <div className="overflow-x-auto border rounded-2xl">
+            <table className="w-full text-left text-xs font-sans">
+              <thead>
+                <tr className="border-b border-border bg-muted/40 text-muted-foreground font-mono uppercase text-[0.65rem]">
+                  <th className="p-3">Candidate / Roll No</th>
+                  <th className="p-3">College Email</th>
+                  <th className="p-3">Dept</th>
+                  <th className="p-3">Assessment Title</th>
+                  <th className="p-3">MCQ Score</th>
+                  <th className="p-3">Coding Score</th>
+                  <th className="p-3">Overall %</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3 text-right">Submission Time</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/50 font-mono text-[0.72rem]">
+                {SHARED_STUDENT_SUBMISSIONS.map((sub) => (
+                  <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
+                    <td className="p-3 font-sans font-bold text-foreground">{sub.studentName} ({sub.rollNo})</td>
+                    <td className="p-3 text-blue-600">{sub.studentEmail}</td>
+                    <td className="p-3 text-muted-foreground font-bold">{sub.department}</td>
+                    <td className="p-3 font-sans max-w-xs truncate">{sub.assessmentTitle}</td>
+                    <td className="p-3 font-bold text-foreground">{sub.mcqScore} / {sub.mcqTotal}</td>
+                    <td className="p-3 font-bold text-purple-600">{sub.codingScore} / {sub.codingTotal}</td>
+                    <td className="p-3 font-bold text-emerald-600">{sub.totalPercentage}%</td>
+                    <td className="p-3">
+                      <Badge className={sub.passStatus ? "bg-emerald-600 text-white text-[0.62rem]" : "bg-rose-600 text-white text-[0.62rem]"}>
+                        {sub.passStatus ? "PASSED" : "FAILED"}
+                      </Badge>
+                    </td>
+                    <td className="p-3 text-right text-muted-foreground">{sub.submissionTime}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </Panel>
+
       {/* ========================================================================= */}
       {/* VIEW ASSESSMENT DRAWER (FULL DETAIL PREVIEW)                             */}
       {/* ========================================================================= */}
@@ -788,7 +870,10 @@ export function AssessmentRequestsApprovalWorkspace() {
                       <span>Share this link directly with eligible students for conducting the exam online.</span>
                       <Button
                         size="sm"
-                        onClick={() => toast.success(`Dispatched exam link to all ${selectedReq.expectedCandidates} eligible students via email!`)}
+                        onClick={() => {
+                          setDispatchReq(selectedReq);
+                          setIsDispatchModalOpen(true);
+                        }}
                         className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold cursor-pointer gap-1"
                       >
                         <Send className="size-3" /> Share with Students
@@ -895,6 +980,82 @@ export function AssessmentRequestsApprovalWorkspace() {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* DISPATCH EXAM LINK TO ELIGIBLE STUDENTS MODAL DIALOG */}
+      <Dialog open={isDispatchModalOpen} onOpenChange={setIsDispatchModalOpen}>
+        <DialogContent className="sm:max-w-lg rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-emerald-600 text-white grid place-items-center shadow-glow">
+                <Send className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Dispatch Exam Link to Eligible Students</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  Send live conducting link via email to selected student roll number series.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {dispatchReq && (
+            <div className="space-y-4 pt-2 text-xs font-sans">
+              <div className="p-3.5 rounded-xl border bg-card space-y-1 font-mono">
+                <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">Assessment</p>
+                <p className="font-bold text-foreground font-sans text-sm">{dispatchReq.name}</p>
+                <p className="text-[0.68rem] text-blue-600">ID: {dispatchReq.assessmentId} • {dispatchReq.duration}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="font-bold text-foreground">Target Student Roll Series</label>
+                  <select
+                    value={dispatchSeries}
+                    onChange={(e) => setDispatchSeries(e.target.value)}
+                    className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold cursor-pointer font-mono"
+                  >
+                    <option value="2022 Series (CSE / ECE / CSM)">2022 Series (2022CSE &amp; 2022ECE)</option>
+                    <option value="2023 Series (23341A4229 CSM Series)">2023 Series (23341A4229 CSM Series)</option>
+                    <option value="All Eligible Campus Batches">All Eligible Campus Batches</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="font-bold text-foreground">Minimum Cutoff CGPA</label>
+                  <Input
+                    value={dispatchMinCgpa}
+                    onChange={(e) => setDispatchMinCgpa(e.target.value)}
+                    required
+                    className="h-9 text-xs rounded-xl font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* LIVE EXAM LINK PREVIEW */}
+              <div className="p-3 rounded-xl bg-slate-950 text-slate-100 font-mono text-[0.68rem] space-y-2">
+                <p className="font-bold text-emerald-400">📨 Email Preview Dispatched to Students:</p>
+                <p className="text-slate-300">"Dear Student (e.g. 23341a4229@college.edu.in), you are invited to attempt the official online assessment '{dispatchReq.name}'. Please use your student college email ID to log in."</p>
+                <p className="text-blue-400 underline font-bold">http://192.168.1.122:8082/exam/take?id={dispatchReq.assessmentId}</p>
+              </div>
+
+              <DialogFooter className="pt-2 gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsDispatchModalOpen(false)} className="rounded-xl text-xs">
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setIsDispatchModalOpen(false);
+                    toast.success(`Dispatched exam link to all eligible ${dispatchSeries} students! Candidate test results will automatically store below upon submission.`);
+                  }}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1.5"
+                >
+                  <Send className="size-3.5" /> Confirm &amp; Send Link to Students
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* APPROVE CONFIRMATION MODAL */}
       <Dialog open={isApproveModalOpen} onOpenChange={setIsApproveModalOpen}>
