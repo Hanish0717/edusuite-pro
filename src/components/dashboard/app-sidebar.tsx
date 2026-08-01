@@ -130,11 +130,19 @@ export function AppSidebar() {
             {profile.initials}
           </span>
           {!collapsed && (
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-sidebar-foreground">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-bold text-sidebar-foreground">
                 {profile.personaName}
               </p>
-              <p className="truncate text-xs text-sidebar-foreground/60">{profile.label}</p>
+              <p className="truncate text-[11px] text-sidebar-foreground/60 font-mono">
+                {role === "student" ? "Roll No: 22CS101" : profile.label}
+              </p>
+              {role === "student" && (
+                <div className="flex items-center gap-1 mt-0.5 text-[10px] text-emerald-500 font-medium font-mono">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Online</span>
+                </div>
+              )}
             </div>
           )}
         </div>

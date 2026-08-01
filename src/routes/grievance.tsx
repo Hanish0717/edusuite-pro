@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import {
   ShieldAlert,
   MessageSquare,
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRole } from "@/context/role-context";
+import { FormDialog, FieldConfig } from "@/components/ui/form-dialog";
 
 export const Route = createFileRoute("/grievance")({
   head: () => ({
@@ -67,10 +69,52 @@ const initialTickets = [
   },
 ];
 
+const grievanceSchema = z.object({
+  category: z.string().min(1, "Please select a category"),
+  subject: z.string().min(3, "Subject must be at least 3 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  isAnonymous: z.boolean().optional(),
+});
+
+const grievanceFields: FieldConfig[] = [
+  {
+    name: "category",
+    label: "Grievance Category",
+    type: "select",
+    placeholder: "Select category",
+    options: [
+      { label: "Academic / Internal Evaluation", value: "Academic / Internal Evaluation" },
+      { label: "Hostel & Facilities", value: "Hostel & Facilities" },
+      { label: "Disciplinary / Anti-Ragging", value: "Disciplinary / Anti-Ragging" },
+      { label: "Financial / Fee Discrepancy", value: "Financial / Fee Discrepancy" },
+      { label: "General Campus Facilities", value: "General Campus Facilities" },
+    ],
+  },
+  {
+    name: "subject",
+    label: "Subject",
+    type: "text",
+    placeholder: "Brief title of your grievance",
+  },
+  {
+    name: "description",
+    label: "Detailed Description",
+    type: "textarea",
+    placeholder: "Provide complete details, timeline, and involved parties...",
+  },
+  {
+    name: "isAnonymous",
+    label: "Submit Anonymously",
+    type: "checkbox",
+    description: "Your identity (Roll No / Name) will be hidden from committee members.",
+  },
+];
+
 export function GrievancePage() {
   const { hasFlag, role } = useRole();
   const [tickets, setTickets] = useState(initialTickets);
   const [search, setSearch] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const isCommitteeMember =
     role === "super-admin" ||
@@ -89,6 +133,27 @@ export function GrievancePage() {
       prev.map((t) => (t.id === id ? { ...t, status: "Resolved", sla: "Closed" } : t)),
     );
     toast.success(`Grievance ticket ${id} marked as Resolved!`);
+  };
+
+  const handleAddGrievance = (values: any) => {
+    const newId = `GRV-2026-0${Math.floor(84 + Math.random() * 100)}`;
+    const newTicket = {
+      id: newId,
+      category: values.category,
+      subject: values.subject,
+      raisedBy: values.isAnonymous ? "Student (Anonymous)" : "Student (Roll 22CS101)",
+      date: new Date().toISOString().split("T")[0] ?? "2026-08-01",
+      committee: values.category.includes("Academic")
+        ? "Academic Appeals Committee"
+        : values.category.includes("Hostel")
+        ? "Hostel Oversight Committee"
+        : "Disciplinary Committee",
+      status: "Under Review",
+      sla: "48 Hours",
+    };
+
+    setTickets((prev) => [newTicket, ...prev]);
+    toast.success(`Grievance ticket ${newId} submitted successfully!`);
   };
 
   return (
@@ -115,9 +180,9 @@ export function GrievancePage() {
 
         {/* KPIS */}
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <KpiCard label="Total Tickets (FY26)" value="142" icon={MessageSquare} />
+          <KpiCard label="Total Tickets (FY26)" value={String(139 + tickets.length)} icon={MessageSquare} />
           <KpiCard label="Resolved SLA Rate" value="96.2%" icon={CheckCircle2} tone="success" />
-          <KpiCard label="Pending Committee Review" value="5" icon={Clock} tone="warning" />
+          <KpiCard label="Pending Committee Review" value={String(tickets.filter(t => t.status !== "Resolved").length)} icon={Clock} tone="warning" />
           <KpiCard label="Avg Resolution Time" value="34 Hours" icon={ShieldAlert} tone="info" />
         </div>
 
@@ -133,7 +198,10 @@ export function GrievancePage() {
               title="Submitted Grievances"
               description="Students and staff can submit grievances. Disciplinary Committee members process cases with strict audit trails."
               action={
-                <Button className="bg-brand-gradient shadow-glow gap-1.5 cursor-pointer">
+                <Button
+                  onClick={() => setIsModalOpen(true)}
+                  className="bg-brand-gradient shadow-glow gap-1.5 cursor-pointer"
+                >
                   <Plus className="size-4" /> Raise New Grievance
                 </Button>
               }
@@ -222,6 +290,24 @@ export function GrievancePage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Raise New Grievance Modal */}
+      <FormDialog
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Raise New Grievance"
+        description="Submit a formal grievance ticket to the institutional oversight committee."
+        schema={grievanceSchema}
+        defaultValues={{
+          category: "Academic / Internal Evaluation",
+          subject: "",
+          description: "",
+          isAnonymous: false,
+        }}
+        fields={grievanceFields}
+        onSubmit={handleAddGrievance}
+        submitText="Submit Grievance"
+      />
     </DashboardLayout>
   );
 }

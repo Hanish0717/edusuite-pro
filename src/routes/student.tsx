@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, Link } from "@tanstack/react-router";
 import { ShieldAlert } from "lucide-react";
 import { useRole } from "@/context/role-context";
+import { normalizeRole } from "@/lib/roleResolver";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { Button } from "@/components/ui/button";
 
@@ -10,8 +11,9 @@ export const Route = createFileRoute("/student")({
 
 function StudentLayout() {
   const { role } = useRole();
+  const normalized = normalizeRole(role);
 
-  if (role !== "student") {
+  if (normalized !== "student" && normalized !== "super_admin" && normalized !== "admin") {
     return (
       <div className="flex h-screen items-center justify-center p-4 bg-background">
         <div className="text-center max-w-md border border-destructive/20 bg-destructive/5 rounded-2xl p-6">

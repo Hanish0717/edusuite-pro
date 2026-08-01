@@ -16,10 +16,20 @@ import {
   BarChart3,
   MessageSquare,
   Settings,
+  User,
   GitBranch,
   Package,
   ShieldAlert,
   Globe,
+  FileCheck,
+  Sparkles,
+  Bell,
+  Clock,
+  ClipboardList,
+  Ticket,
+  CreditCard,
+  MessageCircle,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
 
@@ -44,81 +54,36 @@ export interface NavSection {
   items: NavItem[];
 }
 
+export const studentNavigation: NavSection[] = [
+  {
+    label: "Student Workspace",
+    items: [
+      { title: "Dashboard", url: "/student/dashboard", icon: LayoutDashboard },
+      { title: "Digital Notice Board", url: "/communication", icon: Bell },
+      { title: "My Profile", url: "/student/profile", icon: User },
+      { title: "LMS", url: "/student/lms", icon: BookOpen },
+      { title: "Timetable", url: "/student/timetable", icon: Clock },
+      { title: "Grievances", url: "/grievance", icon: ShieldAlert },
+      { title: "Examinations", url: "/student/examinations", icon: FileSpreadsheet },
+      { title: "Finance", url: "/student/finance", icon: Wallet },
+      { title: "Logout", url: "/login", icon: LogOut },
+    ],
+  },
+];
+
 export const navigation: NavSection[] = [
   {
-    label: "Overview",
+    label: "Menu",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-      { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
-    ],
-  },
-  {
-    label: "Academics",
-    items: [
-      { title: "Admissions", url: "/admission", icon: GraduationCap, moduleId: "admission" },
-      {
-        title: "Academics",
-        url: "/academics",
-        icon: GraduationCap,
-        moduleId: "academics",
-        children: [
-          { title: "Departments", url: "/academics", moduleId: "academics" },
-          { title: "Courses", url: "/academics", moduleId: "academics" },
-          { title: "Curriculum", url: "/academics", moduleId: "academics" },
-        ],
-      },
-      { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
-      { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
-      { title: "Attendance", url: "/attendance", icon: CalendarCheck, moduleId: "attendance" },
-      { title: "Timetable", url: "/timetable", icon: CalendarRange, moduleId: "academics" },
-      { title: "LMS", url: "/lms", icon: BookOpen, moduleId: "lms" },
-    ],
-  },
-  {
-    label: "Examinations",
-    items: [
-      {
-        title: "Examinations",
-        url: "/examinations",
-        icon: FileSpreadsheet,
-        moduleId: "examination",
-        roles: ["super-admin", "staff"],
-        children: [
-          { title: "Exam Schedule", url: "/examinations", moduleId: "examination" },
-          { title: "Hall Tickets", url: "/examinations", moduleId: "examination" },
-          { title: "Internal Marks", url: "/examinations", moduleId: "examination" },
-        ],
-      },
-      { title: "Results", url: "/results", icon: Award, moduleId: "examination" },
-    ],
-  },
-  {
-    label: "Campus Services",
-    items: [
-      { title: "Library", url: "/library", icon: Library, moduleId: "library" },
-      { title: "Hostel", url: "/hostel", icon: BedDouble, moduleId: "hostel" },
-      { title: "Transport", url: "/transport", icon: Bus, moduleId: "transport" },
-      { title: "Placements", url: "/placements", icon: Briefcase, moduleId: "placement" },
-      { title: "Inventory", url: "/inventory", icon: Package, moduleId: "inventory" },
-      { title: "Grievances", url: "/grievance", icon: ShieldAlert, moduleId: "grievance" },
-      { title: "Alumni Network", url: "/alumni", icon: Globe, moduleId: "alumni" },
-    ],
-  },
-  {
-    label: "Administration",
-    items: [
-      { title: "Finance", url: "/finance", icon: Wallet, moduleId: "finance" },
-      { title: "HR", url: "/hr", icon: UserCog, moduleId: "hrms" },
-      { title: "Accreditation", url: "/accreditation", icon: Award, moduleId: "accreditation" },
-      { title: "Reports", url: "/reports", icon: BarChart3, moduleId: "student-info", roles: ["super-admin", "staff"] },
-      {
-        title: "Communication",
-        url: "/communication",
-        icon: MessageSquare,
-        moduleId: "communication",
-        badge: "6",
-      },
-      { title: "Settings", url: "/settings", icon: Settings },
+      { title: "Digital Notice Board", url: "/communication", icon: Bell },
+      { title: "My Profile", url: "/settings", icon: User },
+      { title: "LMS", url: "/lms", icon: BookOpen },
+      { title: "Timetable", url: "/timetable", icon: Clock },
+      { title: "Grievances", url: "/grievance", icon: ShieldAlert },
+      { title: "Examinations", url: "/examinations", icon: FileSpreadsheet },
+      { title: "Finance", url: "/finance", icon: Wallet },
+      { title: "Logout", url: "/login", icon: LogOut },
     ],
   },
 ];
@@ -138,10 +103,13 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
   if (role === "student") {
     if (url === "/dashboard") return "/student/dashboard";
     if (url === "/academics") return "/student/courses";
-    if (url === "/results") return "/student/results";
+    if (url === "/examinations") return "/student/examinations";
+    if (url === "/results") return "/student/examinations";
+    if (url === "/finance") return "/student/finance";
     if (url === "/attendance") return "/student/attendance";
     if (url === "/lms") return "/student/lms";
     if (url === "/settings") return "/student/profile";
+    if (url === "/timetable") return "/student/timetable";
   }
 
   if (role === "parent") {
@@ -255,8 +223,17 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
             url: resolveUrlForUser(child.url, user, child.title),
           }));
 
+          let title = item.title;
+          let icon = item.icon;
+          if (item.title === "Settings") {
+            title = "My Profile";
+            icon = User;
+          }
+
           return {
             ...item,
+            title,
+            icon,
             url: newUrl,
             children: newChildren,
           };
