@@ -57,6 +57,7 @@ import { Route as TransportRouteImport } from './routes/transport'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
+import { Route as ExamTakeRouteImport } from './routes/exam.take'
 import { Route as ExaminationIndexRouteImport } from './routes/examination.index'
 import { Route as ExaminationDashboardRouteImport } from './routes/examination.dashboard'
 import { Route as ExternalUserIndexRouteImport } from './routes/external-user.index'
@@ -95,17 +96,35 @@ import { Route as ParentDashboardRouteImport } from './routes/parent.dashboard'
 import { Route as ParentFeesRouteImport } from './routes/parent.fees'
 import { Route as ParentTransportRouteImport } from './routes/parent.transport'
 import { Route as PlacementIndexRouteImport } from './routes/placement.index'
+import { Route as PlacementAnalyticsRouteImport } from './routes/placement.analytics'
+import { Route as PlacementApplicationsRouteImport } from './routes/placement.applications'
+import { Route as PlacementAssessmentRequestsRouteImport } from './routes/placement.assessment-requests'
+import { Route as PlacementAssessmentSessionsRouteImport } from './routes/placement.assessment-sessions'
+import { Route as PlacementAssessmentsRouteImport } from './routes/placement.assessments'
 import { Route as PlacementCompaniesRouteImport } from './routes/placement.companies'
 import { Route as PlacementDashboardRouteImport } from './routes/placement.dashboard'
 import { Route as PlacementDrivesRouteImport } from './routes/placement.drives'
+import { Route as PlacementInterviewsRouteImport } from './routes/placement.interviews'
+import { Route as PlacementNotificationsRouteImport } from './routes/placement.notifications'
+import { Route as PlacementOffersRouteImport } from './routes/placement.offers'
+import { Route as PlacementRecruitersRouteImport } from './routes/placement.recruiters'
+import { Route as PlacementReportsRouteImport } from './routes/placement.reports'
+import { Route as PlacementSettingsRouteImport } from './routes/placement.settings'
 import { Route as PlacementStudentsRouteImport } from './routes/placement.students'
 import { Route as StudentIndexRouteImport } from './routes/student.index'
 import { Route as StudentAttendanceRouteImport } from './routes/student.attendance'
 import { Route as StudentCoursesRouteImport } from './routes/student.courses'
 import { Route as StudentDashboardRouteImport } from './routes/student.dashboard'
+import { Route as StudentDiscussionForumRouteImport } from './routes/student.discussion-forum'
+import { Route as StudentExaminationsRouteImport } from './routes/student.examinations'
+import { Route as StudentFeedbackRouteImport } from './routes/student.feedback'
+import { Route as StudentFinanceRouteImport } from './routes/student.finance'
+import { Route as StudentHostelRouteImport } from './routes/student.hostel'
+import { Route as StudentLibraryRouteImport } from './routes/student.library'
 import { Route as StudentLmsRouteImport } from './routes/student.lms'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentResultsRouteImport } from './routes/student.results'
+import { Route as StudentTimetableRouteImport } from './routes/student.timetable'
 import { Route as SuperAdminIndexRouteImport } from './routes/super-admin.index'
 import { Route as SuperAdminCoursesRouteImport } from './routes/super-admin.courses'
 import { Route as SuperAdminDashboardRouteImport } from './routes/super-admin.dashboard'
@@ -116,6 +135,7 @@ import { Route as TransportIndexRouteImport } from './routes/transport.index'
 import { Route as TransportBusesRouteImport } from './routes/transport.buses'
 import { Route as TransportDashboardRouteImport } from './routes/transport.dashboard'
 import { Route as TransportRoutesRouteImport } from './routes/transport.routes'
+import { Route as PlacementDrivesDriveIdRouteImport } from './routes/placement.drives_.$driveId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -357,6 +377,11 @@ const DeanDashboardRoute = DeanDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => DeanRoute,
 } as any)
+const ExamTakeRoute = ExamTakeRouteImport.update({
+  id: '/exam/take',
+  path: '/exam/take',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExaminationIndexRoute = ExaminationIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -547,6 +572,33 @@ const PlacementIndexRoute = PlacementIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PlacementRoute,
 } as any)
+const PlacementAnalyticsRoute = PlacementAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => PlacementRoute,
+} as any)
+const PlacementApplicationsRoute = PlacementApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => PlacementRoute,
+} as any)
+const PlacementAssessmentRequestsRoute =
+  PlacementAssessmentRequestsRouteImport.update({
+    id: '/assessment-requests',
+    path: '/assessment-requests',
+    getParentRoute: () => PlacementRoute,
+  } as any)
+const PlacementAssessmentSessionsRoute =
+  PlacementAssessmentSessionsRouteImport.update({
+    id: '/assessment-sessions',
+    path: '/assessment-sessions',
+    getParentRoute: () => PlacementRoute,
+  } as any)
+const PlacementAssessmentsRoute = PlacementAssessmentsRouteImport.update({
+  id: '/assessments',
+  path: '/assessments',
+  getParentRoute: () => PlacementRoute,
+} as any)
 const PlacementCompaniesRoute = PlacementCompaniesRouteImport.update({
   id: '/companies',
   path: '/companies',
@@ -560,6 +612,36 @@ const PlacementDashboardRoute = PlacementDashboardRouteImport.update({
 const PlacementDrivesRoute = PlacementDrivesRouteImport.update({
   id: '/drives',
   path: '/drives',
+  getParentRoute: () => PlacementRoute,
+} as any)
+const PlacementInterviewsRoute = PlacementInterviewsRouteImport.update({
+  id: '/interviews',
+  path: '/interviews',
+  getParentRoute: () => PlacementRoute,
+} as any)
+const PlacementNotificationsRoute = PlacementNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => PlacementRoute,
+} as any)
+const PlacementOffersRoute = PlacementOffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => PlacementRoute,
+} as any)
+const PlacementRecruitersRoute = PlacementRecruitersRouteImport.update({
+  id: '/recruiters',
+  path: '/recruiters',
+  getParentRoute: () => PlacementRoute,
+} as any)
+const PlacementReportsRoute = PlacementReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => PlacementRoute,
+} as any)
+const PlacementSettingsRoute = PlacementSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => PlacementRoute,
 } as any)
 const PlacementStudentsRoute = PlacementStudentsRouteImport.update({
@@ -587,6 +669,36 @@ const StudentDashboardRoute = StudentDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentDiscussionForumRoute = StudentDiscussionForumRouteImport.update({
+  id: '/discussion-forum',
+  path: '/discussion-forum',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentExaminationsRoute = StudentExaminationsRouteImport.update({
+  id: '/examinations',
+  path: '/examinations',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentFeedbackRoute = StudentFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentFinanceRoute = StudentFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentHostelRoute = StudentHostelRouteImport.update({
+  id: '/hostel',
+  path: '/hostel',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentLibraryRoute = StudentLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => StudentRoute,
+} as any)
 const StudentLmsRoute = StudentLmsRouteImport.update({
   id: '/lms',
   path: '/lms',
@@ -600,6 +712,11 @@ const StudentProfileRoute = StudentProfileRouteImport.update({
 const StudentResultsRoute = StudentResultsRouteImport.update({
   id: '/results',
   path: '/results',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentTimetableRoute = StudentTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
   getParentRoute: () => StudentRoute,
 } as any)
 const SuperAdminIndexRoute = SuperAdminIndexRouteImport.update({
@@ -652,6 +769,11 @@ const TransportRoutesRoute = TransportRoutesRouteImport.update({
   path: '/routes',
   getParentRoute: () => TransportRoute,
 } as any)
+const PlacementDrivesDriveIdRoute = PlacementDrivesDriveIdRouteImport.update({
+  id: '/drives_/$driveId',
+  path: '/drives/$driveId',
+  getParentRoute: () => PlacementRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -701,6 +823,7 @@ export interface FileRoutesByFullPath {
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
@@ -729,16 +852,34 @@ export interface FileRoutesByFullPath {
   '/parent/dashboard': typeof ParentDashboardRoute
   '/parent/fees': typeof ParentFeesRoute
   '/parent/transport': typeof ParentTransportRoute
+  '/placement/analytics': typeof PlacementAnalyticsRoute
+  '/placement/applications': typeof PlacementApplicationsRoute
+  '/placement/assessment-requests': typeof PlacementAssessmentRequestsRoute
+  '/placement/assessment-sessions': typeof PlacementAssessmentSessionsRoute
+  '/placement/assessments': typeof PlacementAssessmentsRoute
   '/placement/companies': typeof PlacementCompaniesRoute
   '/placement/dashboard': typeof PlacementDashboardRoute
   '/placement/drives': typeof PlacementDrivesRoute
+  '/placement/interviews': typeof PlacementInterviewsRoute
+  '/placement/notifications': typeof PlacementNotificationsRoute
+  '/placement/offers': typeof PlacementOffersRoute
+  '/placement/recruiters': typeof PlacementRecruitersRoute
+  '/placement/reports': typeof PlacementReportsRoute
+  '/placement/settings': typeof PlacementSettingsRoute
   '/placement/students': typeof PlacementStudentsRoute
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/discussion-forum': typeof StudentDiscussionForumRoute
+  '/student/examinations': typeof StudentExaminationsRoute
+  '/student/feedback': typeof StudentFeedbackRoute
+  '/student/finance': typeof StudentFinanceRoute
+  '/student/hostel': typeof StudentHostelRoute
+  '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
+  '/student/timetable': typeof StudentTimetableRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -761,6 +902,7 @@ export interface FileRoutesByFullPath {
   '/student/': typeof StudentIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
+  '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -796,6 +938,7 @@ export interface FileRoutesByTo {
   '/timetable': typeof TimetableRoute
   '/verify-email': typeof VerifyEmailRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
@@ -824,16 +967,34 @@ export interface FileRoutesByTo {
   '/parent/dashboard': typeof ParentDashboardRoute
   '/parent/fees': typeof ParentFeesRoute
   '/parent/transport': typeof ParentTransportRoute
+  '/placement/analytics': typeof PlacementAnalyticsRoute
+  '/placement/applications': typeof PlacementApplicationsRoute
+  '/placement/assessment-requests': typeof PlacementAssessmentRequestsRoute
+  '/placement/assessment-sessions': typeof PlacementAssessmentSessionsRoute
+  '/placement/assessments': typeof PlacementAssessmentsRoute
   '/placement/companies': typeof PlacementCompaniesRoute
   '/placement/dashboard': typeof PlacementDashboardRoute
   '/placement/drives': typeof PlacementDrivesRoute
+  '/placement/interviews': typeof PlacementInterviewsRoute
+  '/placement/notifications': typeof PlacementNotificationsRoute
+  '/placement/offers': typeof PlacementOffersRoute
+  '/placement/recruiters': typeof PlacementRecruitersRoute
+  '/placement/reports': typeof PlacementReportsRoute
+  '/placement/settings': typeof PlacementSettingsRoute
   '/placement/students': typeof PlacementStudentsRoute
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/discussion-forum': typeof StudentDiscussionForumRoute
+  '/student/examinations': typeof StudentExaminationsRoute
+  '/student/feedback': typeof StudentFeedbackRoute
+  '/student/finance': typeof StudentFinanceRoute
+  '/student/hostel': typeof StudentHostelRoute
+  '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
+  '/student/timetable': typeof StudentTimetableRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -856,6 +1017,7 @@ export interface FileRoutesByTo {
   '/student': typeof StudentIndexRoute
   '/super-admin': typeof SuperAdminIndexRoute
   '/transport': typeof TransportIndexRoute
+  '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -906,6 +1068,7 @@ export interface FileRoutesById {
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
@@ -934,16 +1097,34 @@ export interface FileRoutesById {
   '/parent/dashboard': typeof ParentDashboardRoute
   '/parent/fees': typeof ParentFeesRoute
   '/parent/transport': typeof ParentTransportRoute
+  '/placement/analytics': typeof PlacementAnalyticsRoute
+  '/placement/applications': typeof PlacementApplicationsRoute
+  '/placement/assessment-requests': typeof PlacementAssessmentRequestsRoute
+  '/placement/assessment-sessions': typeof PlacementAssessmentSessionsRoute
+  '/placement/assessments': typeof PlacementAssessmentsRoute
   '/placement/companies': typeof PlacementCompaniesRoute
   '/placement/dashboard': typeof PlacementDashboardRoute
   '/placement/drives': typeof PlacementDrivesRoute
+  '/placement/interviews': typeof PlacementInterviewsRoute
+  '/placement/notifications': typeof PlacementNotificationsRoute
+  '/placement/offers': typeof PlacementOffersRoute
+  '/placement/recruiters': typeof PlacementRecruitersRoute
+  '/placement/reports': typeof PlacementReportsRoute
+  '/placement/settings': typeof PlacementSettingsRoute
   '/placement/students': typeof PlacementStudentsRoute
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/discussion-forum': typeof StudentDiscussionForumRoute
+  '/student/examinations': typeof StudentExaminationsRoute
+  '/student/feedback': typeof StudentFeedbackRoute
+  '/student/finance': typeof StudentFinanceRoute
+  '/student/hostel': typeof StudentHostelRoute
+  '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
+  '/student/timetable': typeof StudentTimetableRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -966,6 +1147,7 @@ export interface FileRoutesById {
   '/student/': typeof StudentIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
+  '/placement/drives_/$driveId': typeof PlacementDrivesDriveIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1017,6 +1199,7 @@ export interface FileRouteTypes {
     | '/transport'
     | '/verify-email'
     | '/dean/dashboard'
+    | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
     | '/faculty/attendance'
@@ -1045,16 +1228,34 @@ export interface FileRouteTypes {
     | '/parent/dashboard'
     | '/parent/fees'
     | '/parent/transport'
+    | '/placement/analytics'
+    | '/placement/applications'
+    | '/placement/assessment-requests'
+    | '/placement/assessment-sessions'
+    | '/placement/assessments'
     | '/placement/companies'
     | '/placement/dashboard'
     | '/placement/drives'
+    | '/placement/interviews'
+    | '/placement/notifications'
+    | '/placement/offers'
+    | '/placement/recruiters'
+    | '/placement/reports'
+    | '/placement/settings'
     | '/placement/students'
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
+    | '/student/discussion-forum'
+    | '/student/examinations'
+    | '/student/feedback'
+    | '/student/finance'
+    | '/student/hostel'
+    | '/student/library'
     | '/student/lms'
     | '/student/profile'
     | '/student/results'
+    | '/student/timetable'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -1077,6 +1278,7 @@ export interface FileRouteTypes {
     | '/student/'
     | '/super-admin/'
     | '/transport/'
+    | '/placement/drives/$driveId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1112,6 +1314,7 @@ export interface FileRouteTypes {
     | '/timetable'
     | '/verify-email'
     | '/dean/dashboard'
+    | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
     | '/faculty/attendance'
@@ -1140,16 +1343,34 @@ export interface FileRouteTypes {
     | '/parent/dashboard'
     | '/parent/fees'
     | '/parent/transport'
+    | '/placement/analytics'
+    | '/placement/applications'
+    | '/placement/assessment-requests'
+    | '/placement/assessment-sessions'
+    | '/placement/assessments'
     | '/placement/companies'
     | '/placement/dashboard'
     | '/placement/drives'
+    | '/placement/interviews'
+    | '/placement/notifications'
+    | '/placement/offers'
+    | '/placement/recruiters'
+    | '/placement/reports'
+    | '/placement/settings'
     | '/placement/students'
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
+    | '/student/discussion-forum'
+    | '/student/examinations'
+    | '/student/feedback'
+    | '/student/finance'
+    | '/student/hostel'
+    | '/student/library'
     | '/student/lms'
     | '/student/profile'
     | '/student/results'
+    | '/student/timetable'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -1172,6 +1393,7 @@ export interface FileRouteTypes {
     | '/student'
     | '/super-admin'
     | '/transport'
+    | '/placement/drives/$driveId'
   id:
     | '__root__'
     | '/'
@@ -1221,6 +1443,7 @@ export interface FileRouteTypes {
     | '/transport'
     | '/verify-email'
     | '/dean/dashboard'
+    | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
     | '/faculty/attendance'
@@ -1249,16 +1472,34 @@ export interface FileRouteTypes {
     | '/parent/dashboard'
     | '/parent/fees'
     | '/parent/transport'
+    | '/placement/analytics'
+    | '/placement/applications'
+    | '/placement/assessment-requests'
+    | '/placement/assessment-sessions'
+    | '/placement/assessments'
     | '/placement/companies'
     | '/placement/dashboard'
     | '/placement/drives'
+    | '/placement/interviews'
+    | '/placement/notifications'
+    | '/placement/offers'
+    | '/placement/recruiters'
+    | '/placement/reports'
+    | '/placement/settings'
     | '/placement/students'
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
+    | '/student/discussion-forum'
+    | '/student/examinations'
+    | '/student/feedback'
+    | '/student/finance'
+    | '/student/hostel'
+    | '/student/library'
     | '/student/lms'
     | '/student/profile'
     | '/student/results'
+    | '/student/timetable'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -1281,6 +1522,7 @@ export interface FileRouteTypes {
     | '/student/'
     | '/super-admin/'
     | '/transport/'
+    | '/placement/drives_/$driveId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1330,6 +1572,7 @@ export interface RootRouteChildren {
   TimetableRoute: typeof TimetableRoute
   TransportRoute: typeof TransportRouteWithChildren
   VerifyEmailRoute: typeof VerifyEmailRoute
+  ExamTakeRoute: typeof ExamTakeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1670,6 +1913,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeanDashboardRouteImport
       parentRoute: typeof DeanRoute
     }
+    '/exam/take': {
+      id: '/exam/take'
+      path: '/exam/take'
+      fullPath: '/exam/take'
+      preLoaderRoute: typeof ExamTakeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/examination/': {
       id: '/examination/'
       path: '/'
@@ -1936,6 +2186,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlacementIndexRouteImport
       parentRoute: typeof PlacementRoute
     }
+    '/placement/analytics': {
+      id: '/placement/analytics'
+      path: '/analytics'
+      fullPath: '/placement/analytics'
+      preLoaderRoute: typeof PlacementAnalyticsRouteImport
+      parentRoute: typeof PlacementRoute
+    }
+    '/placement/applications': {
+      id: '/placement/applications'
+      path: '/applications'
+      fullPath: '/placement/applications'
+      preLoaderRoute: typeof PlacementApplicationsRouteImport
+      parentRoute: typeof PlacementRoute
+    }
+    '/placement/assessment-requests': {
+      id: '/placement/assessment-requests'
+      path: '/assessment-requests'
+      fullPath: '/placement/assessment-requests'
+      preLoaderRoute: typeof PlacementAssessmentRequestsRouteImport
+      parentRoute: typeof PlacementRoute
+    }
+    '/placement/assessment-sessions': {
+      id: '/placement/assessment-sessions'
+      path: '/assessment-sessions'
+      fullPath: '/placement/assessment-sessions'
+      preLoaderRoute: typeof PlacementAssessmentSessionsRouteImport
+      parentRoute: typeof PlacementRoute
+    }
+    '/placement/assessments': {
+      id: '/placement/assessments'
+      path: '/assessments'
+      fullPath: '/placement/assessments'
+      preLoaderRoute: typeof PlacementAssessmentsRouteImport
+      parentRoute: typeof PlacementRoute
+    }
     '/placement/companies': {
       id: '/placement/companies'
       path: '/companies'
@@ -1955,6 +2240,48 @@ declare module '@tanstack/react-router' {
       path: '/drives'
       fullPath: '/placement/drives'
       preLoaderRoute: typeof PlacementDrivesRouteImport
+      parentRoute: typeof PlacementRoute
+    }
+    '/placement/interviews': {
+      id: '/placement/interviews'
+      path: '/interviews'
+      fullPath: '/placement/interviews'
+      preLoaderRoute: typeof PlacementInterviewsRouteImport
+      parentRoute: typeof PlacementRoute
+    }
+    '/placement/notifications': {
+      id: '/placement/notifications'
+      path: '/notifications'
+      fullPath: '/placement/notifications'
+      preLoaderRoute: typeof PlacementNotificationsRouteImport
+      parentRoute: typeof PlacementRoute
+    }
+    '/placement/offers': {
+      id: '/placement/offers'
+      path: '/offers'
+      fullPath: '/placement/offers'
+      preLoaderRoute: typeof PlacementOffersRouteImport
+      parentRoute: typeof PlacementRoute
+    }
+    '/placement/recruiters': {
+      id: '/placement/recruiters'
+      path: '/recruiters'
+      fullPath: '/placement/recruiters'
+      preLoaderRoute: typeof PlacementRecruitersRouteImport
+      parentRoute: typeof PlacementRoute
+    }
+    '/placement/reports': {
+      id: '/placement/reports'
+      path: '/reports'
+      fullPath: '/placement/reports'
+      preLoaderRoute: typeof PlacementReportsRouteImport
+      parentRoute: typeof PlacementRoute
+    }
+    '/placement/settings': {
+      id: '/placement/settings'
+      path: '/settings'
+      fullPath: '/placement/settings'
+      preLoaderRoute: typeof PlacementSettingsRouteImport
       parentRoute: typeof PlacementRoute
     }
     '/placement/students': {
@@ -1992,6 +2319,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentDashboardRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/discussion-forum': {
+      id: '/student/discussion-forum'
+      path: '/discussion-forum'
+      fullPath: '/student/discussion-forum'
+      preLoaderRoute: typeof StudentDiscussionForumRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/examinations': {
+      id: '/student/examinations'
+      path: '/examinations'
+      fullPath: '/student/examinations'
+      preLoaderRoute: typeof StudentExaminationsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/feedback': {
+      id: '/student/feedback'
+      path: '/feedback'
+      fullPath: '/student/feedback'
+      preLoaderRoute: typeof StudentFeedbackRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/finance': {
+      id: '/student/finance'
+      path: '/finance'
+      fullPath: '/student/finance'
+      preLoaderRoute: typeof StudentFinanceRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/hostel': {
+      id: '/student/hostel'
+      path: '/hostel'
+      fullPath: '/student/hostel'
+      preLoaderRoute: typeof StudentHostelRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/library': {
+      id: '/student/library'
+      path: '/library'
+      fullPath: '/student/library'
+      preLoaderRoute: typeof StudentLibraryRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/lms': {
       id: '/student/lms'
       path: '/lms'
@@ -2011,6 +2380,13 @@ declare module '@tanstack/react-router' {
       path: '/results'
       fullPath: '/student/results'
       preLoaderRoute: typeof StudentResultsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/timetable': {
+      id: '/student/timetable'
+      path: '/timetable'
+      fullPath: '/student/timetable'
+      preLoaderRoute: typeof StudentTimetableRouteImport
       parentRoute: typeof StudentRoute
     }
     '/super-admin/': {
@@ -2082,6 +2458,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/transport/routes'
       preLoaderRoute: typeof TransportRoutesRouteImport
       parentRoute: typeof TransportRoute
+    }
+    '/placement/drives_/$driveId': {
+      id: '/placement/drives_/$driveId'
+      path: '/drives/$driveId'
+      fullPath: '/placement/drives/$driveId'
+      preLoaderRoute: typeof PlacementDrivesDriveIdRouteImport
+      parentRoute: typeof PlacementRoute
     }
   }
 }
@@ -2254,19 +2637,43 @@ const ParentRouteWithChildren =
   ParentRoute._addFileChildren(ParentRouteChildren)
 
 interface PlacementRouteChildren {
+  PlacementAnalyticsRoute: typeof PlacementAnalyticsRoute
+  PlacementApplicationsRoute: typeof PlacementApplicationsRoute
+  PlacementAssessmentRequestsRoute: typeof PlacementAssessmentRequestsRoute
+  PlacementAssessmentSessionsRoute: typeof PlacementAssessmentSessionsRoute
+  PlacementAssessmentsRoute: typeof PlacementAssessmentsRoute
   PlacementCompaniesRoute: typeof PlacementCompaniesRoute
   PlacementDashboardRoute: typeof PlacementDashboardRoute
   PlacementDrivesRoute: typeof PlacementDrivesRoute
+  PlacementInterviewsRoute: typeof PlacementInterviewsRoute
+  PlacementNotificationsRoute: typeof PlacementNotificationsRoute
+  PlacementOffersRoute: typeof PlacementOffersRoute
+  PlacementRecruitersRoute: typeof PlacementRecruitersRoute
+  PlacementReportsRoute: typeof PlacementReportsRoute
+  PlacementSettingsRoute: typeof PlacementSettingsRoute
   PlacementStudentsRoute: typeof PlacementStudentsRoute
   PlacementIndexRoute: typeof PlacementIndexRoute
+  PlacementDrivesDriveIdRoute: typeof PlacementDrivesDriveIdRoute
 }
 
 const PlacementRouteChildren: PlacementRouteChildren = {
+  PlacementAnalyticsRoute: PlacementAnalyticsRoute,
+  PlacementApplicationsRoute: PlacementApplicationsRoute,
+  PlacementAssessmentRequestsRoute: PlacementAssessmentRequestsRoute,
+  PlacementAssessmentSessionsRoute: PlacementAssessmentSessionsRoute,
+  PlacementAssessmentsRoute: PlacementAssessmentsRoute,
   PlacementCompaniesRoute: PlacementCompaniesRoute,
   PlacementDashboardRoute: PlacementDashboardRoute,
   PlacementDrivesRoute: PlacementDrivesRoute,
+  PlacementInterviewsRoute: PlacementInterviewsRoute,
+  PlacementNotificationsRoute: PlacementNotificationsRoute,
+  PlacementOffersRoute: PlacementOffersRoute,
+  PlacementRecruitersRoute: PlacementRecruitersRoute,
+  PlacementReportsRoute: PlacementReportsRoute,
+  PlacementSettingsRoute: PlacementSettingsRoute,
   PlacementStudentsRoute: PlacementStudentsRoute,
   PlacementIndexRoute: PlacementIndexRoute,
+  PlacementDrivesDriveIdRoute: PlacementDrivesDriveIdRoute,
 }
 
 const PlacementRouteWithChildren = PlacementRoute._addFileChildren(
@@ -2277,9 +2684,16 @@ interface StudentRouteChildren {
   StudentAttendanceRoute: typeof StudentAttendanceRoute
   StudentCoursesRoute: typeof StudentCoursesRoute
   StudentDashboardRoute: typeof StudentDashboardRoute
+  StudentDiscussionForumRoute: typeof StudentDiscussionForumRoute
+  StudentExaminationsRoute: typeof StudentExaminationsRoute
+  StudentFeedbackRoute: typeof StudentFeedbackRoute
+  StudentFinanceRoute: typeof StudentFinanceRoute
+  StudentHostelRoute: typeof StudentHostelRoute
+  StudentLibraryRoute: typeof StudentLibraryRoute
   StudentLmsRoute: typeof StudentLmsRoute
   StudentProfileRoute: typeof StudentProfileRoute
   StudentResultsRoute: typeof StudentResultsRoute
+  StudentTimetableRoute: typeof StudentTimetableRoute
   StudentIndexRoute: typeof StudentIndexRoute
 }
 
@@ -2287,9 +2701,16 @@ const StudentRouteChildren: StudentRouteChildren = {
   StudentAttendanceRoute: StudentAttendanceRoute,
   StudentCoursesRoute: StudentCoursesRoute,
   StudentDashboardRoute: StudentDashboardRoute,
+  StudentDiscussionForumRoute: StudentDiscussionForumRoute,
+  StudentExaminationsRoute: StudentExaminationsRoute,
+  StudentFeedbackRoute: StudentFeedbackRoute,
+  StudentFinanceRoute: StudentFinanceRoute,
+  StudentHostelRoute: StudentHostelRoute,
+  StudentLibraryRoute: StudentLibraryRoute,
   StudentLmsRoute: StudentLmsRoute,
   StudentProfileRoute: StudentProfileRoute,
   StudentResultsRoute: StudentResultsRoute,
+  StudentTimetableRoute: StudentTimetableRoute,
   StudentIndexRoute: StudentIndexRoute,
 }
 
@@ -2383,6 +2804,7 @@ const rootRouteChildren: RootRouteChildren = {
   TimetableRoute: TimetableRoute,
   TransportRoute: TransportRouteWithChildren,
   VerifyEmailRoute: VerifyEmailRoute,
+  ExamTakeRoute: ExamTakeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

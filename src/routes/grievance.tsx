@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { StudentFeedbackModule } from "@/components/student-feedback";
 import { Panel } from "@/components/dashboard/panel";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { Badge } from "@/components/ui/badge";
@@ -60,13 +61,21 @@ import {
 
 export const Route = createFileRoute("/grievance")({
   head: () => ({
-    meta: [{ title: "Grievance Redressal — EduSuite Pro" }],
+    meta: [{ title: "Feedback & Grievance Redressal — EduSuite Pro" }],
   }),
   component: GrievancePage,
 });
 
 export function GrievancePage() {
   const { hasFlag, role } = useRole();
+
+  if (role === "student") {
+    return (
+      <DashboardLayout>
+        <StudentFeedbackModule />
+      </DashboardLayout>
+    );
+  }
 
   // State for search and filter controls
   const [search, setSearch] = useState("");
@@ -607,6 +616,11 @@ export function GrievancePage() {
           </DialogContent>
         </Dialog>
       </div>
+=======
+  return (
+    <DashboardLayout activeSection="Student Workspace" activeItem="Feedback">
+      <StudentFeedbackModule />
+>>>>>>> origin/main
     </DashboardLayout>
   );
 }

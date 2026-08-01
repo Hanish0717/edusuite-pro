@@ -37,6 +37,26 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+// Configuration for roles that operate at the institution level (no branch/department required)
+const institutionLevelRoles = [
+  "Placement Officer",
+  "placement_officer",
+  "Principal",
+  "principal",
+  "Director",
+  "director",
+  "Registrar",
+  "registrar",
+  "Librarian",
+  "library_admin",
+  "transport_officer",
+  "hostel_warden",
+  "finance_officer",
+  "hr_manager",
+  "vice_principal",
+  "exam_controller",
+];
+
 export function LoginPage() {
   const { setRole, setFlags, setDepartment, setExternalPersona } = useRole();
   const navigate = useNavigate();
@@ -64,6 +84,16 @@ export function LoginPage() {
   const scopeOptions = useMemo(() => {
     return getScopeOptionsForDesignation(step1CoreRole, step2Designation);
   }, [step1CoreRole, step2Designation]);
+
+  // Check if current designation is an institution-level role
+  const isInstitutionLevel =
+    step1CoreRole === "staff" &&
+    institutionLevelRoles.some(
+      (role) =>
+        role.toLowerCase().replace(/_/g, " ") ===
+          step2Designation.toLowerCase().replace(/_/g, " ") ||
+        step2Designation === role
+    );
 
   // Active core role definition for badge UI
   const activeCoreRoleDef = useMemo(() => {
@@ -111,10 +141,47 @@ export function LoginPage() {
     // Dynamically resolve role context from mock service
     const resolved = resolveRoleContextFromSelection(step1CoreRole, step2Designation, step3Branch);
 
+<<<<<<< HEAD
     setRole(resolved.role);
     setFlags(resolved.flags);
     if (resolved.department) setDepartment(resolved.department);
     if (resolved.externalPersona) setExternalPersona(resolved.externalPersona);
+=======
+      // Map designation flag
+      let flag = "isHod";
+      if (step2Designation === "hod") flag = "isHod";
+      else if (step2Designation === "dean") flag = "isDean";
+      else if (step2Designation === "exam_controller") flag = "isExamController";
+      else if (step2Designation === "placement_officer") flag = "isPlacementOfficer";
+      else if (step2Designation === "transport_officer") flag = "isTransportOfficer";
+      else if (step2Designation === "hostel_warden") flag = "isHostelWarden";
+      else if (step2Designation === "finance_officer") flag = "isFinanceOfficer";
+      else if (step2Designation === "library_admin") flag = "isLibraryAdmin";
+      else if (step2Designation === "hr_manager") flag = "isHRManager";
+      else if (step2Designation === "principal") flag = "isPrincipal";
+      else if (step2Designation === "vice_principal") flag = "isVicePrincipal";
+      else flag = "isMentor";
+
+      setFlags([flag, "isClassAdvisor", "isMentor"]);
+      toast.success(
+        isInstitutionLevel
+          ? `Logged in as Staff: ${step2Designation.toUpperCase()} — Institution Level`
+          : `Logged in as Staff: ${step2Designation.toUpperCase()} — Branch: ${deptCode}`
+      );
+    } else if (step1CoreRole === "student") {
+      setRole("student");
+      setDepartment((step3Branch as DepartmentCode) || "CSE");
+      toast.success(`Logged in as Student (${step2Designation.toUpperCase()} — ${step3Branch})`);
+    } else if (step1CoreRole === "parent") {
+      setRole("parent");
+      toast.success(`Logged in as Parent (${step2Designation}) — View: ${step3Branch}`);
+    } else if (step1CoreRole === "external-user") {
+      setRole("external-user");
+      const persona = (step2Designation as ExternalPersona) || "recruiter";
+      setExternalPersona(persona);
+      toast.success(`Logged in as External User [${persona.toUpperCase()}] — ${step3Branch}`);
+    }
+>>>>>>> origin/main
 
     toast.success(resolved.toastMessage);
     navigate({ to: "/dashboard" });
@@ -160,7 +227,7 @@ export function LoginPage() {
         </div>
 
         {/* 2ND DROPDOWN: RELATED DESIGNATION / SUB-ROLE (Cascading based on 1st Dropdown) */}
-        <div className="space-y-1.5 p-3.5 rounded-2xl border border-primary/30 bg-primary/5 space-y-3">
+        <div className="space-y-1.5 p-3.5 rounded-2xl border border-primary/30 bg-primary/5 space-y-3 transition-all duration-300">
           <div className="space-y-1.5">
             <Label className="text-xs font-bold uppercase tracking-wider text-primary flex items-center justify-between">
               <span>2nd Dropdown: Designation / Sub-Role</span>
@@ -185,15 +252,17 @@ export function LoginPage() {
             </div>
           </div>
 
-          {/* 3RD DROPDOWN: BRANCH / DEPARTMENT / FIELD (Cascading based on 2nd Dropdown) */}
-          <div className="space-y-1.5 pt-2 border-t border-primary/20">
-            <Label className="text-xs font-bold uppercase tracking-wider text-primary flex items-center justify-between">
-              <span>3rd Dropdown: Branch / Department Scope</span>
-              <Badge className="bg-brand-gradient text-white font-mono text-[0.65rem]">
-                Step 3
-              </Badge>
-            </Label>
+          {/* 3RD DROPDOWN: BRANCH / DEPARTMENT / FIELD (Hidden dynamically for Institution Level Roles) */}
+          {!isInstitutionLevel && (
+            <div className="space-y-1.5 pt-2 border-t border-primary/20 transition-all duration-300 animate-in fade-in slide-in-from-top-1">
+              <Label className="text-xs font-bold uppercase tracking-wider text-primary flex items-center justify-between">
+                <span>3rd Dropdown: Branch / Department Scope</span>
+                <Badge className="bg-brand-gradient text-white font-mono text-[0.65rem]">
+                  Step 3
+                </Badge>
+              </Label>
 
+<<<<<<< HEAD
             <div className="relative">
               <select
                 value={step3Branch}
@@ -208,19 +277,112 @@ export function LoginPage() {
                 ))}
               </select>
               <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+=======
+              <div className="relative">
+                <select
+                  value={step3Branch}
+                  onChange={(e) => setStep3Branch(e.target.value)}
+                  className="w-full h-10 rounded-xl border border-input bg-card px-3 pr-8 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
+                >
+                  {(step1CoreRole === "staff" || step1CoreRole === "student") && (
+                    <>
+                      {DEPARTMENTS.map((d) => (
+                        <option key={d.code} value={d.code}>
+                          Branch: {d.code} — {d.name}
+                        </option>
+                      ))}
+                    </>
+                  )}
+
+                  {step1CoreRole === "external-user" && (
+                    <>
+                      {step2Designation === "recruiter" && (
+                        <>
+                          <option value="Google Cloud">Company: Google Cloud</option>
+                          <option value="Microsoft India">Company: Microsoft India</option>
+                          <option value="Qualcomm">Company: Qualcomm India</option>
+                          <option value="Tesla Motors">Company: Tesla Motors</option>
+                        </>
+                      )}
+                      {step2Designation === "vendor" && (
+                        <>
+                          <option value="Cafeteria & Mess Services">Vendor: Cafeteria & Mess Services</option>
+                          <option value="IT Hardware Supplier">Vendor: IT Hardware Supplier</option>
+                          <option value="Transport Fleet Service">Vendor: Transport Fleet Service</option>
+                          <option value="Lab Equipment Supplier">Vendor: Lab Equipment Supplier</option>
+                        </>
+                      )}
+                      {step2Designation === "alumni" && (
+                        <>
+                          <option value="Batch of 2022">Batch: Batch of 2022</option>
+                          <option value="Batch of 2021">Batch: Batch of 2021</option>
+                          <option value="Batch of 2020">Batch: Batch of 2020</option>
+                        </>
+                      )}
+                      {step2Designation === "applicant" && (
+                        <>
+                          <option value="B.Tech CSE Admissions">Target: B.Tech CSE Admissions</option>
+                          <option value="B.Tech ECE Admissions">Target: B.Tech ECE Admissions</option>
+                          <option value="MBA Admissions">Target: MBA Admissions</option>
+                        </>
+                      )}
+                      {step2Designation === "guest_faculty" && (
+                        <>
+                          <option value="Computer Science Dept">Visiting: Computer Science Dept</option>
+                          <option value="Electronics Dept">Visiting: Electronics Dept</option>
+                        </>
+                      )}
+                    </>
+                  )}
+
+                  {step1CoreRole === "parent" && (
+                    <>
+                      <option value="Academic & Marks Overview">View: Academic Performance & Marks</option>
+                      <option value="Attendance Ledger & Alerts">View: Attendance Ledger & Alerts</option>
+                      <option value="Online Fee Payment & Invoices">View: Online Fee Payment & Invoices</option>
+                      <option value="Hostel & Transport Status">View: Hostel & Transport Status</option>
+                    </>
+                  )}
+
+                  {step1CoreRole === "super-admin" && (
+                    <>
+                      <option value="All Campuses (Global)">Scope: All Campuses & Departments (Global)</option>
+                      <option value="Main Campus (Hyderabad)">Scope: Main Campus (Hyderabad)</option>
+                      <option value="North Campus (Bengaluru)">Scope: North Campus (Bengaluru)</option>
+                    </>
+                  )}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              </div>
+>>>>>>> origin/main
             </div>
-          </div>
+          )}
         </div>
 
         {/* WORKFLOW DIAGRAM SUMMARY BADGE */}
-        <div className="p-3.5 rounded-xl bg-card border border-border/80 text-xs space-y-1.5">
+        <div className="p-3.5 rounded-xl bg-card border border-border/80 text-xs space-y-1.5 transition-all duration-300">
           <div className="flex items-center justify-between text-muted-foreground">
             <span>Selected Login Resolution:</span>
             <CheckCircle2 className="size-4 text-emerald-500" />
           </div>
+<<<<<<< HEAD
           <p className="font-mono font-bold text-foreground text-xs">
             {activeCoreRoleDef?.title} → {step2Designation.toUpperCase()} → {step3Branch}
           </p>
+=======
+          <div className="font-mono font-bold text-foreground text-xs leading-snug">
+            {isInstitutionLevel ? (
+              <div className="space-y-0.5">
+                <div>{(activeCoreRoleDef?.title || "STAFF")} → {step2Designation.toUpperCase()}</div>
+                <div className="text-muted-foreground font-semibold text-[0.725rem]">Institution Level</div>
+              </div>
+            ) : (
+              <div>
+                {(activeCoreRoleDef?.title || "STAFF")} → {step2Designation.toUpperCase()} → {step3Branch}
+              </div>
+            )}
+          </div>
+>>>>>>> origin/main
         </div>
 
         {/* AUTH CREDENTIALS */}

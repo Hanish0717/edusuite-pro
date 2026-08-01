@@ -3,14 +3,32 @@ import { ShieldAlert } from "lucide-react";
 import { useRole } from "@/context/role-context";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { Button } from "@/components/ui/button";
+import { StudentHostelModule } from "@/components/student-hostel";
 
 export const Route = createFileRoute("/hostel")({
+  head: () => ({
+    meta: [
+      { title: "Hostel Management — EduSuite Pro" },
+      {
+        name: "description",
+        content: "Manage hostel accommodation, room details, mess services, gate passes, complaints and hostel payments.",
+      },
+    ],
+  }),
   component: HostelLayout,
 });
 
 function HostelLayout() {
   const { role, flags } = useRole();
   const isSuperAdmin = role === "super-admin" || role === "super_admin";
+
+  if (role === "student") {
+    return (
+      <DashboardLayout>
+        <StudentHostelModule />
+      </DashboardLayout>
+    );
+  }
 
   if (!isSuperAdmin && (role !== "staff" || !flags.includes("isHostelWarden"))) {
     return (
@@ -29,9 +47,5 @@ function HostelLayout() {
     );
   }
 
-  return (
-    <DashboardLayout>
-      <Outlet />
-    </DashboardLayout>
-  );
+  return <Outlet />;
 }

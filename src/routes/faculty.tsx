@@ -1,14 +1,19 @@
-import { createFileRoute, Outlet, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ShieldAlert } from "lucide-react";
-import { useRole } from "@/context/role-context";
+
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { Button } from "@/components/ui/button";
+import { useRole } from "@/context/role-context";
+import { FacultyModuleView } from "@/modules/faculty";
 
 export const Route = createFileRoute("/faculty")({
-  component: FacultyLayout,
+  head: () => ({
+    meta: [{ title: "Faculty & Staff — EduSuite Pro" }],
+  }),
+  component: FacultyPage,
 });
 
-function FacultyLayout() {
+export function FacultyPage() {
   const { role } = useRole();
   const isSuperAdmin = role === "super-admin" || role === "super_admin";
 
@@ -32,7 +37,7 @@ function FacultyLayout() {
 
   return (
     <DashboardLayout>
-      <Outlet />
+      <FacultyModuleView />
     </DashboardLayout>
   );
 }
