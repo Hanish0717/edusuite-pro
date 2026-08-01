@@ -32,6 +32,7 @@ export function AppSidebar() {
   const { role, flags, department, externalPersona, featureFlags, profile } = useRole();
   const [query, setQuery] = useState("");
   const pathname = useRouterState({ select: (r) => r.location.pathname });
+  const href = useRouterState({ select: (r) => r.location.href });
 
   const sections = navigationForUser({ role, flags, department, externalPersona, featureFlags })
     .map((section) => ({
@@ -70,31 +71,59 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {section.items.map((item) => {
-                  const active = pathname === item.url;
+                  const currentCleanPath = pathname.split("?")[0];
+                  const hasQueryParam = item.url.includes("?");
+                  let isItemActive = false;
+
+                  if (hasQueryParam) {
+                    isItemActive =
+                      href.includes(item.url) ||
+                      (!href.includes("?module=") && item.url.includes("module=dashboard"));
+                  } else {
+                    const itemCleanPath = item.url.split("?")[0];
+                    const isChildActive =
+                      item.children?.some(
+                        (child) => child.url.split("?")[0] === currentCleanPath
+                      ) ?? false;
+                    isItemActive = currentCleanPath === itemCleanPath || isChildActive;
+                  }
+
                   if (item.children && !collapsed) {
                     return (
                       <Collapsible
                         key={item.title}
-                        defaultOpen={active}
+                        defaultOpen={isItemActive}
                         className="group/collapsible"
                       >
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
-                            <SidebarMenuButton isActive={active} tooltip={item.title}>
-                              <item.icon className="size-4 shrink-0" />
+                            <SidebarMenuButton
+                              isActive={isItemActive}
+                              tooltip={item.title}
+                              className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-bold transition-all duration-200"
+                            >
+                              <item.icon className="size-4 shrink-0 text-primary/80" />
                               <span className="truncate">{item.title}</span>
-                              <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                              <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90 text-sidebar-foreground/50" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              {item.children.map((child) => (
-                                <SidebarMenuSubItem key={child.title}>
-                                  <SidebarMenuSubButton asChild>
-                                    <Link to={child.url}>{child.title}</Link>
-                                  </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))}
+                          <CollapsibleContent className="transition-all duration-200 ease-in-out data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
+                            <SidebarMenuSub className="ml-3.5 border-l border-primary/20 pl-2.5 space-y-0.5 my-1">
+                              {item.children.map((child) => {
+                                const childCleanPath = child.url.split("?")[0];
+                                const isSubActive = currentCleanPath === childCleanPath;
+                                return (
+                                  <SidebarMenuSubItem key={child.title}>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      isActive={isSubActive}
+                                      className="text-xs data-[active=true]:font-bold data-[active=true]:text-primary data-[active=true]:bg-primary/5 rounded-lg px-2 py-1"
+                                    >
+                                      <Link to={child.url}>{child.title}</Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                );
+                              })}
                             </SidebarMenuSub>
                           </CollapsibleContent>
                         </SidebarMenuItem>
@@ -104,9 +133,14 @@ export function AppSidebar() {
 
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild isActive={active} tooltip={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isItemActive}
+                        tooltip={item.title}
+                        className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-bold transition-all duration-200"
+                      >
                         <Link to={item.url} className="flex items-center gap-2">
-                          <item.icon className="size-4 shrink-0" />
+                          <item.icon className="size-4 shrink-0 text-primary/80" />
                           <span className="truncate">{item.title}</span>
                           {item.badge && !collapsed && (
                             <Badge className="ml-auto h-5 bg-sidebar-primary px-1.5 text-[0.65rem] text-sidebar-primary-foreground">

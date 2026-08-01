@@ -233,71 +233,10 @@ function AlumniView() {
   );
 }
 
+import { RecruiterPortalWorkspace } from "@/components/dashboard/role/recruiter-portal-workspace";
+
 function RecruiterView() {
-  return (
-    <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Active Drives" value="1 Planned" icon={Briefcase} tone="info" />
-        <KpiCard label="Applicants Registered" value="184 Students" icon={Users} />
-        <KpiCard
-          label="Shortlisted (Round 1)"
-          value="45 Students"
-          icon={CheckCircle}
-          tone="success"
-        />
-        <KpiCard label="Offers Extended" value="Pending" icon={Gift} tone="warning" />
-      </div>
-
-      <Panel title="Recruitment Drive Pipeline" description="Job Profile: Software Engineer (L3)">
-        <div className="space-y-4">
-          <div className="flex justify-between text-xs font-medium">
-            <span>Drive Progress</span>
-            <span>45 / 184 Shortlisted (Round 1 Completed)</span>
-          </div>
-          <Progress value={45} className="h-2.5" />
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Student Name</TableHead>
-                <TableHead>CGPA</TableHead>
-                <TableHead>Resume</TableHead>
-                <TableHead>Test Score</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {[
-                { name: "Aditya Verma", cgpa: "9.2", score: "94/100", status: "Shortlisted" },
-                { name: "Meera Nair", cgpa: "8.9", score: "88/100", status: "Shortlisted" },
-                { name: "Abhishek Rao", cgpa: "8.5", score: "80/100", status: "Pending Interview" },
-              ].map((student, idx) => (
-                <TableRow key={idx}>
-                  <TableCell className="font-semibold">{student.name}</TableCell>
-                  <TableCell>{student.cgpa}</TableCell>
-                  <TableCell className="text-primary underline cursor-pointer text-xs">
-                    view_resume.pdf
-                  </TableCell>
-                  <TableCell>{student.score}</TableCell>
-                  <TableCell>
-                    <Badge>{student.status}</Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </Panel>
-
-      <QuickActionsWidget
-        actions={[
-          "Schedule Interview Round",
-          "Upload Shortlist Result",
-          "Extend Job Offers",
-          "Feedback for T&P Cell",
-        ]}
-      />
-    </div>
-  );
+  return <RecruiterPortalWorkspace />;
 }
 
 function VendorView() {

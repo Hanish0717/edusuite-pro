@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Bell, Download, Filter, Moon, Search, Sun, Settings as SettingsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -292,6 +293,42 @@ export function Topbar() {
               </Badge>
             );
           })}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 cursor-pointer"
+            onClick={() => toast.info("Filters applied to view")}
+          >
+            <Filter className="size-3.5" /> Filters
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 cursor-pointer"
+            onClick={() => {
+              const headers = ["Module", "Role", "Timestamp", "Status"];
+              const rows = [
+                ["Placement Overview", role, new Date().toLocaleString(), "Verified"],
+                ["Registered Companies", role, new Date().toLocaleString(), "Active"],
+                ["Placement Drives", role, new Date().toLocaleString(), "Ongoing"],
+                ["Student Applications", role, new Date().toLocaleString(), "Approved"],
+              ];
+              const csvContent = [headers.join(","), ...rows.map((r) => r.map((c) => `"${c}"`).join(","))].join("\n");
+              const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              const filename = `edusuite_placement_report_${new Date().toISOString().split("T")[0]}.csv`;
+              link.setAttribute("href", url);
+              link.setAttribute("download", filename);
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+              toast.success(`Downloaded ${filename}`);
+            }}
+          >
+            <Download className="size-3.5" /> Export
+          </Button>
         </div>
       </div>
     </header>

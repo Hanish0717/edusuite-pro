@@ -20,6 +20,16 @@ import {
   Package,
   ShieldAlert,
   Globe,
+  Building2,
+  UserCheck,
+  ClipboardList,
+  FileCheck2,
+  Video,
+  Bell,
+  Database,
+  Send,
+  HelpCircle,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -43,6 +53,28 @@ export interface NavSection {
   label: string;
   items: NavItem[];
 }
+
+export const PLACEMENT_OFFICER_NAVIGATION: NavSection[] = [
+  {
+    label: "Placement Officer Portal",
+    items: [
+      { title: "Dashboard", url: "/placement/dashboard", icon: LayoutDashboard },
+      { title: "Companies", url: "/placement/companies", icon: Building2 },
+      { title: "Recruiters", url: "/placement/recruiters", icon: UserCheck },
+      { title: "Placement Drives", url: "/placement/drives", icon: Briefcase },
+      { title: "Eligible Students", url: "/placement/students", icon: GraduationCap },
+      { title: "Applications", url: "/placement/applications", icon: ClipboardList },
+      { title: "Assessment Management", url: "/placement/assessments", icon: FileCheck2 },
+      { title: "Assessment Requests", url: "/placement/assessment-requests", icon: FileCheck2, badge: "Pending" },
+      { title: "Interview Management", url: "/placement/interviews", icon: Video },
+      { title: "Offers", url: "/placement/offers", icon: Award },
+      { title: "Analytics", url: "/placement/analytics", icon: BarChart3 },
+      { title: "Reports", url: "/placement/reports", icon: FileSpreadsheet },
+      { title: "Notifications", url: "/placement/notifications", icon: Bell },
+      { title: "Settings", url: "/placement/settings", icon: Settings },
+    ],
+  },
+];
 
 export const navigation: NavSection[] = [
   {
@@ -191,7 +223,7 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     if (flags.includes("isPlacementOfficer")) {
       if (url === "/dashboard" || url === "/placements") return "/placement/dashboard";
       if (url === "/students") return "/placement/students";
-      if (url === "/settings") return "/faculty/profile";
+      if (url === "/settings") return "/placement/settings";
       if (title === "Companies") return "/placement/companies";
       if (title === "Drives") return "/placement/drives";
       if (title === "Students") return "/placement/students";
@@ -244,7 +276,37 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
   return url;
 }
 
+export const RECRUITER_NAVIGATION: NavSection[] = [
+  {
+    label: "Recruiter Portal",
+    items: [
+      { title: "Dashboard", url: "/external-user/dashboard?module=dashboard", icon: LayoutDashboard },
+      { title: "Company Profile", url: "/external-user/dashboard?module=company-profile", icon: Building2 },
+      { title: "Placement Drives", url: "/external-user/dashboard?module=placement-drives", icon: Briefcase },
+      { title: "Assessments", url: "/external-user/dashboard?module=assessments", icon: FileCheck2 },
+      { title: "Question Bank", url: "/external-user/dashboard?module=question-bank", icon: Database },
+      { title: "Assessment Requests", url: "/external-user/dashboard?module=assessment-requests", icon: Send },
+      { title: "Interview Management", url: "/external-user/dashboard?module=interviews", icon: Video },
+      { title: "Offer Management", url: "/external-user/dashboard?module=offers", icon: Award },
+      { title: "Reports", url: "/external-user/dashboard?module=reports", icon: BarChart3 },
+      { title: "Notifications", url: "/external-user/dashboard?module=notifications", icon: Bell },
+      { title: "Support", url: "/external-user/dashboard?module=support", icon: HelpCircle },
+      { title: "Profile & Security", url: "/external-user/dashboard?module=profile-security", icon: ShieldCheck },
+    ],
+  },
+];
+
 export function navigationForUser(user: UserPermissionContext): NavSection[] {
+  // Placement Officer specific navigation menu
+  if (user.role !== "super-admin" && (user.role === "placement" || user.flags.includes("isPlacementOfficer"))) {
+    return PLACEMENT_OFFICER_NAVIGATION;
+  }
+
+  // Corporate Recruiter ATS Navigation
+  if (user.role === "external-user" && (user.externalPersona === "recruiter" || !user.externalPersona)) {
+    return RECRUITER_NAVIGATION;
+  }
+
   return navigation
     .map((section) => {
       const items = section.items
@@ -289,3 +351,4 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
     })
     .filter((section) => section.items.length > 0);
 }
+
