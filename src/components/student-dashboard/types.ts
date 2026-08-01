@@ -28,11 +28,19 @@ export interface AcademicOverview {
 export interface TimetableSlot {
   id: string;
   time: string;
+  startTime?: string;
+  endTime?: string;
   subject: string;
+  subjectCode?: string;
+  subjectName?: string;
   code: string;
   faculty: string;
   room: string;
-  status: "completed" | "current" | "upcoming";
+  building?: string;
+  isOnline?: boolean;
+  joinUrl?: string;
+  attendanceStatus?: string;
+  status: "completed" | "current" | "upcoming" | "Current" | "Next" | "Completed" | "Upcoming";
 }
 
 export type TimetableItem = TimetableSlot;
@@ -44,7 +52,7 @@ export interface TaskItem {
   category: string;
   dueDate: string;
   urgent?: boolean;
-  priority?: "High" | "Medium" | "Low";
+  priority?: "High" | "Medium" | "Low" | string;
   linkUrl: string;
 }
 
@@ -54,8 +62,8 @@ export interface EventItem {
   date: string;
   time?: string;
   category?: string;
-  priority?: "High" | "Medium" | "Low";
-  type: "Exam" | "Workshop" | "Hackathon" | "Placement" | "Seminar" | "Holiday";
+  priority?: "High" | "Medium" | "Low" | string;
+  type: "Exam" | "Workshop" | "Hackathon" | "Placement" | "Seminar" | "Holiday" | string;
   location: string;
 }
 
@@ -63,7 +71,7 @@ export interface ActivityItem {
   id: string;
   title: string;
   timestamp: string;
-  type: "attendance" | "assignment" | "fee" | "library" | "notice" | "exam";
+  type: any;
 }
 
 export type RecentActivityItem = ActivityItem;
@@ -75,6 +83,7 @@ export interface AnnouncementItem {
   date: string;
   category: string;
   unread?: boolean;
+  isPinned?: boolean;
 }
 
 export interface AttendanceSnapshot {
@@ -117,12 +126,21 @@ export interface HostelSnapshot {
 export interface TransportSnapshot {
   routeNo: string;
   busNo: string;
+  busNumber?: string;
+  route?: string;
+  todaysRoute?: string;
+  driverName?: string;
+  driverPhone?: string;
+  currentLocation?: string;
+  eta?: string;
   passValidity: string;
 }
 
 export interface PlacementSnapshot {
   eligibleCompaniesCount: number;
   upcomingDrivesCount: number;
+  upcomingInterviewsCount?: number;
+  appliedDrivesCount?: number;
   applicationsSubmittedCount: number;
   resumeStatus: string;
   profileCompletionPct: number;
