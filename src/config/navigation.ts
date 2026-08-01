@@ -73,7 +73,6 @@ export const studentNavigation: NavSection[] = [
       { title: "Learning Management", url: "/student/lms", icon: BookOpen },
       { title: "Timetable", url: "/student/timetable", icon: CalendarRange },
       { title: "Feedback", url: "/student/feedback", icon: MessageSquare },
-      { title: "Student Services", url: "/student/profile", icon: Users },
       { title: "Course Registrations", url: "/student/examinations", icon: FileText },
       { title: "Hostel", url: "/hostel", icon: BedDouble },
       { title: "Discussion Forum", url: "/student/discussion-forum", icon: MessageCircle },

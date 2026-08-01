@@ -266,10 +266,10 @@ export function StudentFeedbackModule() {
             <div className="p-2.5 rounded-xl bg-purple-600 text-white shadow-md shadow-purple-500/20">
               <MessageSquare className="h-6 w-6" />
             </div>
-            Feedback & Student Services
+            Feedback Portal
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
-            Submit faculty and course feedback, raise grievances, request student services, and track all requests.
+            Submit faculty and course feedback, raise grievances, request services, and track all requests.
           </p>
         </div>
 
