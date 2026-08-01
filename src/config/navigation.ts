@@ -16,6 +16,7 @@ import {
   BarChart3,
   MessageSquare,
   Settings,
+  User,
   GitBranch,
   Package,
   ShieldAlert,
@@ -25,11 +26,18 @@ import {
   ClipboardList,
   FileCheck2,
   Video,
-  Bell,
   Database,
   Send,
   HelpCircle,
   ShieldCheck,
+  FileCheck,
+  Sparkles,
+  Bell,
+  Clock,
+  Ticket,
+  CreditCard,
+  MessageCircle,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
 
@@ -53,6 +61,23 @@ export interface NavSection {
   label: string;
   items: NavItem[];
 }
+
+export const studentNavigation: NavSection[] = [
+  {
+    label: "Student Workspace",
+    items: [
+      { title: "Dashboard", url: "/student/dashboard", icon: LayoutDashboard },
+      { title: "Digital Notice Board", url: "/communication", icon: Bell },
+      { title: "My Profile", url: "/student/profile", icon: User },
+      { title: "LMS", url: "/student/lms", icon: BookOpen },
+      { title: "Timetable", url: "/student/timetable", icon: Clock },
+      { title: "Grievances", url: "/grievance", icon: ShieldAlert },
+      { title: "Examinations", url: "/student/examinations", icon: FileSpreadsheet },
+      { title: "Finance", url: "/student/finance", icon: Wallet },
+      { title: "Logout", url: "/login", icon: LogOut },
+    ],
+  },
+];
 
 export const PLACEMENT_OFFICER_NAVIGATION: NavSection[] = [
   {
@@ -78,7 +103,7 @@ export const PLACEMENT_OFFICER_NAVIGATION: NavSection[] = [
 
 export const navigation: NavSection[] = [
   {
-    label: "Overview",
+    label: "Menu",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
       { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
@@ -190,10 +215,13 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
   if (role === "student") {
     if (url === "/dashboard") return "/student/dashboard";
     if (url === "/academics") return "/student/courses";
-    if (url === "/results") return "/student/results";
+    if (url === "/examinations") return "/student/examinations";
+    if (url === "/results") return "/student/examinations";
+    if (url === "/finance") return "/student/finance";
     if (url === "/attendance") return "/student/attendance";
     if (url === "/lms") return "/student/lms";
     if (url === "/settings") return "/student/profile";
+    if (url === "/timetable") return "/student/timetable";
   }
 
   if (role === "parent") {
@@ -337,8 +365,17 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
             url: resolveUrlForUser(child.url, user, child.title),
           }));
 
+          let title = item.title;
+          let icon = item.icon;
+          if (item.title === "Settings") {
+            title = "My Profile";
+            icon = User;
+          }
+
           return {
             ...item,
+            title,
+            icon,
             url: newUrl,
             children: newChildren,
           };

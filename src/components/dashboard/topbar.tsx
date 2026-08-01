@@ -87,17 +87,17 @@ export function Topbar() {
   const unread = notifications.filter((n) => n.unread).length;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:flex sm:justify-between">
-        <div className="flex min-w-0 items-center gap-3">
+    <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
+      <div className="flex items-center justify-between gap-3 px-4 py-2.5 min-w-0">
+        <div className="flex min-w-0 items-center gap-2 shrink-0">
           <SidebarTrigger className="shrink-0" />
-          <div className="relative hidden min-w-0 md:block">
+          <div className="relative hidden xl:block min-w-0">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search students, staff, records..." className="h-9 w-72 pl-8" />
+            <Input placeholder="Search students, staff..." className="h-8 w-44 lg:w-56 text-xs pl-8" />
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none py-0.5 max-w-full">
           {/* Primary 5 Core Login Roles Dropdown */}
           <Select value={role} onValueChange={(v) => setRole(v as LoginRole)}>
             <SelectTrigger className="h-9 w-[160px] font-semibold text-xs border-primary/40 bg-card" aria-label="5 Core Login Roles">

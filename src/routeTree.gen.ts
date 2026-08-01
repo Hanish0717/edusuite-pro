@@ -115,9 +115,12 @@ import { Route as StudentIndexRouteImport } from './routes/student.index'
 import { Route as StudentAttendanceRouteImport } from './routes/student.attendance'
 import { Route as StudentCoursesRouteImport } from './routes/student.courses'
 import { Route as StudentDashboardRouteImport } from './routes/student.dashboard'
+import { Route as StudentExaminationsRouteImport } from './routes/student.examinations'
+import { Route as StudentFinanceRouteImport } from './routes/student.finance'
 import { Route as StudentLmsRouteImport } from './routes/student.lms'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentResultsRouteImport } from './routes/student.results'
+import { Route as StudentTimetableRouteImport } from './routes/student.timetable'
 import { Route as SuperAdminIndexRouteImport } from './routes/super-admin.index'
 import { Route as SuperAdminCoursesRouteImport } from './routes/super-admin.courses'
 import { Route as SuperAdminDashboardRouteImport } from './routes/super-admin.dashboard'
@@ -662,6 +665,16 @@ const StudentDashboardRoute = StudentDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentExaminationsRoute = StudentExaminationsRouteImport.update({
+  id: '/examinations',
+  path: '/examinations',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentFinanceRoute = StudentFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => StudentRoute,
+} as any)
 const StudentLmsRoute = StudentLmsRouteImport.update({
   id: '/lms',
   path: '/lms',
@@ -675,6 +688,11 @@ const StudentProfileRoute = StudentProfileRouteImport.update({
 const StudentResultsRoute = StudentResultsRouteImport.update({
   id: '/results',
   path: '/results',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentTimetableRoute = StudentTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
   getParentRoute: () => StudentRoute,
 } as any)
 const SuperAdminIndexRoute = SuperAdminIndexRouteImport.update({
@@ -828,9 +846,12 @@ export interface FileRoutesByFullPath {
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/examinations': typeof StudentExaminationsRoute
+  '/student/finance': typeof StudentFinanceRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
+  '/student/timetable': typeof StudentTimetableRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -936,9 +957,12 @@ export interface FileRoutesByTo {
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/examinations': typeof StudentExaminationsRoute
+  '/student/finance': typeof StudentFinanceRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
+  '/student/timetable': typeof StudentTimetableRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -1059,9 +1083,12 @@ export interface FileRoutesById {
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/examinations': typeof StudentExaminationsRoute
+  '/student/finance': typeof StudentFinanceRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
+  '/student/timetable': typeof StudentTimetableRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -1183,9 +1210,12 @@ export interface FileRouteTypes {
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
+    | '/student/examinations'
+    | '/student/finance'
     | '/student/lms'
     | '/student/profile'
     | '/student/results'
+    | '/student/timetable'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -1291,9 +1321,12 @@ export interface FileRouteTypes {
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
+    | '/student/examinations'
+    | '/student/finance'
     | '/student/lms'
     | '/student/profile'
     | '/student/results'
+    | '/student/timetable'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -1413,9 +1446,12 @@ export interface FileRouteTypes {
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
+    | '/student/examinations'
+    | '/student/finance'
     | '/student/lms'
     | '/student/profile'
     | '/student/results'
+    | '/student/timetable'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -2235,6 +2271,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentDashboardRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/examinations': {
+      id: '/student/examinations'
+      path: '/examinations'
+      fullPath: '/student/examinations'
+      preLoaderRoute: typeof StudentExaminationsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/finance': {
+      id: '/student/finance'
+      path: '/finance'
+      fullPath: '/student/finance'
+      preLoaderRoute: typeof StudentFinanceRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/lms': {
       id: '/student/lms'
       path: '/lms'
@@ -2254,6 +2304,13 @@ declare module '@tanstack/react-router' {
       path: '/results'
       fullPath: '/student/results'
       preLoaderRoute: typeof StudentResultsRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/timetable': {
+      id: '/student/timetable'
+      path: '/timetable'
+      fullPath: '/student/timetable'
+      preLoaderRoute: typeof StudentTimetableRouteImport
       parentRoute: typeof StudentRoute
     }
     '/super-admin/': {
@@ -2551,9 +2608,12 @@ interface StudentRouteChildren {
   StudentAttendanceRoute: typeof StudentAttendanceRoute
   StudentCoursesRoute: typeof StudentCoursesRoute
   StudentDashboardRoute: typeof StudentDashboardRoute
+  StudentExaminationsRoute: typeof StudentExaminationsRoute
+  StudentFinanceRoute: typeof StudentFinanceRoute
   StudentLmsRoute: typeof StudentLmsRoute
   StudentProfileRoute: typeof StudentProfileRoute
   StudentResultsRoute: typeof StudentResultsRoute
+  StudentTimetableRoute: typeof StudentTimetableRoute
   StudentIndexRoute: typeof StudentIndexRoute
 }
 
@@ -2561,9 +2621,12 @@ const StudentRouteChildren: StudentRouteChildren = {
   StudentAttendanceRoute: StudentAttendanceRoute,
   StudentCoursesRoute: StudentCoursesRoute,
   StudentDashboardRoute: StudentDashboardRoute,
+  StudentExaminationsRoute: StudentExaminationsRoute,
+  StudentFinanceRoute: StudentFinanceRoute,
   StudentLmsRoute: StudentLmsRoute,
   StudentProfileRoute: StudentProfileRoute,
   StudentResultsRoute: StudentResultsRoute,
+  StudentTimetableRoute: StudentTimetableRoute,
   StudentIndexRoute: StudentIndexRoute,
 }
 
