@@ -62,7 +62,7 @@ export const NoticeDetailDrawer: React.FC<NoticeDetailDrawerProps> = ({
               </span>
               {notice.pinned && (
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                  Pinned Notice
+                  Featured Update
                 </span>
               )}
             </div>
@@ -113,7 +113,7 @@ export const NoticeDetailDrawer: React.FC<NoticeDetailDrawerProps> = ({
           {/* Full Notice Content */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-primary" /> Notice Details
+              <ShieldCheck className="h-4 w-4 text-primary" /> Update Details
             </h3>
             <div className="p-4 rounded-xl border border-border bg-card text-foreground text-sm leading-relaxed space-y-3 whitespace-pre-line">
               {notice.fullNotice}

@@ -1,5 +1,5 @@
 export type NoticeCategory =
-  | "All Notices"
+  | "All Updates"
   | "Academics"
   | "Examinations"
   | "Placements"
@@ -7,7 +7,8 @@ export type NoticeCategory =
   | "Events"
   | "Hostel"
   | "Transport"
-  | "Library";
+  | "Library"
+  | "Finance";
 
 export type NoticePriority = "Urgent" | "High" | "Normal" | "Low";
 

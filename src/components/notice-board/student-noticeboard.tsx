@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 
 export const StudentNoticeBoard: React.FC = () => {
   const [notices, setNotices] = useState<NoticeItem[]>(() => generateMockNotices());
-  const [activeTab, setActiveTab] = useState<NoticeCategory>("All Notices");
+  const [activeTab, setActiveTab] = useState<NoticeCategory>("All Updates");
   const [searchQuery, setSearchQuery] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
   const [departmentFilter, setDepartmentFilter] = useState("ALL");
@@ -47,7 +47,7 @@ export const StudentNoticeBoard: React.FC = () => {
   const filteredNotices = useMemo(() => {
     return notices.filter((notice) => {
       // 1. Tab / Category Filter
-      if (activeTab !== "All Notices" && notice.category !== activeTab) {
+      if (activeTab !== "All Updates" && notice.category !== activeTab) {
         return false;
       }
 
@@ -108,7 +108,7 @@ export const StudentNoticeBoard: React.FC = () => {
   };
 
   const handleResetFilters = () => {
-    setActiveTab("All Notices");
+    setActiveTab("All Updates");
     setSearchQuery("");
     setPriorityFilter("ALL");
     setDepartmentFilter("ALL");
@@ -132,14 +132,23 @@ export const StudentNoticeBoard: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Breadcrumb */}
+      <div className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
+        <span>Home</span>
+        <span>&gt;</span>
+        <span>Student</span>
+        <span>&gt;</span>
+        <span className="text-foreground font-semibold">Updates</span>
+      </div>
+
       {/* Module Title Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border">
         <div>
           <h1 className="text-2xl font-bold text-foreground tracking-tight flex items-center gap-2">
-            <Bell className="h-6 w-6 text-primary" /> Digital Notice Board
+            <Bell className="h-6 w-6 text-primary" /> Updates
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            College announcements, department notices, examination updates and important circulars.
+            Stay informed with the latest academic announcements, examination updates, placement notifications, scholarships, campus events, and departmental circulars.
           </p>
         </div>
         <Button
@@ -148,17 +157,17 @@ export const StudentNoticeBoard: React.FC = () => {
           onClick={handleRefresh}
           className="gap-2 self-start sm:self-auto text-xs"
         >
-          <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} /> Refresh Notices
+          <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin" : ""}`} /> Refresh Updates
         </Button>
       </div>
 
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* KPI 1: Total Notices */}
+        {/* KPI 1: Total Updates */}
         <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md hover:border-primary/40">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Total Notices
+              Total Updates
             </span>
             <div className="p-2.5 rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
               <Bell className="h-5 w-5" />
@@ -172,11 +181,11 @@ export const StudentNoticeBoard: React.FC = () => {
           </div>
         </div>
 
-        {/* KPI 2: Unread Notices */}
+        {/* KPI 2: New Updates */}
         <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md hover:border-blue-500/40">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Unread Notices
+              New Updates
             </span>
             <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 transition-transform group-hover:scale-110">
               <MailWarning className="h-5 w-5" />
@@ -190,11 +199,11 @@ export const StudentNoticeBoard: React.FC = () => {
           </div>
         </div>
 
-        {/* KPI 3: Important Notices */}
+        {/* KPI 3: Important Updates */}
         <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md hover:border-amber-500/40">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Important Notices
+              Important Updates
             </span>
             <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 transition-transform group-hover:scale-110">
               <AlertOctagon className="h-5 w-5" />
@@ -208,11 +217,11 @@ export const StudentNoticeBoard: React.FC = () => {
           </div>
         </div>
 
-        {/* KPI 4: Upcoming Events */}
+        {/* KPI 4: Upcoming Activities */}
         <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md hover:border-purple-500/40">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Upcoming Events
+              Upcoming Activities
             </span>
             <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 transition-transform group-hover:scale-110">
               <CalendarCheck className="h-5 w-5" />
@@ -271,9 +280,9 @@ export const StudentNoticeBoard: React.FC = () => {
               <div className="p-4 rounded-full bg-muted/50 text-muted-foreground">
                 <Inbox className="h-8 w-8" />
               </div>
-              <h3 className="text-base font-semibold text-foreground">No notices available.</h3>
+              <h3 className="text-base font-semibold text-foreground">No updates available.</h3>
               <p className="text-xs text-muted-foreground max-w-sm">
-                No announcements or notices match your selected filters. Try searching for a different keyword or resetting filters.
+                No announcements or updates match your selected filters. Try searching for a different keyword or resetting filters.
               </p>
               <Button
                 variant="outline"

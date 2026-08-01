@@ -21,7 +21,7 @@ export const NoticeWidget: React.FC<NoticeWidgetProps> = ({
           <h3 className="text-base font-bold text-foreground flex items-center gap-2">
             <Bell className="h-4 w-4 text-primary" /> Recent Announcements
           </h3>
-          <p className="text-xs text-muted-foreground">Latest circulars from Digital Notice Board</p>
+          <p className="text-xs text-muted-foreground">Latest circulars and campus updates</p>
         </div>
         <Button
           variant="outline"
@@ -29,7 +29,7 @@ export const NoticeWidget: React.FC<NoticeWidgetProps> = ({
           onClick={onViewAll}
           className="text-xs gap-1 h-8"
         >
-          View All Notices <ArrowRight className="h-3.5 w-3.5" />
+          View All Updates <ArrowRight className="h-3.5 w-3.5" />
         </Button>
       </div>
 
