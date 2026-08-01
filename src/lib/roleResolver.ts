@@ -108,12 +108,17 @@ export function normalizeRole(rawRole: string): RoleId {
   if (!rawRole) return "student";
   const cleaned = rawRole.trim().toLowerCase().replace(/[\s-]/g, "_");
   if (cleaned in ROLE_NORMALIZATION_MAP) {
-    return ROLE_NORMALIZATION_MAP[cleaned];
+    const matched = ROLE_NORMALIZATION_MAP[cleaned];
+    if (matched) return matched;
   }
   const keyMatch = Object.keys(ROLE_NORMALIZATION_MAP).find((k) =>
     cleaned.includes(k) || k.includes(cleaned),
   );
-  return keyMatch ? ROLE_NORMALIZATION_MAP[keyMatch] : "student";
+  if (keyMatch) {
+    const matched = ROLE_NORMALIZATION_MAP[keyMatch];
+    if (matched) return matched;
+  }
+  return "student";
 }
 
 export const DASHBOARD_ROUTE_MAP: Record<RoleId, string> = {
