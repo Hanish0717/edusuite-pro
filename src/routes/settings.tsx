@@ -275,9 +275,9 @@ export function SettingsPage({ withLayout = true }: { withLayout?: boolean }) {
 
   const calcResult = getEvaluatorResult();
 
-  const mainContent = (
-    <div className="space-y-6">
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
+  return (
+    <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
           <div className="flex items-center gap-3">
             <span className="grid size-12 place-items-center rounded-2xl bg-brand-gradient text-white shadow-glow">
               <SettingsIcon className="size-6" />
