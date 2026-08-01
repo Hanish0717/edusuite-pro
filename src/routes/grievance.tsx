@@ -616,11 +616,6 @@ export function GrievancePage() {
           </DialogContent>
         </Dialog>
       </div>
-=======
-  return (
-    <DashboardLayout activeSection="Student Workspace" activeItem="Feedback">
-      <StudentFeedbackModule />
->>>>>>> origin/main
     </DashboardLayout>
   );
 }

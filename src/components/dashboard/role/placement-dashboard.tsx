@@ -231,34 +231,6 @@ const RECRUITER_ACTIVITIES = [
 import { fetchPlacementStats, fetchPlacementDrives } from "@/lib/roleDashboardService";
 
 export function PlacementDashboard() {
-<<<<<<< HEAD
-  const stats = useMemo(() => fetchPlacementStats(), []);
-  const drives = useMemo(() => fetchPlacementDrives(), []);
-
-  const renderIcon = (name: string) => {
-    switch (name) {
-      case "Briefcase":
-        return Briefcase;
-      case "Users":
-        return Users;
-      case "Award":
-        return Award;
-      default:
-        return TrendingUp;
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4">
-        <div>
-          <h2 className="font-display text-2xl font-extrabold tracking-tight">
-            Placement & Career Cell Console
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Scope: Campus Drives, Recruiter Onboarding, Offer Tracking, Placement Analytics.
-          </p>
-=======
   const { profile } = useRole();
 
   // Local React State for Interactive Frontend Functionality
@@ -456,25 +428,9 @@ export function PlacementDashboard() {
               </div>
             </div>
           </div>
->>>>>>> origin/main
         </div>
       </div>
 
-<<<<<<< HEAD
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((kpi, idx) => {
-          const IconComp = renderIcon(kpi.iconName);
-          return (
-            <KpiCard
-              key={idx}
-              label={kpi.label}
-              value={kpi.value}
-              icon={IconComp}
-              tone={kpi.tone}
-            />
-          );
-        })}
-=======
       {/* ==================================================================== */}
       {/* PLACEMENT HEALTH SCORE BANNER WIDGET                                 */}
       {/* ==================================================================== */}
@@ -501,7 +457,6 @@ export function PlacementDashboard() {
         >
           View Health Audit
         </Button>
->>>>>>> origin/main
       </div>
 
       {/* ==================================================================== */}
@@ -627,20 +582,6 @@ export function PlacementDashboard() {
       {/* ACTIVE DRIVES & UPCOMING EVENTS SPLIT ROW                            */}
       {/* ==================================================================== */}
       <div className="grid gap-6 lg:grid-cols-3">
-<<<<<<< HEAD
-        <div className="lg:col-span-2 space-y-6">
-          <Panel title="Active Recruitment Drives">
-            <div className="space-y-3">
-              {drives.map((d) => (
-                <div key={d.id} className="p-4 rounded-xl border border-border/70 bg-card flex items-center justify-between">
-                  <div>
-                    <h4 className="font-display text-sm font-bold">{d.title}</h4>
-                    <p className="text-xs text-muted-foreground">{d.meta}</p>
-                  </div>
-                  <Badge variant="outline" className="text-xs font-mono">
-                    {d.status}
-                  </Badge>
-=======
         {/* ACTIVE DRIVES CARDS (2 COLS) */}
         <div className="lg:col-span-2 space-y-4">
           <Panel
@@ -707,7 +648,6 @@ export function PlacementDashboard() {
                       View Details
                     </Button>
                   </div>
->>>>>>> origin/main
                 </div>
               ))}
             </div>
@@ -716,23 +656,6 @@ export function PlacementDashboard() {
 
         {/* UPCOMING EVENTS TIMELINE (1 COL) */}
         <div className="space-y-6">
-<<<<<<< HEAD
-          <Panel title="Placement Actions">
-            <div className="space-y-2">
-              <Button
-                onClick={() => toast.info("Opening recruiter invite form...")}
-                className="w-full justify-start bg-brand-gradient text-xs cursor-pointer"
-              >
-                <Plus className="size-4 mr-2" /> Schedule Campus Drive
-              </Button>
-              <Button
-                onClick={() => toast.success("Exporting placement summary spreadsheet...")}
-                variant="outline"
-                className="w-full justify-start text-xs cursor-pointer"
-              >
-                <Download className="size-4 mr-2" /> Export Placement Report
-              </Button>
-=======
           <Panel
             title="Upcoming Placement Schedule"
             description="Timeline of upcoming drive events, test rounds, and interview panels."
@@ -759,7 +682,6 @@ export function PlacementDashboard() {
                   </p>
                 </div>
               ))}
->>>>>>> origin/main
             </div>
           </Panel>
         </div>

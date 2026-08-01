@@ -247,7 +247,6 @@ export function ModulePage({
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between border-b border-border pb-5">
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-gradient text-white shadow-glow">
->>>>>>> origin/main
             <Icon className="size-6" />
           </span>
           <div className="min-w-0">
@@ -255,14 +254,6 @@ export function ModulePage({
             <p className="truncate text-xs sm:text-sm text-muted-foreground">{description}</p>
           </div>
         </div>
-<<<<<<< HEAD
-        <Button
-          onClick={handleOpenModal}
-          className="shrink-0 bg-brand-gradient shadow-glow cursor-pointer text-xs font-bold gap-1.5 text-white"
-        >
-          <Plus className="size-4" /> {actionText}
-        </Button>
-=======
 
         <div className="flex items-center gap-2">
           <Button
@@ -277,12 +268,11 @@ export function ModulePage({
               if (onActionClick) onActionClick();
               else setIsCreateModalOpen(true);
             }}
-            className="bg-brand-gradient shadow-glow text-xs font-bold gap-1.5 h-10 rounded-xl cursor-pointer"
+            className="bg-brand-gradient shadow-glow text-xs font-bold gap-1.5 h-10 rounded-xl cursor-pointer text-white"
           >
             <Plus className="size-4" /> {actionText}
           </Button>
         </div>
->>>>>>> origin/main
       </header>
 
       {/* HIGHLIGHT KPI CARDS */}
@@ -292,42 +282,22 @@ export function ModulePage({
             key={item.label}
             className="animate-fade-up rounded-2xl border border-border/70 bg-card p-5 shadow-card hover:border-primary/40 transition-colors"
           >
-<<<<<<< HEAD
-            <p className="text-xs text-muted-foreground font-medium">{item.label}</p>
-=======
             <p className="text-xs font-semibold text-muted-foreground">{item.label}</p>
->>>>>>> origin/main
             <p className="mt-2 font-display text-2xl font-extrabold text-foreground">{item.value}</p>
           </div>
         ))}
       </div>
 
-<<<<<<< HEAD
-      {/* INTERACTIVE TABS CONTAINER */}
-      <Tabs
-        value={currentTab}
-        onValueChange={(v) => setInternalTab(v)}
-        className="space-y-4"
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <TabsList className="bg-background/50 border border-border p-1 flex-wrap h-auto">
-            {tabs.map((tab) => (
-              <TabsTrigger key={tab} value={tab} className="text-xs cursor-pointer">
-                {tab} ({(records[tab] || []).length})
-=======
       {/* MAIN DATA TABLE & TABS CONTAINER */}
-      <Tabs defaultValue={tabs[0] ?? "All"} onValueChange={(val) => setActiveTab(val)}>
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val)}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <TabsList className="flex-wrap h-auto p-1 bg-muted/50 rounded-xl">
             {tabs.map((tab) => (
               <TabsTrigger key={tab} value={tab} className="text-xs rounded-lg px-3 py-1.5 font-semibold">
                 {tab}
->>>>>>> origin/main
               </TabsTrigger>
             ))}
           </TabsList>
-
-<<<<<<< HEAD
           <div className="relative w-full sm:w-64">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -339,211 +309,6 @@ export function ModulePage({
           </div>
         </div>
 
-        {tabs.map((tab) => {
-          const tabItems = (records[tab] || []).filter(
-            (item) =>
-              item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              item.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              item.details.toLowerCase().includes(searchQuery.toLowerCase()),
-          );
-
-          return (
-            <TabsContent key={tab} value={tab} className="mt-4">
-              <Panel
-                title={`${tab} Directory & Operations`}
-                description={`Active ${tab.toLowerCase()} management and real-time ledger entries.`}
-                action={
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleExportTab(tab)}
-                    className="h-8 text-xs cursor-pointer gap-1.5"
-                  >
-                    <Download className="size-3.5" /> Export {tab}
-                  </Button>
-                }
-              >
-                <div className="space-y-3">
-                  {tabItems.length > 0 ? (
-                    tabItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className="p-3.5 rounded-xl border border-border/70 bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-primary/40 transition-colors"
-                      >
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs font-bold text-primary">{item.id}</span>
-                            <h4 className="font-display text-xs font-bold">{item.name}</h4>
-                          </div>
-                          <p className="text-[0.72rem] text-muted-foreground">{item.details}</p>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="font-mono text-[0.65rem]">
-                            {item.status}
-                          </Badge>
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={() => handleProcessItem(item.name)}
-                            className="h-7 text-[0.7rem] cursor-pointer px-2.5 gap-1"
-                          >
-                            Action <ArrowUpRight className="size-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-8 text-center text-xs text-muted-foreground">
-                      No records match the current query.
-                    </div>
-                  )}
-                </div>
-              </Panel>
-            </TabsContent>
-          );
-        })}
-      </Tabs>
-
-      {/* DIALOG: CREATE NEW RECORD */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <Plus className="size-5 text-primary" /> Create New {title} Record
-            </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              Add a new operational entry to the {title} module ledger.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleCreateSubmit} className="space-y-4 pt-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Record Title / Name *</Label>
-              <Input
-                required
-                placeholder={`e.g. ${title} Priority Task #104`}
-                value={newRecordName}
-                onChange={(e) => setNewRecordName(e.target.value)}
-                className="h-9 text-xs"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Category / Tab</Label>
-                <Select
-                  value={newRecordCategory}
-                  onValueChange={setNewRecordCategory}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Select tab" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {tabs.map((t) => (
-                      <SelectItem key={t} value={t} className="text-xs">
-                        {t}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Status</Label>
-                <Select
-                  value={newRecordStatus}
-                  onValueChange={setNewRecordStatus}
-                >
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active" className="text-xs">
-                      Active
-                    </SelectItem>
-                    <SelectItem value="Approved" className="text-xs">
-                      Approved
-                    </SelectItem>
-                    <SelectItem value="Pending Review" className="text-xs">
-                      Pending Review
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Details / Description</Label>
-              <Input
-                placeholder="e.g. Active status • Verified by Admin"
-                value={newRecordDetails}
-                onChange={(e) => setNewRecordDetails(e.target.value)}
-                className="h-9 text-xs"
-              />
-            </div>
-
-            <DialogFooter className="pt-3 border-t border-border">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsModalOpen(false)}
-                className="text-xs cursor-pointer"
-              >
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold cursor-pointer">
-                Create Record
-=======
-          {/* SEARCH & FILTERS BAR */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative w-48 sm:w-60">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={`Search ${title.toLowerCase()}...`}
-                className="h-9 border-input bg-card pl-9 text-xs rounded-xl focus-visible:ring-primary"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                >
-                  <X className="size-3.5" />
-                </button>
-              )}
-            </div>
-
-            {/* STATUS FILTER DROPDOWN */}
-            <div className="relative">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-9 rounded-xl border border-input bg-card px-3 pr-8 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none cursor-pointer"
-              >
-                <option value="All">All Statuses</option>
-                <option value="Active">Active</option>
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </div>
-
-            {/* SORT ORDER */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSortOrder((prev) => (prev === "newest" ? "name" : "newest"))}
-              className="h-9 text-xs gap-1 rounded-xl cursor-pointer"
-            >
-              <ArrowUpDown className="size-3.5" />
-              {sortOrder === "newest" ? "Newest" : "Name A-Z"}
-            </Button>
-          </div>
-        </div>
-
-        {/* TAB CONTENT WITH DATA TABLE */}
         {tabs.map((tab) => (
           <TabsContent key={tab} value={tab} className="mt-4 space-y-4">
             <Panel
@@ -849,14 +614,11 @@ export function ModulePage({
                   : actionText.includes("Recruiter")
                   ? "Invite Recruiter"
                   : "Save Record"}
->>>>>>> origin/main
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
-<<<<<<< HEAD
-=======
 
       {/* VIEW DETAILS MODAL */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
@@ -945,7 +707,6 @@ export function ModulePage({
           </DialogFooter>
         </DialogContent>
       </Dialog>
->>>>>>> origin/main
     </div>
   );
 }
