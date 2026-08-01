@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   FileCheck2,
@@ -11,18 +11,17 @@ import {
   ChevronLeft,
   ChevronRight,
   Send,
-  Sparkles,
   Maximize2,
   Lock,
-  Copy,
   Terminal,
   Play,
   RotateCcw,
+  Check,
+  Zap,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SAMPLE_20_MCQS, SAMPLE_2_CODING_CHALLENGES } from "@/components/dashboard/role/recruiter-portal-workspace";
 
 export const Route = createFileRoute("/exam/take")({
@@ -38,6 +37,7 @@ export const Route = createFileRoute("/exam/take")({
 function StudentLiveExamPage() {
   const [activeSection, setActiveSection] = useState<"mcq" | "coding">("mcq");
   const [currentMcqIdx, setCurrentMcqIdx] = useState(0);
+  const [activeCodingIdx, setActiveCodingIdx] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
   const [markedForReview, setMarkedForReview] = useState<Record<number, boolean>>({});
 
@@ -78,18 +78,15 @@ function StudentLiveExamPage() {
   useEffect(() => {
     if (!isExamStarted || isExamSubmitted) return;
 
-    // Fullscreen status monitor
     const checkFullscreen = () => {
       setIsFullscreenActive(!!document.fullscreenElement);
     };
 
-    // 1. Disable Right-Click
     const blockContextMenu = (e: MouseEvent) => {
       e.preventDefault();
       toast.error("Right-click is strictly disabled during the exam.");
     };
 
-    // 2. Disable Copy & Paste
     const blockCopy = (e: ClipboardEvent) => {
       e.preventDefault();
       toast.error("Copying text is disabled during the exam.");
@@ -99,7 +96,6 @@ function StudentLiveExamPage() {
       toast.error("Pasting text is disabled during the exam.");
     };
 
-    // 3. Block F5, F12, Ctrl+R, Ctrl+Shift+I
     const blockKeys = (e: KeyboardEvent) => {
       const blocked =
         e.key === "F5" ||
@@ -114,13 +110,11 @@ function StudentLiveExamPage() {
       }
     };
 
-    // 4. Warn before closing / refreshing
     const blockUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
       e.returnValue = "Exam is in progress. Are you sure you want to leave?";
     };
 
-    // 5. Detect Tab switching / Focus loss (Max 3 attempts)
     const handleVisibilityChange = () => {
       if (document.hidden && !isExamSubmitted) {
         setTabViolations((prev) => {
@@ -154,7 +148,7 @@ function StudentLiveExamPage() {
       window.removeEventListener("beforeunload", blockUnload);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [isExamSubmitted]);
+  }, [isExamStarted, isExamSubmitted]);
 
   const requestFullscreenMode = () => {
     const el = document.documentElement;
@@ -182,8 +176,8 @@ function StudentLiveExamPage() {
       correctMcqCount++;
     }
   });
-  const mcqScore = correctMcqCount * 1; // 1 mark each
-  const totalScore = mcqScore + 45; // Simulated coding marks
+  const mcqScore = correctMcqCount * 1;
+  const totalScore = mcqScore + 45;
   const passStatus = totalScore >= 50;
 
   // Format Timer
@@ -192,47 +186,52 @@ function StudentLiveExamPage() {
   const timerFormatted = `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 
   const currentMcq = SAMPLE_20_MCQS[currentMcqIdx]!;
+  const currentCodingProb = SAMPLE_2_CODING_CHALLENGES[activeCodingIdx]!;
+
+  const activeCompilerLang = selectedCompilerLangs[currentCodingProb.id] ?? currentCodingProb.compilers[0]!.name;
+  const activeCompilerObj = currentCodingProb.compilers.find((c: any) => c.name === activeCompilerLang) ?? currentCodingProb.compilers[0]!;
+  const codeVal = userCode[currentCodingProb.id] ?? activeCompilerObj.code;
 
   return (
     <div
-      className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none relative"
+      className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans select-none relative"
       onContextMenu={(e) => e.preventDefault()}
       onCopy={(e) => e.preventDefault()}
       onPaste={(e) => e.preventDefault()}
     >
       {/* 1. INITIAL ENTRY GATE MODAL (Before Start) */}
       {!isExamStarted && (
-        <div className="fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-6">
-          <div className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 text-center shadow-2xl animate-fade-up">
-            <div className="size-20 rounded-full bg-blue-600/15 border-2 border-blue-500/40 grid place-items-center mx-auto text-blue-400">
+        <div className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-6">
+          <div className="w-full max-w-xl bg-white border border-slate-200 rounded-3xl p-8 space-y-6 text-center shadow-2xl animate-fade-up">
+            <div className="size-20 rounded-full bg-blue-50 border-2 border-blue-200 grid place-items-center mx-auto text-blue-600">
               <Shield className="size-10" />
             </div>
 
             <div className="space-y-2">
               <Badge className="bg-blue-600 text-white font-mono">MANDATORY PROCTORED ENVIRONMENT</Badge>
-              <h2 className="text-2xl font-extrabold font-sans text-white">
+              <h2 className="text-2xl font-extrabold font-sans text-slate-900">
                 Proctored Assessment Security Agreement
               </h2>
-              <p className="text-xs text-slate-400 font-mono">
+              <p className="text-xs text-slate-500 font-mono">
                 Google Cloud Systems &amp; Coding Assessment 2026 • 90 Minutes
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-left text-xs font-mono space-y-2 text-slate-300">
-              <p className="font-bold text-blue-400 mb-1.5 flex items-center gap-1.5">
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs font-mono space-y-2 text-slate-700">
+              <p className="font-bold text-blue-700 mb-1.5 flex items-center gap-1.5">
                 <Lock className="size-4" /> Strictly Enforced Security Rules:
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-emerald-400">✓</span> <strong>Fullscreen Mode:</strong> Automatically enabled upon starting.
+                <span className="text-emerald-600 font-bold">✓</span> <strong>Fullscreen Mode:</strong> Automatically enabled upon starting.
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-rose-400">❌</span> <strong>Copy &amp; Paste:</strong> Completely disabled in all questions &amp; code editors.
+                <span className="text-rose-600 font-bold">❌</span> <strong>Copy &amp; Paste:</strong> Completely disabled in all questions &amp; code editors.
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-rose-400">❌</span> <strong>Right-Click &amp; Shortcuts:</strong> Blocked (F5, Ctrl+R, F12 disabled).
+                <span className="text-rose-600 font-bold">❌</span> <strong>Right-Click &amp; Shortcuts:</strong> Blocked (F5, Ctrl+R, F12 disabled).
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-amber-400">⚠️</span> <strong>Tab-Switch Violations:</strong> Maximum 3 allowed. Exceeding 3 auto-submits exam.
+                <span className="text-amber-600 font-bold">⚠️</span> <strong>Tab-Switch Violations:</strong> Maximum 3 allowed. Exceeding 3 auto-submits exam.
               </p>
             </div>
 
@@ -243,7 +242,7 @@ function StudentLiveExamPage() {
                 setIsExamStarted(true);
                 toast.success("Security restrictions active. Good luck!");
               }}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm rounded-2xl h-12 gap-2 shadow-xl shadow-emerald-600/30 cursor-pointer"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm rounded-2xl h-12 gap-2 shadow-xl shadow-emerald-600/30 cursor-pointer"
             >
               <Play className="size-5" /> Start Exam &amp; Enter Fullscreen Mode
             </Button>
@@ -253,18 +252,18 @@ function StudentLiveExamPage() {
 
       {/* 2. FULLSCREEN ENFORCEMENT OVERLAY GUARD (If student exits fullscreen during test) */}
       {isExamStarted && !isFullscreenActive && !isExamSubmitted && (
-        <div className="fixed inset-0 z-[90] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-6">
-          <div className="w-full max-w-md bg-slate-900 border border-rose-500/50 rounded-3xl p-8 space-y-5 text-center shadow-2xl animate-pulse">
-            <div className="size-20 rounded-full bg-rose-500/20 border-2 border-rose-500/50 grid place-items-center mx-auto text-rose-500">
+        <div className="fixed inset-0 z-[90] bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-6">
+          <div className="w-full max-w-md bg-white border border-rose-200 rounded-3xl p-8 space-y-5 text-center shadow-2xl">
+            <div className="size-20 rounded-full bg-rose-50 border-2 border-rose-200 grid place-items-center mx-auto text-rose-600">
               <AlertTriangle className="size-10" />
             </div>
 
             <div className="space-y-1.5">
               <Badge className="bg-rose-600 text-white font-mono">PROCTORING ALERT</Badge>
-              <h3 className="text-xl font-extrabold font-sans text-rose-500">
+              <h3 className="text-xl font-extrabold font-sans text-rose-600">
                 Fullscreen Mode Required!
               </h3>
-              <p className="text-xs text-slate-300 font-mono">
+              <p className="text-xs text-slate-600 font-mono">
                 You exited fullscreen mode. You must return to fullscreen mode immediately to continue your assessment.
               </p>
             </div>
@@ -272,7 +271,7 @@ function StudentLiveExamPage() {
             <Button
               size="lg"
               onClick={requestFullscreenMode}
-              className="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-2xl h-11 gap-2 shadow-lg shadow-rose-600/30 cursor-pointer"
+              className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-2xl h-11 gap-2 shadow-lg shadow-rose-600/30 cursor-pointer"
             >
               <Maximize2 className="size-4" /> Re-enter Fullscreen Mode
             </Button>
@@ -280,17 +279,17 @@ function StudentLiveExamPage() {
         </div>
       )}
 
-      {/* EXAM TOP NAVIGATION HEADER */}
-      <header className="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur px-6 flex items-center justify-between sticky top-0 z-50">
+      {/* EXAM TOP NAVIGATION HEADER (WHITE CLEAN THEME) */}
+      <header className="h-16 border-b border-slate-200 bg-white px-6 flex items-center justify-between sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="size-9 rounded-xl bg-blue-600 grid place-items-center text-white font-bold shadow-lg shadow-blue-500/20">
+          <div className="size-9 rounded-xl bg-blue-600 grid place-items-center text-white font-bold shadow-md shadow-blue-500/20">
             <FileCheck2 className="size-5" />
           </div>
           <div>
-            <h1 className="font-extrabold text-sm font-sans tracking-wide text-white">
+            <h1 className="font-extrabold text-sm font-sans tracking-tight text-slate-900">
               Google Cloud Systems &amp; Coding Assessment 2026
             </h1>
-            <p className="text-[0.68rem] font-mono text-slate-400">
+            <p className="text-[0.68rem] font-mono text-slate-500">
               Exam ID: AST-GGL-2026-01 • Version v1.2 • Google Cloud India
             </p>
           </div>
@@ -302,23 +301,23 @@ function StudentLiveExamPage() {
             <Button
               size="sm"
               onClick={requestFullscreenMode}
-              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl h-8 gap-1.5 animate-bounce"
+              className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl h-8 gap-1.5 shadow-sm"
             >
-              <Maximize2 className="size-3.5" /> Enable Fullscreen Mode
+              <Maximize2 className="size-3.5" /> Enable Fullscreen
             </Button>
           )}
 
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800/80 rounded-xl border border-slate-700 font-mono text-xs">
-            <Clock className="size-4 text-amber-400 animate-pulse" />
-            <span className="text-slate-400">Time Remaining:</span>
-            <span className="font-extrabold text-amber-400 text-sm tracking-wider">{timerFormatted}</span>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 bg-slate-100 rounded-xl border border-slate-200 font-mono text-xs">
+            <Clock className="size-4 text-amber-600" />
+            <span className="text-slate-500">Time Remaining:</span>
+            <span className="font-extrabold text-amber-600 text-sm tracking-wider">{timerFormatted}</span>
           </div>
 
           <div
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border text-xs font-mono font-bold ${
               tabViolations > 0
-                ? "bg-rose-500/20 border-rose-500/50 text-rose-300"
-                : "bg-emerald-500/20 border-emerald-500/50 text-emerald-300"
+                ? "bg-rose-50 border-rose-200 text-rose-700"
+                : "bg-emerald-50 border-emerald-200 text-emerald-700"
             }`}
           >
             <Shield className="size-4" />
@@ -329,7 +328,7 @@ function StudentLiveExamPage() {
             <Button
               size="sm"
               onClick={handleSubmitExam}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-9 px-4 gap-1.5 shadow-lg shadow-emerald-600/30"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-9 px-4 gap-1.5 shadow-md shadow-emerald-600/20 cursor-pointer"
             >
               <Send className="size-3.5" /> Submit Exam
             </Button>
@@ -339,15 +338,15 @@ function StudentLiveExamPage() {
 
       {/* EXAM SUBMITTED SCORECARD RESULT OVERLAY */}
       {isExamSubmitted ? (
-        <main className="flex-1 flex items-center justify-center p-6">
-          <div className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 text-center shadow-2xl">
+        <main className="flex-1 flex items-center justify-center p-6 bg-slate-100">
+          <div className="w-full max-w-xl bg-white border border-slate-200 rounded-3xl p-8 space-y-6 text-center shadow-2xl">
             <div
               className={`size-24 rounded-full mx-auto grid place-items-center border-2 ${
                 isAutoSubmitted
-                  ? "bg-rose-500/10 border-rose-500/40 text-rose-500"
+                  ? "bg-rose-50 border-rose-200 text-rose-600"
                   : passStatus
-                  ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-400"
-                  : "bg-amber-500/10 border-amber-500/40 text-amber-400"
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-600"
+                  : "bg-amber-50 border-amber-200 text-amber-600"
               }`}
             >
               {isAutoSubmitted ? (
@@ -369,12 +368,12 @@ function StudentLiveExamPage() {
               >
                 {isAutoSubmitted ? "AUTO-SUBMITTED (PROCTORING VIOLATION)" : passStatus ? "PASSED CUTOFF" : "COMPLETED"}
               </Badge>
-              <h2 className="text-2xl font-extrabold font-sans text-white">
+              <h2 className="text-2xl font-extrabold font-sans text-slate-900">
                 {isAutoSubmitted
                   ? "Exam Terminated & Submitted"
                   : "Assessment Submitted Successfully!"}
               </h2>
-              <p className="text-xs text-slate-400 font-mono">
+              <p className="text-xs text-slate-500 font-mono">
                 {isAutoSubmitted
                   ? "Exceeded maximum allowed 3 tab-switch proctoring violations."
                   : "Your response has been recorded and submitted to Google Cloud India recruitment team."}
@@ -383,24 +382,24 @@ function StudentLiveExamPage() {
 
             {/* SCORE SUMMARY CARDS */}
             <div className="grid grid-cols-3 gap-3 font-mono text-xs">
-              <div className="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-1">
-                <span className="text-slate-400 text-[0.65rem]">MCQ Score</span>
-                <p className="text-xl font-extrabold text-white">{correctMcqCount} / 20</p>
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[0.65rem]">MCQ Score</span>
+                <p className="text-xl font-extrabold text-slate-900">{correctMcqCount} / 20</p>
               </div>
-              <div className="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-1">
-                <span className="text-slate-400 text-[0.65rem]">Coding Marks</span>
-                <p className="text-xl font-extrabold text-purple-400">45 / 50</p>
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[0.65rem]">Coding Marks</span>
+                <p className="text-xl font-extrabold text-purple-600">45 / 50</p>
               </div>
-              <div className="p-3.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-1">
-                <span className="text-slate-400 text-[0.65rem]">Total Percentage</span>
-                <p className="text-xl font-extrabold text-emerald-400">
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[0.65rem]">Total Percentage</span>
+                <p className="text-xl font-extrabold text-emerald-600">
                   {Math.round((totalScore / 70) * 100)}%
                 </p>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-800/40 border border-slate-800 text-left text-xs font-mono space-y-1.5 text-slate-300">
-              <p className="font-bold text-white mb-2">📋 Assessment Submission Summary:</p>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs font-mono space-y-1.5 text-slate-700">
+              <p className="font-bold text-slate-900 mb-2">📋 Assessment Submission Summary:</p>
               <p>• MCQ Questions Attempted: <strong>{answeredMcqCount} / 20</strong></p>
               <p>• Correct MCQ Answers: <strong>{correctMcqCount}</strong></p>
               <p>• Coding Problems Submitted: <strong>2 / 2 (All test cases passed)</strong></p>
@@ -409,7 +408,7 @@ function StudentLiveExamPage() {
 
             <Button
               onClick={() => (window.location.href = "/student/dashboard")}
-              className="w-full bg-blue-600 hover:bg-blue-500 font-bold rounded-xl h-10 text-xs"
+              className="w-full bg-blue-600 hover:bg-blue-700 font-bold text-white rounded-xl h-10 text-xs shadow-md"
             >
               Back to Student Portal
             </Button>
@@ -417,53 +416,50 @@ function StudentLiveExamPage() {
         </main>
       ) : (
         /* LIVE EXAMINATION ENVIRONMENT WORKSPACE */
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-0 overflow-hidden">
-          {/* MAIN QUESTION WORKSPACE (3 COLS) */}
-          <main className="lg:col-span-3 flex flex-col border-r border-slate-800 overflow-y-auto">
-            {/* SECTION TAB SELECTOR */}
-            <div className="p-4 border-b border-slate-800 bg-slate-900/50 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant={activeSection === "mcq" ? "default" : "outline"}
-                  onClick={() => setActiveSection("mcq")}
-                  className={`rounded-xl text-xs font-bold ${
-                    activeSection === "mcq"
-                      ? "bg-blue-600 text-white"
-                      : "border-slate-700 text-slate-300"
-                  }`}
-                >
-                  Section 1: Technical MCQs (20 Questions)
-                </Button>
-                <Button
-                  size="sm"
-                  variant={activeSection === "coding" ? "default" : "outline"}
-                  onClick={() => setActiveSection("coding")}
-                  className={`rounded-xl text-xs font-bold ${
-                    activeSection === "coding"
-                      ? "bg-purple-600 text-white"
-                      : "border-slate-700 text-slate-300"
-                  }`}
-                >
-                  <Code2 className="size-3.5 mr-1" /> Section 2: Coding Challenges (2 Problems)
-                </Button>
-              </div>
-
-              <span className="text-xs font-mono text-slate-400">
-                {activeSection === "mcq"
-                  ? `Question ${currentMcqIdx + 1} of 20`
-                  : "2 Coding Challenges (50 Marks)"}
-              </span>
+        <div className="flex-1 flex flex-col bg-slate-100 overflow-hidden">
+          {/* SECTION SWITCHER HEADER BAR */}
+          <div className="h-12 bg-white border-b border-slate-200 px-6 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveSection("mcq")}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer ${
+                  activeSection === "mcq"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                Section 1: Technical MCQs (20 Questions)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveSection("coding")}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-all flex items-center gap-1.5 cursor-pointer ${
+                  activeSection === "coding"
+                    ? "bg-purple-600 text-white shadow-sm"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+              >
+                <Code2 className="size-3.5" /> Section 2: Coding Challenges (LeetCode View)
+              </button>
             </div>
 
-            {/* SECTION 1: MCQ WORKSPACE */}
-            {activeSection === "mcq" && (
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-6">
-                <div className="space-y-6">
+            <span className="text-xs font-mono text-slate-500">
+              {activeSection === "mcq"
+                ? `MCQ ${currentMcqIdx + 1} of 20`
+                : `Problem ${activeCodingIdx + 1} of 2 (LeetCode Workspace)`}
+            </span>
+          </div>
+
+          {/* SECTION 1: MCQ WORKSPACE */}
+          {activeSection === "mcq" && (
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-0 overflow-hidden">
+              <main className="lg:col-span-3 p-8 flex flex-col justify-between overflow-y-auto bg-white">
+                <div className="max-w-3xl space-y-6">
                   {/* QUESTION CARD */}
-                  <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 shadow-lg">
+                  <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 shadow-sm">
                     <div className="flex items-center justify-between">
-                      <Badge className="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-mono">
+                      <Badge className="bg-blue-100 text-blue-800 border border-blue-200 text-xs font-mono">
                         Q{currentMcqIdx + 1} • 1 Mark
                       </Badge>
                       <button
@@ -474,17 +470,17 @@ function StudentLiveExamPage() {
                             [currentMcqIdx]: !prev[currentMcqIdx],
                           }))
                         }
-                        className={`text-xs font-mono font-bold px-3 py-1 rounded-lg border transition-all ${
+                        className={`text-xs font-mono font-bold px-3 py-1 rounded-lg border transition-all cursor-pointer ${
                           markedForReview[currentMcqIdx]
-                            ? "bg-amber-500/20 border-amber-500/50 text-amber-300"
-                            : "bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200"
+                            ? "bg-amber-100 border-amber-300 text-amber-800"
+                            : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100"
                         }`}
                       >
                         {markedForReview[currentMcqIdx] ? "★ Marked for Review" : "☆ Mark for Review"}
                       </button>
                     </div>
 
-                    <h3 className="text-base font-semibold text-white leading-relaxed">
+                    <h3 className="text-base font-semibold text-slate-900 leading-relaxed font-sans">
                       {currentMcq.question}
                     </h3>
                   </div>
@@ -502,8 +498,8 @@ function StudentLiveExamPage() {
                           }
                           className={`w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between text-xs font-medium cursor-pointer ${
                             isSelected
-                              ? "bg-blue-600/20 border-blue-500 text-white shadow-lg shadow-blue-500/10"
-                              : "bg-slate-900/60 border-slate-800 text-slate-300 hover:bg-slate-800/70"
+                              ? "bg-blue-50 border-blue-500 text-blue-950 shadow-sm"
+                              : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
                           }`}
                         >
                           <div className="flex items-center gap-3">
@@ -511,14 +507,14 @@ function StudentLiveExamPage() {
                               className={`size-6 rounded-lg grid place-items-center text-[0.7rem] font-bold ${
                                 isSelected
                                   ? "bg-blue-600 text-white"
-                                  : "bg-slate-800 text-slate-400"
+                                  : "bg-slate-100 text-slate-500"
                               }`}
                             >
                               {String.fromCharCode(65 + oIdx)}
                             </span>
                             <span>{opt}</span>
                           </div>
-                          {isSelected && <CheckCircle className="size-4 text-blue-400" />}
+                          {isSelected && <CheckCircle className="size-4 text-blue-600" />}
                         </button>
                       );
                     })}
@@ -526,13 +522,13 @@ function StudentLiveExamPage() {
                 </div>
 
                 {/* BOTTOM PREV / NEXT NAVIGATION */}
-                <div className="flex items-center justify-between pt-6 border-t border-slate-800">
+                <div className="max-w-3xl flex items-center justify-between pt-6 border-t border-slate-200 mt-6">
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={currentMcqIdx === 0}
                     onClick={() => setCurrentMcqIdx((prev) => Math.max(0, prev - 1))}
-                    className="border-slate-700 text-slate-300 text-xs rounded-xl h-9 gap-1"
+                    className="border-slate-200 text-slate-700 text-xs rounded-xl h-9 gap-1 cursor-pointer"
                   >
                     <ChevronLeft className="size-4" /> Previous
                   </Button>
@@ -548,7 +544,7 @@ function StudentLiveExamPage() {
                             return next;
                           })
                         }
-                        className="text-xs font-mono text-slate-400 hover:text-rose-400 underline mr-2"
+                        className="text-xs font-mono text-slate-500 hover:text-rose-600 underline mr-2 cursor-pointer"
                       >
                         Clear Selection
                       </button>
@@ -561,210 +557,222 @@ function StudentLiveExamPage() {
                           ? setCurrentMcqIdx((prev) => prev + 1)
                           : setActiveSection("coding")
                       }
-                      className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl h-9 gap-1"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl h-9 gap-1 cursor-pointer"
                     >
                       {currentMcqIdx < 19 ? "Save & Next" : "Proceed to Coding Section"}{" "}
                       <ChevronRight className="size-4" />
                     </Button>
                   </div>
                 </div>
-              </div>
-            )}
+              </main>
 
-            {/* SECTION 2: CODING WORKSPACE */}
-            {activeSection === "coding" && (
-              <div className="p-6 space-y-6 flex-1 overflow-y-auto">
-                {SAMPLE_2_CODING_CHALLENGES.map((prob: any) => {
-                  const activeCompilerLang =
-                    selectedCompilerLangs[prob.id] ?? prob.compilers[0]!.name;
-                  const activeCompilerObj =
-                    prob.compilers.find((c: any) => c.name === activeCompilerLang) ?? prob.compilers[0]!;
-                  const codeVal = userCode[prob.id] ?? activeCompilerObj.code;
+              {/* PALETTE SIDEBAR */}
+              <aside className="p-5 bg-slate-50 border-l border-slate-200 space-y-6 overflow-y-auto">
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-2 font-mono text-xs shadow-xs">
+                  <span className="text-slate-500 text-[0.68rem] font-bold uppercase tracking-wider">
+                    Proctoring Security Rules
+                  </span>
+                  <div className="space-y-1 text-[0.68rem] text-slate-700">
+                    <p className="flex items-center gap-1.5"><span className="text-emerald-600 font-bold">✓</span> Webcam Monitoring: Active</p>
+                    <p className="flex items-center gap-1.5"><span className="text-emerald-600 font-bold">✓</span> Copy &amp; Paste: Disabled</p>
+                    <p className="flex items-center gap-1.5"><span className="text-emerald-600 font-bold">✓</span> Right-Click: Disabled</p>
+                    <p className="flex items-center gap-1.5"><span className="text-rose-600 font-bold">⚠️</span> Tab Violations: {tabViolations} / 3</p>
+                  </div>
+                </div>
 
-                  return (
-                    <div
-                      key={prob.id}
-                      className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 shadow-xl"
-                    >
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div>
-                          <h4 className="text-base font-extrabold text-white flex items-center gap-2 font-sans">
-                            <Code2 className="size-5 text-purple-400" /> {prob.title}
-                          </h4>
-                          <p className="text-xs font-mono text-slate-400">
-                            Time Limit: {prob.timeLimit} • Memory Limit: {prob.memoryLimit}
-                          </p>
-                        </div>
-                        <Badge className="bg-purple-600 text-white text-xs">{prob.marks} Marks</Badge>
-                      </div>
+                <div className="space-y-3 font-mono">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-slate-900">MCQ Question Palette</span>
+                    <span className="text-slate-500 text-[0.65rem]">{answeredMcqCount} / 20 Answered</span>
+                  </div>
 
-                      <p className="text-xs text-slate-300 leading-relaxed font-sans">{prob.statement}</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {SAMPLE_20_MCQS.map((_: any, idx: number) => {
+                      const isAnswered = userAnswers[idx] !== undefined;
+                      const isMarked = markedForReview[idx];
+                      const isCurrent = currentMcqIdx === idx && activeSection === "mcq";
 
-                      {/* COMPILER SELECTION TABS */}
-                      <div className="space-y-2">
-                        <label className="text-xs font-mono text-purple-400 font-bold block">
-                          Select Programming Language &amp; Compiler:
-                        </label>
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          {prob.compilers.map((c: any) => (
-                            <button
-                              key={c.name}
-                              type="button"
-                              onClick={() => {
-                                setSelectedCompilerLangs((prev) => ({
-                                  ...prev,
-                                  [prob.id]: c.name,
-                                }));
-                                setUserCode((prev) => ({ ...prev, [prob.id]: c.code }));
-                              }}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold border transition-all ${
-                                activeCompilerLang === c.name
-                                  ? "bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-600/20"
-                                  : "bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700"
-                              }`}
-                            >
-                              {c.name}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                      let btnClass = "bg-white text-slate-600 border-slate-200 hover:bg-slate-100";
+                      if (isCurrent) btnClass = "bg-blue-600 text-white border-blue-600 ring-2 ring-blue-500/30";
+                      else if (isMarked) btnClass = "bg-amber-100 text-amber-800 border-amber-300";
+                      else if (isAnswered) btnClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
 
-                      {/* CODE EDITOR TEXTAREA */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-xs font-mono text-slate-400">
-                          <span>Editor Workspace ({activeCompilerLang})</span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setUserCode((prev) => ({ ...prev, [prob.id]: activeCompilerObj.code }))
-                            }
-                            className="text-purple-400 hover:underline flex items-center gap-1"
-                          >
-                            <RotateCcw className="size-3" /> Reset Template
-                          </button>
-                        </div>
-                        <textarea
-                          value={codeVal}
-                          onChange={(e) =>
-                            setUserCode((prev) => ({ ...prev, [prob.id]: e.target.value }))
-                          }
-                          rows={10}
-                          className="w-full rounded-2xl bg-slate-950 border border-slate-800 p-4 font-mono text-xs text-slate-200 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500/40"
-                          spellCheck={false}
-                        />
-                      </div>
-
-                      {/* RUN TEST CASES BUTTON & OUTPUT PANEL */}
-                      <div className="flex items-center justify-between pt-2">
-                        <Button
-                          size="sm"
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
                           onClick={() => {
-                            setIsRunningCode(true);
-                            setTimeout(() => {
-                              setIsRunningCode(false);
-                              setTestOutput((prev) => ({
-                                ...prev,
-                                [prob.id]: `✓ Compilation Successful (${activeCompilerLang})\n[Test Case 1/4] Passed (0.012s)\n[Test Case 2/4] Passed (0.018s)\n[Test Case 3/4] Passed (0.015s)\n[Test Case 4/4] Passed (0.021s)\nResult: ALL 4 TEST CASES PASSED (100% Score)`,
-                              }));
-                              toast.success(`Passed all test cases for ${prob.title}!`);
-                            }, 1200);
+                            setActiveSection("mcq");
+                            setCurrentMcqIdx(idx);
                           }}
-                          className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl h-9 gap-1.5"
+                          className={`h-8 rounded-xl border font-mono text-xs font-bold transition-all cursor-pointer ${btnClass}`}
                         >
-                          <Play className="size-3.5" /> Compile &amp; Run Test Cases
-                        </Button>
-
-                        <span className="text-[0.68rem] font-mono text-slate-400">
-                          Auto-Saved Code • Ready for Submission
-                        </span>
-                      </div>
-
-                      {testOutput[prob.id] && (
-                        <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/40 text-emerald-400 font-mono text-xs space-y-1">
-                          <p className="font-bold flex items-center gap-1 text-emerald-300">
-                            <Terminal className="size-4" /> Output Console:
-                          </p>
-                          <pre className="whitespace-pre-wrap">{testOutput[prob.id]}</pre>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </main>
-
-          {/* SIDEBAR: QUESTION PALETTE & SUMMARY (1 COL) */}
-          <aside className="p-5 bg-slate-900/60 border-l border-slate-800 space-y-6 overflow-y-auto">
-            {/* PROCTORING SECURITY STATUS CARD */}
-            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 font-mono text-xs">
-              <span className="text-slate-400 text-[0.68rem] font-bold uppercase tracking-wider">
-                Proctoring Security Rules
-              </span>
-              <div className="space-y-1 text-[0.68rem] text-slate-300">
-                <p className="flex items-center gap-1.5">
-                  <span className="text-emerald-400">✓</span> Webcam AI Monitoring: Active
-                </p>
-                <p className="flex items-center gap-1.5">
-                  <span className="text-emerald-400">✓</span> Copy &amp; Paste: Disabled
-                </p>
-                <p className="flex items-center gap-1.5">
-                  <span className="text-emerald-400">✓</span> Right-Click: Disabled
-                </p>
-                <p className="flex items-center gap-1.5">
-                  <span className="text-rose-400">⚠️</span> Tab Violations: {tabViolations} / 3
-                </p>
-              </div>
+                          {idx + 1}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </aside>
             </div>
+          )}
 
-            {/* QUESTION PALETTE GRID */}
-            <div className="space-y-3 font-mono">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-white">Section 1 Palette</span>
-                <span className="text-slate-400 text-[0.65rem]">{answeredMcqCount} / 20 Answered</span>
-              </div>
-
-              <div className="grid grid-cols-5 gap-2">
-                {SAMPLE_20_MCQS.map((_: any, idx: number) => {
-                  const isAnswered = userAnswers[idx] !== undefined;
-                  const isMarked = markedForReview[idx];
-                  const isCurrent = currentMcqIdx === idx && activeSection === "mcq";
-
-                  let btnClass = "bg-slate-800 text-slate-400 border-slate-700";
-                  if (isCurrent) btnClass = "bg-blue-600 text-white border-blue-400 ring-2 ring-blue-500/50";
-                  else if (isMarked) btnClass = "bg-amber-500/20 text-amber-300 border-amber-500/50";
-                  else if (isAnswered) btnClass = "bg-emerald-500/20 text-emerald-300 border-emerald-500/50";
-
-                  return (
+          {/* SECTION 2: LEETCODE SPLIT CODING WORKSPACE */}
+          {activeSection === "coding" && (
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden bg-slate-100">
+              {/* LEFT PANE: PROBLEM STATEMENT (LEETCODE LIGHT MODE) */}
+              <div className="border-r border-slate-200 bg-white flex flex-col overflow-y-auto">
+                {/* PROBLEM SELECTOR TABS */}
+                <div className="p-3 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
+                  {SAMPLE_2_CODING_CHALLENGES.map((prob: any, idx: number) => (
                     <button
-                      key={idx}
+                      key={prob.id}
                       type="button"
-                      onClick={() => {
-                        setActiveSection("mcq");
-                        setCurrentMcqIdx(idx);
-                      }}
-                      className={`h-8 rounded-xl border font-mono text-xs font-bold transition-all ${btnClass}`}
+                      onClick={() => setActiveCodingIdx(idx)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                        activeCodingIdx === idx
+                          ? "bg-purple-600 border-purple-600 text-white shadow-xs"
+                          : "bg-white border-slate-200 text-slate-600 hover:bg-slate-100"
+                      }`}
                     >
-                      {idx + 1}
+                      <Code2 className="size-3.5" /> Problem {idx + 1} ({prob.marks} Marks)
                     </button>
-                  );
-                })}
-              </div>
-            </div>
+                  ))}
+                </div>
 
-            {/* PALETTE LEGEND */}
-            <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5 font-mono text-[0.65rem] text-slate-400">
-              <div className="flex items-center gap-2">
-                <span className="size-3 rounded bg-emerald-500/30 border border-emerald-500/60" /> Answered
+                {/* PROBLEM DESCRIPTION CONTENT */}
+                <div className="p-6 space-y-5 flex-1 font-sans text-xs">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">
+                      {currentCodingProb.title}
+                    </h2>
+                    <Badge className="bg-purple-100 text-purple-800 border border-purple-200 font-mono text-[0.65rem]">
+                      {currentCodingProb.marks} Marks
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-[0.7rem] font-mono text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <span>Difficulty: <strong className="text-purple-600">Medium-Hard</strong></span>
+                    <span>Time Limit: <strong>{currentCodingProb.timeLimit}</strong></span>
+                    <span>Memory Limit: <strong>{currentCodingProb.memoryLimit}</strong></span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-slate-900 uppercase font-mono text-[0.7rem] tracking-wider">Problem Description</h4>
+                    <p className="text-slate-700 leading-relaxed text-xs">{currentCodingProb.statement}</p>
+                  </div>
+
+                  {/* SAMPLE INPUT / OUTPUT */}
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <span className="font-mono text-[0.65rem] font-bold text-slate-500 uppercase block">Sample Input</span>
+                      <pre className="font-mono text-xs text-slate-800 font-bold whitespace-pre-wrap">{currentCodingProb.sampleInput}</pre>
+                    </div>
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <span className="font-mono text-[0.65rem] font-bold text-slate-500 uppercase block">Sample Output</span>
+                      <pre className="font-mono text-xs text-slate-800 font-bold whitespace-pre-wrap">{currentCodingProb.sampleOutput}</pre>
+                    </div>
+                  </div>
+
+                  {/* CONSTRAINTS */}
+                  <div className="p-3 rounded-xl bg-purple-50 border border-purple-100 space-y-1 font-mono text-[0.68rem] text-purple-900">
+                    <p className="font-bold">⚡ Technical Constraints:</p>
+                    <p>• 1 &le; N &le; 10<sup>5</sup> key operations</p>
+                    <p>• Time complexity must be strictly O(1) average time per cache hit/miss access.</p>
+                    <p>• Code must run against 4 hidden test cases.</p>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="size-3 rounded bg-amber-500/30 border border-amber-500/60" /> Marked for Review
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="size-3 rounded bg-slate-800 border border-slate-700" /> Not Attempted
+
+              {/* RIGHT PANE: LEETCODE CODE EDITOR & COMPILER (WHITE LIGHT THEME) */}
+              <div className="bg-slate-900 text-slate-100 flex flex-col border-l border-slate-800">
+                {/* COMPILER TOOLBAR */}
+                <div className="p-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between font-mono text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-400 font-bold">Language:</span>
+                    <select
+                      value={activeCompilerLang}
+                      onChange={(e) => {
+                        const newLang = e.target.value;
+                        setSelectedCompilerLangs((prev) => ({
+                          ...prev,
+                          [currentCodingProb.id]: newLang,
+                        }));
+                        const cObj = currentCodingProb.compilers.find((c: any) => c.name === newLang);
+                        if (cObj) setUserCode((prev) => ({ ...prev, [currentCodingProb.id]: cObj.code }));
+                      }}
+                      className="bg-slate-900 text-purple-300 font-bold border border-slate-700 rounded-lg px-2.5 py-1 text-xs cursor-pointer focus:outline-none"
+                    >
+                      {currentCodingProb.compilers.map((c: any) => (
+                        <option key={c.name} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setUserCode((prev) => ({ ...prev, [currentCodingProb.id]: activeCompilerObj.code }))
+                    }
+                    className="text-slate-400 hover:text-white flex items-center gap-1 text-[0.68rem] cursor-pointer"
+                  >
+                    <RotateCcw className="size-3" /> Reset Starter Code
+                  </button>
+                </div>
+
+                {/* CODE EDITOR TEXTAREA (MONOSPACE) */}
+                <div className="flex-1 p-4 bg-slate-950 flex flex-col">
+                  <textarea
+                    value={codeVal}
+                    onChange={(e) =>
+                      setUserCode((prev) => ({ ...prev, [currentCodingProb.id]: e.target.value }))
+                    }
+                    rows={16}
+                    className="w-full flex-1 rounded-xl bg-slate-900 border border-slate-800 p-4 font-mono text-xs text-purple-200 leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    spellCheck={false}
+                  />
+                </div>
+
+                {/* TEST RUNNER ACTION BAR & OUTPUT CONSOLE */}
+                <div className="p-4 bg-slate-950 border-t border-slate-800 space-y-3 font-mono">
+                  <div className="flex items-center justify-between">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setIsRunningCode(true);
+                        setTimeout(() => {
+                          setIsRunningCode(false);
+                          setTestOutput((prev) => ({
+                            ...prev,
+                            [currentCodingProb.id]: `✓ Compilation Successful (${activeCompilerLang})\n[Test Case 1/4] Passed (0.012s)\n[Test Case 2/4] Passed (0.018s)\n[Test Case 3/4] Passed (0.015s)\n[Test Case 4/4] Passed (0.021s)\nResult: ALL 4 TEST CASES PASSED (100% Score)`,
+                          }));
+                          toast.success(`Passed all test cases for ${currentCodingProb.title}!`);
+                        }, 1000);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl h-9 gap-1.5 cursor-pointer shadow-md shadow-purple-600/20"
+                    >
+                      <Play className="size-3.5" /> Run Code (Compile &amp; Test)
+                    </Button>
+
+                    <span className="text-[0.65rem] text-slate-400">
+                      Auto-Saved • Ready to Submit
+                    </span>
+                  </div>
+
+                  {testOutput[currentCodingProb.id] && (
+                    <div className="p-3 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-400 font-mono text-xs space-y-1">
+                      <p className="font-bold flex items-center gap-1 text-emerald-300">
+                        <Terminal className="size-3.5" /> LeetCode Console Output:
+                      </p>
+                      <pre className="whitespace-pre-wrap text-[0.68rem]">{testOutput[currentCodingProb.id]}</pre>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </aside>
+          )}
         </div>
       )}
     </div>
