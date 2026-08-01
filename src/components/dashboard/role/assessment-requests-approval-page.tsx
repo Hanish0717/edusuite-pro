@@ -338,6 +338,40 @@ export function AssessmentRequestsApprovalWorkspace() {
   const [changeCategory, setChangeCategory] = useState("Question Issues");
   const [changeRemarks, setChangeRemarks] = useState("");
 
+  // Helper for copying text with fallback for HTTP / restricted clipboard environments
+  const fallbackCopyTextToClipboard = (text: string, label: string = "link") => {
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const successful = document.execCommand("copy");
+      document.body.removeChild(textArea);
+      if (successful) {
+        toast.success(`Copied ${label} to clipboard!`);
+      } else {
+        prompt("Copy exam link manually:", text);
+      }
+    } catch (err) {
+      prompt("Copy exam link manually:", text);
+    }
+  };
+
+  const copyToClipboard = (text: string, label: string = "link") => {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(
+        () => toast.success(`Copied ${label} to clipboard!`),
+        () => fallbackCopyTextToClipboard(text, label)
+      );
+    } else {
+      fallbackCopyTextToClipboard(text, label);
+    }
+  };
+
   // Handlers
   const handleConfirmApprove = () => {
     if (!selectedReq) return;
@@ -616,8 +650,10 @@ export function AssessmentRequestsApprovalWorkspace() {
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          navigator.clipboard.writeText(`http://192.168.1.122:8082/exam/take?id=${req.assessmentId}`);
-                          toast.success(`Copied exam link for ${req.name} to clipboard!`);
+                          copyToClipboard(
+                            `http://192.168.1.122:8082/exam/take?id=${req.assessmentId}`,
+                            `exam link for ${req.name}`
+                          );
                         }}
                         className="h-7 text-[0.68rem] text-blue-600 border-blue-200 hover:bg-blue-50 rounded-lg cursor-pointer font-bold"
                         title="Copy Live Student Exam Conducting URL"
@@ -738,8 +774,10 @@ export function AssessmentRequestsApprovalWorkspace() {
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          navigator.clipboard.writeText(`http://192.168.1.122:8082/exam/take?id=${selectedReq.assessmentId}`);
-                          toast.success("Copied Student Exam URL to clipboard!");
+                          copyToClipboard(
+                            `http://192.168.1.122:8082/exam/take?id=${selectedReq.assessmentId}`,
+                            "Student Exam URL"
+                          );
                         }}
                         className="h-7 text-xs rounded-lg cursor-pointer shrink-0 gap-1 font-sans"
                       >
