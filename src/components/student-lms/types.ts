@@ -4,7 +4,6 @@ export type LmsTabType =
   | "assignments"
   | "quizzes"
   | "online-classes"
-  | "discussion-forum"
   | "progress"
   | "certificates";
 

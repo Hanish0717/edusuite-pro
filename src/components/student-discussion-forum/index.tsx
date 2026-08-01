@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ForumPost } from "./types";
+import { MOCK_FORUM_POSTS } from "../student-lms/mock-data";
+import { ForumPost } from "../student-lms/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,16 +16,14 @@ import {
   User,
   Paperclip,
   Tag,
+  Search,
+  MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
-interface DiscussionForumProps {
-  posts: ForumPost[];
-  searchQuery: string;
-}
-
-export function DiscussionForum({ posts: initialPosts, searchQuery }: DiscussionForumProps) {
-  const [posts, setPosts] = useState<ForumPost[]>(initialPosts);
+export function StudentDiscussionForumModule() {
+  const [posts, setPosts] = useState<ForumPost[]>(MOCK_FORUM_POSTS);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>("All");
   const [newQuestionModalOpen, setNewQuestionModalOpen] = useState(false);
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
@@ -125,26 +124,39 @@ export function DiscussionForum({ posts: initialPosts, searchQuery }: Discussion
   };
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto">
-      {/* TOOLBAR */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="h-5 w-5 text-indigo-600" />
+    <div className="p-4 sm:p-6 space-y-6 max-w-[1400px] mx-auto min-h-screen">
+      {/* HEADER CARD */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-500/20">
+            <MessageCircle className="h-6 w-6" />
+          </div>
           <div>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-              Course Peer & Faculty Discussion Forum
-            </h3>
-            <p className="text-[11px] text-slate-500 font-medium">
-              Ask doubts, discuss complex theory proofs & get official faculty replies.
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+              Discussion Forum
+            </h1>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">
+              Ask academic questions, discuss complex theory proofs, and engage with peers & faculty.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+            <Input
+              type="text"
+              placeholder="Search discussions or tags..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-9 text-xs rounded-xl border-slate-200 dark:border-slate-700"
+            />
+          </div>
+
           <select
             value={selectedCourseFilter}
             onChange={(e) => setSelectedCourseFilter(e.target.value)}
-            className="h-8 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 font-bold text-slate-700 dark:text-slate-200"
+            className="h-9 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 font-bold text-slate-700 dark:text-slate-200"
           >
             {courseCodes.map((c) => (
               <option key={c} value={c}>{c === "All" ? "All Courses" : c}</option>
@@ -153,17 +165,16 @@ export function DiscussionForum({ posts: initialPosts, searchQuery }: Discussion
 
           <Button
             onClick={() => setNewQuestionModalOpen(true)}
-            size="sm"
-            className="h-8 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-1.5 shadow-xs"
+            className="h-9 text-xs rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold gap-1.5 shadow-sm"
           >
-            <Plus className="h-3.5 w-3.5" /> Ask Question
+            <Plus className="h-4 w-4" /> Ask Question
           </Button>
         </div>
       </div>
 
       {/* POSTS FEED */}
-      <div className="space-y-3">
-        {filteredPosts.slice(0, 15).map((post) => (
+      <div className="space-y-4 max-w-4xl">
+        {filteredPosts.slice(0, 20).map((post) => (
           <div
             key={post.id}
             className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs space-y-3"
@@ -174,7 +185,7 @@ export function DiscussionForum({ posts: initialPosts, searchQuery }: Discussion
                 <img
                   src={post.authorAvatar}
                   alt={post.author}
-                  className="w-8 h-8 rounded-full object-cover border border-slate-200"
+                  className="w-9 h-9 rounded-full object-cover border border-slate-200"
                 />
                 <div>
                   <div className="flex items-center gap-2">
@@ -199,9 +210,9 @@ export function DiscussionForum({ posts: initialPosts, searchQuery }: Discussion
 
             {/* CONTENT */}
             <div className="space-y-1">
-              <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
                 {post.title}
-              </h4>
+              </h3>
               <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                 {post.content}
               </p>
@@ -218,27 +229,27 @@ export function DiscussionForum({ posts: initialPosts, searchQuery }: Discussion
 
             {/* ACTIONS BAR */}
             <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <button
                   onClick={() => handleUpvote(post.id)}
-                  className={`flex items-center gap-1 text-[11px] font-mono font-bold transition-colors ${
+                  className={`flex items-center gap-1 text-xs font-mono font-bold transition-colors ${
                     post.isUpvoted ? "text-indigo-600" : "text-slate-500 hover:text-slate-900"
                   }`}
                 >
-                  <ThumbsUp className={`h-3.5 w-3.5 ${post.isUpvoted ? "fill-indigo-600" : ""}`} /> {post.upvotes} Upvotes
+                  <ThumbsUp className={`h-4 w-4 ${post.isUpvoted ? "fill-indigo-600" : ""}`} /> {post.upvotes} Upvotes
                 </button>
 
                 <button
                   onClick={() => setActiveReplyId(activeReplyId === post.id ? null : post.id)}
-                  className="text-[11px] font-semibold text-slate-500 hover:text-indigo-600 transition-colors"
+                  className="text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors flex items-center gap-1"
                 >
-                  {post.replies.length} Replies
+                  <MessageSquare className="h-3.5 w-3.5" /> {post.replies.length} Replies
                 </button>
               </div>
 
               {post.hasFacultyReply && (
                 <span className="text-[10px] font-mono text-emerald-600 font-bold flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3" /> Faculty Responded
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Faculty Responded
                 </span>
               )}
             </div>
@@ -271,14 +282,14 @@ export function DiscussionForum({ posts: initialPosts, searchQuery }: Discussion
                   placeholder="Write a constructive response..."
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  className="h-8 text-xs rounded-xl flex-1"
+                  className="h-9 text-xs rounded-xl flex-1"
                 />
                 <Button
                   onClick={() => handleAddReply(post.id)}
                   size="sm"
-                  className="h-8 px-3 rounded-xl bg-indigo-600 text-white text-xs"
+                  className="h-9 px-4 rounded-xl bg-indigo-600 text-white text-xs font-bold"
                 >
-                  <Send className="h-3 w-3" />
+                  <Send className="h-3.5 w-3.5" />
                 </Button>
               </div>
             )}

@@ -17,7 +17,6 @@ import { CourseMaterials } from "./course-materials";
 import { Assignments } from "./assignments";
 import { Quizzes } from "./quizzes";
 import { OnlineClasses } from "./online-classes";
-import { DiscussionForum } from "./discussion-forum";
 import { ProgressAnalytics } from "./progress";
 import { Certificates } from "./certificates";
 import { AiLearningWidget } from "./ai-learning-widget";
@@ -126,10 +125,6 @@ export function StudentLmsModule() {
 
               {activeTab === "online-classes" && (
                 <OnlineClasses classes={MOCK_LIVE_CLASSES} searchQuery={searchQuery} />
-              )}
-
-              {activeTab === "discussion-forum" && (
-                <DiscussionForum posts={MOCK_FORUM_POSTS} searchQuery={searchQuery} />
               )}
 
               {activeTab === "progress" && (

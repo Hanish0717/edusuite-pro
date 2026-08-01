@@ -43,9 +43,8 @@ export function LmsDashboardHeader({
     { id: "assignments", label: "Assignments" },
     { id: "quizzes", label: "Quizzes" },
     { id: "online-classes", label: "Online Classes" },
-    { id: "discussion-forum", label: "Discussion Forum" },
     { id: "progress", label: "Progress & Analytics" },
-    { id: "certificates", label: "Certificates & Badges" },
+    { id: "certificates", label: "Certificates" },
   ];
 
   const kpiList = [

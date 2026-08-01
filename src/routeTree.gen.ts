@@ -115,6 +115,7 @@ import { Route as StudentIndexRouteImport } from './routes/student.index'
 import { Route as StudentAttendanceRouteImport } from './routes/student.attendance'
 import { Route as StudentCoursesRouteImport } from './routes/student.courses'
 import { Route as StudentDashboardRouteImport } from './routes/student.dashboard'
+import { Route as StudentDiscussionForumRouteImport } from './routes/student.discussion-forum'
 import { Route as StudentExaminationsRouteImport } from './routes/student.examinations'
 import { Route as StudentFeedbackRouteImport } from './routes/student.feedback'
 import { Route as StudentFinanceRouteImport } from './routes/student.finance'
@@ -667,6 +668,11 @@ const StudentDashboardRoute = StudentDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentDiscussionForumRoute = StudentDiscussionForumRouteImport.update({
+  id: '/discussion-forum',
+  path: '/discussion-forum',
+  getParentRoute: () => StudentRoute,
+} as any)
 const StudentExaminationsRoute = StudentExaminationsRouteImport.update({
   id: '/examinations',
   path: '/examinations',
@@ -858,6 +864,7 @@ export interface FileRoutesByFullPath {
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/discussion-forum': typeof StudentDiscussionForumRoute
   '/student/examinations': typeof StudentExaminationsRoute
   '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
@@ -971,6 +978,7 @@ export interface FileRoutesByTo {
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/discussion-forum': typeof StudentDiscussionForumRoute
   '/student/examinations': typeof StudentExaminationsRoute
   '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
@@ -1099,6 +1107,7 @@ export interface FileRoutesById {
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
+  '/student/discussion-forum': typeof StudentDiscussionForumRoute
   '/student/examinations': typeof StudentExaminationsRoute
   '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
@@ -1228,6 +1237,7 @@ export interface FileRouteTypes {
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
+    | '/student/discussion-forum'
     | '/student/examinations'
     | '/student/feedback'
     | '/student/finance'
@@ -1341,6 +1351,7 @@ export interface FileRouteTypes {
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
+    | '/student/discussion-forum'
     | '/student/examinations'
     | '/student/feedback'
     | '/student/finance'
@@ -1468,6 +1479,7 @@ export interface FileRouteTypes {
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
+    | '/student/discussion-forum'
     | '/student/examinations'
     | '/student/feedback'
     | '/student/finance'
@@ -2295,6 +2307,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentDashboardRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/discussion-forum': {
+      id: '/student/discussion-forum'
+      path: '/discussion-forum'
+      fullPath: '/student/discussion-forum'
+      preLoaderRoute: typeof StudentDiscussionForumRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/examinations': {
       id: '/student/examinations'
       path: '/examinations'
@@ -2646,6 +2665,7 @@ interface StudentRouteChildren {
   StudentAttendanceRoute: typeof StudentAttendanceRoute
   StudentCoursesRoute: typeof StudentCoursesRoute
   StudentDashboardRoute: typeof StudentDashboardRoute
+  StudentDiscussionForumRoute: typeof StudentDiscussionForumRoute
   StudentExaminationsRoute: typeof StudentExaminationsRoute
   StudentFeedbackRoute: typeof StudentFeedbackRoute
   StudentFinanceRoute: typeof StudentFinanceRoute
@@ -2661,6 +2681,7 @@ const StudentRouteChildren: StudentRouteChildren = {
   StudentAttendanceRoute: StudentAttendanceRoute,
   StudentCoursesRoute: StudentCoursesRoute,
   StudentDashboardRoute: StudentDashboardRoute,
+  StudentDiscussionForumRoute: StudentDiscussionForumRoute,
   StudentExaminationsRoute: StudentExaminationsRoute,
   StudentFeedbackRoute: StudentFeedbackRoute,
   StudentFinanceRoute: StudentFinanceRoute,
