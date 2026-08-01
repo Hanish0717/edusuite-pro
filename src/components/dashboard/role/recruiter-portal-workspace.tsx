@@ -498,7 +498,7 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const [parsedQuestions, setParsedQuestions] = useState<Array<{
     id: string;
     type: "MCQ" | "Coding" | "SQL";
-    subject: "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Operating Systems" | "Computer Networks" | "Aptitude & Reasoning";
+    subject: "Verbal Ability" | "Logical Reasoning" | "Quantitative Aptitude" | "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Core Systems (OS & Networks)";
     title: string;
     optionsOrConstraints: string;
     difficulty: "Easy" | "Medium" | "Hard";
