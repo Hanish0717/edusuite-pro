@@ -116,6 +116,7 @@ import { Route as StudentAttendanceRouteImport } from './routes/student.attendan
 import { Route as StudentCoursesRouteImport } from './routes/student.courses'
 import { Route as StudentDashboardRouteImport } from './routes/student.dashboard'
 import { Route as StudentExaminationsRouteImport } from './routes/student.examinations'
+import { Route as StudentFeedbackRouteImport } from './routes/student.feedback'
 import { Route as StudentFinanceRouteImport } from './routes/student.finance'
 import { Route as StudentLibraryRouteImport } from './routes/student.library'
 import { Route as StudentLmsRouteImport } from './routes/student.lms'
@@ -671,6 +672,11 @@ const StudentExaminationsRoute = StudentExaminationsRouteImport.update({
   path: '/examinations',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentFeedbackRoute = StudentFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => StudentRoute,
+} as any)
 const StudentFinanceRoute = StudentFinanceRouteImport.update({
   id: '/finance',
   path: '/finance',
@@ -853,6 +859,7 @@ export interface FileRoutesByFullPath {
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/examinations': typeof StudentExaminationsRoute
+  '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
   '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
@@ -965,6 +972,7 @@ export interface FileRoutesByTo {
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/examinations': typeof StudentExaminationsRoute
+  '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
   '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
@@ -1092,6 +1100,7 @@ export interface FileRoutesById {
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
   '/student/examinations': typeof StudentExaminationsRoute
+  '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
   '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
@@ -1220,6 +1229,7 @@ export interface FileRouteTypes {
     | '/student/courses'
     | '/student/dashboard'
     | '/student/examinations'
+    | '/student/feedback'
     | '/student/finance'
     | '/student/library'
     | '/student/lms'
@@ -1332,6 +1342,7 @@ export interface FileRouteTypes {
     | '/student/courses'
     | '/student/dashboard'
     | '/student/examinations'
+    | '/student/feedback'
     | '/student/finance'
     | '/student/library'
     | '/student/lms'
@@ -1458,6 +1469,7 @@ export interface FileRouteTypes {
     | '/student/courses'
     | '/student/dashboard'
     | '/student/examinations'
+    | '/student/feedback'
     | '/student/finance'
     | '/student/library'
     | '/student/lms'
@@ -2290,6 +2302,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentExaminationsRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/feedback': {
+      id: '/student/feedback'
+      path: '/feedback'
+      fullPath: '/student/feedback'
+      preLoaderRoute: typeof StudentFeedbackRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/finance': {
       id: '/student/finance'
       path: '/finance'
@@ -2628,6 +2647,7 @@ interface StudentRouteChildren {
   StudentCoursesRoute: typeof StudentCoursesRoute
   StudentDashboardRoute: typeof StudentDashboardRoute
   StudentExaminationsRoute: typeof StudentExaminationsRoute
+  StudentFeedbackRoute: typeof StudentFeedbackRoute
   StudentFinanceRoute: typeof StudentFinanceRoute
   StudentLibraryRoute: typeof StudentLibraryRoute
   StudentLmsRoute: typeof StudentLmsRoute
@@ -2642,6 +2662,7 @@ const StudentRouteChildren: StudentRouteChildren = {
   StudentCoursesRoute: StudentCoursesRoute,
   StudentDashboardRoute: StudentDashboardRoute,
   StudentExaminationsRoute: StudentExaminationsRoute,
+  StudentFeedbackRoute: StudentFeedbackRoute,
   StudentFinanceRoute: StudentFinanceRoute,
   StudentLibraryRoute: StudentLibraryRoute,
   StudentLmsRoute: StudentLmsRoute,

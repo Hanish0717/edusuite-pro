@@ -72,7 +72,7 @@ export const studentNavigation: NavSection[] = [
       { title: "My Profile", url: "/student/profile", icon: User },
       { title: "Learning Management", url: "/student/lms", icon: BookOpen },
       { title: "Timetable", url: "/student/timetable", icon: CalendarRange },
-      { title: "Feedbacks", url: "/grievance", icon: MessageSquare },
+      { title: "Feedback", url: "/student/feedback", icon: MessageSquare },
       { title: "Student Services", url: "/student/profile", icon: Users },
       { title: "Course Registrations", url: "/student/examinations", icon: FileText },
       { title: "Hostel", url: "/hostel", icon: BedDouble },
@@ -231,6 +231,7 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     if (url === "/settings") return "/student/profile";
     if (url === "/timetable") return "/student/timetable";
     if (url === "/library") return "/student/library";
+    if (url === "/grievance" || url === "/feedback") return "/student/feedback";
   }
 
   if (role === "parent") {
