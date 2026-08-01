@@ -57,6 +57,7 @@ import { Route as TransportRouteImport } from './routes/transport'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
+import { Route as ExamTakeRouteImport } from './routes/exam.take'
 import { Route as ExaminationIndexRouteImport } from './routes/examination.index'
 import { Route as ExaminationDashboardRouteImport } from './routes/examination.dashboard'
 import { Route as ExternalUserIndexRouteImport } from './routes/external-user.index'
@@ -368,6 +369,11 @@ const DeanDashboardRoute = DeanDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => DeanRoute,
+} as any)
+const ExamTakeRoute = ExamTakeRouteImport.update({
+  id: '/exam/take',
+  path: '/exam/take',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ExaminationIndexRoute = ExaminationIndexRouteImport.update({
   id: '/',
@@ -775,6 +781,7 @@ export interface FileRoutesByFullPath {
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
@@ -882,6 +889,7 @@ export interface FileRoutesByTo {
   '/timetable': typeof TimetableRoute
   '/verify-email': typeof VerifyEmailRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
@@ -1004,6 +1012,7 @@ export interface FileRoutesById {
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
@@ -1127,6 +1136,7 @@ export interface FileRouteTypes {
     | '/transport'
     | '/verify-email'
     | '/dean/dashboard'
+    | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
     | '/faculty/attendance'
@@ -1234,6 +1244,7 @@ export interface FileRouteTypes {
     | '/timetable'
     | '/verify-email'
     | '/dean/dashboard'
+    | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
     | '/faculty/attendance'
@@ -1355,6 +1366,7 @@ export interface FileRouteTypes {
     | '/transport'
     | '/verify-email'
     | '/dean/dashboard'
+    | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
     | '/faculty/attendance'
@@ -1476,6 +1488,7 @@ export interface RootRouteChildren {
   TimetableRoute: typeof TimetableRoute
   TransportRoute: typeof TransportRouteWithChildren
   VerifyEmailRoute: typeof VerifyEmailRoute
+  ExamTakeRoute: typeof ExamTakeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1815,6 +1828,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dean/dashboard'
       preLoaderRoute: typeof DeanDashboardRouteImport
       parentRoute: typeof DeanRoute
+    }
+    '/exam/take': {
+      id: '/exam/take'
+      path: '/exam/take'
+      fullPath: '/exam/take'
+      preLoaderRoute: typeof ExamTakeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/examination/': {
       id: '/examination/'
@@ -2637,6 +2657,7 @@ const rootRouteChildren: RootRouteChildren = {
   TimetableRoute: TimetableRoute,
   TransportRoute: TransportRouteWithChildren,
   VerifyEmailRoute: VerifyEmailRoute,
+  ExamTakeRoute: ExamTakeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

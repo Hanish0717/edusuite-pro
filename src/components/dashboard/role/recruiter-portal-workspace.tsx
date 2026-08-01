@@ -512,7 +512,8 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const handleSendToTpoSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!sendToTpoAst) return;
-    const link = `https://edusuite.pro/exam/${sendToTpoAst.id.toLowerCase()}-${Date.now().toString(36)}`;
+    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:8082";
+    const link = `${origin}/exam/take?id=${sendToTpoAst.id}`;
     setGeneratedTestLink(link);
     setIsSendSuccess(true);
     toast.success(`Test "${sendToTpoAst.title}" sent to TPO ${sendTpoName} successfully!`);
@@ -1239,8 +1240,16 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                         >
                           Copy
                         </button>
+                        <a
+                          href={generatedTestLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="shrink-0 bg-blue-600 text-white font-bold text-[0.65rem] px-2 py-0.5 rounded-md hover:bg-blue-700 cursor-pointer flex items-center gap-1"
+                        >
+                          <Play className="size-3" /> Open Exam
+                        </a>
                       </div>
-                      <p className="text-[0.62rem] text-muted-foreground">Share this link with the TPO to allow them to access and conduct the test.</p>
+                      <p className="text-[0.62rem] text-muted-foreground">Click "Open Exam" or share this link with the TPO to conduct the live proctored test.</p>
                     </div>
 
                     {/* NEXT STEPS */}
