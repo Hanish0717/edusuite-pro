@@ -53,8 +53,7 @@ import {
 } from "@/config/roles";
 import { useRole } from "@/context/role-context";
 import { notifications } from "@/data/mock";
-import { notificationService } from "@/shared/services/NotificationService";
-import type { Notification } from "@/shared/types/notification.types";
+import { notificationService, type Notification } from "@/shared/notifications";
 import { eventBus } from "@/shared/services/eventBus";
 import { toast } from "sonner";
 
@@ -318,10 +317,12 @@ export function Topbar() {
                       key={n.id}
                       onClick={async () => {
                         if (n.status === "unread") {
-                          await notificationService.markNotificationAsRead(n.id);
+                          await notificationService.markNotificationAsRead(n.id, profile.personaName);
                           setNotifs((prev) =>
                             prev.map((x) => (x.id === n.id ? { ...x, status: "read" } : x))
                           );
+                        } else {
+                          await notificationService.trackClick(n.id, profile.personaName);
                         }
                         if (n.route) {
                           navigate({ to: n.route });
@@ -367,7 +368,7 @@ export function Topbar() {
                                 } else {
                                   toast.success(`Action "${act.label}" succeeded.`);
                                 }
-                                await notificationService.markNotificationAsRead(n.id);
+                                await notificationService.markNotificationAsRead(n.id, profile.personaName);
                                 setNotifs((prev) =>
                                   prev.map((x) => (x.id === n.id ? { ...x, status: "read" } : x))
                                 );

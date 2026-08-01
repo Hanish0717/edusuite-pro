@@ -1,0 +1,235 @@
+[
+  {
+    "id": "NOTIF-101",
+    "college_id": "GMR",
+    "title": "Attendance Alert: Low Percentage",
+    "message": "Sai Teja's attendance is 68%, which is below the 75% threshold.",
+    "template": "ATTENDANCE_LOW",
+    "type": "Warning",
+    "priority": "High",
+    "module": "Attendance",
+    "target_role": "student",
+    "status": "unread",
+    "delivery_status": {
+      "dashboard": true,
+      "email": true,
+      "sms": false,
+      "push": false
+    },
+    "channels": ["dashboard", "email"],
+    "actions": [
+      { "label": "View Student", "actionType": "link", "route": "/ai-analytics/attendance-prediction" }
+    ],
+    "expires_at": "2026-08-15T00:00:00Z",
+    "created_by": "AI Prediction Engine",
+    "created_at": "2026-08-01T08:00:00Z",
+    "updated_at": "2026-08-01T08:00:00Z",
+    "schema_version": "1.0",
+    "entity_id": "STD-101",
+    "route": "/attendance/student/STD-101"
+  },
+  {
+    "id": "NOTIF-102",
+    "college_id": "GMR",
+    "title": "Semester Tuition Fee Due",
+    "message": "Your tuition fee of $1,250 is outstanding. Please clear by August 10.",
+    "template": "FEE_DUE",
+    "type": "Reminder",
+    "priority": "High",
+    "module": "Finance",
+    "target_role": "student",
+    "status": "unread",
+    "delivery_status": {
+      "dashboard": true,
+      "email": true,
+      "sms": true,
+      "push": false
+    },
+    "channels": ["dashboard", "email", "sms"],
+    "actions": [
+      { "label": "Pay Now", "actionType": "link", "route": "/finance/pay" }
+    ],
+    "expires_at": "2026-08-10T23:59:59Z",
+    "created_by": "Accounts Department",
+    "created_at": "2026-08-01T07:15:00Z",
+    "updated_at": "2026-08-01T07:15:00Z",
+    "schema_version": "1.0",
+    "entity_id": "INV-48201",
+    "route": "/finance/invoices"
+  },
+  {
+    "id": "NOTIF-103",
+    "college_id": "GMR",
+    "title": "Attendance Alert: Low Percentage",
+    "message": "Your ward Sai Teja's attendance in CSE-401 has fallen to 68%. Please review with the HOD.",
+    "template": "ATTENDANCE_LOW",
+    "type": "Warning",
+    "priority": "High",
+    "module": "Attendance",
+    "target_role": "parent",
+    "status": "unread",
+    "delivery_status": {
+      "dashboard": true,
+      "email": false,
+      "sms": true,
+      "push": false
+    },
+    "channels": ["dashboard", "sms"],
+    "actions": [
+      { "label": "View Report Card", "actionType": "link", "route": "/parent/report-card" }
+    ],
+    "expires_at": "2026-08-20T00:00:00Z",
+    "created_by": "AI Prediction Engine",
+    "created_at": "2026-08-01T08:30:00Z",
+    "updated_at": "2026-08-01T08:30:00Z",
+    "schema_version": "1.0",
+    "entity_id": "STD-101",
+    "route": "/parent/ward-performance"
+  },
+  {
+    "id": "NOTIF-104",
+    "college_id": "GMR",
+    "title": "Faculty Leave Approval Required",
+    "message": "Sarah James has requested causal leave for August 10.",
+    "template": "LEAVE_APPROVAL",
+    "type": "Approval",
+    "priority": "Medium",
+    "module": "Administration",
+    "target_role": "hod",
+    "status": "unread",
+    "delivery_status": {
+      "dashboard": true,
+      "email": false,
+      "sms": false,
+      "push": true
+    },
+    "channels": ["dashboard", "push"],
+    "actions": [
+      { "label": "Approve", "actionType": "approve", "apiEndpoint": "/api/v1/leaves/approve/LV-904" },
+      { "label": "Reject", "actionType": "reject", "apiEndpoint": "/api/v1/leaves/reject/LV-904" }
+    ],
+    "expires_at": "2026-08-09T18:00:00Z",
+    "created_by": "HR Portal",
+    "created_at": "2026-08-01T10:00:00Z",
+    "updated_at": "2026-08-01T10:00:00Z",
+    "schema_version": "1.0",
+    "entity_id": "LV-904",
+    "route": "/admin/leaves"
+  },
+  {
+    "id": "NOTIF-105",
+    "college_id": "GMR",
+    "title": "System Error: Backup Failed",
+    "message": "Database backup failed at 02:00 AM on server node Replica Node-B.",
+    "template": "BACKUP_FAILED",
+    "type": "Error",
+    "priority": "Critical",
+    "module": "System",
+    "target_role": "super-admin",
+    "status": "unread",
+    "delivery_status": {
+      "dashboard": true,
+      "email": false,
+      "sms": false,
+      "push": true
+    },
+    "channels": ["dashboard", "push", "email"],
+    "actions": [
+      { "label": "Retry Backup", "actionType": "api", "apiEndpoint": "/api/v1/system/backup/retry" }
+    ],
+    "expires_at": null,
+    "created_by": "Backup Manager",
+    "created_at": "2026-08-01T08:30:00Z",
+    "updated_at": "2026-08-01T08:30:00Z",
+    "schema_version": "1.0",
+    "entity_id": "BK-9921",
+    "route": "/system/logs"
+  },
+  {
+    "id": "NOTIF-106",
+    "college_id": "GMR",
+    "title": "Security Alert: Malicious Login Attempts",
+    "message": "Multiple failed login attempts detected on IP 192.168.1.105 targeting HOD accounts.",
+    "template": "SECURITY_ALERT",
+    "type": "Emergency",
+    "priority": "Critical",
+    "module": "Security",
+    "target_role": "admin",
+    "status": "unread",
+    "delivery_status": {
+      "dashboard": true,
+      "email": true,
+      "sms": true,
+      "push": true
+    },
+    "channels": ["dashboard", "push", "email", "sms"],
+    "actions": [
+      { "label": "Block IP", "actionType": "api", "apiEndpoint": "/api/v1/security/block-ip" }
+    ],
+    "expires_at": null,
+    "created_by": "Security Watchdog",
+    "created_at": "2026-08-01T09:45:00Z",
+    "updated_at": "2026-08-01T09:45:00Z",
+    "schema_version": "1.0",
+    "entity_id": "AUD-562",
+    "route": "/security/audit"
+  },
+  {
+    "id": "NOTIF-107",
+    "college_id": "GMR",
+    "title": "Attendance Alert: Low Percentage",
+    "message": "Pending attendance sheets for your CSE-401 lecture.",
+    "template": "ATTENDANCE_LOW",
+    "type": "Warning",
+    "priority": "High",
+    "module": "Attendance",
+    "target_role": "faculty",
+    "status": "unread",
+    "delivery_status": {
+      "dashboard": true,
+      "email": false,
+      "sms": false,
+      "push": true
+    },
+    "channels": ["dashboard", "push"],
+    "actions": [
+      { "label": "Submit Attendance", "actionType": "link", "route": "/academics/attendance/entry" }
+    ],
+    "expires_at": "2026-08-01T23:59:59Z",
+    "created_by": "Attendance Checker",
+    "created_at": "2026-08-01T11:00:00Z",
+    "updated_at": "2026-08-01T11:00:00Z",
+    "schema_version": "1.0",
+    "entity_id": "LCT-401A",
+    "route": "/academics/attendance/entry"
+  },
+  {
+    "id": "NOTIF-108",
+    "college_id": "GMR",
+    "title": "New Placement Campus Drive",
+    "message": "Amazon campus recruitment drive is scheduled for September 5-6. Registration is open.",
+    "template": "CAMPUS_DRIVE",
+    "type": "Announcement",
+    "priority": "High",
+    "module": "Placement",
+    "target_role": "placement",
+    "status": "unread",
+    "delivery_status": {
+      "dashboard": true,
+      "email": true,
+      "sms": false,
+      "push": false
+    },
+    "channels": ["dashboard", "email"],
+    "actions": [
+      { "label": "View Details", "actionType": "link", "route": "/placement/drives" }
+    ],
+    "expires_at": "2026-09-01T18:00:00Z",
+    "created_by": "TPO System",
+    "created_at": "2026-08-01T10:00:00Z",
+    "updated_at": "2026-08-01T10:00:00Z",
+    "schema_version": "1.0",
+    "entity_id": "DRV-AMZ2026",
+    "route": "/placement/drives"
+  }
+]

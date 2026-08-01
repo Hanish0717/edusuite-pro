@@ -1,3 +1,3 @@
 export { eventBus } from "./eventBus";
-export { notificationService } from "./NotificationService";
-export { NotificationFactory } from "./NotificationFactory";
+export { notificationService } from "../notifications/services/NotificationService";
+export { NotificationFactory } from "../notifications/engine/NotificationFactory";

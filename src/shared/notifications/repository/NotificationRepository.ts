@@ -1,12 +1,13 @@
-import type { ApiResponse } from "../types/api.types";
-import type { Notification } from "../types/notification.types";
-import notificationsData from "../mock-data/notifications.json";
+import type { ApiResponse } from "@/shared/types/api.types";
+import type { Notification } from "../types/NotificationTypes";
+import notificationsData from "../data/notifications.json";
 
 export interface INotificationRepository {
   getNotifications(role: string, collegeId?: string): Promise<ApiResponse<Notification[]>>;
   markAsRead(id: string): Promise<ApiResponse<boolean>>;
+  updateStatus(id: string, status: Notification["status"]): Promise<ApiResponse<boolean>>;
   createNotification(
-    notification: Omit<Notification, "id" | "created_at" | "status" | "schema_version" | "delivery_status">
+    notification: Omit<Notification, "id" | "created_at" | "status" | "schema_version" | "delivery_status" | "updated_at">
   ): Promise<ApiResponse<Notification>>;
 }
 
@@ -25,29 +26,36 @@ export class MockNotificationRepository implements INotificationRepository {
   }
 
   async markAsRead(id: string): Promise<ApiResponse<boolean>> {
+    return this.updateStatus(id, "read");
+  }
+
+  async updateStatus(id: string, status: Notification["status"]): Promise<ApiResponse<boolean>> {
     const match = dbNotifications.find((x) => x.id === id);
     if (match) {
-      match.status = "read";
+      match.status = status;
+      match.updated_at = new Date().toISOString();
       return { success: true, data: true };
     }
     return { success: false, data: false, error: "Notification not found" };
   }
 
   async createNotification(
-    notification: Omit<Notification, "id" | "created_at" | "status" | "schema_version" | "delivery_status">
+    notification: Omit<Notification, "id" | "created_at" | "status" | "schema_version" | "delivery_status" | "updated_at">
   ): Promise<ApiResponse<Notification>> {
     const delivery: Record<string, boolean> = {};
     notification.channels.forEach((ch) => {
       delivery[ch] = true;
     });
 
+    const now = new Date().toISOString();
     const newNotif: Notification = {
       ...notification,
       id: `NOTIF-${Math.floor(1000 + Math.random() * 9000)}`,
       status: "unread",
       schema_version: "1.0",
       delivery_status: delivery,
-      created_at: new Date().toISOString(),
+      created_at: now,
+      updated_at: now,
     };
 
     dbNotifications.unshift(newNotif);
@@ -62,9 +70,13 @@ export class SupabaseNotificationRepository implements INotificationRepository {
   async markAsRead(id: string): Promise<ApiResponse<boolean>> {
     return { success: true, data: true };
   }
+  async updateStatus(id: string, status: Notification["status"]): Promise<ApiResponse<boolean>> {
+    return { success: true, data: true };
+  }
   async createNotification(
-    notification: Omit<Notification, "id" | "created_at" | "status" | "schema_version" | "delivery_status">
+    notification: Omit<Notification, "id" | "created_at" | "status" | "schema_version" | "delivery_status" | "updated_at">
   ): Promise<ApiResponse<Notification>> {
+    const now = new Date().toISOString();
     return {
       success: true,
       data: {
@@ -73,7 +85,8 @@ export class SupabaseNotificationRepository implements INotificationRepository {
         status: "unread",
         schema_version: "1.0",
         delivery_status: {},
-        created_at: new Date().toISOString(),
+        created_at: now,
+        updated_at: now,
       },
     };
   }
