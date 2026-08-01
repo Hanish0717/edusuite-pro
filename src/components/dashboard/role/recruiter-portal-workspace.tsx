@@ -603,9 +603,6 @@ Bengaluru, Karnataka
   const [editDuration, setEditDuration] = useState("");
   const [editPassingPct, setEditPassingPct] = useState("");
 
-  // Upload Offer Modal State
-  const [isUploadOfferModalOpen, setIsUploadOfferModalOpen] = useState(false);
-
   // Audit Timeline Modal State
   const [selectedAuditAst, setSelectedAuditAst] = useState<RecruiterAssessment | null>(null);
   const [isAuditTimelineModalOpen, setIsAuditTimelineModalOpen] = useState(false);
