@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo } from "react";
 import {
   ShieldCheck,
   Users,
@@ -19,12 +19,17 @@ import {
   Shield,
   FileSpreadsheet,
   CheckCircle,
-  Clock,
-  XCircle,
   AlertTriangle,
   Lock,
   Server,
   Terminal,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  ChevronLeft,
+  ChevronRight,
+  SlidersHorizontal,
+  LockKeyhole,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,25 +53,14 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 
 import {
-  fetchSuperAdminStats,
-  fetchUsers,
-  createUser,
-  updateUser,
-  deleteUser,
-  fetchDepartments,
-  fetchAuditLogs,
-  triggerBackup,
-  MOCK_SUPER_ADMIN_STATS,
-  MOCK_USERS,
-  MOCK_DEPARTMENTS,
-  MOCK_AUDIT_LOGS,
-  type SuperAdminStats,
-  type SuperAdminUser,
-  type DepartmentItem,
-  type AuditLogItem,
-} from "./SuperAdminService";
+  useSuperAdmin,
+  type SortField,
+} from "./useSuperAdmin";
+import type { SuperAdminUser, DepartmentItem, AuditLogItem, RolePermissionMatrixItem } from "./SuperAdminService";
 
 const ROLES = [
   "All Roles",
@@ -81,175 +75,79 @@ const ROLES = [
   "hr",
 ];
 
+const STATUSES = ["All Statuses", "Active", "Inactive", "Suspended"];
+
 export function SuperAdminModuleView() {
-  const [stats, setStats] = useState<SuperAdminStats>(MOCK_SUPER_ADMIN_STATS);
-  const [users, setUsers] = useState<SuperAdminUser[]>(MOCK_USERS);
-  const [departments, setDepartments] = useState<DepartmentItem[]>(MOCK_DEPARTMENTS);
-  const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>(MOCK_AUDIT_LOGS);
+  const {
+    activeTab,
+    setActiveTab,
+    stats,
+    users,
+    departments,
+    auditLogs,
+    rolePermissions,
+    search,
+    setSearch,
+    selectedRole,
+    setSelectedRole,
+    selectedDepartmentFilter,
+    setSelectedDepartmentFilter,
+    selectedStatusFilter,
+    setSelectedStatusFilter,
+    sortField,
+    sortOrder,
+    handleSort,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    totalPages,
+    filteredUsers,
+    sortedUsers,
+    paginatedUsers,
+    selectedUserIds,
+    handleSelectAllOnPage,
+    handleSelectUser,
+    loading,
+    backupLoading,
+    isAddUserOpen,
+    setIsAddUserOpen,
+    isEditUserOpen,
+    setIsEditUserOpen,
+    isViewUserOpen,
+    setIsViewUserOpen,
+    isAddDeptOpen,
+    setIsAddDeptOpen,
+    selectedUser,
+    userFormData,
+    setUserFormData,
+    deptFormData,
+    setDeptFormData,
+    loadData,
+    handleOpenAddUser,
+    handleOpenEditUser,
+    handleOpenViewUser,
+    handleAddUserSubmit,
+    handleEditUserSubmit,
+    handleDeleteUser,
+    handleBulkDelete,
+    handleBulkUpdateStatus,
+    handleOpenAddDept,
+    handleAddDeptSubmit,
+    handleTogglePermission,
+    handleTriggerBackup,
+    handleExportCSV,
+  } = useSuperAdmin();
 
-  const [search, setSearch] = useState("");
-  const [selectedRole, setSelectedRole] = useState("All Roles");
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "users" | "departments" | "audit" | "ai"
-  >("overview");
+  // All department options for filter
+  const departmentOptions = [
+    "All Departments",
+    ...Array.from(new Set(departments.map((d) => d.name))),
+  ];
 
-  const [loading, setLoading] = useState(false);
-  const [backupLoading, setBackupLoading] = useState(false);
-
-  // Modal States
-  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
-  const [isEditUserOpen, setIsEditUserOpen] = useState(false);
-  const [isViewUserOpen, setIsViewUserOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<SuperAdminUser | null>(null);
-
-  // Form State
-  const [formData, setFormData] = useState<Partial<SuperAdminUser>>({
-    name: "",
-    email: "",
-    role: "faculty",
-    department: "Computer Science & Engineering",
-    status: "Active",
-  });
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      const [sData, uData, dData, aData] = await Promise.all([
-        fetchSuperAdminStats(),
-        fetchUsers(),
-        fetchDepartments(),
-        fetchAuditLogs(),
-      ]);
-      setStats(sData);
-      setUsers(uData);
-      setDepartments(dData);
-      setAuditLogs(aData);
-    } catch (err) {
-      toast.error("Error connecting to backend services. Using local fallback mode.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  // Filtered Users
-  const filteredUsers = users.filter((u) => {
-    const matchesSearch =
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase()) ||
-      u.id.toLowerCase().includes(search.toLowerCase()) ||
-      u.department.toLowerCase().includes(search.toLowerCase());
-
-    const matchesRole = selectedRole === "All Roles" || u.role === selectedRole;
-
-    return matchesSearch && matchesRole;
-  });
-
-  // Handlers
-  const handleOpenAddUser = () => {
-    setFormData({
-      name: "",
-      email: "",
-      role: "faculty",
-      department: "Computer Science & Engineering",
-      status: "Active",
-    });
-    setIsAddUserOpen(true);
-  };
-
-  const handleOpenEditUser = (user: SuperAdminUser) => {
-    setSelectedUser(user);
-    setFormData({ ...user });
-    setIsEditUserOpen(true);
-  };
-
-  const handleOpenViewUser = (user: SuperAdminUser) => {
-    setSelectedUser(user);
-    setIsViewUserOpen(true);
-  };
-
-  const handleAddUserSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email) {
-      toast.error("Please provide user full name and email.");
-      return;
-    }
-
-    const created = await createUser(formData);
-    setUsers((prev) => [created, ...prev]);
-    setIsAddUserOpen(false);
-    toast.success(`User ${created.name} (${created.role.toUpperCase()}) created successfully!`);
-  };
-
-  const handleEditUserSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedUser) return;
-
-    await updateUser(selectedUser.id, formData);
-    setUsers((prev) =>
-      prev.map((u) => (u.id === selectedUser.id ? ({ ...u, ...formData } as SuperAdminUser) : u)),
-    );
-    setIsEditUserOpen(false);
-    toast.success(`User ${formData.name} updated successfully!`);
-  };
-
-  const handleDeleteUser = async (user: SuperAdminUser) => {
-    if (confirm(`Are you sure you want to delete user account ${user.name} (${user.email})?`)) {
-      await deleteUser(user.id);
-      setUsers((prev) => prev.filter((u) => u.id !== user.id));
-      toast.success(`User ${user.name} deleted.`);
-    }
-  };
-
-  const handleTriggerBackup = async () => {
-    setBackupLoading(true);
-    toast.info("Initializing system database backup snapshot...");
-    const res = await triggerBackup();
-    setBackupLoading(false);
-    toast.success(res.message);
-  };
-
-  const handleExportCSV = () => {
-    const headers = [
-      "User ID",
-      "Full Name",
-      "Email Address",
-      "Role",
-      "Department",
-      "Status",
-      "Last Login",
-      "Created At",
-    ];
-    const rows = filteredUsers.map((u) => [
-      u.id,
-      `"${u.name}"`,
-      u.email,
-      u.role,
-      `"${u.department}"`,
-      u.status,
-      u.lastLogin,
-      u.createdAt,
-    ]);
-
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute(
-      "download",
-      `SuperAdmin_Users_Roster_${new Date().toISOString().split("T")[0]}.csv`,
-    );
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success(`Exported ${filteredUsers.length} user records to CSV!`);
-  };
+  const allOnPageSelected =
+    paginatedUsers.length > 0 &&
+    paginatedUsers.every((u) => selectedUserIds.includes(u.id));
 
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
@@ -275,7 +173,7 @@ export function SuperAdminModuleView() {
         </div>
 
         {/* Action Buttons - Top Right Corner */}
-        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
+        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto flex-wrap">
           <Button
             variant="outline"
             size="sm"
@@ -347,7 +245,7 @@ export function SuperAdminModuleView() {
             <Building2 className="size-4 text-emerald-500" />
           </div>
           <p className="text-2xl font-bold font-mono text-emerald-600">
-            {stats.totalDepartments}
+            {departments.length}
           </p>
           <p className="text-[0.68rem] text-emerald-600 font-medium">NBA / NAAC Accredited</p>
         </div>
@@ -395,6 +293,16 @@ export function SuperAdminModuleView() {
           Departments ({departments.length})
         </button>
         <button
+          onClick={() => setActiveTab("rbac")}
+          className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
+            activeTab === "rbac"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-muted"
+          }`}
+        >
+          Role & Permission Matrix
+        </button>
+        <button
           onClick={() => setActiveTab("audit")}
           className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
             activeTab === "audit"
@@ -402,7 +310,7 @@ export function SuperAdminModuleView() {
               : "text-muted-foreground hover:bg-muted"
           }`}
         >
-          Audit Logs
+          Audit Logs ({auditLogs.length})
         </button>
         <button
           onClick={() => setActiveTab("ai")}
@@ -488,10 +396,10 @@ export function SuperAdminModuleView() {
                 </Button>
 
                 <Button
-                  onClick={() => setActiveTab("users")}
+                  onClick={() => setActiveTab("rbac")}
                   className="w-full justify-start text-xs font-semibold gap-2 bg-muted text-foreground hover:bg-muted/80 border border-border h-10"
                 >
-                  <UserCog className="size-4" /> Manage Role Privileges
+                  <LockKeyhole className="size-4 text-amber-500" /> Manage Role Privileges
                 </Button>
 
                 <Button
@@ -509,113 +417,335 @@ export function SuperAdminModuleView() {
       {/* TAB 2: USER MANAGEMENT */}
       {activeTab === "users" && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-card border border-border/80 shadow-sm">
-            <div className="relative flex-1 min-w-[220px]">
+          {/* Controls Bar */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm">
+            <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
-                placeholder="Search user by name, email, role, department..."
+                placeholder="Search by name, email, ID, department..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9 h-9 text-xs"
               />
             </div>
 
-            <Select value={selectedRole} onValueChange={setSelectedRole}>
-              <SelectTrigger className="h-9 w-full sm:w-[160px] text-xs" aria-label="Role Filter">
-                <Filter className="size-3.5 mr-1.5 text-muted-foreground" />
-                <SelectValue placeholder="Role Filter" />
-              </SelectTrigger>
-              <SelectContent>
-                {ROLES.map((r) => (
-                  <SelectItem key={r} value={r} className="text-xs">
-                    {r}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Select value={selectedRole} onValueChange={setSelectedRole}>
+                <SelectTrigger className="h-9 w-[140px] text-xs" aria-label="Role Filter">
+                  <Filter className="size-3.5 mr-1.5 text-muted-foreground" />
+                  <SelectValue placeholder="Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ROLES.map((r) => (
+                    <SelectItem key={r} value={r} className="text-xs">
+                      {r}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={selectedDepartmentFilter}
+                onValueChange={setSelectedDepartmentFilter}
+              >
+                <SelectTrigger className="h-9 w-[160px] text-xs" aria-label="Department Filter">
+                  <Building2 className="size-3.5 mr-1.5 text-muted-foreground" />
+                  <SelectValue placeholder="Department" />
+                </SelectTrigger>
+                <SelectContent>
+                  {departmentOptions.map((d) => (
+                    <SelectItem key={d} value={d} className="text-xs">
+                      {d}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedStatusFilter} onValueChange={setSelectedStatusFilter}>
+                <SelectTrigger className="h-9 w-[130px] text-xs" aria-label="Status Filter">
+                  <SlidersHorizontal className="size-3.5 mr-1.5 text-muted-foreground" />
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUSES.map((s) => (
+                    <SelectItem key={s} value={s} className="text-xs">
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
+          {/* Bulk Operations Bar */}
+          {selectedUserIds.length > 0 && (
+            <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between gap-3 text-xs font-semibold">
+              <span className="text-primary flex items-center gap-1.5">
+                <CheckCircle className="size-4" /> {selectedUserIds.length} users selected
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleBulkUpdateStatus("Active")}
+                  className="h-8 text-xs bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                >
+                  Set Active
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleBulkUpdateStatus("Suspended")}
+                  className="h-8 text-xs bg-amber-500/10 text-amber-600 border-amber-500/20"
+                >
+                  Suspend
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={handleBulkDelete}
+                  className="h-8 text-xs gap-1.5"
+                >
+                  <Trash2 className="size-3.5" /> Delete Selected
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Table Container */}
           <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <h3 className="font-bold text-base text-foreground flex items-center gap-2">
                 <UserCog className="size-4 text-primary" /> System Accounts Roster
                 <Badge variant="secondary" className="font-mono text-xs">
-                  {filteredUsers.length} Users
+                  {sortedUsers.length} Users Found
                 </Badge>
               </h3>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
-                  <tr>
-                    <th className="py-3 px-3">User ID</th>
-                    <th className="py-3 px-3">Full Name & Email</th>
-                    <th className="py-3 px-3">Role</th>
-                    <th className="py-3 px-3">Department</th>
-                    <th className="py-3 px-3">Status</th>
-                    <th className="py-3 px-3">Last Login</th>
-                    <th className="py-3 px-3 text-right pr-4">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60">
-                  {filteredUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-muted/20 transition-colors">
-                      <td className="py-3 px-3 font-mono font-bold text-foreground">{u.id}</td>
-                      <td className="py-3 px-3">
-                        <div className="font-semibold text-foreground">{u.name}</div>
-                        <div className="text-[0.68rem] text-muted-foreground font-mono">{u.email}</div>
-                      </td>
-                      <td className="py-3 px-3">
-                        <Badge
-                          variant="outline"
-                          className="font-mono text-[0.68rem] text-primary border-primary/30 uppercase"
-                        >
-                          {u.role}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-3 font-medium text-foreground">{u.department}</td>
-                      <td className="py-3 px-3">
-                        <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[0.68rem]">
-                          {u.status}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-3 font-mono text-muted-foreground">{u.lastLogin}</td>
-                      <td className="py-3 px-3 text-right pr-4">
-                        <div className="flex items-center justify-end gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleOpenViewUser(u)}
-                            className="size-7 text-muted-foreground hover:text-foreground"
-                            title="View User"
-                          >
-                            <Eye className="size-3.5" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleOpenEditUser(u)}
-                            className="size-7 text-muted-foreground hover:text-primary"
-                            title="Edit User"
-                          >
-                            <Edit className="size-3.5" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteUser(u)}
-                            className="size-7 text-muted-foreground hover:text-red-600"
-                            title="Delete User"
-                          >
-                            <Trash2 className="size-3.5" />
-                          </Button>
+            {paginatedUsers.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground space-y-2">
+                <UserCog className="size-8 mx-auto text-muted-foreground/50" />
+                <p className="text-sm font-semibold">No users matching your filters.</p>
+                <p className="text-xs text-muted-foreground">Try adjusting your search term or dropdown filters.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                    <tr>
+                      <th className="py-3 px-3 w-8">
+                        <Checkbox
+                          checked={allOnPageSelected}
+                          onCheckedChange={(val) => handleSelectAllOnPage(!!val)}
+                          aria-label="Select all on page"
+                        />
+                      </th>
+                      <th
+                        className="py-3 px-3 cursor-pointer hover:text-foreground select-none"
+                        onClick={() => handleSort("id")}
+                      >
+                        <div className="flex items-center gap-1">
+                          <span>User ID</span>
+                          {sortField === "id" ? (
+                            sortOrder === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
+                          ) : (
+                            <ArrowUpDown className="size-3 text-muted-foreground/60" />
+                          )}
                         </div>
-                      </td>
+                      </th>
+                      <th
+                        className="py-3 px-3 cursor-pointer hover:text-foreground select-none"
+                        onClick={() => handleSort("name")}
+                      >
+                        <div className="flex items-center gap-1">
+                          <span>Full Name & Email</span>
+                          {sortField === "name" ? (
+                            sortOrder === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
+                          ) : (
+                            <ArrowUpDown className="size-3 text-muted-foreground/60" />
+                          )}
+                        </div>
+                      </th>
+                      <th
+                        className="py-3 px-3 cursor-pointer hover:text-foreground select-none"
+                        onClick={() => handleSort("role")}
+                      >
+                        <div className="flex items-center gap-1">
+                          <span>Role</span>
+                          {sortField === "role" ? (
+                            sortOrder === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
+                          ) : (
+                            <ArrowUpDown className="size-3 text-muted-foreground/60" />
+                          )}
+                        </div>
+                      </th>
+                      <th
+                        className="py-3 px-3 cursor-pointer hover:text-foreground select-none"
+                        onClick={() => handleSort("department")}
+                      >
+                        <div className="flex items-center gap-1">
+                          <span>Department</span>
+                          {sortField === "department" ? (
+                            sortOrder === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
+                          ) : (
+                            <ArrowUpDown className="size-3 text-muted-foreground/60" />
+                          )}
+                        </div>
+                      </th>
+                      <th
+                        className="py-3 px-3 cursor-pointer hover:text-foreground select-none"
+                        onClick={() => handleSort("status")}
+                      >
+                        <div className="flex items-center gap-1">
+                          <span>Status</span>
+                          {sortField === "status" ? (
+                            sortOrder === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
+                          ) : (
+                            <ArrowUpDown className="size-3 text-muted-foreground/60" />
+                          )}
+                        </div>
+                      </th>
+                      <th className="py-3 px-3">Last Login</th>
+                      <th className="py-3 px-3 text-right pr-4">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {paginatedUsers.map((u) => {
+                      const isSelected = selectedUserIds.includes(u.id);
+                      return (
+                        <tr
+                          key={u.id}
+                          className={`transition-colors ${
+                            isSelected ? "bg-primary/5" : "hover:bg-muted/20"
+                          }`}
+                        >
+                          <td className="py-3 px-3">
+                            <Checkbox
+                              checked={isSelected}
+                              onCheckedChange={(val) => handleSelectUser(u.id, !!val)}
+                              aria-label={`Select ${u.name}`}
+                            />
+                          </td>
+                          <td className="py-3 px-3 font-mono font-bold text-foreground">{u.id}</td>
+                          <td className="py-3 px-3">
+                            <div className="font-semibold text-foreground">{u.name}</div>
+                            <div className="text-[0.68rem] text-muted-foreground font-mono">{u.email}</div>
+                          </td>
+                          <td className="py-3 px-3">
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-[0.68rem] text-primary border-primary/30 uppercase"
+                            >
+                              {u.role}
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-3 font-medium text-foreground">{u.department}</td>
+                          <td className="py-3 px-3">
+                            <Badge
+                              className={
+                                u.status === "Active"
+                                  ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[0.68rem]"
+                                  : u.status === "Suspended"
+                                  ? "bg-amber-500/10 text-amber-600 border-amber-500/20 text-[0.68rem]"
+                                  : "bg-muted text-muted-foreground text-[0.68rem]"
+                              }
+                            >
+                              {u.status}
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-3 font-mono text-muted-foreground">{u.lastLogin}</td>
+                          <td className="py-3 px-3 text-right pr-4">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleOpenViewUser(u)}
+                                className="size-7 text-muted-foreground hover:text-foreground"
+                                title="View User Dossier"
+                              >
+                                <Eye className="size-3.5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleOpenEditUser(u)}
+                                className="size-7 text-muted-foreground hover:text-primary"
+                                title="Edit User"
+                              >
+                                <Edit className="size-3.5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteUser(u)}
+                                className="size-7 text-muted-foreground hover:text-red-600"
+                                title="Delete User"
+                              >
+                                <Trash2 className="size-3.5" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Pagination Controls */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-border/60 text-xs">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <span>Rows per page:</span>
+                <Select
+                  value={String(pageSize)}
+                  onValueChange={(val) => setPageSize(Number(val))}
+                >
+                  <SelectTrigger className="h-8 w-16 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5" className="text-xs">
+                      5
+                    </SelectItem>
+                    <SelectItem value="10" className="text-xs">
+                      10
+                    </SelectItem>
+                    <SelectItem value="25" className="text-xs">
+                      25
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <span>
+                  Showing {sortedUsers.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} to{" "}
+                  {Math.min(currentPage * pageSize, sortedUsers.length)} of {sortedUsers.length} entries
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="h-8 text-xs gap-1"
+                >
+                  <ChevronLeft className="size-3.5" /> Previous
+                </Button>
+                <span className="font-semibold text-foreground px-2 font-mono">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage >= totalPages}
+                  className="h-8 text-xs gap-1"
+                >
+                  Next <ChevronRight className="size-3.5" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -623,50 +753,163 @@ export function SuperAdminModuleView() {
 
       {/* TAB 3: DEPARTMENTS */}
       {activeTab === "departments" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {departments.map((dept) => (
-            <div
-              key={dept.id}
-              className="p-5 rounded-2xl border border-border/80 bg-card space-y-3 shadow-sm hover:border-primary/40 transition-all"
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+              <Building2 className="size-5 text-emerald-500" /> Academic & Administrative Departments
+            </h3>
+            <Button
+              size="sm"
+              onClick={handleOpenAddDept}
+              className="h-9 bg-primary text-primary-foreground gap-2 font-semibold text-xs"
             >
-              <div className="flex items-center justify-between">
-                <Badge variant="secondary" className="font-mono text-xs">
-                  {dept.code}
-                </Badge>
-                <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-xs">
-                  {dept.accreditation}
-                </Badge>
-              </div>
+              <Plus className="size-4" /> Add Department
+            </Button>
+          </div>
 
-              <div>
-                <h3 className="font-bold text-base text-foreground">{dept.name}</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  HOD: <span className="font-semibold text-primary">{dept.hodName}</span>
-                </p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {departments.map((dept) => (
+              <div
+                key={dept.id}
+                className="p-5 rounded-2xl border border-border/80 bg-card space-y-3 shadow-sm hover:border-primary/40 transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <Badge variant="secondary" className="font-mono text-xs">
+                    {dept.code}
+                  </Badge>
+                  <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-xs">
+                    {dept.accreditation}
+                  </Badge>
+                </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50 text-xs font-mono">
-                <div className="p-2 rounded-xl bg-muted/40 text-center">
-                  <div className="text-[0.68rem] text-muted-foreground font-sans">Students</div>
-                  <div className="font-bold text-foreground text-sm">{dept.studentsCount}</div>
+                <div>
+                  <h3 className="font-bold text-base text-foreground">{dept.name}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    HOD: <span className="font-semibold text-primary">{dept.hodName}</span>
+                  </p>
                 </div>
-                <div className="p-2 rounded-xl bg-muted/40 text-center">
-                  <div className="text-[0.68rem] text-muted-foreground font-sans">Faculty</div>
-                  <div className="font-bold text-foreground text-sm">{dept.facultyCount}</div>
+
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50 text-xs font-mono">
+                  <div className="p-2 rounded-xl bg-muted/40 text-center">
+                    <div className="text-[0.68rem] text-muted-foreground font-sans">Students</div>
+                    <div className="font-bold text-foreground text-sm">{dept.studentsCount}</div>
+                  </div>
+                  <div className="p-2 rounded-xl bg-muted/40 text-center">
+                    <div className="text-[0.68rem] text-muted-foreground font-sans">Faculty</div>
+                    <div className="font-bold text-foreground text-sm">{dept.facultyCount}</div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
-      {/* TAB 4: AUDIT LOGS */}
+      {/* TAB 4: ROLE & PERMISSION MATRIX (RBAC) */}
+      {activeTab === "rbac" && (
+        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <div>
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <LockKeyhole className="size-5 text-amber-500" /> Role-Based Access Control (RBAC) Matrix
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Configure module privilege flags dynamically across institution user personas.
+              </p>
+            </div>
+            <Badge variant="outline" className="font-mono text-xs text-amber-600 border-amber-500/30">
+              Live Enforcement
+            </Badge>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                <tr>
+                  <th className="py-3 px-3">Role Persona</th>
+                  <th className="py-3 px-3 text-center">System Admin</th>
+                  <th className="py-3 px-3 text-center">Principal</th>
+                  <th className="py-3 px-3 text-center">Academic Dean</th>
+                  <th className="py-3 px-3 text-center">HOD</th>
+                  <th className="py-3 px-3 text-center">Faculty</th>
+                  <th className="py-3 px-3 text-center">Finance</th>
+                  <th className="py-3 px-3 text-center">User Mgmt</th>
+                  <th className="py-3 px-3 text-center">Export Data</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {rolePermissions.map((item) => (
+                  <tr key={item.role} className="hover:bg-muted/20 transition-colors">
+                    <td className="py-3 px-3 font-bold text-foreground">
+                      <div>{item.label}</div>
+                      <div className="text-[0.68rem] text-muted-foreground font-mono uppercase">{item.role}</div>
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <Switch
+                        checked={item.isSystemAdmin}
+                        onCheckedChange={() => handleTogglePermission(item.role, "isSystemAdmin", item.isSystemAdmin)}
+                      />
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <Switch
+                        checked={item.isPrincipal}
+                        onCheckedChange={() => handleTogglePermission(item.role, "isPrincipal", item.isPrincipal)}
+                      />
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <Switch
+                        checked={item.isDean}
+                        onCheckedChange={() => handleTogglePermission(item.role, "isDean", item.isDean)}
+                      />
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <Switch
+                        checked={item.isHod}
+                        onCheckedChange={() => handleTogglePermission(item.role, "isHod", item.isHod)}
+                      />
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <Switch
+                        checked={item.isFaculty}
+                        onCheckedChange={() => handleTogglePermission(item.role, "isFaculty", item.isFaculty)}
+                      />
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <Switch
+                        checked={item.isFinance}
+                        onCheckedChange={() => handleTogglePermission(item.role, "isFinance", item.isFinance)}
+                      />
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <Switch
+                        checked={item.canManageUsers}
+                        onCheckedChange={() => handleTogglePermission(item.role, "canManageUsers", item.canManageUsers)}
+                      />
+                    </td>
+                    <td className="py-3 px-3 text-center">
+                      <Switch
+                        checked={item.canExportData}
+                        onCheckedChange={() => handleTogglePermission(item.role, "canExportData", item.canExportData)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: AUDIT LOGS */}
       {activeTab === "audit" && (
         <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <h3 className="font-bold text-base text-foreground flex items-center gap-2">
               <FileSpreadsheet className="size-4 text-primary" /> Admin Audit Trail
             </h3>
+            <Badge variant="secondary" className="font-mono text-xs">
+              {auditLogs.length} Log Entries
+            </Badge>
           </div>
 
           <div className="overflow-x-auto">
@@ -712,7 +955,7 @@ export function SuperAdminModuleView() {
         </div>
       )}
 
-      {/* TAB 5: AI ANOMALY ENGINE */}
+      {/* TAB 6: AI ANOMALY ENGINE */}
       {activeTab === "ai" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-4 shadow-sm">
@@ -754,8 +997,18 @@ export function SuperAdminModuleView() {
 
             <div className="space-y-3 text-xs">
               <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1">
-                <div className="font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
-                  <AlertTriangle className="size-4 text-amber-500" /> Concurrent Request Surge
+                <div className="font-bold text-amber-700 dark:text-amber-300 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <AlertTriangle className="size-4 text-amber-500" /> Concurrent Request Surge
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => toast.success("Mitigation rule applied to SIT-HYD API Gateway.")}
+                    className="h-6 text-[0.65rem] px-2"
+                  >
+                    Mitigate
+                  </Button>
                 </div>
                 <p className="text-muted-foreground">
                   Spike of 800+ concurrent requests detected on SIT-HYD API gateway node.
@@ -763,8 +1016,18 @@ export function SuperAdminModuleView() {
               </div>
 
               <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 space-y-1">
-                <div className="font-bold text-red-700 dark:text-red-300 flex items-center gap-1.5">
-                  <Lock className="size-4 text-red-500" /> Brute Force IP Block
+                <div className="font-bold text-red-700 dark:text-red-300 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <Lock className="size-4 text-red-500" /> Brute Force IP Block
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => toast.info("IP 192.168.1.145 moved to permanent block list.")}
+                    className="h-6 text-[0.65rem] px-2"
+                  >
+                    Details
+                  </Button>
                 </div>
                 <p className="text-muted-foreground">
                   IP 192.168.1.145 blocked after 15 failed password attempts on staff account.
@@ -794,8 +1057,8 @@ export function SuperAdminModuleView() {
                 <Input
                   required
                   placeholder="e.g. Dr. K. Sai Teja"
-                  value={formData.name || ""}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  value={userFormData.name || ""}
+                  onChange={(e) => setUserFormData({ ...userFormData, name: e.target.value })}
                   className="h-9 text-xs"
                 />
               </div>
@@ -806,8 +1069,8 @@ export function SuperAdminModuleView() {
                   type="email"
                   required
                   placeholder="e.g. user@college.com"
-                  value={formData.email || ""}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={userFormData.email || ""}
+                  onChange={(e) => setUserFormData({ ...userFormData, email: e.target.value })}
                   className="h-9 text-xs"
                 />
               </div>
@@ -815,8 +1078,8 @@ export function SuperAdminModuleView() {
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold">Assigned Role</Label>
                 <Select
-                  value={formData.role}
-                  onValueChange={(val: any) => setFormData({ ...formData, role: val })}
+                  value={userFormData.role || "faculty"}
+                  onValueChange={(val: any) => setUserFormData({ ...userFormData, role: val })}
                 >
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue placeholder="Select Role" />
@@ -835,8 +1098,8 @@ export function SuperAdminModuleView() {
                 <Label className="text-xs font-semibold">Department</Label>
                 <Input
                   placeholder="e.g. Computer Science"
-                  value={formData.department || ""}
-                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                  value={userFormData.department || ""}
+                  onChange={(e) => setUserFormData({ ...userFormData, department: e.target.value })}
                   className="h-9 text-xs"
                 />
               </div>
@@ -874,8 +1137,8 @@ export function SuperAdminModuleView() {
                 <Label className="text-xs font-semibold">Full Name</Label>
                 <Input
                   required
-                  value={formData.name || ""}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  value={userFormData.name || ""}
+                  onChange={(e) => setUserFormData({ ...userFormData, name: e.target.value })}
                   className="h-9 text-xs"
                 />
               </div>
@@ -885,8 +1148,8 @@ export function SuperAdminModuleView() {
                 <Input
                   type="email"
                   required
-                  value={formData.email || ""}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={userFormData.email || ""}
+                  onChange={(e) => setUserFormData({ ...userFormData, email: e.target.value })}
                   className="h-9 text-xs"
                 />
               </div>
@@ -894,8 +1157,8 @@ export function SuperAdminModuleView() {
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold">Role</Label>
                 <Select
-                  value={formData.role}
-                  onValueChange={(val: any) => setFormData({ ...formData, role: val })}
+                  value={userFormData.role || "faculty"}
+                  onValueChange={(val: any) => setUserFormData({ ...userFormData, role: val })}
                 >
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue placeholder="Select Role" />
@@ -913,10 +1176,29 @@ export function SuperAdminModuleView() {
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold">Department</Label>
                 <Input
-                  value={formData.department || ""}
-                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                  value={userFormData.department || ""}
+                  onChange={(e) => setUserFormData({ ...userFormData, department: e.target.value })}
                   className="h-9 text-xs"
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Status</Label>
+                <Select
+                  value={userFormData.status || "Active"}
+                  onValueChange={(val: any) => setUserFormData({ ...userFormData, status: val })}
+                >
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUSES.filter((s) => s !== "All Statuses").map((s) => (
+                      <SelectItem key={s} value={s} className="text-xs">
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -996,6 +1278,80 @@ export function SuperAdminModuleView() {
               </DialogFooter>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* DIALOG 4: ADD DEPARTMENT MODAL */}
+      <Dialog open={isAddDeptOpen} onOpenChange={setIsAddDeptOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Building2 className="size-5 text-emerald-500" /> Create Academic Department
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Add a new institutional department or division.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleAddDeptSubmit} className="space-y-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Department Name *</Label>
+                <Input
+                  required
+                  placeholder="e.g. Civil Engineering"
+                  value={deptFormData.name || ""}
+                  onChange={(e) => setDeptFormData({ ...deptFormData, name: e.target.value })}
+                  className="h-9 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Department Code *</Label>
+                <Input
+                  required
+                  placeholder="e.g. CE"
+                  value={deptFormData.code || ""}
+                  onChange={(e) => setDeptFormData({ ...deptFormData, code: e.target.value.toUpperCase() })}
+                  className="h-9 text-xs uppercase"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">HOD Name</Label>
+                <Input
+                  placeholder="e.g. Dr. A. V. Rao"
+                  value={deptFormData.hodName || ""}
+                  onChange={(e) => setDeptFormData({ ...deptFormData, hodName: e.target.value })}
+                  className="h-9 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Accreditation</Label>
+                <Input
+                  placeholder="e.g. NBA Accredited"
+                  value={deptFormData.accreditation || ""}
+                  onChange={(e) => setDeptFormData({ ...deptFormData, accreditation: e.target.value })}
+                  className="h-9 text-xs"
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="pt-3 border-t border-border">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsAddDeptOpen(false)}
+                className="text-xs"
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold">
+                Create Department
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

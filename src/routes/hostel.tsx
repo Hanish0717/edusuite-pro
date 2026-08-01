@@ -3,9 +3,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { HostelModuleView } from "@/modules/hostel";
 
 export const Route = createFileRoute("/hostel")({
-  head: () => ({
-    meta: [{ title: "Hostel Management — EduSuite Pro" }],
-  }),
+  head: () => ({ meta: [{ title: "Hostel Management — EduSuite Pro" }] }),
   component: HostelPage,
 });
 

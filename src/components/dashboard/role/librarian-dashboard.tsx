@@ -1,26 +1,40 @@
-import {
-  Library,
-  BookOpen,
-  CheckCircle2,
-  Clock,
-  Plus,
-  Search,
-} from "lucide-react";
+import { useMemo } from "react";
+import { toast } from "sonner";
+import { Library, BookOpen, Clock, Globe, Plus, Download } from "lucide-react";
+
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { Panel } from "@/components/dashboard/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+import { fetchLibrarianStats, fetchLibraryCirculation } from "@/lib/roleDashboardService";
+
 export function LibrarianDashboard() {
+  const stats = useMemo(() => fetchLibrarianStats(), []);
+  const items = useMemo(() => fetchLibraryCirculation(), []);
+
+  const renderIcon = (name: string) => {
+    switch (name) {
+      case "Library":
+        return Library;
+      case "BookOpen":
+        return BookOpen;
+      case "Clock":
+        return Clock;
+      default:
+        return Globe;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4">
         <div>
           <h2 className="font-display text-2xl font-extrabold tracking-tight">
-            Central Library Control Desk
+            Library Management Console
           </h2>
           <p className="text-sm text-muted-foreground">
-            Scope: Library System, Book Cataloging, Issue & Return Desk, Digital Repository, Fine Collection.
+            Scope: Book Cataloging, Circulation Logs, E-Journal Subscriptions, Fines.
           </p>
         </div>
         <Badge className="bg-brand-gradient text-white w-fit font-mono">
@@ -29,28 +43,32 @@ export function LibrarianDashboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Total Catalog Titles" value="45,820 Volumes" icon={Library} />
-        <KpiCard label="Books Currently Issued" value="1,240 Active" icon={BookOpen} tone="info" />
-        <KpiCard label="Overdue Returns" value="38 Books" icon={Clock} tone="warning" />
-        <KpiCard label="Fine Collections (This Month)" value="Rs 12,450" icon={CheckCircle2} tone="success" />
+        {stats.map((kpi, idx) => {
+          const IconComp = renderIcon(kpi.iconName);
+          return (
+            <KpiCard
+              key={idx}
+              label={kpi.label}
+              value={kpi.value}
+              icon={IconComp}
+              tone={kpi.tone}
+            />
+          );
+        })}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          <Panel title="Circulation Desk & Issue Logs">
+          <Panel title="Recent Book Circulation & Returns">
             <div className="space-y-3">
-              {[
-                { title: "Introduction to Algorithms (Cormen)", borrower: "K. Sai Teja (22CS101)", due: "Aug 5, 2026", status: "Issued" },
-                { title: "Digital Signal Processing (Proakis)", borrower: "Priya S. (22ECE044)", due: "Aug 8, 2026", status: "Issued" },
-                { title: "Artificial Intelligence: A Modern Approach", borrower: "Prof. Ananya Sharma", due: "Today", status: "Due Today" },
-              ].map((book) => (
-                <div key={book.title} className="p-4 rounded-xl border border-border/70 bg-card flex items-center justify-between">
+              {items.map((item) => (
+                <div key={item.id} className="p-4 rounded-xl border border-border/70 bg-card flex items-center justify-between">
                   <div>
-                    <h4 className="font-display text-sm font-bold">{book.title}</h4>
-                    <p className="text-xs text-muted-foreground">Borrower: {book.borrower} | Due: {book.due}</p>
+                    <h4 className="font-display text-sm font-bold">{item.title}</h4>
+                    <p className="text-xs text-muted-foreground">{item.meta}</p>
                   </div>
-                  <Badge className="bg-primary/10 text-primary text-xs font-mono">
-                    {book.status}
+                  <Badge variant="outline" className="text-xs font-mono">
+                    {item.status}
                   </Badge>
                 </div>
               ))}
@@ -59,13 +77,20 @@ export function LibrarianDashboard() {
         </div>
 
         <div className="space-y-6">
-          <Panel title="Library Desk Actions">
+          <Panel title="Library Quick Actions">
             <div className="space-y-2">
-              <Button className="w-full justify-start bg-brand-gradient text-xs cursor-pointer">
-                <Plus className="size-4 mr-2" /> Issue / Return Book
+              <Button
+                onClick={() => toast.info("Opening accession catalog form...")}
+                className="w-full justify-start bg-brand-gradient text-xs cursor-pointer"
+              >
+                <Plus className="size-4 mr-2" /> Add Book to Catalog
               </Button>
-              <Button variant="outline" className="w-full justify-start text-xs cursor-pointer">
-                <BookOpen className="size-4 mr-2" /> Add Digital E-Book / Journal
+              <Button
+                onClick={() => toast.success("Generating overdue fines report...")}
+                variant="outline"
+                className="w-full justify-start text-xs cursor-pointer"
+              >
+                <Download className="size-4 mr-2" /> Export Circulation Log
               </Button>
             </div>
           </Panel>

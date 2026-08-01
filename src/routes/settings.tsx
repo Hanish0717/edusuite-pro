@@ -78,7 +78,7 @@ const scopeLabels: Record<string, string> = {
   global: "Global",
 };
 
-export function SettingsPage() {
+export function SettingsPage({ withLayout = true }: { withLayout?: boolean }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDeptScope, setSelectedDeptScope] = useState("all");
   const { featureFlags, setFeatureFlags } = useRole();
@@ -1224,4 +1224,10 @@ export function SettingsPage() {
         </Tabs>
       </div>
   );
+
+  if (!withLayout) {
+    return mainContent;
+  }
+
+  return <DashboardLayout>{mainContent}</DashboardLayout>;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -56,6 +56,7 @@ interface ModulePageProps {
   onActionClick?: () => void;
   actionText?: string;
   initialItems?: TableItem[];
+  activeTab?: string | undefined;
 }
 
 const DEFAULT_MOCK_ITEMS: TableItem[] = [
@@ -76,9 +77,18 @@ export function ModulePage({
   onActionClick,
   actionText = "New Record",
   initialItems = DEFAULT_MOCK_ITEMS,
+  activeTab: externalActiveTab,
 }: ModulePageProps) {
   const [items, setItems] = useState<TableItem[]>(initialItems);
-  const [activeTab, setActiveTab] = useState(tabs[0] || "All");
+  const [activeTab, setActiveTab] = useState(
+    externalActiveTab && tabs.includes(externalActiveTab) ? externalActiveTab : tabs[0] || "All"
+  );
+
+  useEffect(() => {
+    if (externalActiveTab && tabs.includes(externalActiveTab)) {
+      setActiveTab(externalActiveTab);
+    }
+  }, [externalActiveTab, tabs]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [sortOrder, setSortOrder] = useState<"newest" | "name">("newest");
@@ -258,7 +268,7 @@ export function ModulePage({
               if (onActionClick) onActionClick();
               else setIsCreateModalOpen(true);
             }}
-            className="bg-brand-gradient shadow-glow text-xs font-bold gap-1.5 h-10 rounded-xl cursor-pointer"
+            className="bg-brand-gradient shadow-glow text-xs font-bold gap-1.5 h-10 rounded-xl cursor-pointer text-white"
           >
             <Plus className="size-4" /> {actionText}
           </Button>
@@ -279,7 +289,7 @@ export function ModulePage({
       </div>
 
       {/* MAIN DATA TABLE & TABS CONTAINER */}
-      <Tabs defaultValue={tabs[0] ?? "All"} onValueChange={(val) => setActiveTab(val)}>
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val)}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <TabsList className="flex-wrap h-auto p-1 bg-muted/50 rounded-xl">
             {tabs.map((tab) => (
@@ -288,56 +298,17 @@ export function ModulePage({
               </TabsTrigger>
             ))}
           </TabsList>
-
-          {/* SEARCH & FILTERS BAR */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative w-48 sm:w-60">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={`Search ${title.toLowerCase()}...`}
-                className="h-9 border-input bg-card pl-9 text-xs rounded-xl focus-visible:ring-primary"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                >
-                  <X className="size-3.5" />
-                </button>
-              )}
-            </div>
-
-            {/* STATUS FILTER DROPDOWN */}
-            <div className="relative">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-9 rounded-xl border border-input bg-card px-3 pr-8 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none cursor-pointer"
-              >
-                <option value="All">All Statuses</option>
-                <option value="Active">Active</option>
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </div>
-
-            {/* SORT ORDER */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSortOrder((prev) => (prev === "newest" ? "name" : "newest"))}
-              className="h-9 text-xs gap-1 rounded-xl cursor-pointer"
-            >
-              <ArrowUpDown className="size-3.5" />
-              {sortOrder === "newest" ? "Newest" : "Name A-Z"}
-            </Button>
+          <div className="relative w-full sm:w-64">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder={`Search ${title.toLowerCase()} records...`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-8 text-xs"
+            />
           </div>
         </div>
 
-        {/* TAB CONTENT WITH DATA TABLE */}
         {tabs.map((tab) => (
           <TabsContent key={tab} value={tab} className="mt-4 space-y-4">
             <Panel

@@ -85,13 +85,19 @@ const SEMESTERS_LIST = [
   "Semester 8",
 ];
 
-export function AcademicsModuleView() {
+export function AcademicsModuleView({ initialTab }: { initialTab?: "courses" | "departments" | "curriculum" }) {
   const [courses, setCourses] = useState<AcademicCourse[]>(INITIAL_COURSES);
   const [departments, setDepartments] = useState<AcademicDepartment[]>(INITIAL_DEPARTMENTS);
   const [curriculumSchemes, setCurriculumSchemes] = useState<CurriculumScheme[]>(INITIAL_CURRICULUM_SCHEMES);
 
   // Active Subpart Tab state: "courses" | "departments" | "curriculum"
-  const [activeSubpart, setActiveSubpart] = useState<"courses" | "departments" | "curriculum">("courses");
+  const [activeSubpart, setActiveSubpart] = useState<"courses" | "departments" | "curriculum">(initialTab || "departments");
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveSubpart(initialTab);
+    }
+  }, [initialTab]);
 
   const [search, setSearch] = useState("");
   const [selectedDept, setSelectedDept] = useState("All Departments");

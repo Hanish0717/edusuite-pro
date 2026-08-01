@@ -60,7 +60,6 @@ import {
   Legend,
 } from "recharts";
 import { toast } from "sonner";
-
 import { Panel } from "@/components/dashboard/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -228,6 +227,8 @@ const RECRUITER_ACTIVITIES = [
   { id: 3, company: "Tesla Motors", recruiter: "Marcus Vance (Senior Talent Acquisition)", action: "Signed 3-Year Institutional MoU for Campus Recruitment", time: "3 hours ago" },
   { id: 4, company: "Qualcomm", recruiter: "Rajesh K. (Technical Hiring Manager)", action: "Approved online coding test threshold score (75%)", time: "Yesterday" },
 ];
+
+import { fetchPlacementStats, fetchPlacementDrives } from "@/lib/roleDashboardService";
 
 export function PlacementDashboard() {
   const { profile } = useRole();

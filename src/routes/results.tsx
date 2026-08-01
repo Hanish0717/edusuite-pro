@@ -3,9 +3,7 @@ import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { ResultsModuleView } from "@/modules/results";
 
 export const Route = createFileRoute("/results")({
-  head: () => ({
-    meta: [{ title: "Institutional Results & Transcripts — EduSuite Pro" }],
-  }),
+  head: () => ({ meta: [{ title: "Institutional Results & Transcripts — EduSuite Pro" }] }),
   component: ResultsPage,
 });
 

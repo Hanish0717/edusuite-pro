@@ -119,7 +119,7 @@ export function AppSidebar() {
                                       isActive={isSubActive}
                                       className="text-xs data-[active=true]:font-bold data-[active=true]:text-primary data-[active=true]:bg-primary/5 rounded-lg px-2 py-1"
                                     >
-                                      <Link to={child.url}>{child.title}</Link>
+                                      <Link to={child.url} search={child.search}>{child.title}</Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
                                 );
