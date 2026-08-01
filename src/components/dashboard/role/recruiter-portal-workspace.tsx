@@ -54,6 +54,8 @@ import {
   ShieldCheck,
   SlidersHorizontal,
   Play,
+  Phone,
+  Mail,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -666,7 +668,18 @@ Bengaluru, Karnataka
   };
 
   // Support Tickets State
-  const MOCK_SUPPORT_TICKETS = [
+  interface SupportTicketItem {
+    id: string;
+    subject: string;
+    category: string;
+    priority: "High" | "Medium" | "Low";
+    status: string;
+    createdDate: string;
+    assignedAgent: string;
+    description: string;
+  }
+
+  const MOCK_SUPPORT_TICKETS: SupportTicketItem[] = [
     {
       id: "TCK-801",
       subject: "Proctoring Auto-Submit Audit Request for Candidate 2022CSE104",
@@ -689,7 +702,7 @@ Bengaluru, Karnataka
     },
   ];
 
-  const [supportTickets, setSupportTickets] = useState(MOCK_SUPPORT_TICKETS);
+  const [supportTickets, setSupportTickets] = useState<SupportTicketItem[]>(MOCK_SUPPORT_TICKETS);
   const [isCreateTicketModalOpen, setIsCreateTicketModalOpen] = useState(false);
   const [ticketSubject, setTicketSubject] = useState("");
   const [ticketCategory, setTicketCategory] = useState("Assessment Proctoring");
@@ -698,7 +711,7 @@ Bengaluru, Karnataka
 
   const handleCreateTicketSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newTicket = {
+    const newTicket: SupportTicketItem = {
       id: `TCK-${Math.floor(100 + Math.random() * 900)}`,
       subject: ticketSubject || "Corporate Placement Query",
       category: ticketCategory,
@@ -2321,7 +2334,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
       {/* ===================================================================== */}
       {/* 12. RECRUITER PROFILE & SECURITY WORKSPACE                            */}
       {/* ===================================================================== */}
-      {activeModule === "profile" && (
+      {(activeModule === "profile-security" || (activeModule as string) === "profile") && (
         <div className="space-y-6">
           <Panel title="Corporate Recruiter Profile & Security Settings">
             <div className="space-y-6 pt-1 font-sans">
