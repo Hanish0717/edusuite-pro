@@ -30,22 +30,39 @@ import { SAMPLE_20_MCQS, SAMPLE_2_CODING_CHALLENGES } from "@/components/dashboa
 import { saveStudentSubmission } from "@/lib/shared-assessment-store";
 
 function parseCollegeEmail(email: string) {
-  const prefix = email.split("@")[0] || "alex.2022cse015";
-  const parts = prefix.split(".");
-  const rawName = parts[0] || "Student";
-  const name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+  const prefix = (email.split("@")[0] || "23341a4229").trim();
+  const rollNo = prefix.toUpperCase();
 
-  const rollMatch = prefix.match(/\d{4}[a-zA-Z]+\d+/);
-  const rollNo = rollMatch ? rollMatch[0].toUpperCase() : "2022CSE015";
+  // Extract Name (e.g. 23341A4229 -> Student 23341A4229)
+  const nameParts = prefix.split(".");
+  let name = "";
+  if (nameParts.length > 1 && isNaN(Number(nameParts[0]))) {
+    name = nameParts[0]!.charAt(0).toUpperCase() + nameParts[0]!.slice(1);
+  } else {
+    name = `Student ${rollNo}`;
+  }
 
+  // Branch Code extraction for JNTU/Autonomous format like 23341A4229 (42 -> CSM/AIML, 05 -> CSE, 04 -> ECE, 12 -> IT, 02 -> EEE)
   let dept = "CSE (Computer Science & Engg)";
-  const lowerRoll = rollNo.toLowerCase();
-  if (lowerRoll.includes("ece")) dept = "ECE (Electronics & Comm)";
-  else if (lowerRoll.includes("cse")) dept = "CSE (Computer Science & Engg)";
-  else if (lowerRoll.includes("it")) dept = "IT (Information Technology)";
-  else if (lowerRoll.includes("eee")) dept = "EEE (Electrical & Electronics)";
-  else if (lowerRoll.includes("mech")) dept = "MECH (Mechanical Engg)";
-  else if (lowerRoll.includes("civil")) dept = "CIVIL (Civil Engg)";
+  const lowerPrefix = prefix.toLowerCase();
+
+  if (lowerPrefix.includes("42") || lowerPrefix.includes("csm") || lowerPrefix.includes("aiml")) {
+    dept = "CSM (AI & Machine Learning)";
+  } else if (lowerPrefix.includes("05") || lowerPrefix.includes("cse")) {
+    dept = "CSE (Computer Science & Engg)";
+  } else if (lowerPrefix.includes("04") || lowerPrefix.includes("ece")) {
+    dept = "ECE (Electronics & Comm Engg)";
+  } else if (lowerPrefix.includes("12") || lowerPrefix.includes("it")) {
+    dept = "IT (Information Technology)";
+  } else if (lowerPrefix.includes("02") || lowerPrefix.includes("eee")) {
+    dept = "EEE (Electrical & Electronics)";
+  } else if (lowerPrefix.includes("03") || lowerPrefix.includes("mech")) {
+    dept = "MECH (Mechanical Engineering)";
+  } else if (lowerPrefix.includes("01") || lowerPrefix.includes("civil")) {
+    dept = "CIVIL (Civil Engineering)";
+  } else if (lowerPrefix.includes("44") || lowerPrefix.includes("csd")) {
+    dept = "CSD (Data Science)";
+  }
 
   return { name, rollNo, dept, deptCode: dept.split(" ")[0]! };
 }
@@ -67,8 +84,8 @@ function StudentLiveExamPage() {
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
   const [markedForReview, setMarkedForReview] = useState<Record<number, boolean>>({});
 
-  // Student College Authentication State — Only Email & Password required
-  const [studentEmail, setStudentEmail] = useState("alex.2022cse015@college.edu.in");
+  // Student College Authentication State — Roll No Email ID
+  const [studentEmail, setStudentEmail] = useState("23341a4229@college.edu.in");
   const [studentPassword, setStudentPassword] = useState("EduSuite@2026#");
 
   // Auto-derive Name, Roll No, Department from Email ID series
