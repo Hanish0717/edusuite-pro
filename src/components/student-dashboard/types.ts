@@ -27,13 +27,13 @@ export interface AcademicOverview {
 
 export interface TimetableSlot {
   id: string;
-  time: string;
+  time?: string;
   startTime?: string;
   endTime?: string;
-  subject: string;
+  subject?: string;
   subjectCode?: string;
   subjectName?: string;
-  code: string;
+  code?: string;
   faculty: string;
   room: string;
   building?: string;
@@ -52,6 +52,7 @@ export interface TaskItem {
   category: string;
   dueDate: string;
   urgent?: boolean;
+  status?: string;
   priority?: "High" | "Medium" | "Low" | string;
   linkUrl: string;
 }
@@ -61,6 +62,7 @@ export interface EventItem {
   title: string;
   date: string;
   time?: string;
+  description?: string;
   category?: string;
   priority?: "High" | "Medium" | "Low" | string;
   type: "Exam" | "Workshop" | "Hackathon" | "Placement" | "Seminar" | "Holiday" | string;
@@ -71,6 +73,7 @@ export interface ActivityItem {
   id: string;
   title: string;
   timestamp: string;
+  status?: string;
   type: any;
 }
 
@@ -80,6 +83,7 @@ export interface AnnouncementItem {
   id: string;
   title: string;
   content: string;
+  author?: string;
   date: string;
   category: string;
   unread?: boolean;
@@ -90,6 +94,7 @@ export interface AttendanceSnapshot {
   overallPercentage: number;
   totalClasses: number;
   attendedClasses: number;
+  shortageCount?: number;
   status: string;
 }
 
@@ -98,34 +103,43 @@ export interface ExamSnapshot {
   nextExamDate: string;
   hallTicketStatus: string;
   latestCgpa: number;
+  cgpa?: number;
 }
 
 export interface FinanceSnapshot {
   pendingAmount: number;
   dueDate: string;
+  feesPaid?: number;
   status: string;
 }
 
 export interface LmsSnapshot {
-  activeCoursesCount: number;
-  pendingAssignmentsCount: number;
+  activeCoursesCount?: number;
+  registeredCoursesCount?: number;
+  pendingAssignmentsCount?: number;
+  pendingAssignments?: number;
+  upcomingQuizzes?: number;
+  completedCourses?: number;
+  learningProgressPercentage?: number;
 }
 
 export interface LibrarySnapshot {
-  borrowedBooksCount: number;
+  borrowedBooksCount?: number;
+  booksIssued?: number;
   dueDate: string;
   fineAmount: number;
 }
 
 export interface HostelSnapshot {
-  roomNo: string;
-  block: string;
-  messFeeStatus: string;
+  roomNo?: string;
+  roomNumber?: string;
+  block?: string;
+  messFeeStatus?: string;
 }
 
 export interface TransportSnapshot {
-  routeNo: string;
-  busNo: string;
+  routeNo?: string;
+  busNo?: string;
   busNumber?: string;
   route?: string;
   todaysRoute?: string;
@@ -133,7 +147,7 @@ export interface TransportSnapshot {
   driverPhone?: string;
   currentLocation?: string;
   eta?: string;
-  passValidity: string;
+  passValidity?: string;
 }
 
 export interface PlacementSnapshot {
