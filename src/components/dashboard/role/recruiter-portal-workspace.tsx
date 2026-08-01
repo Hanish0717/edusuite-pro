@@ -35,13 +35,16 @@ import {
   CheckCheck,
   Check,
   X,
-  FileSpreadsheet,
   Layers,
   User,
   Key,
   Smartphone,
   LogOut,
   ChevronRight,
+  BookOpen,
+  BrainCircuit,
+  Calculator,
+  Cpu,
   PieChart as PieChartIcon,
   TrendingUp,
   Brain,
@@ -386,24 +389,36 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const INITIAL_QUESTION_BANK: Array<{
     id: string;
     type: "MCQ" | "Coding" | "SQL";
-    subject: "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Operating Systems" | "Computer Networks" | "Aptitude & Reasoning";
+    subject: "Verbal Ability" | "Logical Reasoning" | "Quantitative Aptitude" | "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Core Systems (OS & Networks)";
     title: string;
     optionsOrConstraints: string;
     difficulty: "Easy" | "Medium" | "Hard";
     marks: number;
   }> = [
+    // Data Structures & Algorithms
     { id: "QB-DSA-01", type: "Coding", subject: "Data Structures & Algorithms", title: "Distributed Cache Eviction (LRU-K Policy with O(1) time complexity)", optionsOrConstraints: "Java 17, Python 3.11, C++ 20", difficulty: "Hard", marks: 20 },
     { id: "QB-DSA-02", type: "Coding", subject: "Data Structures & Algorithms", title: "Optimal Cloud Subgraph Network Connectivity (K Minimum Spanning Tree)", optionsOrConstraints: "Java 17, Python 3.11, C++ 20", difficulty: "Hard", marks: 30 },
     { id: "QB-DSA-03", type: "MCQ", subject: "Data Structures & Algorithms", title: "Log-Structured Merge-Tree (LSM-Tree) append-only storage in Google Bigtable", optionsOrConstraints: "4 Options (LSM, B+, Tree, Hash Ring)", difficulty: "Hard", marks: 1 },
+
+    // Verbal Ability
+    { id: "QB-VERBAL-01", type: "MCQ", subject: "Verbal Ability", title: "Sentence Completion & Contextual Technical Vocabulary Analogy", optionsOrConstraints: "4 Options", difficulty: "Easy", marks: 1 },
+    { id: "QB-VERBAL-02", type: "MCQ", subject: "Verbal Ability", title: "Reading Comprehension Inferences: High-Throughput System Documentation", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
+
+    // Logical Reasoning
+    { id: "QB-LOGIC-01", type: "MCQ", subject: "Logical Reasoning", title: "Syllogism Deductive Logic: Statements & Venn Diagram Conclusions", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
+    { id: "QB-LOGIC-02", type: "MCQ", subject: "Logical Reasoning", title: "Circular Seating Arrangement & Directional Positioning Matrix", optionsOrConstraints: "4 Options", difficulty: "Hard", marks: 1 },
+
+    // Quantitative Aptitude
+    { id: "QB-QUANT-01", type: "MCQ", subject: "Quantitative Aptitude", title: "Work & Time Efficiency Ratio: 3 Pipes Filling Cistern at Differential Flow Rates", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
+    { id: "QB-QUANT-02", type: "MCQ", subject: "Quantitative Aptitude", title: "Combinatorics & Probability of Concurrent Distributed Server Node Failures", optionsOrConstraints: "4 Options", difficulty: "Hard", marks: 1 },
+
+    // Database Systems (DBMS)
     { id: "QB-DBMS-01", type: "SQL", subject: "Database Management Systems (DBMS)", title: "Top 5 High-Revenue Corporate Accounts Window Aggregation (DENSE_RANK)", optionsOrConstraints: "PostgreSQL 15 / MySQL 8", difficulty: "Medium", marks: 10 },
     { id: "QB-DBMS-02", type: "SQL", subject: "Database Management Systems (DBMS)", title: "Recursive Common Table Expression (CTE) for Org Hierarchy Tree Traversals", optionsOrConstraints: "PostgreSQL 15 / MySQL 8", difficulty: "Hard", marks: 15 },
-    { id: "QB-DBMS-03", type: "MCQ", subject: "Database Management Systems (DBMS)", title: "Google Spanner External Consistency (TrueTime API atomic clocks)", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
-    { id: "QB-OS-01", type: "MCQ", subject: "Operating Systems", title: "Banker's Algorithm Resource Request Deadlock Prevention State Matrix", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
-    { id: "QB-OS-02", type: "MCQ", subject: "Operating Systems", title: "Virtual Memory Page Fault Replacement LRU Stack Implementation", optionsOrConstraints: "4 Options", difficulty: "Easy", marks: 1 },
-    { id: "QB-CN-01", type: "MCQ", subject: "Computer Networks", title: "TCP 3-Way Handshake SYN-ACK Sequence & Acknowledgement Numbering", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
-    { id: "QB-CN-02", type: "MCQ", subject: "Computer Networks", title: "CIDR /26 Subnet Masking Host IP Address Allocation & Broadcast Range", optionsOrConstraints: "4 Options", difficulty: "Easy", marks: 1 },
-    { id: "QB-APT-01", type: "MCQ", subject: "Aptitude & Reasoning", title: "Combinatorics & Permutations for Multi-Region Distributed Server Nodes", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
-    { id: "QB-APT-02", type: "MCQ", subject: "Aptitude & Reasoning", title: "Work & Time Efficiency Pipes and Cistern Rates Ratio Calculation", optionsOrConstraints: "4 Options", difficulty: "Easy", marks: 1 },
+
+    // Core Systems (OS & Networks)
+    { id: "QB-OS-01", type: "MCQ", subject: "Core Systems (OS & Networks)", title: "Banker's Algorithm Resource Request Deadlock Prevention State Matrix", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
+    { id: "QB-CN-01", type: "MCQ", subject: "Core Systems (OS & Networks)", title: "TCP 3-Way Handshake SYN-ACK Sequence & Acknowledgement Numbering", optionsOrConstraints: "4 Options", difficulty: "Medium", marks: 1 },
   ];
 
   // Password reset alert state
@@ -1221,6 +1236,156 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                 </div>
               </div>
 
+              {/* SUBJECT CATEGORY CARDS GRID */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between font-mono text-xs">
+                  <p className="font-bold text-foreground font-sans">📚 Subject &amp; Aptitude Cards Repository:</p>
+                  {qbSubjectFilter !== "All" && (
+                    <button
+                      type="button"
+                      onClick={() => setQbSubjectFilter("All")}
+                      className="text-[0.68rem] text-purple-600 font-bold hover:underline cursor-pointer"
+                    >
+                      Reset Filter (Show All Subjects)
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {/* CARD 1: DSA (Coding & MCQs) */}
+                  <div
+                    onClick={() => setQbSubjectFilter("Data Structures & Algorithms")}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
+                      qbSubjectFilter === "Data Structures & Algorithms"
+                        ? "bg-purple-500/10 border-purple-500 shadow-md ring-2 ring-purple-500/20"
+                        : "bg-card hover:bg-muted/40 border-border"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="p-2 rounded-xl bg-purple-600/10 text-purple-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                        <Code2 className="size-4" /> Data Structures &amp; Algorithms
+                      </span>
+                      <Badge className="bg-purple-600 text-white text-[0.62rem]">Coding + MCQs</Badge>
+                    </div>
+                    <p className="text-[0.72rem] text-muted-foreground">Arrays, Trees, Dynamic Programming, Graphs &amp; Algorithms</p>
+                    <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
+                      <span className="text-muted-foreground font-bold">45 Questions Available</span>
+                      <span className="text-purple-600 font-bold">Click to filter →</span>
+                    </div>
+                  </div>
+
+                  {/* CARD 2: Verbal Ability (MCQs) */}
+                  <div
+                    onClick={() => setQbSubjectFilter("Verbal Ability")}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
+                      qbSubjectFilter === "Verbal Ability"
+                        ? "bg-blue-500/10 border-blue-500 shadow-md ring-2 ring-blue-500/20"
+                        : "bg-card hover:bg-muted/40 border-border"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="p-2 rounded-xl bg-blue-600/10 text-blue-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                        <BookOpen className="size-4" /> Verbal Ability
+                      </span>
+                      <Badge variant="outline" className="text-[0.62rem] border-blue-300 text-blue-700 bg-blue-50">MCQs Only</Badge>
+                    </div>
+                    <p className="text-[0.72rem] text-muted-foreground">Vocabulary, Grammar, Reading Comprehension &amp; Sentence Completion</p>
+                    <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
+                      <span className="text-muted-foreground font-bold">30 Questions Available</span>
+                      <span className="text-blue-600 font-bold">Click to filter →</span>
+                    </div>
+                  </div>
+
+                  {/* CARD 3: Logical Reasoning (MCQs) */}
+                  <div
+                    onClick={() => setQbSubjectFilter("Logical Reasoning")}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
+                      qbSubjectFilter === "Logical Reasoning"
+                        ? "bg-amber-500/10 border-amber-500 shadow-md ring-2 ring-amber-500/20"
+                        : "bg-card hover:bg-muted/40 border-border"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="p-2 rounded-xl bg-amber-600/10 text-amber-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                        <BrainCircuit className="size-4" /> Logical Reasoning
+                      </span>
+                      <Badge variant="outline" className="text-[0.62rem] border-amber-300 text-amber-700 bg-amber-50">MCQs Only</Badge>
+                    </div>
+                    <p className="text-[0.72rem] text-muted-foreground">Syllogisms, Puzzles, Sequences &amp; Pattern Identification</p>
+                    <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
+                      <span className="text-muted-foreground font-bold">25 Questions Available</span>
+                      <span className="text-amber-600 font-bold">Click to filter →</span>
+                    </div>
+                  </div>
+
+                  {/* CARD 4: Quantitative Aptitude (MCQs) */}
+                  <div
+                    onClick={() => setQbSubjectFilter("Quantitative Aptitude")}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
+                      qbSubjectFilter === "Quantitative Aptitude"
+                        ? "bg-emerald-500/10 border-emerald-500 shadow-md ring-2 ring-emerald-500/20"
+                        : "bg-card hover:bg-muted/40 border-border"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="p-2 rounded-xl bg-emerald-600/10 text-emerald-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                        <Calculator className="size-4" /> Quantitative Aptitude
+                      </span>
+                      <Badge variant="outline" className="text-[0.62rem] border-emerald-300 text-emerald-700 bg-emerald-50">MCQs Only</Badge>
+                    </div>
+                    <p className="text-[0.72rem] text-muted-foreground">Work &amp; Time, Speed &amp; Distance, Probability &amp; Combinatorics</p>
+                    <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
+                      <span className="text-muted-foreground font-bold">25 Questions Available</span>
+                      <span className="text-emerald-600 font-bold">Click to filter →</span>
+                    </div>
+                  </div>
+
+                  {/* CARD 5: Database Systems (SQL & MCQs) */}
+                  <div
+                    onClick={() => setQbSubjectFilter("Database Management Systems (DBMS)")}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
+                      qbSubjectFilter === "Database Management Systems (DBMS)"
+                        ? "bg-cyan-500/10 border-cyan-500 shadow-md ring-2 ring-cyan-500/20"
+                        : "bg-card hover:bg-muted/40 border-border"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="p-2 rounded-xl bg-cyan-600/10 text-cyan-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                        <Database className="size-4" /> Database Systems (DBMS)
+                      </span>
+                      <Badge className="bg-emerald-600 text-white text-[0.62rem]">SQL + MCQs</Badge>
+                    </div>
+                    <p className="text-[0.72rem] text-muted-foreground">SQL Queries, Window Aggregations, CTEs, ACID &amp; Indexing</p>
+                    <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
+                      <span className="text-muted-foreground font-bold">20 Questions Available</span>
+                      <span className="text-cyan-600 font-bold">Click to filter →</span>
+                    </div>
+                  </div>
+
+                  {/* CARD 6: Core Systems (OS & Networks) */}
+                  <div
+                    onClick={() => setQbSubjectFilter("Core Systems (OS & Networks)")}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
+                      qbSubjectFilter === "Core Systems (OS & Networks)"
+                        ? "bg-indigo-500/10 border-indigo-500 shadow-md ring-2 ring-indigo-500/20"
+                        : "bg-card hover:bg-muted/40 border-border"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="p-2 rounded-xl bg-indigo-600/10 text-indigo-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                        <Cpu className="size-4" /> Core Systems (OS &amp; Networks)
+                      </span>
+                      <Badge variant="outline" className="text-[0.62rem] border-indigo-300 text-indigo-700 bg-indigo-50">MCQs Only</Badge>
+                    </div>
+                    <p className="text-[0.72rem] text-muted-foreground">Deadlocks, Virtual Memory, TCP 3-Way Handshake &amp; Subnetting</p>
+                    <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
+                      <span className="text-muted-foreground font-bold">17 Questions Available</span>
+                      <span className="text-indigo-600 font-bold">Click to filter →</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* SEARCH BAR & SUBJECT FILTER DROPDOWN */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="relative flex-1">
@@ -1239,12 +1404,13 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                     onChange={(e) => setQbSubjectFilter(e.target.value)}
                     className="h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold font-mono cursor-pointer"
                   >
-                    <option value="All">All Subjects (5 Categories)</option>
-                    <option value="Data Structures & Algorithms">Data Structures &amp; Algorithms</option>
-                    <option value="Database Management Systems (DBMS)">DBMS (Database Systems)</option>
-                    <option value="Operating Systems">Operating Systems (OS)</option>
-                    <option value="Computer Networks">Computer Networks (CN)</option>
-                    <option value="Aptitude & Reasoning">Aptitude &amp; Reasoning</option>
+                    <option value="All">All Subjects (6 Categories)</option>
+                    <option value="Data Structures & Algorithms">Data Structures &amp; Algorithms (DSA)</option>
+                    <option value="Verbal Ability">Verbal Ability (Vocabulary &amp; Grammar)</option>
+                    <option value="Logical Reasoning">Logical Reasoning (Syllogisms &amp; Puzzles)</option>
+                    <option value="Quantitative Aptitude">Quantitative Aptitude (Math &amp; Prob)</option>
+                    <option value="Database Management Systems (DBMS)">DBMS &amp; SQL Queries</option>
+                    <option value="Core Systems (OS & Networks)">Core Systems (OS &amp; Networks)</option>
                   </select>
 
                   <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-xl text-xs font-mono">
