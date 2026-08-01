@@ -182,16 +182,7 @@ export function StudentFeedbackModule() {
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-[1600px] mx-auto min-h-screen">
       {/* HEADER & QUICK ACTIONS */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-          <Home className="h-3.5 w-3.5" />
-          <span>Home</span>
-          <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
-          <span>Student</span>
-          <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
-          <span className="text-slate-900 dark:text-white font-bold">Feedback Portal</span>
-        </div>
-
+      <div className="space-y-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4 border-slate-200 dark:border-slate-800">
           <div>
             <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
