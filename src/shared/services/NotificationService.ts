@@ -1,10 +1,22 @@
 import { toast } from "sonner";
 import { notificationRepository } from "../repositories/notification.repository";
 import type { Notification } from "../types/notification.types";
+import { eventBus } from "./eventBus";
 
 class NotificationService {
-  async getNotificationsForRole(role: string): Promise<Notification[]> {
-    const res = await notificationRepository.getNotifications(role);
+  constructor() {
+    // Decoupled Event-based subscriber
+    eventBus.on("notification:create", async (payload: any) => {
+      try {
+        await this.dispatch(payload);
+      } catch (err) {
+        console.error("[NotificationService] Event subscription dispatch failed:", err);
+      }
+    });
+  }
+
+  async getNotificationsForRole(role: string, collegeId: string = "GMR"): Promise<Notification[]> {
+    const res = await notificationRepository.getNotifications(role, collegeId);
     return res.success ? res.data : [];
   }
 
@@ -14,15 +26,16 @@ class NotificationService {
   }
 
   async dispatch(
-    payload: Omit<Notification, "id" | "created_at" | "is_read" | "created_by"> & { created_by?: string }
+    payload: Omit<Notification, "id" | "created_at" | "status" | "schema_version" | "delivery_status">
   ): Promise<Notification | null> {
-    const res = await notificationRepository.createNotification({
-      ...payload,
-      created_by: payload.created_by || "System",
-    });
+    const res = await notificationRepository.createNotification(payload);
     
-    if (res.success) {
-      toast.success(`New ${payload.type} alert sent to ${payload.target_role}: "${payload.title}"`);
+    if (res.success && res.data) {
+      toast.success(`[New Alert] ${payload.title}`, {
+        description: payload.message,
+      });
+      // Inform listeners (like the Topbar) that a new notification is ready
+      eventBus.emit("notification:new_added", res.data);
       return res.data;
     }
     return null;

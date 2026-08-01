@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { Bell, Download, Filter, Moon, Search, Sun, Settings as SettingsIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -55,6 +55,8 @@ import { useRole } from "@/context/role-context";
 import { notifications } from "@/data/mock";
 import { notificationService } from "@/shared/services/NotificationService";
 import type { Notification } from "@/shared/types/notification.types";
+import { eventBus } from "@/shared/services/eventBus";
+import { toast } from "sonner";
 
 function useCrumbs() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
@@ -81,6 +83,7 @@ export function Topbar() {
   } = useRole();
   const [dark, setDark] = useState(false);
   const [notifs, setNotifs] = useState<Notification[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -107,17 +110,45 @@ export function Topbar() {
 
   useEffect(() => {
     let active = true;
-    notificationService.getNotificationsForRole(activeNotifRole).then((data) => {
-      if (active) {
-        setNotifs(data);
+    const fetchNotifs = () => {
+      notificationService.getNotificationsForRole(activeNotifRole).then((data) => {
+        if (active) {
+          setNotifs(data);
+        }
+      });
+    };
+
+    fetchNotifs();
+
+    // Event Bus Listener
+    const unsubscribeNew = eventBus.on("notification:new_added", (newNotif) => {
+      if (newNotif.target_role === activeNotifRole) {
+        fetchNotifs();
       }
     });
+
     return () => {
       active = false;
+      unsubscribeNew();
     };
   }, [activeNotifRole]);
 
-  const unread = notifs.filter((n) => !n.is_read).length;
+  const unread = notifs.filter((n) => n.status === "unread").length;
+
+  const getPriorityBadge = (priority: string) => {
+    switch (priority) {
+      case "Critical":
+        return <span className="bg-red-600 text-white animate-pulse text-[0.6rem] font-bold px-1.5 py-0.5 rounded">Critical</span>;
+      case "High":
+        return <span className="bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300 text-[0.6rem] font-bold px-1.5 py-0.5 rounded">High</span>;
+      case "Medium":
+        return <span className="bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 text-[0.6rem] font-bold px-1.5 py-0.5 rounded">Medium</span>;
+      case "Low":
+        return <span className="bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 text-[0.6rem] font-bold px-1.5 py-0.5 rounded">Low</span>;
+      default:
+        return <span className="bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300 text-[0.6rem] font-bold px-1.5 py-0.5 rounded">Info</span>;
+    }
+  };
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
@@ -286,30 +317,68 @@ export function Topbar() {
                     <div
                       key={n.id}
                       onClick={async () => {
-                        await notificationService.markNotificationAsRead(n.id);
-                        setNotifs((prev) =>
-                          prev.map((x) => (x.id === n.id ? { ...x, is_read: true } : x))
-                        );
+                        if (n.status === "unread") {
+                          await notificationService.markNotificationAsRead(n.id);
+                          setNotifs((prev) =>
+                            prev.map((x) => (x.id === n.id ? { ...x, status: "read" } : x))
+                          );
+                        }
+                        if (n.route) {
+                          navigate({ to: n.route });
+                        }
                       }}
                       className={`rounded-xl border border-border bg-card p-3 shadow-card transition-colors hover:bg-accent/40 cursor-pointer ${
-                        !n.is_read ? "border-l-4 border-l-primary" : ""
+                        n.status === "unread" ? "border-l-4 border-l-primary" : ""
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className={`text-[0.65rem] px-2 py-0.5 rounded font-semibold ${
-                          n.type === "Warning" ? "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300" :
-                          n.type === "Error" || n.type === "Emergency" ? "bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300" :
-                          n.type === "Success" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300" :
-                          "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300"
-                        }`}>
-                          {n.type}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[0.65rem] px-2 py-0.5 rounded font-semibold ${
+                            n.type === "Warning" ? "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300" :
+                            n.type === "Error" || n.type === "Emergency" ? "bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300" :
+                            n.type === "Success" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300" :
+                            "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300"
+                          }`}>
+                            {n.type}
+                          </span>
+                          {getPriorityBadge(n.priority)}
+                        </div>
                         <span className="text-[0.65rem] text-muted-foreground font-mono">
                           {n.module}
                         </span>
                       </div>
                       <p className="text-sm font-semibold mt-1.5">{n.title}</p>
                       <p className="mt-1 text-xs text-muted-foreground leading-normal">{n.message}</p>
+                      
+                      {n.actions && n.actions.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-border/40">
+                          {n.actions.map((act) => (
+                            <Button
+                              key={act.label}
+                              size="sm"
+                              variant={act.actionType === "approve" ? "default" : act.actionType === "reject" ? "destructive" : "outline"}
+                              className={`text-[0.65rem] h-6 py-0 px-2 ${
+                                act.actionType === "approve" ? "bg-emerald-600 text-white hover:bg-emerald-700 border-none shadow-none" : ""
+                              }`}
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (act.actionType === "link" && act.route) {
+                                  navigate({ to: act.route });
+                                } else {
+                                  toast.success(`Action "${act.label}" succeeded.`);
+                                }
+                                await notificationService.markNotificationAsRead(n.id);
+                                setNotifs((prev) =>
+                                  prev.map((x) => (x.id === n.id ? { ...x, status: "read" } : x))
+                                );
+                              }}
+                            >
+                              {act.label}
+                            </Button>
+                          ))}
+                        </div>
+                      )}
+                      
                       <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-border/40 text-[0.65rem] text-muted-foreground">
                         <span>By: {n.created_by}</span>
                         <span>{new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
