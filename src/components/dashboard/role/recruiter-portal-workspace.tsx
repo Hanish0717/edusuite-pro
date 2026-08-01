@@ -451,6 +451,17 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const [generatedTestLink, setGeneratedTestLink] = useState("");
   const [isSendSuccess, setIsSendSuccess] = useState(false);
 
+  // Question View Detail Modal State
+  const [selectedViewQuestion, setSelectedViewQuestion] = useState<{
+    id: string;
+    type: "MCQ" | "Coding" | "SQL";
+    title: string;
+    optionsOrConstraints: string;
+    difficulty: "Easy" | "Medium" | "Hard";
+    marks: number;
+  } | null>(null);
+  const [isViewQuestionModalOpen, setIsViewQuestionModalOpen] = useState(false);
+
   // Question Bank & Bulk Upload State
   const [qbList, setQbList] = useState(INITIAL_QUESTION_BANK);
   const [qbCounts, setQbCounts] = useState({ mcq: 80, coding: 42, sql: 20, total: 142 });
@@ -1278,7 +1289,10 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => toast.info(`Previewing "${item.title}"`)}
+                                onClick={() => {
+                                  setSelectedViewQuestion(item);
+                                  setIsViewQuestionModalOpen(true);
+                                }}
                                 className="h-7 text-xs rounded-xl cursor-pointer"
                               >
                                 <Eye className="size-3 mr-1" /> View
@@ -1437,6 +1451,111 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
           </Panel>
         </div>
       )}
+
+      {/* QUESTION VIEW DETAIL MODAL DIALOG */}
+      <Dialog open={isViewQuestionModalOpen} onOpenChange={setIsViewQuestionModalOpen}>
+        <DialogContent className="sm:max-w-xl rounded-2xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-blue-600 text-white grid place-items-center shadow-glow">
+                <Eye className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Question Detail &amp; Specification</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  {selectedViewQuestion?.id} • {selectedViewQuestion?.type} Question Bank Record
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {selectedViewQuestion && (
+            <div className="space-y-4 pt-2 text-xs font-sans">
+              <div className="flex items-center justify-between">
+                <Badge
+                  className={
+                    selectedViewQuestion.type === "Coding"
+                      ? "bg-purple-600 text-white"
+                      : selectedViewQuestion.type === "SQL"
+                      ? "bg-emerald-600 text-white"
+                      : "bg-blue-600 text-white"
+                  }
+                >
+                  {selectedViewQuestion.type} Category
+                </Badge>
+                <div className="flex items-center gap-3 font-mono text-[0.68rem]">
+                  <span>Difficulty: <strong className="text-purple-600">{selectedViewQuestion.difficulty}</strong></span>
+                  <span>Marks: <strong className="text-foreground">{selectedViewQuestion.marks} Mks</strong></span>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-muted/30 border border-border/80 space-y-2">
+                <p className="font-mono text-[0.65rem] font-bold text-muted-foreground uppercase">Question Statement / Title:</p>
+                <h4 className="font-bold text-sm text-foreground leading-relaxed font-sans">{selectedViewQuestion.title}</h4>
+              </div>
+
+              {selectedViewQuestion.type === "MCQ" && (
+                <div className="space-y-2">
+                  <p className="font-mono text-[0.68rem] font-bold text-foreground">Answer Options &amp; Correct Answer Key:</p>
+                  <div className="grid gap-2 font-mono text-xs">
+                    <div className="p-3 rounded-xl border bg-emerald-500/10 border-emerald-500/40 text-emerald-700 dark:text-emerald-300 font-bold flex items-center justify-between">
+                      <span>A. {selectedViewQuestion.optionsOrConstraints.split("(")[0] || "Log-Structured Merge-Tree (LSM-Tree)"}</span>
+                      <span className="text-[0.62rem] bg-emerald-600 text-white px-2 py-0.5 rounded-md font-sans">Correct Answer</span>
+                    </div>
+                    <div className="p-3 rounded-xl border bg-card text-muted-foreground">
+                      <span>B. B+ Tree Indexing with WAL</span>
+                    </div>
+                    <div className="p-3 rounded-xl border bg-card text-muted-foreground">
+                      <span>C. Red-Black Balanced Binary Search Tree</span>
+                    </div>
+                    <div className="p-3 rounded-xl border bg-card text-muted-foreground">
+                      <span>D. Distributed Hash Map Ring</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {selectedViewQuestion.type === "Coding" && (
+                <div className="space-y-3">
+                  <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 font-mono space-y-1 text-purple-900 dark:text-purple-200">
+                    <p className="font-bold">💻 Supported Compilers &amp; Language Runtimes:</p>
+                    <p className="text-[0.68rem] font-semibold">{selectedViewQuestion.optionsOrConstraints}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 font-mono text-[0.68rem]">
+                    <div className="p-3 rounded-xl bg-card border space-y-1">
+                      <span className="text-muted-foreground font-bold uppercase block">Sample Input</span>
+                      <p className="text-foreground font-bold">Capacity = 3, K = 2</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-card border space-y-1">
+                      <span className="text-muted-foreground font-bold uppercase block">Sample Output</span>
+                      <p className="text-foreground font-bold">Evicted Node ID = 4</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {selectedViewQuestion.type === "SQL" && (
+                <div className="space-y-3 font-mono text-xs">
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-200 space-y-1">
+                    <p className="font-bold">🗄️ Database Dialect &amp; Schema Scope:</p>
+                    <p className="text-[0.68rem]">{selectedViewQuestion.optionsOrConstraints}</p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-slate-950 text-emerald-400 font-mono text-[0.68rem] space-y-1.5">
+                    <p className="text-slate-400 font-bold">Expected Query Solution:</p>
+                    <pre className="whitespace-pre-wrap">SELECT account_id, DENSE_RANK() OVER (ORDER BY revenue DESC) FROM corporate_accounts;</pre>
+                  </div>
+                </div>
+              )}
+
+              <DialogFooter className="pt-2">
+                <Button type="button" onClick={() => setIsViewQuestionModalOpen(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer">
+                  Close Question Preview
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* BULK UPLOAD QUESTIONS MODAL DIALOG */}
       <Dialog open={isBulkUploadModalOpen} onOpenChange={setIsBulkUploadModalOpen}>
