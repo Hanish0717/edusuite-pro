@@ -7,9 +7,9 @@ export type PermissionScope = "own" | "department" | "school" | "campus" | "inst
 export interface UserPermissionContext {
   role: LoginRole;
   flags: string[];
-  department?: DepartmentCode;
-  externalPersona?: ExternalPersona;
-  featureFlags?: Record<string, boolean>;
+  department?: DepartmentCode | undefined;
+  externalPersona?: ExternalPersona | undefined;
+  featureFlags?: Record<string, boolean> | undefined;
 }
 
 // Module IDs mapping:
@@ -426,14 +426,14 @@ export function hasPermission(
 ): { allowed: boolean; scope: PermissionScope } {
   // 0. Licensing & Feature Flags Check
   if (user.featureFlags) {
-    if (moduleId === "finance" && !user.featureFlags.finance)
+    if (moduleId === "finance" && !user.featureFlags["finance"])
       return { allowed: false, scope: "own" };
-    if (moduleId === "hostel" && !user.featureFlags.hostel) return { allowed: false, scope: "own" };
-    if (moduleId === "transport" && !user.featureFlags.transport)
+    if (moduleId === "hostel" && !user.featureFlags["hostel"]) return { allowed: false, scope: "own" };
+    if (moduleId === "transport" && !user.featureFlags["transport"])
       return { allowed: false, scope: "own" };
-    if (moduleId === "placement" && !user.featureFlags.placement)
+    if (moduleId === "placement" && !user.featureFlags["placement"])
       return { allowed: false, scope: "own" };
-    if (moduleId === "library" && !user.featureFlags.library)
+    if (moduleId === "library" && !user.featureFlags["library"])
       return { allowed: false, scope: "own" };
   }
 

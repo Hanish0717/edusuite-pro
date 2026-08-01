@@ -4,15 +4,16 @@ import path from 'path';
 
 // Define directories and image paths
 const conversationId = 'aad8a9e5-ca7d-4430-8b2c-9453726dc39b';
-const baseDir = `C:\\Users\\acer\\.gemini\\antigravity\\brain\\${conversationId}`;
-const artifactsDir = `C:\\Users\\acer\\.gemini\\antigravity\\brain\\${conversationId}`; // Output to conversation folder as an artifact
+const baseDir = `C:\\Users\\acer\\.gemini\\antigravity\brain\\${conversationId}`;
 
 const images = {
   faculty: path.join(baseDir, 'media__1785493877544.jpg'),
   academic: path.join(baseDir, 'media__1785493885816.jpg'),
   examination: path.join(baseDir, 'media__1785493944755.jpg'),
   studentWorkflow: path.join(baseDir, 'media__1785494149393.jpg'),
-  accessControl: path.join(baseDir, 'media__1785494599702.jpg')
+  accessControl: path.join(baseDir, 'media__1785494599702.jpg'),
+  placementWorkflow: path.join(baseDir, 'placement_workflow_diagram_1785494732807.png'),
+  libraryWorkflow: path.join(baseDir, 'library_workflow_diagram_1785494745946.png')
 };
 
 const pdfPath = path.resolve('public/edusuite_workflows.pdf');
@@ -343,53 +344,53 @@ if (fs.existsSync(images.accessControl)) {
 }
 
 // ----------------------------------------------------
-// PAGE 10: TRAINING & PLACEMENT WORKFLOW (PART 1)
+// PAGE 10: TRAINING & PLACEMENT WORKFLOW
 // ----------------------------------------------------
 doc.addPage();
 addHeader('6. Training & Placement Cell Workflow');
 addBody('The Training and Placement (T&P) Cell module handles drive setups, auto-filtering students based on eligibility, assessment creation with dynamic IDEs, and offer letter policies.');
 
 addSubSection('Phase 1: Pre-Placement Preparation');
-addBody('• Career Declaration: Students select paths (Placement / Higher Studies / Startup).\n• Profile Verification: T&P cell inspects resumes and eligibility credentials.\n• Academic Validation: Automatic checks on CGPA, active backlogs, and attendance.\n• Policies Setup: Configure "One Student One Job" and "Dream Offer Upgrade" conditions.');
+addBody('• Career Declaration: Students select paths (Placement / Higher Studies / Startup).\n• Profile Verification: T&P cell inspects resumes and eligibility credentials.\n• Academic Validation: Automatic checks on CGPA, active backlogs, and attendance.');
 
 addSubSection('Phase 2: Company & Recruiter Onboarding');
-addBody('• Registration & Verification: Recruiter sign-up and security verification.\n• Access Approvals: Create secure recruiter portals.\n• Classification: Segment companies into Mass Recruiter, Core, Dream, and Super Dream tiers.');
+addBody('• Registration & Verification: Recruiter sign-up and security verification.\n• Classification: Segment companies into Mass Recruiter, Core, Dream, and Super Dream tiers.');
 
 addSubSection('Phase 3: Drive Management');
-addBody('• Create Drive: Publish role details, salary packages, locations, and schedules.\n• Auto-Filtering: System identifies eligible cohorts and triggers sign-up notifications.\n• Application Reviews: Recruiter dashboard list checks.');
+addBody('• Create Drive: Publish role details, salary packages, locations, and schedules.\n• Auto-Filtering: System identifies eligible cohorts and triggers sign-up notifications.');
 
 addSubSection('Phase 4: Assessment Creation & Approvals');
 addBody('• Assessment Builder: Recruiter constructs tests containing MCQs, Coding IDE (C/C++, Java, Python), or SQL IDE environments.\n• Review Queue: Placements Officer inspects, requests revisions, or approves the test for publication.');
 
-addSubSection('Phase 5: Assessment Operations');
-addBody('• Setup Test: Schedule date and send access links.\n• Test Environment: Dynamic full-screen Assessment Player with auto-save, code compilers, timers, and resume support.');
+addSubSection('Phase 5: Assessment Operations & Evaluation');
+addBody('• Setup Test: Schedule date and send access links.\n• Test Player: Dynamic full-screen player with code compiler execution (runs code against test cases) and SQL query validator.');
+
+addSubSection('Phase 6: Result Moderation & Interview scheduling');
+addBody('• Audits: Placements Officer audits results and flags. Coordination: Schedule Technical and HR interview rounds.');
+
+addSubSection('Phase 7: Offer & Alumni Management');
+addBody('• Verify Offers: Validate rules ("One Student One Job" and "Dream Offer Upgrade") and release offers.\n• Alumni Sync: Auto-onboard graduating students into referral networks.');
 
 // ----------------------------------------------------
-// PAGE 11: TRAINING & PLACEMENT WORKFLOW (PART 2)
+// PAGE 11: TRAINING & PLACEMENT WORKFLOW DIAGRAM
 // ----------------------------------------------------
 doc.addPage();
-addHeader('T&P Cell Workflow (Continued)');
+addHeader('6.1 Training & Placement Recruitment Diagram');
+addBody('This diagram illustrates the structured 11-phase operational recruitment process handled by the Training & Placement Cell.');
 
-addSubSection('Phase 6: Auto Evaluation Engine');
-addBody('• Immediate MCQ Scoring: Results saved on submission.\n• Code Compiler Execution: Runs student code against pre-configured test cases (correctness, time complexity).\n• SQL Query Tester: Validates student queries against database schemas and returns output scores.');
-
-addSubSection('Phase 7: Result Moderation');
-addBody('• Verification: Placement Officer audits logs and flags.\n• Publication: Releases candidate shortlists to recruiters.');
-
-addSubSection('Phase 8: Interview Management');
-addBody('• Coordination: Schedule online/offline Technical and HR rounds.\n• Feedback Tracking: Recruiter inputs feedback for each round.');
-
-addSubSection('Phase 9: Offer Management');
-addBody('• Upload Offers: Recruiters upload scanned/digital offer letters.\n• Policy Check: System checks against student-job rules (Dream upgrades vs. blocking duplicate offers).\n• Release: Verified offers released to student portals for final acceptance.');
-
-addSubSection('Phase 10: Analytics & Reporting Dashboard');
-addBody('• KPIs: Placement percentage, average package, highest package trends.\n• Metrics: Grouped by Department, Companies, MCQ performance, and Interview shortlists.\n• AI Insights: Predictive suggestions on cohort performance and recruitment success rates.');
-
-addSubSection('Phase 11: Alumni Transition');
-addBody('• Graduating: Auto-converts placed candidates to active Alumni status.\n• Network: Integrates student profiles with referral networks and placement drives.');
+if (fs.existsSync(images.placementWorkflow)) {
+  doc.image(images.placementWorkflow, 54, 180, { width: 487 });
+  doc.fillColor(TEXT_MUTED)
+     .font('Helvetica-Oblique')
+     .fontSize(8.5)
+     .text('Figure 6.1: T&P Cell Career Recruitment & Evaluation Lifecycle', 54, 530, { align: 'center' });
+} else {
+  doc.rect(54, 180, 487, 300).strokeColor(LINE_COLOR).stroke();
+  doc.text('T&P Cell Recruitment Diagram (Image missing)', 54, 320, { align: 'center' });
+}
 
 // ----------------------------------------------------
-// PAGE 12: LIBRARY WORKFLOW (PART 1)
+// PAGE 12: LIBRARY WORKFLOW
 // ----------------------------------------------------
 doc.addPage();
 addHeader('7. Library Admin & Operations Workflow');
@@ -404,35 +405,32 @@ addBody('• Book Intake: Input details (ISBN, title, author, edition).\n• Bar
 addSubSection('Phase 3: Member Registration');
 addBody('• Verification: Auto-fetch student/faculty status from master DB.\n• ID Printing: Print library cards containing barcodes for fast scanner checkouts.');
 
-addSubSection('Phase 4: Book Issue Workflow');
-addBody('• Scanner Checkout: Scan student card, check limits/fines, scan book barcode.\n• Transaction Log: Record transaction and compute custom due date.\n• Notifications: Trigger instant issue SMS/Email receipts.');
+addSubSection('Phase 4: Book Issue & Return Workflow');
+addBody('• Scanner Checkout: Scan student card, check limits/fines, scan book barcode.\n• Transaction Log: Record transaction and compute custom due date.\n• Scanner Return: Calculate overdue days and assess book condition (Good, Damaged, Lost) and return book to stock.');
 
-addSubSection('Phase 5: Book Return Workflow');
-addBody('• Intake: Scan book barcode.\n• Audit: Calculate overdue days and assess book condition (Good, Damaged, Lost).\n• Finalize: Update inventory stock counts and clear borrow count logs.');
+addSubSection('Phase 5: Fine Management & POS Checkout');
+addBody('• POS Checkout: Support overdue fee payment via cash or integrated UPI, instant print receipt and ledger sync.');
+
+addSubSection('Phase 6: Digital Library Hub & Notifications');
+addBody('• Upload: Store PDFs, lecture notes, academic journals matched to semester rules.\n• Reminders: Auto-sends emails/notifications for books due tomorrow or overdue warnings.');
 
 // ----------------------------------------------------
-// PAGE 13: LIBRARY WORKFLOW (PART 2)
+// PAGE 13: LIBRARY WORKFLOW DIAGRAM
 // ----------------------------------------------------
 doc.addPage();
-addHeader('Library Operations (Continued)');
+addHeader('7.1 Library Admin & Operations Diagram');
+addBody('This diagram displays the 11-phase workflow cataloging physical books, scanner checkouts/returns, POS fine collection, and digital uploads.');
 
-addSubSection('Phase 6: Fine Management');
-addBody('• Tracking: System registers overdue charges.\n• POS Checkout: Support fee payment via cash or integrated UPI.\n• Receipts: Instant print and ledger synchronization.');
-
-addSubSection('Phase 7: Digital Library Hub');
-addBody('• Upload: Store PDFs, lecture notes, academic journals.\n• Permissions: Match resources by department or semester rules.');
-
-addSubSection('Phase 8: Automated Notifications');
-addBody('• CRON Scheduler: Runs nightly checkups.\n• Reminders: Auto-sends emails/notifications for books due tomorrow or overdue warnings.');
-
-addSubSection('Phase 9: Analytics & Reporting');
-addBody('• Operations Audit: Export reports on transaction history, catalog additions, and fine collection.\n• Formats: Downloadable as PDF, Excel, and CSV.');
-
-addSubSection('Phase 10: Library Administration');
-addBody('• Management: Oversee librarian permissions and access controls.\n• Insights: Real-time dashboards showing book utilization rates and peak hours.');
-
-addSubSection('Phase 11: Archives & Annual Audit');
-addBody('• Stock Verification: Run audits to crosscheck physical books against DB records.\n• Archival: Write historic circulation logs to archives.');
+if (fs.existsSync(images.libraryWorkflow)) {
+  doc.image(images.libraryWorkflow, 54, 180, { width: 487 });
+  doc.fillColor(TEXT_MUTED)
+     .font('Helvetica-Oblique')
+     .fontSize(8.5)
+     .text('Figure 7.1: Library Physical Inventory & Digital Circulation Workflow', 54, 530, { align: 'center' });
+} else {
+  doc.rect(54, 180, 487, 300).strokeColor(LINE_COLOR).stroke();
+  doc.text('Library Operations Diagram (Image missing)', 54, 320, { align: 'center' });
+}
 
 // ----------------------------------------------------
 // FINAL PASS: HEADER, FOOTER & PAGE NUMBERING

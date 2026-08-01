@@ -26,7 +26,6 @@ import {
   type CoreRoleKey,
   type DepartmentCode,
   type ExternalPersona,
-  type LoginRole,
 } from "@/config/roles";
 import { useRole } from "@/context/role-context";
 

@@ -9,7 +9,7 @@ import { useRole } from "@/context/role-context";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const { profile } = useRole();
-  const showAi = profile.featureFlags?.aiAssistant !== false;
+  const showAi = profile.featureFlags?.["aiAssistant"] !== false;
 
   return (
     <SidebarProvider>
