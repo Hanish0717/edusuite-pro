@@ -129,6 +129,25 @@ export const navigation: NavSection[] = [
 ];
 
 function resolveUrlForUser(url: string, user: UserPermissionContext, title?: string): string {
+  // Preserve standalone module URLs without rewriting
+  if (
+    [
+      "/employee-management",
+      "/leave",
+      "/payroll",
+      "/inventory",
+      "/procurement",
+      "/campus-events",
+      "/admission",
+      "/accreditation",
+      "/grievance",
+      "/alumni",
+      "/approval-workflows",
+    ].includes(url)
+  ) {
+    return url;
+  }
+
   const role = user.role;
   const flags = user.flags;
 

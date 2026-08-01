@@ -256,14 +256,57 @@ export function getBasePermissions(
     scope: "own",
   };
 
-  if (role === "super-admin") {
+  if (role === "super-admin" || role === "super_admin") {
     return { read: true, create: true, update: true, delete: true, approve: true, scope: "global" };
+  }
+
+  // Admin and management roles have full access to all modules
+  if (
+    [
+      "admin",
+      "principal",
+      "vice_principal",
+      "dean",
+      "hod",
+      "faculty",
+      "exam_cell",
+      "librarian",
+      "placement",
+      "warden",
+      "transport",
+      "accounts",
+      "lms",
+      "alumni_coordinator",
+      "staff",
+    ].includes(role)
+  ) {
+    return {
+      read: true,
+      create: true,
+      update: true,
+      delete: true,
+      approve: true,
+      scope: "institution",
+    };
   }
 
   switch (role) {
     case "student":
       // Students have read-only access to most things and own-scoped access
-      if (["student-info", "attendance", "examination", "lms", "results"].includes(moduleId)) {
+      if (
+        [
+          "student-info",
+          "attendance",
+          "examination",
+          "lms",
+          "results",
+          "library",
+          "transport",
+          "hostel",
+          "campus-events",
+          "events",
+        ].includes(moduleId)
+      ) {
         return {
           read: true,
           create: false,
@@ -283,16 +326,6 @@ export function getBasePermissions(
           scope: "own",
         }; // Pay fees
       }
-      if (moduleId === "transport" || moduleId === "library") {
-        return {
-          read: true,
-          create: false,
-          update: false,
-          delete: false,
-          approve: false,
-          scope: "own",
-        };
-      }
       if (moduleId === "grievance") {
         return {
           read: true,
@@ -308,9 +341,16 @@ export function getBasePermissions(
     case "parent":
       // Parents view their child's data
       if (
-        ["student-info", "attendance", "examination", "results", "finance", "transport"].includes(
-          moduleId,
-        )
+        [
+          "student-info",
+          "attendance",
+          "examination",
+          "results",
+          "finance",
+          "transport",
+          "campus-events",
+          "events",
+        ].includes(moduleId)
       ) {
         return {
           read: true,
@@ -357,7 +397,7 @@ export function getBasePermissions(
           scope: "own",
         };
       }
-      if (externalPersona === "vendor" && moduleId === "inventory") {
+      if (externalPersona === "vendor" && (moduleId === "inventory" || moduleId === "procurement")) {
         return {
           read: true,
           create: false,
@@ -367,7 +407,7 @@ export function getBasePermissions(
           scope: "own",
         };
       }
-      if (externalPersona === "guest-faculty" && moduleId === "academics") {
+      if (externalPersona === "guest-faculty" && (moduleId === "academics" || moduleId === "events" || moduleId === "campus-events")) {
         return {
           read: true,
           create: false,
@@ -375,40 +415,6 @@ export function getBasePermissions(
           delete: false,
           approve: false,
           scope: "own",
-        };
-      }
-      break;
-
-    case "staff":
-      // Default Staff access: Profile, Attendance, Leave, Calendar, Documents, LMS
-      if (["student-info", "attendance", "academics", "lms"].includes(moduleId)) {
-        return {
-          read: true,
-          create: true,
-          update: true,
-          delete: false,
-          approve: false,
-          scope: "department",
-        };
-      }
-      if (["examination", "library", "transport", "hostel"].includes(moduleId)) {
-        return {
-          read: true,
-          create: false,
-          update: false,
-          delete: false,
-          approve: false,
-          scope: "institution",
-        };
-      }
-      if (["communication", "grievance"].includes(moduleId)) {
-        return {
-          read: true,
-          create: true,
-          update: true,
-          delete: false,
-          approve: false,
-          scope: "department",
         };
       }
       break;
