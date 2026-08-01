@@ -612,6 +612,19 @@ export function AssessmentRequestsApprovalWorkspace() {
                         <Eye className="size-3.5 mr-1" /> View
                       </Button>
 
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`http://192.168.1.122:8082/exam/take?id=${req.assessmentId}`);
+                          toast.success(`Copied exam link for ${req.name} to clipboard!`);
+                        }}
+                        className="h-7 text-[0.68rem] text-blue-600 border-blue-200 hover:bg-blue-50 rounded-lg cursor-pointer font-bold"
+                        title="Copy Live Student Exam Conducting URL"
+                      >
+                        <Copy className="size-3 mr-1" /> Link
+                      </Button>
+
                       {req.status !== "Approved" && req.status !== "Rejected" && (
                         <>
                           <Button
@@ -711,6 +724,40 @@ export function AssessmentRequestsApprovalWorkspace() {
                     </div>
                   </div>
 
+                  {/* STUDENT ASSESSMENT CONDUCTING URL & SHARING BOX */}
+                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl space-y-3 font-mono text-xs">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold font-sans">
+                        <CheckCircle2 className="size-4" /> Live Student Exam Link (TPO Shared)
+                      </div>
+                      <Badge className="bg-emerald-600 text-white text-[0.62rem]">Active Test Link</Badge>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded-xl bg-background border font-mono text-xs text-blue-600">
+                      <span className="truncate">http://192.168.1.122:8082/exam/take?id={selectedReq.assessmentId}</span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`http://192.168.1.122:8082/exam/take?id=${selectedReq.assessmentId}`);
+                          toast.success("Copied Student Exam URL to clipboard!");
+                        }}
+                        className="h-7 text-xs rounded-lg cursor-pointer shrink-0 gap-1 font-sans"
+                      >
+                        <Copy className="size-3" /> Copy Link
+                      </Button>
+                    </div>
+                    <div className="flex items-center justify-between text-[0.68rem] text-muted-foreground font-sans">
+                      <span>Share this link directly with eligible students for conducting the exam online.</span>
+                      <Button
+                        size="sm"
+                        onClick={() => toast.success(`Dispatched exam link to all ${selectedReq.expectedCandidates} eligible students via email!`)}
+                        className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold cursor-pointer gap-1"
+                      >
+                        <Send className="size-3" /> Share with Students
+                      </Button>
+                    </div>
+                  </div>
+
                   <div className="p-3.5 bg-muted/30 rounded-xl space-y-1 font-sans">
                     <span className="font-bold text-xs">Recruiter Submission Notes</span>
                     <p className="text-xs text-muted-foreground italic">"{selectedReq.recruiterNotes}"</p>
@@ -744,6 +791,20 @@ export function AssessmentRequestsApprovalWorkspace() {
                         <p className="text-muted-foreground">{cod.problemStatement}</p>
                         <div className="p-2 bg-background rounded-lg border text-[0.68rem]">
                           Sample Input: {cod.sampleInput} | Output: {cod.sampleOutput}
+                        </div>
+                      </div>
+                    ))}
+
+                    <span className="font-bold font-sans text-xs text-blue-600 uppercase tracking-wider block pt-2">SQL Database Queries ({selectedReq.sqlQuestions.length})</span>
+                    {selectedReq.sqlQuestions.map((sql, idx) => (
+                      <div key={sql.id} className="p-3.5 rounded-xl border border-blue-500/30 bg-blue-500/5 space-y-2">
+                        <div className="flex justify-between font-sans">
+                          <p className="font-bold text-foreground">SQL Q{idx + 1}: {sql.title}</p>
+                          <Badge className="bg-blue-600 text-white text-[0.6rem]">{sql.marks} Marks</Badge>
+                        </div>
+                        <p className="text-muted-foreground">{sql.queryTask}</p>
+                        <div className="p-2 bg-background rounded-lg border text-[0.68rem] font-mono">
+                          Tables: {sql.tablesGiven} | Columns: {sql.expectedColumns}
                         </div>
                       </div>
                     ))}
