@@ -583,6 +583,26 @@ Bengaluru, Karnataka
     toast.success(`Downloaded official offer letter document for ${ofr.candidateName}!`);
   };
 
+  const handleExportRecruiterReportCsv = () => {
+    const headers = "Placement Drive Title,Target Batch,Registered / Attempted,Assessment Passed,Interview Shortlisted,Offers Extended,Conversion Rate Pct\n";
+    const rows = [
+      '"Google Cloud Systems & Coding Assessment 2026","2026 CSE/CSM/ECE","150","45","20","12","8.0%"',
+      '"Google Cloud AI & Machine Learning Drive","2026 CSE/CSM","120","38","18","10","8.3%"',
+      '"Google Infrastructure Engineering Round","2026 ECE/EEE","72","22","10","5","6.9%"',
+    ].join("\n");
+
+    const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "recruiter_campus_hiring_analytics_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("Downloaded Recruiter Campus Hiring Analytics CSV report!");
+  };
+
   // Preview Assessment Modal State
   const [selectedPreviewAst, setSelectedPreviewAst] = useState<RecruiterAssessment | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -1847,8 +1867,134 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
       )}
 
       {/* ===================================================================== */}
-      {/* 8. OFFER MANAGEMENT                                                   */}
+      {/* 9. REPORTS & HIRING ANALYTICS WORKSPACE                               */}
       {/* ===================================================================== */}
+      {activeModule === "reports" && (
+        <div className="space-y-6">
+          <Panel
+            title="Recruiter Campus Placement Analytics & Hiring Conversion Intelligence"
+            action={
+              <div className="flex items-center gap-2">
+                <Button onClick={handleExportRecruiterReportCsv} variant="outline" className="h-8 text-xs rounded-xl cursor-pointer gap-1">
+                  <Download className="size-3.5" /> Export Excel CSV
+                </Button>
+                <Button onClick={handleExportRecruiterReportCsv} className="h-8 text-xs bg-brand-gradient shadow-glow text-white font-bold rounded-xl cursor-pointer gap-1.5">
+                  <FileSpreadsheet className="size-3.5" /> Download Full Analytics Report
+                </Button>
+              </div>
+            }
+          >
+            <div className="space-y-6 pt-1">
+              {/* KPI STAT CARDS GRID */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
+                <div className="p-4 rounded-2xl border bg-card space-y-1">
+                  <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">Candidates Evaluated</p>
+                  <p className="text-2xl font-extrabold text-blue-600 font-sans">342</p>
+                  <p className="text-[0.62rem] text-muted-foreground">Across All Drives</p>
+                </div>
+                <div className="p-4 rounded-2xl border bg-card space-y-1">
+                  <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">Assessments Conducted</p>
+                  <p className="text-2xl font-extrabold text-purple-600 font-sans">14</p>
+                  <p className="text-[0.62rem] text-muted-foreground">78% Avg Pass Rate</p>
+                </div>
+                <div className="p-4 rounded-2xl border bg-card space-y-1">
+                  <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">Interviews Completed</p>
+                  <p className="text-2xl font-extrabold text-amber-600 font-sans">48</p>
+                  <p className="text-[0.62rem] text-muted-foreground">32 Recommended</p>
+                </div>
+                <div className="p-4 rounded-2xl border bg-card space-y-1">
+                  <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">Offers Extended</p>
+                  <p className="text-2xl font-extrabold text-emerald-600 font-sans">12</p>
+                  <p className="text-[0.62rem] text-muted-foreground">10 Accepted • 2 Pending</p>
+                </div>
+              </div>
+
+              {/* HIRING CONVERSION FUNNEL DIRECTORY TABLE */}
+              <div className="space-y-3">
+                <p className="font-sans font-bold text-xs text-foreground">📊 Placement Drive Hiring Funnel Conversion Summary:</p>
+                <div className="overflow-x-auto border rounded-2xl">
+                  <table className="w-full text-left text-xs font-sans">
+                    <thead>
+                      <tr className="border-b border-border bg-muted/40 text-muted-foreground font-mono uppercase text-[0.65rem]">
+                        <th className="p-3">Placement Drive Title</th>
+                        <th className="p-3">Target Batch</th>
+                        <th className="p-3">Attempted</th>
+                        <th className="p-3">Passed</th>
+                        <th className="p-3">Interviewed</th>
+                        <th className="p-3">Offered</th>
+                        <th className="p-3">Conversion</th>
+                        <th className="p-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/50 font-mono text-[0.72rem]">
+                      <tr className="hover:bg-muted/30 transition-colors">
+                        <td className="p-3 font-sans font-bold text-foreground">Google Cloud Systems &amp; Coding Assessment 2026</td>
+                        <td className="p-3 text-muted-foreground">2026 CSE/CSM/ECE</td>
+                        <td className="p-3 font-bold text-foreground">150</td>
+                        <td className="p-3 font-bold text-blue-600">45 (30%)</td>
+                        <td className="p-3 font-bold text-purple-600">20</td>
+                        <td className="p-3 font-bold text-emerald-600">12 (₹32 LPA)</td>
+                        <td className="p-3"><Badge className="bg-emerald-600 text-white text-[0.62rem]">8.0% Rate</Badge></td>
+                        <td className="p-3 text-right">
+                          <Button size="sm" variant="outline" onClick={handleExportRecruiterReportCsv} className="h-7 text-xs rounded-xl cursor-pointer">
+                            <Download className="size-3 mr-1" /> CSV
+                          </Button>
+                        </td>
+                      </tr>
+                      <tr className="hover:bg-muted/30 transition-colors">
+                        <td className="p-3 font-sans font-bold text-foreground">Google Cloud AI &amp; Machine Learning Drive</td>
+                        <td className="p-3 text-muted-foreground">2026 CSE/CSM</td>
+                        <td className="p-3 font-bold text-foreground">120</td>
+                        <td className="p-3 font-bold text-blue-600">38 (31%)</td>
+                        <td className="p-3 font-bold text-purple-600">18</td>
+                        <td className="p-3 font-bold text-emerald-600">10 (₹32 LPA)</td>
+                        <td className="p-3"><Badge className="bg-emerald-600 text-white text-[0.62rem]">8.3% Rate</Badge></td>
+                        <td className="p-3 text-right">
+                          <Button size="sm" variant="outline" onClick={handleExportRecruiterReportCsv} className="h-7 text-xs rounded-xl cursor-pointer">
+                            <Download className="size-3 mr-1" /> CSV
+                          </Button>
+                        </td>
+                      </tr>
+                      <tr className="hover:bg-muted/30 transition-colors">
+                        <td className="p-3 font-sans font-bold text-foreground">Google Infrastructure Engineering Round</td>
+                        <td className="p-3 text-muted-foreground">2026 ECE/EEE</td>
+                        <td className="p-3 font-bold text-foreground">72</td>
+                        <td className="p-3 font-bold text-blue-600">22 (30%)</td>
+                        <td className="p-3 font-bold text-purple-600">10</td>
+                        <td className="p-3 font-bold text-emerald-600">5 (₹28 LPA)</td>
+                        <td className="p-3"><Badge className="bg-emerald-600 text-white text-[0.62rem]">6.9% Rate</Badge></td>
+                        <td className="p-3 text-right">
+                          <Button size="sm" variant="outline" onClick={handleExportRecruiterReportCsv} className="h-7 text-xs rounded-xl cursor-pointer">
+                            <Download className="size-3 mr-1" /> CSV
+                          </Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* PROCTORING AUDIT SUMMARY PANEL */}
+              <div className="p-4 rounded-2xl bg-muted/20 border border-border/80 space-y-3 font-mono text-xs">
+                <div className="flex items-center justify-between">
+                  <p className="font-bold text-foreground font-sans">🛡️ Examination Proctoring &amp; Security Compliance Metrics:</p>
+                  <Badge variant="outline" className="text-[0.62rem] border-emerald-300 text-emerald-700 bg-emerald-50">92% High Integrity Audit</Badge>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[0.72rem]">
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-200 space-y-1">
+                    <p className="font-bold">✓ Clean Submissions (0/3 Violations):</p>
+                    <p className="text-[0.68rem] text-muted-foreground">138 out of 150 candidates completed assessment within 0 proctoring warnings.</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-200 space-y-1">
+                    <p className="font-bold">⚠️ Flagged Submissions (Violations Logged):</p>
+                    <p className="text-[0.68rem] text-muted-foreground">12 candidates reached tab switch limit &amp; auto-submitted for TPO audit.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Panel>
+        </div>
+      )}
       {activeModule === "offers" && (
         <div className="space-y-6">
           <Panel
