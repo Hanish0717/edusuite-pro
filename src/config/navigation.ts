@@ -74,7 +74,7 @@ export const studentNavigation: NavSection[] = [
       { title: "Timetable", url: "/student/timetable", icon: CalendarRange },
       { title: "Feedback", url: "/student/feedback", icon: MessageSquare },
       { title: "Course Registrations", url: "/student/examinations", icon: FileText },
-      { title: "Hostel", url: "/hostel", icon: BedDouble },
+      { title: "Hostel", url: "/student/hostel", icon: BedDouble },
       { title: "Discussion Forum", url: "/student/discussion-forum", icon: MessageCircle },
       { title: "Payments", url: "/student/finance", icon: CreditCard },
       { title: "OPAC", url: "/student/library", icon: Library },

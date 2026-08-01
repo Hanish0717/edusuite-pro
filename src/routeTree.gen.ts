@@ -119,6 +119,7 @@ import { Route as StudentDiscussionForumRouteImport } from './routes/student.dis
 import { Route as StudentExaminationsRouteImport } from './routes/student.examinations'
 import { Route as StudentFeedbackRouteImport } from './routes/student.feedback'
 import { Route as StudentFinanceRouteImport } from './routes/student.finance'
+import { Route as StudentHostelRouteImport } from './routes/student.hostel'
 import { Route as StudentLibraryRouteImport } from './routes/student.library'
 import { Route as StudentLmsRouteImport } from './routes/student.lms'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
@@ -688,6 +689,11 @@ const StudentFinanceRoute = StudentFinanceRouteImport.update({
   path: '/finance',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentHostelRoute = StudentHostelRouteImport.update({
+  id: '/hostel',
+  path: '/hostel',
+  getParentRoute: () => StudentRoute,
+} as any)
 const StudentLibraryRoute = StudentLibraryRouteImport.update({
   id: '/library',
   path: '/library',
@@ -868,6 +874,7 @@ export interface FileRoutesByFullPath {
   '/student/examinations': typeof StudentExaminationsRoute
   '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
+  '/student/hostel': typeof StudentHostelRoute
   '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
@@ -982,6 +989,7 @@ export interface FileRoutesByTo {
   '/student/examinations': typeof StudentExaminationsRoute
   '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
+  '/student/hostel': typeof StudentHostelRoute
   '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
@@ -1111,6 +1119,7 @@ export interface FileRoutesById {
   '/student/examinations': typeof StudentExaminationsRoute
   '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
+  '/student/hostel': typeof StudentHostelRoute
   '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
@@ -1241,6 +1250,7 @@ export interface FileRouteTypes {
     | '/student/examinations'
     | '/student/feedback'
     | '/student/finance'
+    | '/student/hostel'
     | '/student/library'
     | '/student/lms'
     | '/student/profile'
@@ -1355,6 +1365,7 @@ export interface FileRouteTypes {
     | '/student/examinations'
     | '/student/feedback'
     | '/student/finance'
+    | '/student/hostel'
     | '/student/library'
     | '/student/lms'
     | '/student/profile'
@@ -1483,6 +1494,7 @@ export interface FileRouteTypes {
     | '/student/examinations'
     | '/student/feedback'
     | '/student/finance'
+    | '/student/hostel'
     | '/student/library'
     | '/student/lms'
     | '/student/profile'
@@ -2335,6 +2347,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentFinanceRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/hostel': {
+      id: '/student/hostel'
+      path: '/hostel'
+      fullPath: '/student/hostel'
+      preLoaderRoute: typeof StudentHostelRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/library': {
       id: '/student/library'
       path: '/library'
@@ -2669,6 +2688,7 @@ interface StudentRouteChildren {
   StudentExaminationsRoute: typeof StudentExaminationsRoute
   StudentFeedbackRoute: typeof StudentFeedbackRoute
   StudentFinanceRoute: typeof StudentFinanceRoute
+  StudentHostelRoute: typeof StudentHostelRoute
   StudentLibraryRoute: typeof StudentLibraryRoute
   StudentLmsRoute: typeof StudentLmsRoute
   StudentProfileRoute: typeof StudentProfileRoute
@@ -2685,6 +2705,7 @@ const StudentRouteChildren: StudentRouteChildren = {
   StudentExaminationsRoute: StudentExaminationsRoute,
   StudentFeedbackRoute: StudentFeedbackRoute,
   StudentFinanceRoute: StudentFinanceRoute,
+  StudentHostelRoute: StudentHostelRoute,
   StudentLibraryRoute: StudentLibraryRoute,
   StudentLmsRoute: StudentLmsRoute,
   StudentProfileRoute: StudentProfileRoute,
