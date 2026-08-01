@@ -112,7 +112,7 @@ export function Topbar() {
 
           {role === "staff" && (
             <>
-              <Select value={department} onValueChange={(v) => setDepartment(v as DepartmentCode)}>
+              <Select value={department || ""} onValueChange={(v) => setDepartment((v || undefined) as DepartmentCode)}>
                 <SelectTrigger className="h-9 w-[100px]" aria-label="Department">
                   <SelectValue placeholder="Dept" />
                 </SelectTrigger>
@@ -168,8 +168,8 @@ export function Topbar() {
 
           {role === "external-user" && (
             <Select
-              value={externalPersona}
-              onValueChange={(v) => setExternalPersona(v as ExternalPersona)}
+              value={externalPersona || ""}
+              onValueChange={(v) => setExternalPersona((v || undefined) as ExternalPersona)}
             >
               <SelectTrigger className="h-9 w-[150px]" aria-label="External Persona">
                 <SelectValue />

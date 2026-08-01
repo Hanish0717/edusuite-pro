@@ -193,7 +193,7 @@ export function StaffDashboard() {
                       <h4 className="font-semibold">{item.course}</h4>
                       <p className="text-[0.65rem] text-muted-foreground">Status: {item.status}</p>
                     </div>
-                    <Badge variant={item.date === "In Review" ? "warning" : "secondary"}>
+                    <Badge variant={item.date === "In Review" ? "outline" : "secondary"} className={item.date === "In Review" ? "bg-amber-500/10 text-amber-600 border-amber-500/30" : ""}>
                       {item.date}
                     </Badge>
                   </div>
@@ -293,7 +293,7 @@ export function StaffDashboard() {
                 </div>
                 <div className="flex justify-between items-center text-xs">
                   <span>ECE Papers Graded</span>
-                  <Badge variant="warning">75%</Badge>
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/30">75%</Badge>
                 </div>
                 <div className="flex justify-between items-center text-xs">
                   <span>ME Papers Graded</span>

@@ -32,7 +32,7 @@ export interface NavItem {
   moduleId?: string;
   requiredPermission?: "read" | "create" | "update" | "delete" | "approve";
   badge?: string;
-  children?: { title: string; url: string; moduleId?: string }[];
+  children?: { title: string; url: string; moduleId?: string }[] | undefined;
 }
 
 export interface NavSection {

@@ -21,8 +21,8 @@ export interface RoleProfile {
   personaMeta: string;
   initials: string;
   flags: string[];
-  department?: DepartmentCode;
-  externalPersona?: ExternalPersona;
+  department?: DepartmentCode | undefined;
+  externalPersona?: ExternalPersona | undefined;
 }
 
 export const RESPONSIBILITY_FLAGS = [
@@ -221,3 +221,204 @@ export function getDefaultRouteForUser(role: LoginRole, flags: string[]): string
 
   return "/faculty/dashboard";
 }
+
+export interface DemoUser {
+  id: string;
+  name: string;
+  email: string;
+  role: LoginRole;
+  title: string;
+  category: "Core Roles" | "Academic Roles" | "Administrative Officers" | "External Personas";
+  avatarInitials: string;
+  flags: string[];
+  department?: DepartmentCode;
+  externalPersona?: ExternalPersona;
+}
+
+export const DEMO_USERS: DemoUser[] = [
+  // Core Roles
+  {
+    id: "super-admin",
+    name: "Super Admin",
+    email: "admin@edusuite.edu",
+    role: "super-admin",
+    title: "Super Admin",
+    category: "Core Roles",
+    avatarInitials: "SA",
+    flags: ["isSystemAdmin", "isPrincipal"],
+  },
+  {
+    id: "staff-default",
+    name: "Dr. Ravi Kumar",
+    email: "ravi.kumar@edusuite.edu",
+    role: "staff",
+    title: "Staff / Faculty (Default)",
+    category: "Core Roles",
+    avatarInitials: "RK",
+    flags: ["isMentor", "isClassAdvisor"],
+    department: "CSE",
+  },
+  {
+    id: "student",
+    name: "K. Sai Teja",
+    email: "saiteja.student@edusuite.edu",
+    role: "student",
+    title: "Student",
+    category: "Core Roles",
+    avatarInitials: "ST",
+    flags: [],
+    department: "CSE",
+  },
+  {
+    id: "parent",
+    name: "S. Anitha",
+    email: "anitha.parent@edusuite.edu",
+    role: "parent",
+    title: "Parent",
+    category: "Core Roles",
+    avatarInitials: "SA",
+    flags: [],
+  },
+
+  // Academic Roles
+  {
+    id: "hod",
+    name: "Dr. Suresh Babu",
+    email: "suresh.babu@edusuite.edu",
+    role: "staff",
+    title: "HOD (Department Head)",
+    category: "Academic Roles",
+    avatarInitials: "SB",
+    flags: ["isHod", "isMentor"],
+    department: "CSE",
+  },
+  {
+    id: "dean",
+    name: "Dr. Clara Oswald",
+    email: "clara.oswald@edusuite.edu",
+    role: "staff",
+    title: "Dean (Academic Planning)",
+    category: "Academic Roles",
+    avatarInitials: "CO",
+    flags: ["isDean"],
+    department: "CSE",
+  },
+  {
+    id: "exam-controller",
+    name: "Prof. K. Rama Rao",
+    email: "rama.rao@edusuite.edu",
+    role: "staff",
+    title: "Exam Controller",
+    category: "Academic Roles",
+    avatarInitials: "RR",
+    flags: ["isExamController"],
+  },
+
+  // Administrative Officers
+  {
+    id: "placement-officer",
+    name: "Dr. Ananya Sen",
+    email: "ananya.sen@edusuite.edu",
+    role: "staff",
+    title: "Placement Officer",
+    category: "Administrative Officers",
+    avatarInitials: "AS",
+    flags: ["isPlacementOfficer"],
+  },
+  {
+    id: "transport-officer",
+    name: "M. Gangadhar",
+    email: "gangadhar@edusuite.edu",
+    role: "staff",
+    title: "Transport Officer",
+    category: "Administrative Officers",
+    avatarInitials: "MG",
+    flags: ["isTransportOfficer"],
+  },
+  {
+    id: "hostel-warden",
+    name: "B. Devendra",
+    email: "devendra@edusuite.edu",
+    role: "staff",
+    title: "Hostel Warden",
+    category: "Administrative Officers",
+    avatarInitials: "BD",
+    flags: ["isHostelWarden"],
+  },
+  {
+    id: "finance-officer",
+    name: "V. K. Viswanathan",
+    email: "viswanathan@edusuite.edu",
+    role: "staff",
+    title: "Finance Officer",
+    category: "Administrative Officers",
+    avatarInitials: "VV",
+    flags: ["isFinanceOfficer"],
+  },
+  {
+    id: "library-admin",
+    name: "Mrs. G. Sujatha",
+    email: "sujatha@edusuite.edu",
+    role: "staff",
+    title: "Library Admin",
+    category: "Administrative Officers",
+    avatarInitials: "GS",
+    flags: ["isLibraryAdmin"],
+  },
+  {
+    id: "hr-manager",
+    name: "R. Srinivas",
+    email: "srinivas@edusuite.edu",
+    role: "staff",
+    title: "HR Manager",
+    category: "Administrative Officers",
+    avatarInitials: "RS",
+    flags: ["isHRManager"],
+  },
+
+  // External Personas
+  {
+    id: "external-applicant",
+    name: "John Doe",
+    email: "john.applicant@gmail.com",
+    role: "external-user",
+    title: "Applicant (External)",
+    category: "External Personas",
+    avatarInitials: "JD",
+    flags: [],
+    externalPersona: "applicant",
+  },
+  {
+    id: "external-recruiter",
+    name: "David Miller",
+    email: "david.recruiter@google.com",
+    role: "external-user",
+    title: "Recruiter (External)",
+    category: "External Personas",
+    avatarInitials: "DM",
+    flags: [],
+    externalPersona: "recruiter",
+  },
+  {
+    id: "external-alumni",
+    name: "Sarah Jenkins",
+    email: "sarah.jenkins@alumni.edu",
+    role: "external-user",
+    title: "Alumni (External)",
+    category: "External Personas",
+    avatarInitials: "SJ",
+    flags: [],
+    externalPersona: "alumni",
+  },
+  {
+    id: "external-vendor",
+    name: "Robert Chen",
+    email: "robert.vendor@catering.com",
+    role: "external-user",
+    title: "Vendor (External)",
+    category: "External Personas",
+    avatarInitials: "RC",
+    flags: [],
+    externalPersona: "vendor",
+  }
+];

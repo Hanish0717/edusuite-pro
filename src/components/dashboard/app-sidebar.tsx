@@ -29,11 +29,11 @@ import { cn } from "@/lib/utils";
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { profile } = useRole();
+  const { role, flags, department, externalPersona, featureFlags, profile } = useRole();
   const [query, setQuery] = useState("");
   const pathname = useRouterState({ select: (r) => r.location.pathname });
 
-  const sections = navigationForUser(profile)
+  const sections = navigationForUser({ role, flags, department, externalPersona, featureFlags })
     .map((section) => ({
       ...section,
       items: section.items.filter((item) =>
