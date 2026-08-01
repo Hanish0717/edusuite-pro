@@ -35,6 +35,7 @@ import {
   CheckCheck,
   Check,
   X,
+  FileSpreadsheet,
   Layers,
   User,
   Key,
@@ -584,7 +585,7 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
     const listToImport = parsedQuestions.length > 0 ? parsedQuestions : [
       { id: `QB-UP-1`, type: "Coding" as const, subject: "Data Structures & Algorithms" as const, title: "Rate Limiter Leaky Bucket Algorithm", optionsOrConstraints: "Java 17, Python 3.11", difficulty: "Medium" as const, marks: 20 },
       { id: `QB-UP-2`, type: "SQL" as const, subject: "Database Management Systems (DBMS)" as const, title: "Monthly Recurring Revenue (MRR) Churn Rate", optionsOrConstraints: "PostgreSQL 15", difficulty: "Hard" as const, marks: 15 },
-      { id: `QB-UP-3`, type: "MCQ" as const, subject: "Operating Systems" as const, title: "Process Control Block (PCB) Context Switch Latency", optionsOrConstraints: "4 Options", difficulty: "Medium" as const, marks: 1 },
+      { id: `QB-UP-3`, type: "MCQ" as const, subject: "Core Systems (OS & Networks)" as const, title: "Process Control Block (PCB) Context Switch Latency", optionsOrConstraints: "4 Options", difficulty: "Medium" as const, marks: 1 },
     ];
 
     const mcqAdded = listToImport.filter((q) => q.type === "MCQ").length;
