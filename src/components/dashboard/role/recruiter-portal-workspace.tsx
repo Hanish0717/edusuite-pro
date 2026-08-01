@@ -535,7 +535,7 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
       const parsed: Array<{
         id: string;
         type: "MCQ" | "Coding" | "SQL";
-        subject: "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Operating Systems" | "Computer Networks" | "Aptitude & Reasoning";
+        subject: "Verbal Ability" | "Logical Reasoning" | "Quantitative Aptitude" | "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Core Systems (OS & Networks)";
         title: string;
         optionsOrConstraints: string;
         difficulty: "Easy" | "Medium" | "Hard";
@@ -547,11 +547,12 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
         const cols = line.split(",").map((c) => c.replace(/^"|"$/g, "").trim());
         if (cols.length >= 2) {
           const rawSubject = cols[0] || "Data Structures & Algorithms";
-          let subject: "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Operating Systems" | "Computer Networks" | "Aptitude & Reasoning" = "Data Structures & Algorithms";
-          if (rawSubject.includes("DBMS") || rawSubject.includes("Database")) subject = "Database Management Systems (DBMS)";
-          else if (rawSubject.includes("Operating") || rawSubject.includes("OS")) subject = "Operating Systems";
-          else if (rawSubject.includes("Networks") || rawSubject.includes("CN")) subject = "Computer Networks";
-          else if (rawSubject.includes("Aptitude") || rawSubject.includes("Reasoning")) subject = "Aptitude & Reasoning";
+          let subject: "Verbal Ability" | "Logical Reasoning" | "Quantitative Aptitude" | "Data Structures & Algorithms" | "Database Management Systems (DBMS)" | "Core Systems (OS & Networks)" = "Data Structures & Algorithms";
+          if (rawSubject.includes("Verbal")) subject = "Verbal Ability";
+          else if (rawSubject.includes("Logical")) subject = "Logical Reasoning";
+          else if (rawSubject.includes("Quantitative") || rawSubject.includes("Aptitude")) subject = "Quantitative Aptitude";
+          else if (rawSubject.includes("DBMS") || rawSubject.includes("Database")) subject = "Database Management Systems (DBMS)";
+          else if (rawSubject.includes("Core") || rawSubject.includes("Operating") || rawSubject.includes("OS") || rawSubject.includes("Networks")) subject = "Core Systems (OS & Networks)";
 
           const rawType = (cols[1] || "MCQ").toUpperCase();
           const type: "MCQ" | "Coding" | "SQL" = rawType.includes("CODING") ? "Coding" : rawType.includes("SQL") ? "SQL" : "MCQ";
