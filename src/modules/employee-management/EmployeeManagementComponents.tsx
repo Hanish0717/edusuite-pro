@@ -278,14 +278,14 @@ export function EmployeeManagementModuleView() {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        {/* Action Buttons - Top Right Corner */}
+        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={loadData}
             disabled={loading}
-            className="gap-2 text-xs font-medium"
+            className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent"
           >
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -295,7 +295,7 @@ export function EmployeeManagementModuleView() {
             variant="outline"
             size="sm"
             onClick={handleExportCSV}
-            className="gap-2 text-xs font-medium border-border hover:bg-accent"
+            className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent"
           >
             <Download className="size-3.5" /> Export CSV
           </Button>
@@ -303,7 +303,7 @@ export function EmployeeManagementModuleView() {
           <Button
             size="sm"
             onClick={handleOpenAdd}
-            className="bg-brand-gradient text-white gap-2 font-semibold text-xs shadow-glow hover:opacity-95"
+            className="h-9 bg-brand-gradient text-white gap-2 font-semibold text-xs shadow-glow hover:opacity-95"
           >
             <UserPlus className="size-4" /> Add New Employee
           </Button>

@@ -292,12 +292,6 @@ export function Topbar() {
               </Badge>
             );
           })}
-          <Button variant="outline" size="sm" className="h-8 gap-1.5">
-            <Filter className="size-3.5" /> Filters
-          </Button>
-          <Button variant="outline" size="sm" className="h-8 gap-1.5">
-            <Download className="size-3.5" /> Export
-          </Button>
         </div>
       </div>
     </header>
