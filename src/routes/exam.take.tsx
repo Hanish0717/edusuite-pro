@@ -29,6 +29,27 @@ import { Input } from "@/components/ui/input";
 import { SAMPLE_20_MCQS, SAMPLE_2_CODING_CHALLENGES } from "@/components/dashboard/role/recruiter-portal-workspace";
 import { saveStudentSubmission } from "@/lib/shared-assessment-store";
 
+function parseCollegeEmail(email: string) {
+  const prefix = email.split("@")[0] || "alex.2022cse015";
+  const parts = prefix.split(".");
+  const rawName = parts[0] || "Student";
+  const name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+
+  const rollMatch = prefix.match(/\d{4}[a-zA-Z]+\d+/);
+  const rollNo = rollMatch ? rollMatch[0].toUpperCase() : "2022CSE015";
+
+  let dept = "CSE (Computer Science & Engg)";
+  const lowerRoll = rollNo.toLowerCase();
+  if (lowerRoll.includes("ece")) dept = "ECE (Electronics & Comm)";
+  else if (lowerRoll.includes("cse")) dept = "CSE (Computer Science & Engg)";
+  else if (lowerRoll.includes("it")) dept = "IT (Information Technology)";
+  else if (lowerRoll.includes("eee")) dept = "EEE (Electrical & Electronics)";
+  else if (lowerRoll.includes("mech")) dept = "MECH (Mechanical Engg)";
+  else if (lowerRoll.includes("civil")) dept = "CIVIL (Civil Engg)";
+
+  return { name, rollNo, dept, deptCode: dept.split(" ")[0]! };
+}
+
 export const Route = createFileRoute("/exam/take")({
   head: () => ({
     meta: [
@@ -46,12 +67,15 @@ function StudentLiveExamPage() {
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
   const [markedForReview, setMarkedForReview] = useState<Record<number, boolean>>({});
 
-  // Student College Authentication State
-  const [studentName, setStudentName] = useState("Alex Kumar");
+  // Student College Authentication State — Only Email & Password required
   const [studentEmail, setStudentEmail] = useState("alex.2022cse015@college.edu.in");
-  const [studentRollNo, setStudentRollNo] = useState("2022CSE015");
-  const [studentDept, setStudentDept] = useState("CSE");
   const [studentPassword, setStudentPassword] = useState("EduSuite@2026#");
+
+  // Auto-derive Name, Roll No, Department from Email ID series
+  const parsedInfo = parseCollegeEmail(studentEmail);
+  const studentName = parsedInfo.name;
+  const studentRollNo = parsedInfo.rollNo;
+  const studentDept = parsedInfo.deptCode;
 
   // Coding states
   const [selectedCompilerLangs, setSelectedCompilerLangs] = useState<Record<string, string>>({
@@ -277,66 +301,24 @@ function StudentLiveExamPage() {
               }}
               className="space-y-4 text-left text-xs font-sans"
             >
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
+              <div className="space-y-3">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700 flex items-center gap-1">
-                    <User className="size-3.5 text-blue-600" /> Student Full Name
+                    <Mail className="size-3.5 text-blue-600" /> Official College Email ID
                   </label>
                   <Input
-                    value={studentName}
-                    onChange={(e) => setStudentName(e.target.value)}
+                    type="email"
+                    value={studentEmail}
+                    onChange={(e) => setStudentEmail(e.target.value)}
                     required
-                    placeholder="e.g. Alex Kumar"
-                    className="h-9 text-xs rounded-xl"
+                    placeholder="e.g. alex.2022cse015@college.edu.in"
+                    className="h-10 text-xs rounded-xl font-mono"
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700 flex items-center gap-1">
-                    <Building className="size-3.5 text-blue-600" /> Roll No / Hall Ticket No
-                  </label>
-                  <Input
-                    value={studentRollNo}
-                    onChange={(e) => setStudentRollNo(e.target.value)}
-                    required
-                    placeholder="e.g. 2022CSE015"
-                    className="h-9 text-xs rounded-xl font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700 flex items-center gap-1">
-                  <Mail className="size-3.5 text-blue-600" /> Official College Email ID
-                </label>
-                <Input
-                  type="email"
-                  value={studentEmail}
-                  onChange={(e) => setStudentEmail(e.target.value)}
-                  required
-                  placeholder="student.2022cse015@college.edu.in"
-                  className="h-9 text-xs rounded-xl font-mono"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Department / Branch</label>
-                  <select
-                    value={studentDept}
-                    onChange={(e) => setStudentDept(e.target.value)}
-                    className="w-full h-9 rounded-xl border border-input bg-card px-2.5 text-xs font-semibold cursor-pointer"
-                  >
-                    <option value="CSE">Computer Science &amp; Engg (CSE)</option>
-                    <option value="ECE">Electronics &amp; Comm (ECE)</option>
-                    <option value="IT">Information Technology (IT)</option>
-                    <option value="EEE">Electrical &amp; Electronics (EEE)</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700 flex items-center gap-1">
-                    <Key className="size-3.5 text-blue-600" /> Default Student Passkey
+                    <Key className="size-3.5 text-blue-600" /> Default Student Passkey / Password
                   </label>
                   <Input
                     type="password"
@@ -344,22 +326,31 @@ function StudentLiveExamPage() {
                     onChange={(e) => setStudentPassword(e.target.value)}
                     required
                     placeholder="EduSuite@2026#"
-                    className="h-9 text-xs rounded-xl font-mono"
+                    className="h-10 text-xs rounded-xl font-mono"
                   />
                 </div>
               </div>
 
-              {/* SECURITY SUMMARY */}
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono space-y-1.5 text-slate-700">
-                <p className="font-bold text-blue-700 flex items-center gap-1">
-                  <Shield className="size-3.5" /> Exam Response Storage Policy:
+              {/* LIVE AUTO-DERIVED STUDENT PROFILE CARD */}
+              <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 text-xs font-mono space-y-2 text-blue-950 shadow-xs">
+                <p className="font-bold text-blue-800 text-[0.7rem] uppercase tracking-wider flex items-center justify-between">
+                  <span>⚡ Auto-Detected Student Record</span>
+                  <span className="text-[0.62rem] bg-blue-600 text-white px-2 py-0.5 rounded-md font-sans">Verified ID</span>
                 </p>
-                <p className="text-[0.68rem] text-slate-600">
-                  • Test responses will be linked to <strong>{studentEmail}</strong> and saved automatically upon submission.
-                </p>
-                <p className="text-[0.68rem] text-slate-600">
-                  • Fullscreen mode, copy-paste blocks, and tab violation tracking are enforced.
-                </p>
+                <div className="grid grid-cols-3 gap-2 pt-1 text-[0.68rem]">
+                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
+                    <span className="text-slate-500 block text-[0.6rem]">Student Name</span>
+                    <strong className="text-slate-900 font-sans">{studentName}</strong>
+                  </div>
+                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
+                    <span className="text-slate-500 block text-[0.6rem]">Roll / Hall Ticket</span>
+                    <strong className="text-blue-700 font-mono">{studentRollNo}</strong>
+                  </div>
+                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
+                    <span className="text-slate-500 block text-[0.6rem]">Derived Department</span>
+                    <strong className="text-emerald-700 font-sans">{parsedInfo.dept}</strong>
+                  </div>
+                </div>
               </div>
 
               <Button
