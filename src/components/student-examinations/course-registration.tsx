@@ -53,46 +53,7 @@ export function CourseRegistration({
   return (
     <div className="space-y-6">
 
-      {/* WORKFLOW COMPLETION STATUS STRIP */}
-      <div className={`p-4 rounded-2xl border shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-        isCompleted
-          ? "border-emerald-200 dark:border-emerald-900/40 bg-emerald-50/30 dark:bg-emerald-950/20"
-          : "border-[#0b193c]/20 dark:border-blue-900/40 bg-[#0b193c]/5 dark:bg-blue-950/20"
-      }`}>
-        <div className="flex items-center gap-2 text-xs">
-          {isCompleted ? (
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-          ) : (
-            <Clock className="h-4 w-4 text-[#0b193c] dark:text-blue-400 shrink-0" />
-          )}
-          <span className="font-semibold text-slate-700 dark:text-slate-200">
-            Course Registration Status:{" "}
-            <strong className={isCompleted ? "text-emerald-600" : "text-[#0b193c] dark:text-blue-400"}>
-              {courseRegStatus}
-            </strong>
-          </span>
-        </div>
 
-        <div className="flex items-center gap-2">
-          {!isCompleted ? (
-            <Button
-              onClick={onCompleteCourseRegistration}
-              size="sm"
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5 shadow-sm"
-            >
-              <CheckCircle2 className="h-3.5 w-3.5" /> Approve & Lock Registration
-            </Button>
-          ) : (
-            <Button
-              onClick={onNavigateToExamReg}
-              size="sm"
-              className="rounded-xl bg-[#0b193c] hover:bg-[#0b193c]/90 text-white text-xs gap-1.5 shadow-sm"
-            >
-              Proceed to Exam Registration <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          )}
-        </div>
-      </div>
 
       {/* TWO COLUMN LAYOUT (EXACT MATCH WITH SCREENSHOT) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

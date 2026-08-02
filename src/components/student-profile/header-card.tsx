@@ -119,30 +119,13 @@ export function StudentHeaderCard({
         <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-center gap-3 border-t md:border-t-0 pt-4 md:pt-0 border-slate-100 dark:border-slate-800">
 
           {/* Primary Action Buttons */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-2 gap-2 w-full sm:w-auto">
-            <Button
-              onClick={onOpenIdCard}
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs shadow-sm shadow-blue-500/20 gap-1.5 h-9"
-            >
-              <IdCard className="h-3.5 w-3.5" /> ID Card
-            </Button>
-            
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Button
               onClick={onOpenEdit}
-              variant="outline"
-              className="rounded-xl text-xs border-slate-200 dark:border-slate-700 hover:bg-slate-50 text-slate-700 dark:text-slate-200 gap-1.5 h-9"
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs shadow-sm shadow-blue-500/20 gap-1.5 h-9 px-4"
             >
-              <Edit3 className="h-3.5 w-3.5 text-blue-600" /> Edit
+              <Edit3 className="h-3.5 w-3.5" /> Edit Profile
             </Button>
-            
-            <Button
-              onClick={onDownloadPdf}
-              variant="outline"
-              className="rounded-xl text-xs border-slate-200 dark:border-slate-700 hover:bg-slate-50 text-slate-700 dark:text-slate-200 gap-1.5 h-9"
-            >
-              <Download className="h-3.5 w-3.5 text-emerald-600" /> PDF
-            </Button>
-            
           </div>
 
         </div>

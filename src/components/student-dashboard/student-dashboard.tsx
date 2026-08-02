@@ -102,9 +102,6 @@ export const StudentDashboard: React.FC = () => {
       {/* 2. Academic Overview Cards Grid */}
       <AcademicOverviewCards data={academicOverviewData} />
 
-      {/* 3. Quick Actions Widget */}
-      <QuickActions onNavigate={handleNavigate} />
-
       {/* 4. Main Two Column Grid: Left Feed + Right Snapshots */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Columns */}
@@ -114,9 +111,6 @@ export const StudentDashboard: React.FC = () => {
             slots={todayTimetableSlots}
             onViewFullTimetable={() => handleNavigate("/student/timetable")}
           />
-
-          {/* Action Tasks */}
-          <MyTasks tasks={actionTasks} onNavigate={handleNavigate} />
 
           {/* Announcements / Notices Widget */}
           <NoticeWidget
@@ -130,7 +124,7 @@ export const StudentDashboard: React.FC = () => {
             <AttendanceWidget
               percentage={academicOverviewData.attendancePercentage}
               classesNeeded={0}
-              onViewAttendance={() => handleNavigate("/student/timetable")}
+              onViewAttendance={() => handleNavigate("/student/attendance")}
             />
             <ExamWidget onOpenExamination={() => handleNavigate("/student/examinations")} />
             <FinanceWidget
@@ -150,7 +144,7 @@ export const StudentDashboard: React.FC = () => {
           <EventsWidget events={upcomingEvents} />
 
           {/* Library Snapshot */}
-          <LibraryWidget onOpenLibrary={() => handleNavigate("/settings")} />
+          <LibraryWidget onOpenLibrary={() => handleNavigate("/student/library")} />
 
           {/* Mini Academic Calendar */}
           <CalendarWidget />

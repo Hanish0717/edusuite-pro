@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Download, Printer, RotateCw, ShieldCheck, QrCode, Phone, Mail, MapPin } from "lucide-react";
 import { brand } from "@/config/branding";
+import { downloadStudentIdCardPdf } from "../download-id-card";
 
 interface DigitalIdCardModalProps {
   open: boolean;
@@ -170,7 +171,7 @@ export function DigitalIdCardModal({ open, onOpenChange, student }: DigitalIdCar
               <Printer className="h-3.5 w-3.5 text-slate-400" /> Print
             </Button>
             <Button
-              onClick={() => alert("Downloading official Digital ID Card PDF...")}
+              onClick={() => downloadStudentIdCardPdf(student)}
               className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5"
             >
               <Download className="h-3.5 w-3.5" /> Download Pass

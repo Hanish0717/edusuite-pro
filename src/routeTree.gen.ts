@@ -120,12 +120,14 @@ import { Route as StudentExaminationsRouteImport } from './routes/student.examin
 import { Route as StudentFeedbackRouteImport } from './routes/student.feedback'
 import { Route as StudentFinanceRouteImport } from './routes/student.finance'
 import { Route as StudentHostelRouteImport } from './routes/student.hostel'
+import { Route as StudentIdCardRouteImport } from './routes/student.id-card'
 import { Route as StudentLibraryRouteImport } from './routes/student.library'
 import { Route as StudentLmsRouteImport } from './routes/student.lms'
 import { Route as StudentProfileRouteImport } from './routes/student.profile'
 import { Route as StudentResultsRouteImport } from './routes/student.results'
 import { Route as StudentTimetableRouteImport } from './routes/student.timetable'
 import { Route as StudentUpdatesRouteImport } from './routes/student.updates'
+import { Route as StudentWebinarsRouteImport } from './routes/student.webinars'
 import { Route as SuperAdminIndexRouteImport } from './routes/super-admin.index'
 import { Route as SuperAdminCoursesRouteImport } from './routes/super-admin.courses'
 import { Route as SuperAdminDashboardRouteImport } from './routes/super-admin.dashboard'
@@ -695,6 +697,11 @@ const StudentHostelRoute = StudentHostelRouteImport.update({
   path: '/hostel',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentIdCardRoute = StudentIdCardRouteImport.update({
+  id: '/id-card',
+  path: '/id-card',
+  getParentRoute: () => StudentRoute,
+} as any)
 const StudentLibraryRoute = StudentLibraryRouteImport.update({
   id: '/library',
   path: '/library',
@@ -723,6 +730,11 @@ const StudentTimetableRoute = StudentTimetableRouteImport.update({
 const StudentUpdatesRoute = StudentUpdatesRouteImport.update({
   id: '/updates',
   path: '/updates',
+  getParentRoute: () => StudentRoute,
+} as any)
+const StudentWebinarsRoute = StudentWebinarsRouteImport.update({
+  id: '/webinars',
+  path: '/webinars',
   getParentRoute: () => StudentRoute,
 } as any)
 const SuperAdminIndexRoute = SuperAdminIndexRouteImport.update({
@@ -881,12 +893,14 @@ export interface FileRoutesByFullPath {
   '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
   '/student/hostel': typeof StudentHostelRoute
+  '/student/id-card': typeof StudentIdCardRoute
   '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
   '/student/timetable': typeof StudentTimetableRoute
   '/student/updates': typeof StudentUpdatesRoute
+  '/student/webinars': typeof StudentWebinarsRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -997,12 +1011,14 @@ export interface FileRoutesByTo {
   '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
   '/student/hostel': typeof StudentHostelRoute
+  '/student/id-card': typeof StudentIdCardRoute
   '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
   '/student/timetable': typeof StudentTimetableRoute
   '/student/updates': typeof StudentUpdatesRoute
+  '/student/webinars': typeof StudentWebinarsRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -1128,12 +1144,14 @@ export interface FileRoutesById {
   '/student/feedback': typeof StudentFeedbackRoute
   '/student/finance': typeof StudentFinanceRoute
   '/student/hostel': typeof StudentHostelRoute
+  '/student/id-card': typeof StudentIdCardRoute
   '/student/library': typeof StudentLibraryRoute
   '/student/lms': typeof StudentLmsRoute
   '/student/profile': typeof StudentProfileRoute
   '/student/results': typeof StudentResultsRoute
   '/student/timetable': typeof StudentTimetableRoute
   '/student/updates': typeof StudentUpdatesRoute
+  '/student/webinars': typeof StudentWebinarsRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
@@ -1260,12 +1278,14 @@ export interface FileRouteTypes {
     | '/student/feedback'
     | '/student/finance'
     | '/student/hostel'
+    | '/student/id-card'
     | '/student/library'
     | '/student/lms'
     | '/student/profile'
     | '/student/results'
     | '/student/timetable'
     | '/student/updates'
+    | '/student/webinars'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -1376,12 +1396,14 @@ export interface FileRouteTypes {
     | '/student/feedback'
     | '/student/finance'
     | '/student/hostel'
+    | '/student/id-card'
     | '/student/library'
     | '/student/lms'
     | '/student/profile'
     | '/student/results'
     | '/student/timetable'
     | '/student/updates'
+    | '/student/webinars'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -1506,12 +1528,14 @@ export interface FileRouteTypes {
     | '/student/feedback'
     | '/student/finance'
     | '/student/hostel'
+    | '/student/id-card'
     | '/student/library'
     | '/student/lms'
     | '/student/profile'
     | '/student/results'
     | '/student/timetable'
     | '/student/updates'
+    | '/student/webinars'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
@@ -2366,6 +2390,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentHostelRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/student/id-card': {
+      id: '/student/id-card'
+      path: '/id-card'
+      fullPath: '/student/id-card'
+      preLoaderRoute: typeof StudentIdCardRouteImport
+      parentRoute: typeof StudentRoute
+    }
     '/student/library': {
       id: '/student/library'
       path: '/library'
@@ -2406,6 +2437,13 @@ declare module '@tanstack/react-router' {
       path: '/updates'
       fullPath: '/student/updates'
       preLoaderRoute: typeof StudentUpdatesRouteImport
+      parentRoute: typeof StudentRoute
+    }
+    '/student/webinars': {
+      id: '/student/webinars'
+      path: '/webinars'
+      fullPath: '/student/webinars'
+      preLoaderRoute: typeof StudentWebinarsRouteImport
       parentRoute: typeof StudentRoute
     }
     '/super-admin/': {
@@ -2708,12 +2746,14 @@ interface StudentRouteChildren {
   StudentFeedbackRoute: typeof StudentFeedbackRoute
   StudentFinanceRoute: typeof StudentFinanceRoute
   StudentHostelRoute: typeof StudentHostelRoute
+  StudentIdCardRoute: typeof StudentIdCardRoute
   StudentLibraryRoute: typeof StudentLibraryRoute
   StudentLmsRoute: typeof StudentLmsRoute
   StudentProfileRoute: typeof StudentProfileRoute
   StudentResultsRoute: typeof StudentResultsRoute
   StudentTimetableRoute: typeof StudentTimetableRoute
   StudentUpdatesRoute: typeof StudentUpdatesRoute
+  StudentWebinarsRoute: typeof StudentWebinarsRoute
   StudentIndexRoute: typeof StudentIndexRoute
 }
 
@@ -2726,12 +2766,14 @@ const StudentRouteChildren: StudentRouteChildren = {
   StudentFeedbackRoute: StudentFeedbackRoute,
   StudentFinanceRoute: StudentFinanceRoute,
   StudentHostelRoute: StudentHostelRoute,
+  StudentIdCardRoute: StudentIdCardRoute,
   StudentLibraryRoute: StudentLibraryRoute,
   StudentLmsRoute: StudentLmsRoute,
   StudentProfileRoute: StudentProfileRoute,
   StudentResultsRoute: StudentResultsRoute,
   StudentTimetableRoute: StudentTimetableRoute,
   StudentUpdatesRoute: StudentUpdatesRoute,
+  StudentWebinarsRoute: StudentWebinarsRoute,
   StudentIndexRoute: StudentIndexRoute,
 }
 

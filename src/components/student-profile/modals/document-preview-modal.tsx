@@ -19,12 +19,12 @@ interface DocumentPreviewModalProps {
 }
 
 export function DocumentPreviewModal({ open, onOpenChange, document: doc }: DocumentPreviewModalProps) {
-  if (!doc) return null;
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open && Boolean(doc)} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg rounded-2xl p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-xl">
-        <DialogHeader className="space-y-1 text-left">
+        {doc && (
+          <>
+            <DialogHeader className="space-y-1 text-left">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
               <FileText className="h-5 w-5 text-blue-600" /> {doc.title}
@@ -72,6 +72,8 @@ export function DocumentPreviewModal({ open, onOpenChange, document: doc }: Docu
             <Download className="h-3.5 w-3.5" /> Download File
           </Button>
         </DialogFooter>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

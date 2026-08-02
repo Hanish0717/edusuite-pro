@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CourseItem } from "./types";
+import { CourseItem, LmsTabType } from "./types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -10,9 +10,10 @@ import { toast } from "sonner";
 interface MyCoursesProps {
   courses: CourseItem[];
   searchQuery: string;
+  onSelectTab?: (tab: LmsTabType) => void;
 }
 
-export function MyCourses({ courses, searchQuery }: MyCoursesProps) {
+export function MyCourses({ courses, searchQuery, onSelectTab }: MyCoursesProps) {
   const [selectedCourse, setSelectedCourse] = useState<CourseItem | null>(null);
 
   const filteredCourses = courses.filter(
@@ -22,8 +23,52 @@ export function MyCourses({ courses, searchQuery }: MyCoursesProps) {
       c.faculty.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleDownloadSyllabus = (courseCode: string) => {
-    toast.success(`Official Syllabus for ${courseCode} downloaded!`);
+  const handleDownloadSyllabus = (courseCode: string, courseName: string) => {
+    const syllabusText = `EDUSUITE PRO COLLEGE OF ENGINEERING & TECHNOLOGY
+=====================================================
+OFFICIAL COURSE SYLLABUS & CURRICULUM SCHEME (2026-27)
+=====================================================
+Course Code: ${courseCode}
+Course Name: ${courseName}
+Department: Computer Science & Engineering
+Credits: 4 | Semester: V
+
+1. MODULE 1: FUNDAMENTALS & ARCHITECTURE
+- System Overview, Distributed Algorithms, Consensus Protocols (Paxos, Raft).
+
+2. MODULE 2: FAULT TOLERANCE & CONCURRENCY
+- Two-Phase Commit Protocols, Logical Clocks (Lamport), Distributed Mutual Exclusion.
+
+3. MODULE 3: DISTRIBUTED STORAGE & MAPREDUCE
+- Distributed Hash Tables, GFS Architecture, MapReduce simulation & HDFS execution.
+
+4. MODULE 4: CLOUD VIRTUALIZATION & SECURITY
+- Hypervisors, Containerization (Docker, Kubernetes), Cloud Security Policies.
+
+EVALUATION BREAKDOWN:
+- Internal Assessments (2): 20%
+- Lab & Practical Assignments: 20%
+- End-Semester Theory Examination: 60%
+
+Verified Document — Academic Affairs Committee`;
+
+    const blob = new Blob([syllabusText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Syllabus_${courseCode}_2026.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded Official Syllabus PDF for ${courseCode}`);
+  };
+
+  const handleOpenWorkspace = (courseCode: string, courseName: string) => {
+    toast.success(`Entered online workspace for ${courseName} (${courseCode})!`);
+    if (onSelectTab) {
+      onSelectTab("course-materials");
+    }
   };
 
   return (
@@ -98,25 +143,25 @@ export function MyCourses({ courses, searchQuery }: MyCoursesProps) {
                 onClick={() => setSelectedCourse(course)}
                 size="sm"
                 variant="outline"
-                className="h-8 text-[11px] px-1 font-semibold rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 w-full min-w-0 overflow-hidden"
+                className="h-8 text-[11px] px-1 font-semibold rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 w-full min-w-0 overflow-hidden cursor-pointer"
               >
                 <span className="truncate">Details</span>
               </Button>
 
               <Button
-                onClick={() => handleDownloadSyllabus(course.code)}
+                onClick={() => handleDownloadSyllabus(course.code, course.name)}
                 size="sm"
                 variant="outline"
-                className="h-8 text-[11px] px-1 font-semibold rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 w-full min-w-0 overflow-hidden"
+                className="h-8 text-[11px] px-1 font-semibold rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 w-full min-w-0 overflow-hidden cursor-pointer"
               >
                 <Download className="h-3 w-3 shrink-0" />
                 <span className="truncate">Syllabus</span>
               </Button>
 
               <Button
-                onClick={() => toast.info(`Opening ${course.code} learning portal...`)}
+                onClick={() => handleOpenWorkspace(course.code, course.name)}
                 size="sm"
-                className="h-8 text-[11px] px-1 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold gap-1 w-full min-w-0 overflow-hidden"
+                className="h-8 text-[11px] px-1 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold gap-1 w-full min-w-0 overflow-hidden cursor-pointer"
               >
                 <span className="truncate">Open</span> <ExternalLink className="h-3 w-3 shrink-0" />
               </Button>
@@ -152,18 +197,18 @@ export function MyCourses({ courses, searchQuery }: MyCoursesProps) {
 
             <DialogFooter className="gap-2">
               <Button
-                onClick={() => handleDownloadSyllabus(selectedCourse.code)}
+                onClick={() => handleDownloadSyllabus(selectedCourse.code, selectedCourse.name)}
                 variant="outline"
-                className="rounded-xl text-xs gap-1"
+                className="rounded-xl text-xs gap-1 cursor-pointer"
               >
                 <FileText className="h-3.5 w-3.5" /> Download Full Syllabus PDF
               </Button>
               <Button
                 onClick={() => {
-                  toast.success(`Entered ${selectedCourse.code} online workspace!`);
+                  handleOpenWorkspace(selectedCourse.code, selectedCourse.name);
                   setSelectedCourse(null);
                 }}
-                className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs gap-1"
+                className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs gap-1 cursor-pointer"
               >
                 Go to Workspace <ExternalLink className="h-3.5 w-3.5" />
               </Button>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NoticeItem } from "./types";
 import {
   FileText,
@@ -17,11 +17,12 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface NoticeDetailDrawerProps {
   notice: NoticeItem | null;
   onClose: () => void;
-  onToggleBookmark: (id: string) => void;
+  onToggleBookmark?: (id: string) => void;
 }
 
 export const NoticeDetailDrawer: React.FC<NoticeDetailDrawerProps> = ({
@@ -29,18 +30,69 @@ export const NoticeDetailDrawer: React.FC<NoticeDetailDrawerProps> = ({
   onClose,
   onToggleBookmark,
 }) => {
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
+
+  React.useEffect(() => {
+    if (notice) {
+      setIsBookmarked(!!notice.bookmarked);
+    }
+  }, [notice]);
 
   if (!notice) return null;
 
   const handleShare = () => {
-    navigator.clipboard?.writeText?.(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(`https://edusuite.edu.in/notice/${notice.id}`);
+      setCopied(true);
+      toast.success("Notice URL copied to clipboard!");
+      setTimeout(() => setCopied(false), 2000);
+    } else {
+      toast.info(`Notice Link: https://edusuite.edu.in/notice/${notice.id}`);
+    }
   };
 
   const handlePrint = () => {
+    toast.info("Preparing notice print layout...");
     window.print();
+  };
+
+  const handleToggleBookmark = () => {
+    const nextState = !isBookmarked;
+    setIsBookmarked(nextState);
+    if (onToggleBookmark) {
+      onToggleBookmark(notice.id);
+    }
+    toast.success(nextState ? `Bookmarked "${notice.title}"` : `Bookmark removed for "${notice.title}"`);
+  };
+
+  const handleDownloadAttachment = (filename: string) => {
+    const content = `EduSuite Pro Official Notice Attachment\n\nFile: ${filename}\nNotice Title: ${notice.title}\nIssued By: ${notice.issuedBy}\nDepartment: ${notice.department}\nDate: ${notice.publishedDate}\n\nNotice Body:\n${notice.fullNotice}`;
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded ${filename}`);
+  };
+
+  const handleDownloadPdf = () => {
+    const pdfContent = `OFFICIAL CAMPUS NOTICE\n=========================================\nTitle: ${notice.title}\nCategory: ${notice.category}\nPriority: ${notice.priority}\nIssued By: ${notice.issuedBy}\nDepartment: ${notice.department}\nDate: ${notice.publishedDate}\nExpiry: ${notice.expiryDate}\n=========================================\n\n${notice.fullNotice}\n\n=========================================\nVerified Official Document — EduSuite ERP`;
+    const blob = new Blob([pdfContent], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const filename = `Notice_${notice.id}_${notice.publishedDate}.pdf`;
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded Notice PDF: ${filename}`);
   };
 
   return (
@@ -144,7 +196,7 @@ export const NoticeDetailDrawer: React.FC<NoticeDetailDrawerProps> = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => alert(`Downloading ${att.name}...`)}
+                      onClick={() => handleDownloadAttachment(att.name)}
                       className="h-8 gap-1 text-xs"
                     >
                       <Download className="h-3.5 w-3.5" /> Download
@@ -165,10 +217,16 @@ export const NoticeDetailDrawer: React.FC<NoticeDetailDrawerProps> = ({
                 {notice.relatedLinks.map((link, idx) => (
                   <a
                     key={idx}
-                    href={link.url}
-                    target="_blank"
+                    href={link.url === "#" ? "javascript:void(0)" : link.url}
+                    onClick={(e) => {
+                      if (link.url === "#") {
+                        e.preventDefault();
+                        toast.info(`Opening ${link.title}...`);
+                      }
+                    }}
+                    target={link.url === "#" ? "_self" : "_blank"}
                     rel="noreferrer"
-                    className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:border-primary/50 text-sm text-primary transition-colors"
+                    className="flex items-center justify-between p-3 rounded-lg border border-border bg-card hover:border-primary/50 text-sm text-primary transition-colors cursor-pointer"
                   >
                     <span className="font-medium">{link.title}</span>
                     <ExternalLink className="h-4 w-4" />
@@ -185,13 +243,13 @@ export const NoticeDetailDrawer: React.FC<NoticeDetailDrawerProps> = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onToggleBookmark(notice.id)}
+              onClick={handleToggleBookmark}
               className={`gap-1.5 text-xs ${
-                notice.bookmarked ? "text-amber-500 border-amber-500/30" : ""
+                isBookmarked ? "text-amber-500 border-amber-500/30" : ""
               }`}
             >
-              <Bookmark className={`h-4 w-4 ${notice.bookmarked ? "fill-amber-500" : ""}`} />
-              {notice.bookmarked ? "Bookmarked" : "Bookmark"}
+              <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-amber-500" : ""}`} />
+              {isBookmarked ? "Bookmarked" : "Bookmark"}
             </Button>
 
             <Button
@@ -225,8 +283,8 @@ export const NoticeDetailDrawer: React.FC<NoticeDetailDrawerProps> = ({
             <Button
               variant="default"
               size="sm"
-              onClick={() => alert(`Downloading full notice payload for ${notice.title}...`)}
-              className="gap-1.5 text-xs"
+              onClick={handleDownloadPdf}
+              className="gap-1.5 text-xs bg-primary text-primary-foreground font-semibold"
             >
               <Download className="h-4 w-4" /> Download PDF
             </Button>

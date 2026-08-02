@@ -449,25 +449,85 @@ export const ErpUpdatesModule: React.FC = () => {
                 </div>
               )}
 
-              {/* Visual Preview Screenshot Container */}
-              <div className="p-4 rounded-xl bg-muted/40 border border-border text-center space-y-2">
-                <div className="p-3 bg-card border border-border rounded-lg max-w-sm mx-auto shadow-xs">
-                  <div className="h-24 bg-gradient-to-br from-primary/10 to-primary/30 rounded flex items-center justify-center text-primary font-bold text-xs">
-                    [ Official ERP Release Interface Preview ]
+              {/* Visual Preview — ERP Interface Mockup */}
+              <div className="rounded-xl border border-border bg-muted/30 overflow-hidden">
+                {/* Browser chrome bar */}
+                <div className="flex items-center gap-2 px-3 py-2 bg-slate-800 dark:bg-slate-950">
+                  <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  <div className="flex-1 mx-3 h-4 bg-slate-700 dark:bg-slate-800 rounded-full flex items-center px-2.5">
+                    <span className="text-[9px] font-mono text-slate-400 truncate">edusuite.edu.in/student/{selectedUpdate.category.toLowerCase().replace(" ","-")}</span>
+                  </div>
+                  <span className="text-[9px] font-mono text-emerald-400 font-bold">{selectedUpdate.version}</span>
+                </div>
+
+                {/* ERP content mockup */}
+                <div className="p-3 bg-white dark:bg-slate-900 space-y-2.5">
+                  {/* Top metric bar */}
+                  <div className="grid grid-cols-4 gap-2">
+                    {["Attendance", "GPA", "Credits", "Alerts"].map((label, i) => (
+                      <div key={label} className={`p-2 rounded-lg border text-center ${
+                        i === 0 ? "border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800" :
+                        i === 1 ? "border-emerald-200 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-800" :
+                        i === 2 ? "border-purple-200 bg-purple-50 dark:bg-purple-950/30 dark:border-purple-800" :
+                        "border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800"
+                      }`}>
+                        <div className={`text-xs font-extrabold ${
+                          i === 0 ? "text-blue-600" : i === 1 ? "text-emerald-600" : i === 2 ? "text-purple-600" : "text-amber-600"
+                        }`}>{["87%","9.12","156","2"][i]}</div>
+                        <div className="text-[9px] text-slate-500 font-semibold mt-0.5">{label}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Main content row */}
+                  <div className="flex gap-2">
+                    {/* Left panel */}
+                    <div className="flex-1 space-y-1.5">
+                      <div className="h-2 w-24 rounded bg-slate-200 dark:bg-slate-700" />
+                      {selectedUpdate.featuresAdded.slice(0, 3).map((feat, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+                          <div className="h-1.5 rounded bg-slate-200 dark:bg-slate-700" style={{ width: `${60 + idx * 10}%` }} />
+                        </div>
+                      ))}
+                    </div>
+                    {/* Right pill — new badge */}
+                    <div className="flex flex-col items-end gap-1.5 pt-0.5">
+                      <span className="text-[9px] font-bold bg-blue-600 text-white px-2 py-0.5 rounded-full">NEW</span>
+                      <span className="text-[9px] font-bold bg-emerald-500 text-white px-2 py-0.5 rounded-full">LIVE</span>
+                    </div>
+                  </div>
+
+                  {/* Footer bar */}
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800">
+                    <span className="text-[9px] text-slate-400 font-mono">EduSuite Pro · {selectedUpdate.publishedDate}</span>
+                    <span className="text-[9px] font-bold text-emerald-600">✓ Verified &amp; Live on Production</span>
                   </div>
                 </div>
-                <p className="text-[11px] text-muted-foreground">Verified & Tested on EduSuite Pro Production Servers</p>
               </div>
             </div>
 
             {/* Modal Footer */}
             <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-border">
               {selectedUpdate.attachmentName ? (
-                <Button
+        <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => alert(`Downloading Release Notes: ${selectedUpdate.attachmentName}`)}
-                  className="text-xs gap-1.5"
+                  onClick={() => {
+                    const content = `EduSuite Pro — Official Release Notes\n======================================\nVersion: ${selectedUpdate.version}\nTitle: ${selectedUpdate.title}\nCategory: ${selectedUpdate.category}\nPublished: ${selectedUpdate.publishedDate}\nStatus: ${selectedUpdate.status}\n\nDescription:\n${selectedUpdate.fullDescription}\n\nFeatures Added:\n${selectedUpdate.featuresAdded.map((f, i) => `${i + 1}. ${f}`).join("\n")}\n\nEduSuite Pro Academic ERP — Official Release Documentation`;
+                    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `ReleaseNotes_${selectedUpdate.version.replace(/[^a-zA-Z0-9]/g, "_")}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="text-xs gap-1.5 cursor-pointer"
                 >
                   <Download className="h-3.5 w-3.5 text-primary" /> Download Release Notes
                 </Button>

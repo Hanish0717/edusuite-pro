@@ -101,6 +101,11 @@ export interface SemesterResultItem {
   rank: number;
   resultStatus: "Pass" | "Fail";
   gradeCardUrl?: string;
+  publishedDate?: string;
+  downloadCount?: number;
+  memoStatus?: "Declared" | "Verified" | "Revaluation Pending" | "Withheld";
+  memoNumber?: string;
+  category?: "Regular" | "Supplementary" | "Improvement" | "Revaluation";
   subjects: Array<{
     code: string;
     name: string;
@@ -162,6 +167,30 @@ export interface HallTicketRecordItem {
   hallTicketNumber: string;
   generatedDate: string;
   examCenter: string;
-  status: "Generated" | "Verified & Issued" | "Downloaded";
+  status: "Released" | "Downloaded" | "Pending" | "Withheld" | "Not Released" | "Verified & Issued";
+  reportingTime?: string;
+  instructions?: string[];
   subjects: UpcomingExamItem[];
+}
+
+export interface DownloadHistoryItem {
+  id: string;
+  title: string;
+  type: "Memo" | "Hall Ticket";
+  downloadedDate: string;
+  fileSize: string;
+  semester: number;
+}
+
+export interface RevaluationRequestItem {
+  id: string;
+  semester: number;
+  subjectCode: string;
+  subjectName: string;
+  revaluationType: "Paper Revaluation" | "Recounting" | "Script Copy";
+  reason: string;
+  comments: string;
+  status: "Submitted" | "Under Review" | "Updated" | "No Change";
+  submittedDate: string;
+  feeAmount: number;
 }

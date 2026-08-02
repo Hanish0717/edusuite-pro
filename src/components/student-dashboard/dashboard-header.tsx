@@ -47,19 +47,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </div>
         </div>
 
-        {/* Right: Quick Search */}
-        <div className="w-full lg:w-80">
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-300" />
-            <input
-              type="text"
-              placeholder="Search subjects, exams, notices..."
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-white/10 border border-white/15 text-white placeholder:text-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 backdrop-blur-md transition-all"
-            />
-          </div>
-        </div>
       </div>
     </div>
   );

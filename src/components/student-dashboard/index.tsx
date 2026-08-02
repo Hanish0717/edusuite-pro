@@ -213,14 +213,6 @@ export function StudentDashboardPage() {
           {/* SECTION 2: ACADEMIC OVERVIEW KPI CARDS */}
           <AcademicOverview onNavigate={handleNavigate} />
 
-          {/* SECTION 17: QUICK ACTIONS */}
-          <QuickActions
-            onNavigate={handleNavigate}
-            onOpenLeaveModal={() => setLeaveModalOpen(true)}
-            onOpenDigitalId={() => setDigitalIdOpen(true)}
-            onGenerateBonafide={() => setBonafideOpen(true)}
-          />
-
           {/* SECTION 20: MODULE SHORTCUTS NAVIGATOR */}
           <Shortcuts onNavigate={handleNavigate} />
 
@@ -236,13 +228,10 @@ export function StudentDashboardPage() {
                 onViewTimetable={() => handleNavigate("/student/timetable")}
               />
 
-              {/* SECTION 4: MY ACTION TASKS */}
-              <MyTasks tasks={MOCK_TASKS} onNavigate={handleNavigate} />
-
               {/* MODULE SNAPSHOTS GRID (2 COLUMNS INSIDE LEFT) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* SECTION 6: ATTENDANCE */}
-                <AttendanceWidget attendance={MOCK_ATTENDANCE_SNAPSHOT} onNavigate={handleNavigate} />
+                <AttendanceWidget percentage={86.4} classesNeeded={0} onViewAttendance={() => handleNavigate("/student/attendance")} />
 
                 {/* SECTION 7: EXAMINATION */}
                 <ExamWidget exam={MOCK_EXAM_SNAPSHOT} onNavigate={handleNavigate} />
@@ -254,7 +243,7 @@ export function StudentDashboardPage() {
                 <LmsWidget lms={MOCK_LMS_SNAPSHOT} onNavigate={handleNavigate} />
 
                 {/* SECTION 10: LIBRARY */}
-                <LibraryWidget library={MOCK_LIBRARY_SNAPSHOT} onNavigate={handleNavigate} />
+                <LibraryWidget onOpenLibrary={() => handleNavigate("/student/library")} />
 
                 {/* SECTION 11: HOSTEL */}
                 <HostelWidget hostel={MOCK_HOSTEL_SNAPSHOT} onNavigate={handleNavigate} />

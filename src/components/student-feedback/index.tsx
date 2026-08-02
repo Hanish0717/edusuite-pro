@@ -259,7 +259,7 @@ export function StudentFeedbackModule() {
 
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-[1600px] mx-auto min-h-screen">
-      {/* HEADER & TOP QUICK ACTIONS */}
+      {/* HEADER */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b pb-5 border-slate-200 dark:border-slate-800">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
@@ -271,55 +271,6 @@ export function StudentFeedbackModule() {
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
             Submit faculty and course feedback, raise grievances, request services, and track all requests.
           </p>
-        </div>
-
-        {/* TOP RIGHT QUICK ACTIONS */}
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
-          <Button
-            onClick={() => {
-              setActiveTab("faculty");
-            }}
-            className="rounded-xl text-xs bg-purple-600 hover:bg-purple-700 text-white font-bold h-9 px-4 gap-1.5 shadow-sm"
-          >
-            <UserCheck className="h-4 w-4" /> Faculty Feedback
-          </Button>
-
-          <Button
-            onClick={() => {
-              setActiveTab("course");
-            }}
-            className="rounded-xl text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold h-9 px-4 gap-1.5 shadow-sm"
-          >
-            <BookOpen className="h-4 w-4" /> Course Feedback
-          </Button>
-
-          <Button
-            onClick={() => {
-              setActiveTab("grievance");
-              setIsGrievanceModalOpen(true);
-            }}
-            variant="outline"
-            className="rounded-xl text-xs font-bold h-9 px-4 border-rose-300 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 gap-1.5"
-          >
-            <ShieldAlert className="h-4 w-4" /> Raise Grievance
-          </Button>
-
-          <Button
-            onClick={() => {
-              setActiveTab("services");
-            }}
-            className="rounded-xl text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-9 px-4 gap-1.5 shadow-sm"
-          >
-            <FileCheck className="h-4 w-4" /> Request Service
-          </Button>
-
-          <Button
-            onClick={() => setActiveTab("history")}
-            variant="ghost"
-            className="rounded-xl text-xs font-bold h-9 px-4 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 gap-1.5"
-          >
-            <History className="h-4 w-4 text-slate-500" /> My Requests
-          </Button>
         </div>
       </div>
 

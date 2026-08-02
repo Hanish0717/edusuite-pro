@@ -108,7 +108,7 @@ export function StudentLmsModule() {
             {/* MAIN TAB CONTENT (3 COLS) */}
             <div className="lg:col-span-3 space-y-6">
               {activeTab === "my-courses" && (
-                <MyCourses courses={MOCK_COURSES} searchQuery={searchQuery} />
+                <MyCourses courses={MOCK_COURSES} searchQuery={searchQuery} onSelectTab={setActiveTab} />
               )}
 
               {activeTab === "course-materials" && (

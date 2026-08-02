@@ -1,9 +1,11 @@
 import {
   LayoutDashboard,
+  BadgeCheck,
   GraduationCap,
   Users,
   UserCog,
   CalendarCheck,
+  ClipboardCheck,
   CalendarRange,
   BookOpen,
   FileSpreadsheet,
@@ -43,11 +45,7 @@ import {
 } from "lucide-react";
 
 import type { LoginRole } from "@/config/roles";
-import {
-  canAccessModule,
-  resolveTargetUrlForUser,
-  type UserPermissionContext,
-} from "@/lib/permissions";
+import { hasPermission, type UserPermissionContext } from "@/lib/permissions";
 
 export interface NavItem {
   title: string;
@@ -59,7 +57,7 @@ export interface NavItem {
   moduleId?: string;
   requiredPermission?: "read" | "create" | "update" | "delete" | "approve";
   badge?: string;
-  children?: { title: string; url: string; search?: Record<string, string>; moduleId?: string }[] | undefined;
+  children?: { title: string; url: string; moduleId?: string }[] | undefined;
 }
 
 export interface NavSection {
@@ -73,9 +71,9 @@ export const studentNavigation: NavSection[] = [
     items: [
       { title: "Dashboard", url: "/student/dashboard", icon: LayoutDashboard },
       { title: "Digital Notice Board", url: "/communication", icon: ClipboardList },
-      { title: "My Profile", url: "/student/profile", icon: User },
       { title: "Learning Management", url: "/student/lms", icon: BookOpen },
       { title: "Timetable", url: "/student/timetable", icon: CalendarRange },
+      { title: "Attendance", url: "/student/attendance", icon: ClipboardCheck },
       { title: "Feedback", url: "/student/feedback", icon: MessageSquare },
       { title: "Course Registrations", url: "/student/examinations", icon: FileText },
       { title: "Hostel", url: "/student/hostel", icon: BedDouble },
@@ -83,7 +81,9 @@ export const studentNavigation: NavSection[] = [
       { title: "Payments", url: "/student/finance", icon: CreditCard },
       { title: "OPAC", url: "/student/library", icon: Library },
       { title: "Updates", url: "/student/updates", icon: Sparkles },
-      { title: "Webinars", url: "/student/lms", icon: Video },
+      { title: "Webinars", url: "/student/webinars", icon: Video },
+      { title: "Student ID Card", url: "/student/id-card", icon: BadgeCheck },
+      { title: "My Profile", url: "/student/profile", icon: User },
     ],
   },
 ];
@@ -128,9 +128,9 @@ export const navigation: NavSection[] = [
         icon: GraduationCap,
         moduleId: "academics",
         children: [
-          { title: "Departments", url: "/academics", search: { tab: "departments" }, moduleId: "academics" },
-          { title: "Courses", url: "/academics", search: { tab: "courses" }, moduleId: "academics" },
-          { title: "Curriculum", url: "/academics", search: { tab: "curriculum" }, moduleId: "academics" },
+          { title: "Departments", url: "/academics", moduleId: "academics" },
+          { title: "Courses", url: "/academics", moduleId: "academics" },
+          { title: "Curriculum", url: "/academics", moduleId: "academics" },
         ],
       },
       { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
@@ -150,9 +150,9 @@ export const navigation: NavSection[] = [
         moduleId: "examination",
         roles: ["super-admin", "staff"],
         children: [
-          { title: "Exam Schedule", url: "/faculty/examinations", search: { tab: "Exam Schedule" }, moduleId: "examination" },
-          { title: "Hall Tickets", url: "/faculty/examinations", search: { tab: "Hall Tickets" }, moduleId: "examination" },
-          { title: "Internal Marks", url: "/faculty/examinations", search: { tab: "Internal Marks" }, moduleId: "examination" },
+          { title: "Exam Schedule", url: "/examinations", moduleId: "examination" },
+          { title: "Hall Tickets", url: "/examinations", moduleId: "examination" },
+          { title: "Internal Marks", url: "/examinations", moduleId: "examination" },
         ],
       },
       { title: "Results", url: "/results", icon: Award, moduleId: "examination" },
@@ -195,7 +195,126 @@ export const navigation: NavSection[] = [
 ];
 
 function resolveUrlForUser(url: string, user: UserPermissionContext, title?: string): string {
-  return resolveTargetUrlForUser(user, url, title);
+  // Preserve standalone module URLs without rewriting
+  if (
+    [
+      "/employee-management",
+      "/leave",
+      "/payroll",
+      "/inventory",
+      "/procurement",
+      "/campus-events",
+      "/admission",
+      "/accreditation",
+      "/grievance",
+      "/alumni",
+      "/approval-workflows",
+    ].includes(url)
+  ) {
+    return url;
+  }
+
+  const role = user.role;
+  const flags = user.flags;
+
+  if (role === "super-admin" || role === "super_admin") {
+    return url === "/dashboard" ? "/super-admin/dashboard" : url;
+  }
+
+  if (role === "student") {
+    if (url === "/dashboard") return "/student/dashboard";
+    if (url === "/academics") return "/student/courses";
+    if (url === "/examinations") return "/student/examinations";
+    if (url === "/results") return "/student/examinations";
+    if (url === "/finance") return "/student/finance";
+    if (url === "/attendance") return "/student/attendance";
+    if (url === "/lms") return "/student/lms";
+    if (url === "/settings") return "/student/profile";
+    if (url === "/timetable") return "/student/timetable";
+    if (url === "/library") return "/student/library";
+    if (url === "/grievance" || url === "/feedback") return "/student/feedback";
+    if (url === "/discussion-forum") return "/student/discussion-forum";
+    if (url === "/id-card") return "/student/id-card";
+  }
+
+  if (role === "parent") {
+    if (url === "/dashboard") return "/parent/dashboard";
+    if (url === "/attendance") return "/parent/attendance";
+    if (url === "/finance") return "/parent/fees";
+    if (url === "/transport") return "/parent/transport";
+    if (url === "/settings") return "/parent/dashboard";
+  }
+
+  if (role === "staff") {
+    if (flags.includes("isHod")) {
+      if (url === "/dashboard") return "/hod/dashboard";
+      if (url === "/faculty") return "/hod/faculty";
+      if (url === "/attendance") return "/hod/attendance";
+      if (url === "/reports") return "/hod/reports";
+      if (url === "/settings") return "/faculty/profile";
+    }
+    if (flags.includes("isDean")) {
+      if (url === "/dashboard") return "/dean/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+    }
+    if (flags.includes("isExamController")) {
+      if (url === "/dashboard") return "/examination/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+    }
+    if (flags.includes("isPlacementOfficer")) {
+      if (url === "/dashboard" || url === "/placements") return "/placement/dashboard";
+      if (url === "/students") return "/placement/students";
+      if (url === "/settings") return "/placement/settings";
+      if (title === "Companies") return "/placement/companies";
+      if (title === "Drives") return "/placement/drives";
+      if (title === "Students") return "/placement/students";
+    }
+    if (flags.includes("isLibraryAdmin")) {
+      if (url === "/dashboard" || url === "/library") return "/library/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Books" || title === "Search Catalogue" || title === "Catalogue")
+        return "/library/books";
+      if (title === "Issues" || title === "Circulation") return "/library/issues";
+    }
+    if (flags.includes("isTransportOfficer")) {
+      if (url === "/dashboard" || url === "/transport") return "/transport/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Routes") return "/transport/routes";
+      if (title === "Buses" || title === "Vehicles") return "/transport/buses";
+    }
+    if (flags.includes("isHostelWarden")) {
+      if (url === "/dashboard" || url === "/hostel") return "/hostel/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Rooms" || title === "Allotment") return "/hostel/rooms";
+      if (title === "Students") return "/hostel/students";
+    }
+    if (flags.includes("isHRManager")) {
+      if (url === "/dashboard" || url === "/hr") return "/hr/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Employees") return "/hr/employees";
+      if (title === "Payroll") return "/hr/payroll";
+    }
+    if (flags.includes("isFinanceOfficer")) {
+      if (url === "/dashboard" || url === "/finance") return "/finance/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Fees") return "/finance/fees";
+      if (title === "Reports") return "/finance/reports";
+    }
+
+    if (url === "/dashboard") return "/faculty/dashboard";
+    if (url === "/attendance") return "/faculty/attendance";
+    if (url === "/lms") return "/faculty/lms";
+    if (url === "/examinations") return "/faculty/examinations";
+    if (url === "/results") return "/faculty/results";
+    if (url === "/settings") return "/faculty/profile";
+  }
+
+  if (role === "external-user") {
+    if (url === "/dashboard") return "/external-user/dashboard";
+    if (url === "/settings") return "/external-user/dashboard";
+  }
+
+  return url;
 }
 
 export const RECRUITER_NAVIGATION: NavSection[] = [
@@ -248,10 +367,11 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
             return false;
           }
 
-          // 3. Module permission check via permissions service
+          // 3. Module permission check
           if (item.moduleId) {
             const action = item.requiredPermission || "read";
-            return canAccessModule(user, item.moduleId, action);
+            const perm = hasPermission(user, item.moduleId, action);
+            return perm.allowed;
           }
 
           return true;

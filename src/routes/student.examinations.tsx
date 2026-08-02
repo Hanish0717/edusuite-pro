@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import React, { useState } from "react";
 import {
   ExamSubmodule,
@@ -8,6 +8,8 @@ import {
   ResultWorkflowStatus,
   AcademicYearOption,
   YEAR_TO_SEMESTERS_MAP,
+  HallTicketRecordItem,
+  SemesterResultItem,
 } from "@/components/student-examinations/types";
 import {
   MOCK_EXAM_PROFILE,
@@ -29,6 +31,7 @@ import { HallTicketModal } from "@/components/student-examinations/modals/hall-t
 import { GradeCardModal } from "@/components/student-examinations/modals/grade-card-modal";
 import { CourseDetailsDrawer } from "@/components/student-examinations/modals/course-details-drawer";
 import { RegistrationModal } from "@/components/student-examinations/modals/registration-modal";
+import { RevaluationModal } from "@/components/student-examinations/modals/revaluation-modal";
 
 // UI Primitives & Icons
 import {
@@ -48,14 +51,14 @@ export const Route = createFileRoute("/student/examinations")({
 });
 
 function StudentExaminationsPage() {
-  // Active Submodule Tab: Default "course-registration"
+  // Active Submodule Tab
   const [activeSubmodule, setActiveSubmodule] = useState<ExamSubmodule>("course-registration");
 
-  // DYNAMIC YEAR & SEMESTER STATE WITH MAP DEPENDENCY
+  // Year & Semester State
   const [selectedYear, setSelectedYear] = useState<AcademicYearOption>("3rd Year");
   const [selectedSemester, setSelectedSemester] = useState<number>(5);
 
-  // LINKED WORKFLOW STATE
+  // Linked Workflow State
   const [courseRegStatus, setCourseRegStatus] = useState<CourseRegWorkflowStatus>("Submitted");
   const [examRegStatus, setExamRegStatus] = useState<ExamRegWorkflowStatus>("Locked");
   const [hallTicketStatus, setHallTicketStatus] = useState<HallTicketWorkflowStatus>("Locked");
@@ -69,15 +72,25 @@ function StudentExaminationsPage() {
   const [workflow] = useState(MOCK_REGISTRATION_WORKFLOW);
   const [examRegistrations, setExamRegistrations] = useState(MOCK_EXAM_REGISTRATIONS);
 
-  // Modals
+  // Hall Ticket Modal — supports both current & archive hall tickets
   const [hallTicketModalOpen, setHallTicketModalOpen] = useState(false);
+  const [selectedHallTicketRecord, setSelectedHallTicketRecord] = useState<HallTicketRecordItem | null>(null);
+
+  // Grade Card Modal
   const [gradeCardModalOpen, setGradeCardModalOpen] = useState(false);
-  const [selectedSemesterResult, setSelectedSemesterResult] = useState<any>(null);
+  const [selectedSemesterResult, setSelectedSemesterResult] = useState<SemesterResultItem | null>(null);
+
+  // Course Drawer
   const [courseDrawerOpen, setCourseDrawerOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
+
+  // Registration Modal
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
 
-  // Year Change Handler (Updates Year and automatically sets default semester)
+  // Revaluation Modal
+  const [revaluationModalOpen, setRevaluationModalOpen] = useState(false);
+
+  // Year Change Handler
   const handleYearChange = (year: AcademicYearOption) => {
     setSelectedYear(year);
     const sems = YEAR_TO_SEMESTERS_MAP[year] || [1, 2];
@@ -99,12 +112,12 @@ function StudentExaminationsPage() {
     { id: "results", label: "Results & Memos", icon: Award },
   ];
 
-  // Helper counts for selected semester
+  // Helper counts
   const semesterCourses = availableCourses.filter((c) => c.semester === selectedSemester);
   const registeredCoursesList = semesterCourses.filter((c) => c.isRegistered);
   const registeredCreditsSum = registeredCoursesList.reduce((s, c) => s + c.credits, 0);
 
-  // Linked workflow triggers
+  // Workflow Triggers
   const handleCompleteCourseRegistration = () => {
     setCourseRegStatus("Completed");
     setExamRegStatus("Pending Payment");
@@ -184,6 +197,14 @@ function StudentExaminationsPage() {
     }
   };
 
+  // Semester Navigation inside GradeCard Modal
+  const handleNavigateSemester = (sem: number) => {
+    const result = semesterResults.find((r) => r.semester === sem);
+    if (result) {
+      setSelectedSemesterResult(result);
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       
@@ -212,7 +233,7 @@ function StudentExaminationsPage() {
           </span>
         </div>
 
-        {/* Card 3: Registered Courses (Current Sem) */}
+        {/* Card 3: Registered Courses */}
         <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3">
           <span className="text-xs font-semibold text-slate-500 block">Registered Courses (Sem {selectedSemester})</span>
           <div className="text-3xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display">
@@ -223,7 +244,7 @@ function StudentExaminationsPage() {
           </span>
         </div>
 
-        {/* Card 4: Registered Credits (Current Sem) */}
+        {/* Card 4: Registered Credits */}
         <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3">
           <span className="text-xs font-semibold text-slate-500 block">Total Registered Credits (Sem {selectedSemester})</span>
           <div className="text-3xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display">
@@ -320,7 +341,10 @@ function StudentExaminationsPage() {
           selectedSemester={selectedSemester}
           onYearChange={handleYearChange}
           onSemesterChange={handleSemesterChange}
-          onOpenModal={() => setHallTicketModalOpen(true)}
+          onOpenModal={(ht) => {
+            setSelectedHallTicketRecord(ht || null);
+            setHallTicketModalOpen(true);
+          }}
           onNavigateToExamReg={() => setActiveSubmodule("exam-registration")}
         />
       )}
@@ -338,9 +362,7 @@ function StudentExaminationsPage() {
             setSelectedSemesterResult(res);
             setGradeCardModalOpen(true);
           }}
-          onApplyRevaluation={() => {
-            toast.success("Revaluation Application submitted to Exam Branch!");
-          }}
+          onApplyRevaluation={() => setRevaluationModalOpen(true)}
           onTogglePublishResults={handleTogglePublishResults}
         />
       )}
@@ -351,6 +373,7 @@ function StudentExaminationsPage() {
         onOpenChange={setHallTicketModalOpen}
         profile={profile}
         exams={upcomingExams}
+        hallTicketRecord={selectedHallTicketRecord}
       />
 
       <GradeCardModal
@@ -358,6 +381,12 @@ function StudentExaminationsPage() {
         onOpenChange={setGradeCardModalOpen}
         profile={profile}
         result={selectedSemesterResult}
+        allResults={semesterResults}
+        onNavigateSemester={handleNavigateSemester}
+        onApplyRevaluation={() => {
+          setGradeCardModalOpen(false);
+          setRevaluationModalOpen(true);
+        }}
       />
 
       <CourseDetailsDrawer
@@ -375,6 +404,16 @@ function StudentExaminationsPage() {
         onConfirm={() => {
           setCourseRegStatus("Submitted");
           toast.success("Course Registration locks submitted to Advisor!");
+        }}
+      />
+
+      <RevaluationModal
+        open={revaluationModalOpen}
+        onOpenChange={setRevaluationModalOpen}
+        semesterResults={semesterResults}
+        defaultSemester={selectedSemesterResult?.semester || selectedSemester}
+        onSubmitRevaluation={(data) => {
+          toast.success(`Revaluation request for ${data.subjectCode} submitted! Ref: REV-2026-${Math.floor(1000 + Math.random() * 9000)}`);
         }}
       />
 

@@ -553,12 +553,12 @@ export const MOCK_UPCOMING_EXAMS: UpcomingExamItem[] = [
 ];
 
 // ---------------------------------------------------------
-// 4. PREVIOUS RESULTS FOR ALL COMPLETED SEMESTERS (1 to 4)
+// 4. PREVIOUS RESULTS FOR ALL COMPLETED SEMESTERS (1 to 6)
 // ---------------------------------------------------------
 export const MOCK_SEMESTER_RESULTS: SemesterResultItem[] = [
   {
     semester: 1,
-    academicYear: "2022-2023",
+    academicYear: "1st Year",
     monthYear: "May 2023",
     creditsAttempted: 22,
     creditsEarned: 22,
@@ -567,6 +567,11 @@ export const MOCK_SEMESTER_RESULTS: SemesterResultItem[] = [
     rank: 6,
     resultStatus: "Pass",
     gradeCardUrl: "#",
+    publishedDate: "15 Jun 2023",
+    downloadCount: 4,
+    memoStatus: "Verified",
+    memoNumber: "MEMO-2023-SEM1-0542",
+    category: "Regular",
     subjects: [
       { code: "MA101", name: "Linear Algebra & Calculus", internal: 36, external: 51, total: 87, grade: "A+", credits: 4, status: "Pass" },
       { code: "PH101", name: "Engineering Physics", internal: 34, external: 49, total: 83, grade: "A+", credits: 3, status: "Pass" },
@@ -576,7 +581,7 @@ export const MOCK_SEMESTER_RESULTS: SemesterResultItem[] = [
   },
   {
     semester: 2,
-    academicYear: "2022-2023",
+    academicYear: "1st Year",
     monthYear: "Nov 2023",
     creditsAttempted: 22,
     creditsEarned: 22,
@@ -585,6 +590,11 @@ export const MOCK_SEMESTER_RESULTS: SemesterResultItem[] = [
     rank: 5,
     resultStatus: "Pass",
     gradeCardUrl: "#",
+    publishedDate: "10 Dec 2023",
+    downloadCount: 5,
+    memoStatus: "Verified",
+    memoNumber: "MEMO-2023-SEM2-0542",
+    category: "Regular",
     subjects: [
       { code: "MA201", name: "Advanced Calculus & ODE", internal: 35, external: 50, total: 85, grade: "A+", credits: 4, status: "Pass" },
       { code: "EE201", name: "Basic Electrical Engineering", internal: 32, external: 48, total: 80, grade: "A", credits: 3, status: "Pass" },
@@ -593,7 +603,7 @@ export const MOCK_SEMESTER_RESULTS: SemesterResultItem[] = [
   },
   {
     semester: 3,
-    academicYear: "2023-2024",
+    academicYear: "2nd Year",
     monthYear: "May 2024",
     creditsAttempted: 24,
     creditsEarned: 24,
@@ -602,6 +612,11 @@ export const MOCK_SEMESTER_RESULTS: SemesterResultItem[] = [
     rank: 4,
     resultStatus: "Pass",
     gradeCardUrl: "#",
+    publishedDate: "18 Jun 2024",
+    downloadCount: 6,
+    memoStatus: "Verified",
+    memoNumber: "MEMO-2024-SEM3-0542",
+    category: "Regular",
     subjects: [
       { code: "CS202", name: "Discrete Mathematics", internal: 37, external: 54, total: 91, grade: "O", credits: 3, status: "Pass" },
       { code: "CS203", name: "Object Oriented Programming (Java)", internal: 39, external: 58, total: 97, grade: "O", credits: 4, status: "Pass" },
@@ -610,7 +625,7 @@ export const MOCK_SEMESTER_RESULTS: SemesterResultItem[] = [
   },
   {
     semester: 4,
-    academicYear: "2023-2024",
+    academicYear: "2nd Year",
     monthYear: "Nov 2024",
     creditsAttempted: 24,
     creditsEarned: 24,
@@ -619,10 +634,61 @@ export const MOCK_SEMESTER_RESULTS: SemesterResultItem[] = [
     rank: 4,
     resultStatus: "Pass",
     gradeCardUrl: "#",
+    publishedDate: "22 Dec 2024",
+    downloadCount: 3,
+    memoStatus: "Verified",
+    memoNumber: "MEMO-2024-SEM4-0542",
+    category: "Regular",
     subjects: [
       { code: "CS205", name: "Operating Systems", internal: 38, external: 57, total: 95, grade: "O", credits: 4, status: "Pass" },
       { code: "CS206", name: "Computer Organization & Arch", internal: 36, external: 52, total: 88, grade: "A+", credits: 3, status: "Pass" },
       { code: "CS207", name: "Formal Languages & Automata", internal: 37, external: 55, total: 92, grade: "O", credits: 3, status: "Pass" },
+    ],
+  },
+  {
+    semester: 5,
+    academicYear: "3rd Year",
+    monthYear: "May 2025",
+    creditsAttempted: 22,
+    creditsEarned: 22,
+    sgpa: 9.12,
+    cgpa: 8.96,
+    rank: 3,
+    resultStatus: "Pass",
+    gradeCardUrl: "#",
+    publishedDate: "28 Jun 2025",
+    downloadCount: 2,
+    memoStatus: "Declared",
+    memoNumber: "MEMO-2025-SEM5-0542",
+    category: "Regular",
+    subjects: [
+      { code: "CS301", name: "Computer Networks", internal: 38, external: 56, total: 94, grade: "O", credits: 4, status: "Pass" },
+      { code: "CS302", name: "Database Management Systems", internal: 36, external: 54, total: 90, grade: "O", credits: 4, status: "Pass" },
+      { code: "CS305", name: "Software Engineering & Agile", internal: 35, external: 52, total: 87, grade: "A+", credits: 3, status: "Pass" },
+      { code: "OE311", name: "Intellectual Property Rights", internal: 31, external: 44, total: 75, grade: "A", credits: 3, status: "Pass" },
+    ],
+  },
+  {
+    semester: 6,
+    academicYear: "3rd Year",
+    monthYear: "Dec 2025",
+    creditsAttempted: 22,
+    creditsEarned: 22,
+    sgpa: 9.30,
+    cgpa: 9.02,
+    rank: 2,
+    resultStatus: "Pass",
+    gradeCardUrl: "#",
+    publishedDate: "15 Jan 2026",
+    downloadCount: 1,
+    memoStatus: "Declared",
+    memoNumber: "MEMO-2026-SEM6-0542",
+    category: "Regular",
+    subjects: [
+      { code: "CS308", name: "Machine Learning & Neural Networks", internal: 39, external: 58, total: 97, grade: "O", credits: 4, status: "Pass" },
+      { code: "CS309", name: "Compiler Design & Processing", internal: 35, external: 51, total: 86, grade: "A+", credits: 4, status: "Pass" },
+      { code: "CS310", name: "Cryptography & Security", internal: 37, external: 55, total: 92, grade: "O", credits: 4, status: "Pass" },
+      { code: "CS311", name: "Cloud Computing & Virtualization", internal: 38, external: 56, total: 94, grade: "O", credits: 4, status: "Pass" },
     ],
   },
 ];
@@ -632,14 +698,57 @@ export const MOCK_SEMESTER_RESULTS: SemesterResultItem[] = [
 // ---------------------------------------------------------
 export const MOCK_PAST_HALL_TICKETS: HallTicketRecordItem[] = [
   {
+    id: "ht-sem6",
+    semester: 6,
+    academicYear: "3rd Year",
+    examType: "Regular End-Sem",
+    hallTicketNumber: "HT-2026-SEM6-0542",
+    generatedDate: "Dec 01, 2025",
+    examCenter: "Main Campus - Academic Block A",
+    status: "Released",
+    reportingTime: "09:00 AM (30 mins before exam)",
+    instructions: [
+      "Hall Ticket and College ID Card are mandatory for entry into examination hall.",
+      "Electronic devices, smartwatches, and programmable calculators are strictly prohibited.",
+      "Candidates must occupy designated seats 15 minutes before exam commencement.",
+      "Check question paper code and page count immediately upon receipt.",
+    ],
+    subjects: [
+      { id: "s601", semester: 6, subjectCode: "CS308", subjectName: "Machine Learning & Neural Networks", examDate: "Dec 10, 2025", timeSlot: "09:30 AM - 12:30 PM", duration: "3 Hours", hallNumber: "Block A - 302", seatNumber: "A-42", credits: 4, type: "Theory", status: "Completed" },
+      { id: "s602", semester: 6, subjectCode: "CS309", subjectName: "Compiler Design", examDate: "Dec 12, 2025", timeSlot: "09:30 AM - 12:30 PM", duration: "3 Hours", hallNumber: "Block A - 302", seatNumber: "A-42", credits: 4, type: "Theory", status: "Completed" },
+      { id: "s603", semester: 6, subjectCode: "CS310", subjectName: "Cryptography & Security", examDate: "Dec 15, 2025", timeSlot: "09:30 AM - 12:30 PM", duration: "3 Hours", hallNumber: "Block A - 302", seatNumber: "A-42", credits: 4, type: "Theory", status: "Completed" },
+    ],
+  },
+  {
+    id: "ht-sem5",
+    semester: 5,
+    academicYear: "3rd Year",
+    examType: "Regular End-Sem",
+    hallTicketNumber: "HT-2025-SEM5-0542",
+    generatedDate: "May 01, 2025",
+    examCenter: "Main Campus - Academic Block A",
+    status: "Downloaded",
+    reportingTime: "09:00 AM",
+    instructions: [
+      "Hall Ticket and College ID Card are mandatory for entry.",
+      "No smartwatches or mobile phones allowed.",
+    ],
+    subjects: [
+      { id: "s501", semester: 5, subjectCode: "CS301", subjectName: "Computer Networks", examDate: "May 10, 2025", timeSlot: "09:30 AM - 12:30 PM", duration: "3 Hours", hallNumber: "Block A - 302", seatNumber: "A-42", credits: 4, type: "Theory", status: "Completed" },
+      { id: "s502", semester: 5, subjectCode: "CS302", subjectName: "Database Management Systems", examDate: "May 12, 2025", timeSlot: "09:30 AM - 12:30 PM", duration: "3 Hours", hallNumber: "Block A - 302", seatNumber: "A-42", credits: 4, type: "Theory", status: "Completed" },
+    ],
+  },
+  {
     id: "ht-sem4",
     semester: 4,
-    academicYear: "2023-2024",
+    academicYear: "2nd Year",
     examType: "Regular End-Sem",
     hallTicketNumber: "HT-2024-SEM4-0542",
     generatedDate: "Nov 01, 2024",
     examCenter: "Main Campus - Academic Block A",
     status: "Verified & Issued",
+    reportingTime: "09:00 AM",
+    instructions: ["Hall Ticket mandatory."],
     subjects: [
       { id: "s401", semester: 4, subjectCode: "CS205", subjectName: "Operating Systems", examDate: "Nov 12, 2024", timeSlot: "09:30 AM - 12:30 PM", duration: "3 Hours", hallNumber: "Block A - 204", seatNumber: "A-14", credits: 4, type: "Theory", status: "Completed" },
       { id: "s402", semester: 4, subjectCode: "CS206", subjectName: "Computer Organization & Architecture", examDate: "Nov 15, 2024", timeSlot: "09:30 AM - 12:30 PM", duration: "3 Hours", hallNumber: "Block A - 204", seatNumber: "A-14", credits: 3, type: "Theory", status: "Completed" },
@@ -648,12 +757,14 @@ export const MOCK_PAST_HALL_TICKETS: HallTicketRecordItem[] = [
   {
     id: "ht-sem3",
     semester: 3,
-    academicYear: "2023-2024",
+    academicYear: "2nd Year",
     examType: "Regular End-Sem",
     hallTicketNumber: "HT-2024-SEM3-0542",
     generatedDate: "May 02, 2024",
     examCenter: "Main Campus - Academic Block A",
     status: "Verified & Issued",
+    reportingTime: "09:00 AM",
+    instructions: ["Hall Ticket mandatory."],
     subjects: [
       { id: "s301", semester: 3, subjectCode: "CS202", subjectName: "Discrete Mathematics", examDate: "May 10, 2024", timeSlot: "09:30 AM - 12:30 PM", duration: "3 Hours", hallNumber: "Block A - 102", seatNumber: "B-22", credits: 3, type: "Theory", status: "Completed" },
     ],
@@ -661,24 +772,51 @@ export const MOCK_PAST_HALL_TICKETS: HallTicketRecordItem[] = [
   {
     id: "ht-sem2",
     semester: 2,
-    academicYear: "2022-2023",
+    academicYear: "1st Year",
     examType: "Regular End-Sem",
     hallTicketNumber: "HT-2023-SEM2-0542",
     generatedDate: "Nov 03, 2023",
     examCenter: "Science Block - Hall 301",
-    status: "Verified & Issued",
+    status: "Downloaded",
+    reportingTime: "09:00 AM",
+    instructions: ["Hall Ticket mandatory."],
     subjects: [],
   },
   {
     id: "ht-sem1",
     semester: 1,
-    academicYear: "2022-2023",
+    academicYear: "1st Year",
     examType: "Regular End-Sem",
     hallTicketNumber: "HT-2023-SEM1-0542",
     generatedDate: "May 04, 2023",
     examCenter: "Science Block - Hall 301",
     status: "Verified & Issued",
+    reportingTime: "09:00 AM",
+    instructions: ["Hall Ticket mandatory."],
     subjects: [],
+  },
+];
+
+export const MOCK_DOWNLOAD_HISTORY = [
+  { id: "dh-1", title: "Semester 5 Marks Memo", type: "Memo" as const, downloadedDate: "02 Aug 2026", fileSize: "1.4 MB", semester: 5 },
+  { id: "dh-2", title: "Semester 6 Hall Ticket", type: "Hall Ticket" as const, downloadedDate: "18 Jan 2026", fileSize: "850 KB", semester: 6 },
+  { id: "dh-3", title: "Semester 4 Marks Memo", type: "Memo" as const, downloadedDate: "10 Jul 2025", fileSize: "1.3 MB", semester: 4 },
+  { id: "dh-4", title: "Semester 3 Hall Ticket", type: "Hall Ticket" as const, downloadedDate: "05 Jan 2025", fileSize: "820 KB", semester: 3 },
+  { id: "dh-5", title: "Semester 2 Marks Memo", type: "Memo" as const, downloadedDate: "12 Dec 2024", fileSize: "1.2 MB", semester: 2 },
+];
+
+export const MOCK_REVALUATION_REQUESTS = [
+  {
+    id: "REV-2026-8942",
+    semester: 5,
+    subjectCode: "OE311",
+    subjectName: "Intellectual Property Rights",
+    revaluationType: "Paper Revaluation" as const,
+    reason: "Internal valuation discrepancy in Part B answers",
+    comments: "Answer script copy attached.",
+    status: "Under Review" as const,
+    submittedDate: "20 Jan 2026",
+    feeAmount: 500,
   },
 ];
 

@@ -15,6 +15,7 @@ import {
   Video,
   FileCode,
   BookOpen,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -62,12 +63,51 @@ export function CourseMaterials({ materials, searchQuery }: CourseMaterialsProps
   };
 
   const handleDownload = (mat: MaterialItem) => {
-    toast.success(`Downloading ${mat.title} (${mat.size})...`);
+    const content = `EDUSUITE PRO LMS DIGITAL MATERIAL
+=====================================================
+Title: ${mat.title}
+Course Code: ${mat.courseCode} (${mat.courseName})
+Category: ${mat.category}
+Uploaded By: ${mat.faculty}
+Upload Date: ${mat.uploadDate}
+
+RESOURCE DESCRIPTION:
+${mat.description || "Official course notes, lecture slides, and reference materials provided by the academic department."}
+
+=====================================================
+Verified Official Academic Resource — EduSuite ERP`;
+
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${mat.title.replace(/[\s,]+/g, "_")}.${mat.type || "pdf"}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded ${mat.title} (${mat.size})`);
   };
 
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
   const handleShare = (mat: MaterialItem) => {
-    navigator.clipboard.writeText(`https://edusuite.pro/lms/materials/${mat.id}`);
-    toast.success(`Resource share link copied to clipboard!`);
+    const shareUrl = `https://edusuite.pro/lms/materials/${mat.id}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        setCopiedId(mat.id);
+        toast.success(`Copied share link for "${mat.title}" to clipboard!`);
+        setTimeout(() => setCopiedId(null), 2000);
+      }).catch(() => {
+        setCopiedId(mat.id);
+        toast.success(`Share Link: ${shareUrl}`);
+        setTimeout(() => setCopiedId(null), 2000);
+      });
+    } else {
+      setCopiedId(mat.id);
+      toast.success(`Share Link: ${shareUrl}`);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
   };
 
   return (
@@ -195,11 +235,22 @@ export function CourseMaterials({ materials, searchQuery }: CourseMaterialsProps
                   onClick={() => handleShare(mat)}
                   size="sm"
                   variant="outline"
-                  className="h-8 text-[11px] px-1 font-semibold rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 w-full min-w-0 overflow-hidden"
+                  className={`h-8 text-[11px] px-1 font-semibold rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 gap-1 hover:bg-slate-100 dark:hover:bg-slate-800 w-full min-w-0 overflow-hidden cursor-pointer ${
+                    copiedId === mat.id ? "text-emerald-600 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30" : ""
+                  }`}
                   title="Share material link"
                 >
-                  <Share2 className="h-3.5 w-3.5 text-slate-600 shrink-0" />
-                  <span className="truncate">Share</span>
+                  {copiedId === mat.id ? (
+                    <>
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                      <span className="truncate text-emerald-600 font-bold">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className="h-3.5 w-3.5 text-slate-600 shrink-0" />
+                      <span className="truncate">Share</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </div>

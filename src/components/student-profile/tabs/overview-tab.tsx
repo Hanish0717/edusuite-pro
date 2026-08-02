@@ -8,7 +8,7 @@ import {
   Users,
   ShieldCheck,
   Award,
-  Home as HostelIcon,
+  Building2 as HostelIcon,
 } from "lucide-react";
 
 interface OverviewTabProps {

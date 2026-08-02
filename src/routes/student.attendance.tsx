@@ -55,15 +55,43 @@ function StudentAttendancePage() {
   const [leaveRequests, setLeaveRequests] = useState(MOCK_LEAVE_REQUESTS);
   const [leaveBalance, setLeaveBalance] = useState(MOCK_LEAVE_BALANCE);
 
-  // Filter subjects based on selected Year & Semester
-  const currentSemesterSubjects = MOCK_ALL_SUBJECTS.filter((sub) => {
-    return sub.academicYear === selectedYear && sub.semester === selectedSemester;
-  });
+  // Dynamic subjects filter based on selected Year & Semester
+  const displayedSubjects = React.useMemo(() => {
+    const matched = MOCK_ALL_SUBJECTS.filter(
+      (sub) => sub.academicYear === selectedYear && sub.semester === selectedSemester
+    );
+    if (matched.length > 0) return matched;
+    const semMatched = MOCK_ALL_SUBJECTS.filter((sub) => sub.semester === selectedSemester);
+    if (semMatched.length > 0) return semMatched;
+    return MOCK_ALL_SUBJECTS.filter((s) => s.semester === 5);
+  }, [selectedYear, selectedSemester]);
 
-  // Fallback to all 3rd year subjects if selected semester has no subjects in mock data
-  const displayedSubjects = currentSemesterSubjects.length > 0
-    ? currentSemesterSubjects
-    : MOCK_ALL_SUBJECTS.filter((s) => s.semester === 5);
+  // Dynamic student profile metrics based on selected semester subjects
+  const currentProfile = React.useMemo(() => {
+    let totalConducted = 0;
+    let totalAttended = 0;
+    let totalAbsent = 0;
+    let totalLeave = 0;
+
+    displayedSubjects.forEach((sub) => {
+      totalConducted += sub.conducted;
+      totalAttended += sub.attended;
+      totalAbsent += sub.absent;
+      totalLeave += sub.leave;
+    });
+
+    const pct = totalConducted > 0 ? Number(((totalAttended / totalConducted) * 100).toFixed(1)) : 85.0;
+
+    return {
+      ...MOCK_STUDENT_ATTENDANCE_PROFILE,
+      academicYear: selectedYear,
+      semester: selectedSemester,
+      overallAttendancePct: pct,
+      presentClasses: totalAttended,
+      absentClasses: totalAbsent,
+      leaveClasses: totalLeave,
+    };
+  }, [displayedSubjects, selectedYear, selectedSemester]);
 
   const handleYearChange = (year: AcademicYearOption) => {
     setSelectedYear(year);
@@ -186,7 +214,7 @@ function StudentAttendancePage() {
       <div>
         {activeTab === "summary" && (
           <AttendanceSummary
-            profile={MOCK_STUDENT_ATTENDANCE_PROFILE}
+            profile={currentProfile}
             schedule={MOCK_TODAY_SCHEDULE}
             subjects={displayedSubjects}
             onOpenLeaveModal={() => setIsLeaveModalOpen(true)}
