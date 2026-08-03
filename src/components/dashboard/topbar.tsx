@@ -53,11 +53,8 @@ import {
   type DepartmentCode,
 } from "@/config/roles";
 import { useRole } from "@/context/role-context";
-import { notifications } from "@/data/mock";
 import { notificationService, type Notification } from "@/shared/notifications";
 import { eventBus } from "@/shared/services/eventBus";
-import { toast } from "sonner";
-
 function useCrumbs() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const parts = pathname.split("/").filter(Boolean);

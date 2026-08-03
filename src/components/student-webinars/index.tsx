@@ -64,17 +64,44 @@ export function StudentWebinarsModule() {
           } else {
             toast.info(`Registration canceled for "${w.title}".`);
           }
-          return {
+          const updated = {
             ...w,
             isRegistered: nextState,
             registeredCount: nextState ? w.registeredCount + 1 : w.registeredCount - 1,
             seatsLeft: nextState ? w.seatsLeft - 1 : w.seatsLeft + 1,
           };
+          if (selectedWebinar?.id === webinarId) {
+            setSelectedWebinar(updated);
+          }
+          return updated;
         }
         return w;
       })
     );
   };
+
+  // Bookmark toggle handler
+  const handleToggleWebinarBookmark = (webinarId: string) => {
+    setWebinarsList((prev) =>
+      prev.map((w) => {
+        if (w.id === webinarId) {
+          const nextState = !w.isBookmarked;
+          toast.success(nextState ? `Saved "${w.title}" to bookmarks!` : `Removed "${w.title}" from bookmarks.`);
+          const updated = { ...w, isBookmarked: nextState };
+          if (selectedWebinar?.id === webinarId) {
+            setSelectedWebinar(updated);
+          }
+          return updated;
+        }
+        return w;
+      })
+    );
+  };
+
+  // Featured webinar memoized from state
+  const featuredWebinar = useMemo(() => {
+    return webinarsList.find((w) => w.isFeatured || w.id === "web-live-1") || MOCK_FEATURED_WEBINAR;
+  }, [webinarsList]);
 
   // Filter Webinars
   const filteredWebinars = useMemo(() => {
@@ -116,10 +143,7 @@ export function StudentWebinarsModule() {
         onSearchChange={setSearchQuery}
       />
 
-      {/* 2. STATISTICS CARDS */}
-      <WebinarStatsCards onTabClick={(tab) => setActiveTab(tab)} />
-
-      {/* 3. TOP NAVIGATION TABS */}
+      {/* 2. TOP NAVIGATION TABS */}
       <WebinarTabsNav activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* 4. MAIN LAYOUT (LEFT CONTENT AREA vs RIGHT SIDEBAR) */}
@@ -153,12 +177,16 @@ export function StudentWebinarsModule() {
             {/* UPCOMING WEBINARS SECTION */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
-                  Upcoming Webinars
+                <h2 className="text-base font-extrabold text-slate-900 dark:text-white capitalize">
+                  {activeTab} Webinars
                 </h2>
                 <button
-                  onClick={() => setActiveTab("upcoming")}
-                  className="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1"
+                  onClick={() => {
+                    setActiveTab("upcoming");
+                    setSelectedCategory("All");
+                    setSearchQuery("");
+                  }}
+                  className="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1 cursor-pointer"
                 >
                   View All <ArrowRight className="size-3" />
                 </button>
@@ -168,6 +196,7 @@ export function StudentWebinarsModule() {
                 <WebinarEmptyState
                   type={activeTab === "registered" ? "no-registrations" : "no-webinars"}
                   onResetFilter={() => {
+                    setActiveTab("upcoming");
                     setSelectedCategory("All");
                     setSearchQuery("");
                   }}
@@ -179,6 +208,7 @@ export function StudentWebinarsModule() {
                       key={webinar.id}
                       webinar={webinar}
                       onRegisterToggle={handleRegisterToggle}
+                      onToggleBookmark={handleToggleWebinarBookmark}
                       onSelectWebinar={handleSelectWebinar}
                     />
                   ))}
@@ -190,7 +220,7 @@ export function StudentWebinarsModule() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Featured Webinar Banner */}
               <WebinarHero
-                webinar={MOCK_FEATURED_WEBINAR}
+                webinar={featuredWebinar}
                 onRegisterToggle={handleRegisterToggle}
                 onSelectWebinar={handleSelectWebinar}
               />

@@ -22,6 +22,7 @@ import {
   processWorkflowStep,
   type WorkflowItem,
 } from "@/lib/workflowService";
+import { HodApprovalPanel } from "@/components/student-examinations/hod-approval-panel";
 
 export const Route = createFileRoute("/approval-workflows")({
   head: () => ({
@@ -71,6 +72,9 @@ export function ApprovalWorkflowsPage() {
             ACTIVE WORKFLOW ENGINE
           </Badge>
         </header>
+
+        {/* HOD EXAM & NPTEL REGISTRATION APPROVAL PANEL */}
+        <HodApprovalPanel />
 
         <div className="space-y-6">
           {workflows.map((wf) => {

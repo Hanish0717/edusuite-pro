@@ -100,15 +100,15 @@ export function AppSidebar() {
                             <SidebarMenuButton
                               isActive={isItemActive}
                               tooltip={item.title}
-                              className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-bold transition-all duration-200"
+                              className="rounded-[18px] transition-all duration-[250ms] px-3 py-2 border border-transparent data-[active=true]:bg-[#172554] data-[active=true]:text-white data-[active=true]:border-[#233876] data-[active=true]:shadow-sm data-[active=true]:font-semibold hover:bg-[#1E3A8A] hover:text-white"
                             >
-                              <item.icon className="size-4 shrink-0 text-primary/80" />
+                              <item.icon className="size-4 shrink-0" />
                               <span className="truncate">{item.title}</span>
-                              <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90 text-sidebar-foreground/50" />
+                              <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent className="transition-all duration-200 ease-in-out data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                            <SidebarMenuSub className="ml-3.5 border-l border-primary/20 pl-2.5 space-y-0.5 my-1">
+                            <SidebarMenuSub className="ml-3.5 border-l border-sidebar-border/40 pl-2.5 space-y-0.5 my-1">
                               {item.children.map((child) => {
                                 const childCleanPath = child.url.split("?")[0];
                                 const isSubActive = currentCleanPath === childCleanPath;
@@ -117,7 +117,7 @@ export function AppSidebar() {
                                     <SidebarMenuSubButton
                                       asChild
                                       isActive={isSubActive}
-                                      className="text-xs data-[active=true]:font-bold data-[active=true]:text-primary data-[active=true]:bg-primary/5 rounded-lg px-2 py-1"
+                                      className="text-xs rounded-[18px] px-3 py-1.5 transition-all duration-[250ms] border border-transparent data-[active=true]:bg-[#172554] data-[active=true]:text-white data-[active=true]:border-[#233876] data-[active=true]:shadow-sm data-[active=true]:font-semibold hover:bg-[#1E3A8A] hover:text-white"
                                     >
                                       <Link to={child.url} search={child.search}>{child.title}</Link>
                                     </SidebarMenuSubButton>
@@ -137,10 +137,10 @@ export function AppSidebar() {
                         asChild
                         isActive={isItemActive}
                         tooltip={item.title}
-                        className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-bold transition-all duration-200"
+                        className="rounded-[18px] transition-all duration-[250ms] px-3 py-2 border border-transparent data-[active=true]:bg-[#172554] data-[active=true]:text-white data-[active=true]:border-[#233876] data-[active=true]:shadow-sm data-[active=true]:font-semibold hover:bg-[#1E3A8A] hover:text-white"
                       >
                         <Link to={item.url} className="flex items-center gap-2">
-                          <item.icon className="size-4 shrink-0 text-primary/80" />
+                          <item.icon className="size-4 shrink-0" />
                           <span className="truncate">{item.title}</span>
                           {item.badge && !collapsed && (
                             <Badge className="ml-auto h-5 bg-sidebar-primary px-1.5 text-[0.65rem] text-sidebar-primary-foreground">

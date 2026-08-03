@@ -61,6 +61,7 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
     status: "upcoming",
     dateBadge: { month: "AUG", day: "10" },
     startDate: "2026-08-10",
+    displayDate: "Aug 10, 2026",
     displayTime: "11:00 AM - 12:30 PM",
     duration: "1h 30m",
     speaker: {
@@ -68,6 +69,8 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
       name: "Dr. Priya Sharma",
       role: "AI Research Scientist",
       avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
+      organization: "Google AI",
+      bio: "Dr. Priya Sharma is a principal AI researcher specializing in deep learning and NLP architectures.",
     },
     description: "Explore the core concepts of artificial intelligence, neural networks, machine learning algorithms, and real-world industrial applications.",
     agenda: [
@@ -79,8 +82,8 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
     totalSeats: 150,
     registeredCount: 120,
     seatsLeft: 30,
-    isRegistered: false,
-    isBookmarked: false,
+    isRegistered: true,
+    isBookmarked: true,
   },
   {
     id: "web-2",
@@ -90,6 +93,7 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
     status: "upcoming",
     dateBadge: { month: "AUG", day: "12" },
     startDate: "2026-08-12",
+    displayDate: "Aug 12, 2026",
     displayTime: "02:00 PM - 03:30 PM",
     duration: "1h 30m",
     speaker: {
@@ -97,6 +101,8 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
       name: "Mr. Arjun Reddy",
       role: "Cloud Architect",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
+      organization: "Amazon Web Services",
+      bio: "Arjun Reddy is a Senior Solutions Architect with deep expertise in cloud migration and DevOps automation.",
     },
     description: "Learn fundamental cloud deployment models, IaaS vs PaaS vs SaaS, virtual machines, containerization, and AWS architecture basics.",
     agenda: [
@@ -112,6 +118,38 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
     isBookmarked: false,
   },
   {
+    id: "web-live-1",
+    title: "The Future of AI in Automotive Industry",
+    category: "AI & ML",
+    bannerImage: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1200&auto=format&fit=crop&q=80",
+    status: "live",
+    dateBadge: { month: "AUG", day: "08" },
+    startDate: "2026-08-08",
+    displayDate: "Aug 08, 2026",
+    displayTime: "04:00 PM - 05:30 PM",
+    duration: "1h 30m",
+    speaker: {
+      id: "spk-raghav",
+      name: "Dr. Raghav Menon",
+      role: "Head of AI, Tesla India",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+      organization: "Tesla",
+      bio: "Dr. Raghav Menon leads autonomous driving AI initiatives at Tesla India with 15+ years of experience in computer vision.",
+    },
+    description: "Dive into autonomous driving neural networks, computer vision perception, sensor fusion, and reinforcement learning in modern electric vehicle technologies.",
+    agenda: [
+      "Computer Vision & LiDAR Sensor Fusion",
+      "Real-time Edge AI Inference on Vehicles",
+      "Reinforcement Learning for Autonomous Navigation",
+      "Career Opportunities in Automotive Tech",
+    ],
+    totalSeats: 500,
+    registeredCount: 180,
+    seatsLeft: 320,
+    isRegistered: true,
+    isFeatured: true,
+  },
+  {
     id: "web-3",
     title: "Python for Data Analysis",
     category: "Python",
@@ -119,6 +157,7 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
     status: "upcoming",
     dateBadge: { month: "AUG", day: "14" },
     startDate: "2026-08-14",
+    displayDate: "Aug 14, 2026",
     displayTime: "10:00 AM - 11:30 AM",
     duration: "1h 30m",
     speaker: {
@@ -126,6 +165,8 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
       name: "Dr. Karthik Babu",
       role: "Data Scientist",
       avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
+      organization: "Microsoft",
+      bio: "Dr. Karthik Babu leads data science teams specializing in predictive analytics and large-scale data modeling.",
     },
     description: "Master NumPy, Pandas, Matplotlib, and Data Wrangling techniques for exploratory data analysis and statistical modeling.",
     agenda: [
@@ -141,6 +182,37 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
     isBookmarked: false,
   },
   {
+    id: "web-comp-1",
+    title: "Full Stack Web Development with React & Node",
+    category: "Web Development",
+    bannerImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=80",
+    status: "completed",
+    dateBadge: { month: "AUG", day: "01" },
+    startDate: "2026-08-01",
+    displayDate: "Aug 01, 2026",
+    displayTime: "05:00 PM - 06:30 PM",
+    duration: "1h 30m",
+    speaker: {
+      id: "spk-5",
+      name: "Vikram Malhotra",
+      role: "Lead Full Stack Engineer",
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80",
+      organization: "Meta",
+      bio: "Vikram is a senior engineer at Meta focusing on high-performance frontend frameworks and distributed APIs.",
+    },
+    description: "Comprehensive workshop covering modern React architecture, state management, REST API integration, and Node.js microservices.",
+    agenda: [
+      "React 19 & Server Components Overview",
+      "Building scalable REST APIs with Express",
+      "Database ORM & Authentication",
+    ],
+    totalSeats: 300,
+    registeredCount: 300,
+    seatsLeft: 0,
+    isRegistered: true,
+    isBookmarked: true,
+  },
+  {
     id: "web-4",
     title: "Cyber Security Essentials",
     category: "Cyber Security",
@@ -148,6 +220,7 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
     status: "upcoming",
     dateBadge: { month: "AUG", day: "16" },
     startDate: "2026-08-16",
+    displayDate: "Aug 16, 2026",
     displayTime: "03:00 PM - 04:30 PM",
     duration: "1h 30m",
     speaker: {
@@ -155,6 +228,8 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
       name: "Ms. Sneha Kulkarni",
       role: "Cyber Security Expert",
       avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80",
+      organization: "Palo Alto Networks",
+      bio: "Sneha is a certified ethical hacker and security consultant advising Fortune 500 companies.",
     },
     description: "Protect systems against network vulnerabilities, phishing attacks, malware, and zero-day threats in enterprise environments.",
     agenda: [
@@ -172,13 +247,15 @@ export const MOCK_UPCOMING_WEBINARS: Webinar[] = [
 ];
 
 export const MOCK_FEATURED_WEBINAR: Webinar = {
-  id: "web-featured",
+  id: "web-live-1",
   title: "The Future of AI in Automotive Industry",
   category: "AI & ML",
+  subtitle: "Autonomous driving, perception, and computer vision.",
   bannerImage: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1200&auto=format&fit=crop&q=80",
   status: "live",
   dateBadge: { month: "AUG", day: "08" },
   startDate: "2026-08-08",
+  displayDate: "Aug 08, 2026",
   displayTime: "04:00 PM - 05:30 PM",
   duration: "1h 30m",
   speaker: {
@@ -186,6 +263,8 @@ export const MOCK_FEATURED_WEBINAR: Webinar = {
     name: "Dr. Raghav Menon",
     role: "Head of AI, Tesla India",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+    organization: "Tesla",
+    bio: "Dr. Raghav Menon leads autonomous driving AI initiatives at Tesla India with 15+ years of experience in computer vision.",
   },
   description: "Dive into autonomous driving neural networks, computer vision perception, sensor fusion, and reinforcement learning in modern electric vehicle technologies.",
   agenda: [
@@ -197,7 +276,7 @@ export const MOCK_FEATURED_WEBINAR: Webinar = {
   totalSeats: 500,
   registeredCount: 180,
   seatsLeft: 320,
-  isRegistered: false,
+  isRegistered: true,
   isFeatured: true,
 };
 

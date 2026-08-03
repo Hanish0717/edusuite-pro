@@ -76,7 +76,7 @@ function SignupPage() {
     setRole(newRole);
     const newDesignations = getDesignationsForRole(newRole);
     if (newDesignations.length > 0) {
-      setDesignation(newDesignations[0].value);
+      setDesignation(newDesignations[0]?.value ?? "");
     }
   };
 

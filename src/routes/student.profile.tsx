@@ -15,6 +15,7 @@ import { PayFeesModal } from "@/components/student-profile/modals/pay-fees-modal
 import { DocumentPreviewModal } from "@/components/student-profile/modals/document-preview-modal";
 import { BonafideModal } from "@/components/student-profile/modals/bonafide-modal";
 import { AddAchievementModal } from "@/components/student-profile/modals/add-achievement-modal";
+import { ResetPasswordModal } from "@/components/student-profile/modals/reset-password-modal";
 
 // Tabs
 import { OverviewTab } from "@/components/student-profile/tabs/overview-tab";
@@ -92,6 +93,7 @@ function StudentProfilePage() {
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
   const [bonafideModalOpen, setBonafideModalOpen] = useState(false);
   const [addAchievementModalOpen, setAddAchievementModalOpen] = useState(false);
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
 
   // Download handlers
   const handleDownloadPdf = () => {
@@ -176,31 +178,13 @@ function StudentProfilePage() {
             onOpenIdCard={() => {}}
             onOpenQr={() => setQrOpen(true)}
             onOpenEdit={() => setEditDrawerOpen(true)}
+            onOpenResetPassword={() => setResetPasswordOpen(true)}
             onDownloadPdf={() => {}}
             onPrint={handlePrint}
           />
 
-          {/* 4. 16 TABS NAVIGATION BAR */}
+          {/* MAIN ERP PROFILE CONTENT WITHOUT SUB-NAVIGATION TAB BAR */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
-            
-            {/* Scrollable Tabs Header Bar */}
-            <div className="overflow-x-auto pb-2 scrollbar-none">
-              <TabsList className="inline-flex h-auto p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-800 space-x-1 min-w-max">
-                {tabItems.map((tab) => {
-                  const IconComp = tab.icon;
-                  return (
-                    <TabsTrigger
-                      key={tab.id}
-                      value={tab.id}
-                      className="px-3.5 py-2 text-xs font-semibold rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all gap-1.5"
-                    >
-                      <IconComp className="h-3.5 w-3.5" />
-                      <span>{tab.label}</span>
-                    </TabsTrigger>
-                  );
-                })}
-              </TabsList>
-            </div>
 
             {/* TAB CONTENTS */}
             <TabsContent value="overview" className="mt-0">
@@ -326,6 +310,11 @@ function StudentProfilePage() {
             achievements: [newAch, ...student.achievements],
           });
         }}
+      />
+
+      <ResetPasswordModal
+        open={resetPasswordOpen}
+        onOpenChange={setResetPasswordOpen}
       />
 
     </div>

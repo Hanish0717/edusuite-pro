@@ -13,10 +13,11 @@ interface RegistrationModalProps {
   onConfirm: () => void;
 }
 
-export function RegistrationModal({ open, onOpenChange, selectedCourses, onConfirm }: RegistrationModalProps) {
+export function RegistrationModal({ open, onOpenChange, selectedCourses = [], onConfirm }: RegistrationModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const totalCredits = selectedCourses.reduce((sum, c) => sum + c.credits, 0);
+  const safeCourses = selectedCourses || [];
+  const totalCredits = safeCourses.reduce((sum, c) => sum + (c?.credits || 0), 0);
 
   const handleConfirmRegistration = () => {
     setIsSubmitting(true);
