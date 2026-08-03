@@ -20,6 +20,11 @@ import {
   Package,
   ShieldAlert,
   Globe,
+  User,
+  ClipboardList,
+  FileText,
+  TrendingUp,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 
@@ -225,6 +230,39 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
 }
 
 export function navigationForUser(user: UserPermissionContext): NavSection[] {
+  // Check if staff has administrative flags
+  const isAdminStaff = user.flags.some(flag => 
+    ["isHod", "isDean", "isExamController", "isPlacementOfficer", "isLibraryAdmin", 
+     "isTransportOfficer", "isHostelWarden", "isHRManager", "isFinanceOfficer"].includes(flag)
+  );
+
+  if (user.role === "staff" && !isAdminStaff) {
+    return [
+      {
+        label: "Faculty Workspace",
+        items: [
+          { title: "Dashboard", url: "/faculty/dashboard", icon: LayoutDashboard },
+          { title: "My Profile", url: "/faculty/profile", icon: User },
+          { title: "Timetable", url: "/faculty/timetable", icon: CalendarRange },
+          { title: "Subjects", url: "/faculty/subjects", icon: BookOpen },
+          { title: "Lesson Plans", url: "/faculty/lesson-plan", icon: ClipboardList },
+          { title: "Attendance", url: "/faculty/attendance", icon: CalendarCheck },
+          { title: "Students", url: "/faculty/students", icon: Users },
+          { title: "Assignments", url: "/faculty/assignments", icon: ClipboardList },
+          { title: "Study Materials", url: "/faculty/materials", icon: FileText },
+          { title: "Assessments", url: "/faculty/assessments", icon: GraduationCap },
+          { title: "Examinations", url: "/faculty/examinations", icon: FileSpreadsheet },
+          { title: "Research", url: "/faculty/research", icon: TrendingUp },
+          { title: "Leave", url: "/faculty/leave", icon: CalendarRange },
+          { title: "Payroll", url: "/faculty/payroll", icon: Wallet },
+          { title: "Reports", url: "/faculty/reports", icon: BarChart3 },
+          { title: "Notifications", url: "/faculty/notifications", icon: Bell, badge: "3" },
+          { title: "Settings", url: "/faculty/settings", icon: Settings },
+        ],
+      }
+    ];
+  }
+
   return navigation
     .map((section) => {
       const items = section.items
