@@ -1,0 +1,62 @@
+{
+  "name": "Students",
+  "version": "1.0.0",
+  "category": "Academic Core",
+  "owner": "Academic Registrar Office",
+  "icon": "Users",
+  "permissions": [
+    "VIEW_STUDENT",
+    "CREATE_STUDENT",
+    "UPDATE_STUDENT",
+    "DELETE_STUDENT",
+    "IMPORT_STUDENTS",
+    "EXPORT_STUDENTS",
+    "PROMOTE_STUDENT",
+    "TRANSFER_STUDENT",
+    "VIEW_DOCUMENTS",
+    "MANAGE_DOCUMENTS",
+    "VIEW_TIMELINE",
+    "VIEW_CONNECTIONS"
+  ],
+  "dependencies": [
+    "Admissions",
+    "Academics",
+    "Attendance",
+    "Library",
+    "Finance",
+    "LMS",
+    "Transport",
+    "Hostel",
+    "Placements",
+    "AI Analytics",
+    "Notifications"
+  ],
+  "routes": [
+    "/students",
+    "/students/profile/:id"
+  ],
+  "notifications": [
+    "student:created_notify",
+    "student:promoted_notify",
+    "student:transferred_notify",
+    "student:document_verified_notify"
+  ],
+  "events": [
+    "student:created",
+    "student:updated",
+    "student:deleted",
+    "student:transferred",
+    "student:promoted",
+    "student:graduated",
+    "student:document_verified"
+  ],
+  "futureApis": [
+    "GET /api/v1/students",
+    "GET /api/v1/students/:id",
+    "POST /api/v1/students",
+    "PUT /api/v1/students/:id",
+    "DELETE /api/v1/students/:id",
+    "POST /api/v1/students/:id/promote",
+    "POST /api/v1/students/:id/transfer"
+  ]
+}

@@ -1,6 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { StudentsModuleView } from "@/modules/students";
 
 export const Route = createFileRoute("/students")({
   head: () => ({
@@ -12,7 +11,7 @@ export const Route = createFileRoute("/students")({
 export function StudentsPage() {
   return (
     <DashboardLayout>
-      <StudentsModuleView />
+      <Outlet />
     </DashboardLayout>
   );
 }

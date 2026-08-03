@@ -138,6 +138,7 @@ import { Route as StudentResultsRouteImport } from './routes/student.results'
 import { Route as StudentTimetableRouteImport } from './routes/student.timetable'
 import { Route as StudentUpdatesRouteImport } from './routes/student.updates'
 import { Route as StudentWebinarsRouteImport } from './routes/student.webinars'
+import { Route as StudentsIndexRouteImport } from './routes/students.index'
 import { Route as SuperAdminIndexRouteImport } from './routes/super-admin.index'
 import { Route as SuperAdminCoursesRouteImport } from './routes/super-admin.courses'
 import { Route as SuperAdminDashboardRouteImport } from './routes/super-admin.dashboard'
@@ -149,6 +150,7 @@ import { Route as TransportBusesRouteImport } from './routes/transport.buses'
 import { Route as TransportDashboardRouteImport } from './routes/transport.dashboard'
 import { Route as TransportRoutesRouteImport } from './routes/transport.routes'
 import { Route as PlacementDrivesDriveIdRouteImport } from './routes/placement.drives_.$driveId'
+import { Route as StudentsProfileIdRouteImport } from './routes/students.profile.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -800,6 +802,11 @@ const StudentWebinarsRoute = StudentWebinarsRouteImport.update({
   path: '/webinars',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentsIndexRoute = StudentsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StudentsRoute,
+} as any)
 const SuperAdminIndexRoute = SuperAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -855,6 +862,11 @@ const PlacementDrivesDriveIdRoute = PlacementDrivesDriveIdRouteImport.update({
   path: '/drives/$driveId',
   getParentRoute: () => PlacementRoute,
 } as any)
+const StudentsProfileIdRoute = StudentsProfileIdRouteImport.update({
+  id: '/profile/$id',
+  path: '/profile/$id',
+  getParentRoute: () => StudentsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -899,7 +911,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/student': typeof StudentRouteWithChildren
-  '/students': typeof StudentsRoute
+  '/students': typeof StudentsRouteWithChildren
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
@@ -994,9 +1006,11 @@ export interface FileRoutesByFullPath {
   '/parent/': typeof ParentIndexRoute
   '/placement/': typeof PlacementIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/students/': typeof StudentsIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/students/profile/$id': typeof StudentsProfileIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -1028,7 +1042,6 @@ export interface FileRoutesByTo {
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
-  '/students': typeof StudentsRoute
   '/timetable': typeof TimetableRoute
   '/verify-email': typeof VerifyEmailRoute
   '/ai-analytics/attendance-prediction': typeof AiAnalyticsAttendancePredictionRoute
@@ -1121,9 +1134,11 @@ export interface FileRoutesByTo {
   '/parent': typeof ParentIndexRoute
   '/placement': typeof PlacementIndexRoute
   '/student': typeof StudentIndexRoute
+  '/students': typeof StudentsIndexRoute
   '/super-admin': typeof SuperAdminIndexRoute
   '/transport': typeof TransportIndexRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/students/profile/$id': typeof StudentsProfileIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1169,7 +1184,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/student': typeof StudentRouteWithChildren
-  '/students': typeof StudentsRoute
+  '/students': typeof StudentsRouteWithChildren
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
@@ -1264,9 +1279,11 @@ export interface FileRoutesById {
   '/parent/': typeof ParentIndexRoute
   '/placement/': typeof PlacementIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/students/': typeof StudentsIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
   '/placement/drives_/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/students/profile/$id': typeof StudentsProfileIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1408,9 +1425,11 @@ export interface FileRouteTypes {
     | '/parent/'
     | '/placement/'
     | '/student/'
+    | '/students/'
     | '/super-admin/'
     | '/transport/'
     | '/placement/drives/$driveId'
+    | '/students/profile/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1442,7 +1461,6 @@ export interface FileRouteTypes {
     | '/results'
     | '/settings'
     | '/signup'
-    | '/students'
     | '/timetable'
     | '/verify-email'
     | '/ai-analytics/attendance-prediction'
@@ -1535,9 +1553,11 @@ export interface FileRouteTypes {
     | '/parent'
     | '/placement'
     | '/student'
+    | '/students'
     | '/super-admin'
     | '/transport'
     | '/placement/drives/$driveId'
+    | '/students/profile/$id'
   id:
     | '__root__'
     | '/'
@@ -1677,9 +1697,11 @@ export interface FileRouteTypes {
     | '/parent/'
     | '/placement/'
     | '/student/'
+    | '/students/'
     | '/super-admin/'
     | '/transport/'
     | '/placement/drives_/$driveId'
+    | '/students/profile/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1725,7 +1747,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   StudentRoute: typeof StudentRouteWithChildren
-  StudentsRoute: typeof StudentsRoute
+  StudentsRoute: typeof StudentsRouteWithChildren
   SuperAdminRoute: typeof SuperAdminRouteWithChildren
   TimetableRoute: typeof TimetableRoute
   TransportRoute: typeof TransportRouteWithChildren
@@ -2638,6 +2660,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentWebinarsRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/students/': {
+      id: '/students/'
+      path: '/'
+      fullPath: '/students/'
+      preLoaderRoute: typeof StudentsIndexRouteImport
+      parentRoute: typeof StudentsRoute
+    }
     '/super-admin/': {
       id: '/super-admin/'
       path: '/'
@@ -2714,6 +2743,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/placement/drives/$driveId'
       preLoaderRoute: typeof PlacementDrivesDriveIdRouteImport
       parentRoute: typeof PlacementRoute
+    }
+    '/students/profile/$id': {
+      id: '/students/profile/$id'
+      path: '/profile/$id'
+      fullPath: '/students/profile/$id'
+      preLoaderRoute: typeof StudentsProfileIdRouteImport
+      parentRoute: typeof StudentsRoute
     }
   }
 }
@@ -3000,6 +3036,20 @@ const StudentRouteChildren: StudentRouteChildren = {
 const StudentRouteWithChildren =
   StudentRoute._addFileChildren(StudentRouteChildren)
 
+interface StudentsRouteChildren {
+  StudentsIndexRoute: typeof StudentsIndexRoute
+  StudentsProfileIdRoute: typeof StudentsProfileIdRoute
+}
+
+const StudentsRouteChildren: StudentsRouteChildren = {
+  StudentsIndexRoute: StudentsIndexRoute,
+  StudentsProfileIdRoute: StudentsProfileIdRoute,
+}
+
+const StudentsRouteWithChildren = StudentsRoute._addFileChildren(
+  StudentsRouteChildren,
+)
+
 interface SuperAdminRouteChildren {
   SuperAdminCoursesRoute: typeof SuperAdminCoursesRoute
   SuperAdminDashboardRoute: typeof SuperAdminDashboardRoute
@@ -3083,7 +3133,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   StudentRoute: StudentRouteWithChildren,
-  StudentsRoute: StudentsRoute,
+  StudentsRoute: StudentsRouteWithChildren,
   SuperAdminRoute: SuperAdminRouteWithChildren,
   TimetableRoute: TimetableRoute,
   TransportRoute: TransportRouteWithChildren,

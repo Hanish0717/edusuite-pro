@@ -1,6 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { TransportModuleView } from "@/modules/transport";
 
 export const Route = createFileRoute("/transport")({
   head: () => ({ meta: [{ title: "Campus Transport — EduSuite Pro" }] }),
@@ -10,7 +9,7 @@ export const Route = createFileRoute("/transport")({
 export function TransportPage() {
   return (
     <DashboardLayout>
-      <TransportModuleView />
+      <Outlet />
     </DashboardLayout>
   );
 }

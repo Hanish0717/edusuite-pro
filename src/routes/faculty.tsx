@@ -1,10 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { ShieldAlert } from "lucide-react";
 
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { useRole } from "@/context/role-context";
-import { FacultyModuleView } from "@/modules/faculty";
 
 export const Route = createFileRoute("/faculty")({
   head: () => ({
@@ -37,7 +36,7 @@ export function FacultyPage() {
 
   return (
     <DashboardLayout>
-      <FacultyModuleView />
+      <Outlet />
     </DashboardLayout>
   );
 }

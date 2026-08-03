@@ -56,7 +56,6 @@ import { useRole } from "@/context/role-context";
 import { notifications } from "@/data/mock";
 import { notificationService, type Notification } from "@/shared/notifications";
 import { eventBus } from "@/shared/services/eventBus";
-import { toast } from "sonner";
 
 function useCrumbs() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
@@ -407,7 +406,9 @@ export function Topbar() {
                   {c.last ? (
                     <BreadcrumbPage>{c.label}</BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink href={c.href}>{c.label}</BreadcrumbLink>
+                    <BreadcrumbLink asChild>
+                      <Link to={c.href}>{c.label}</Link>
+                    </BreadcrumbLink>
                   )}
                 </BreadcrumbItem>
               </span>
