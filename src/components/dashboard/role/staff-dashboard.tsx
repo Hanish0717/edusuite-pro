@@ -15,7 +15,6 @@ import {
   Activity,
   Bell,
   Clock,
-  ArrowRight,
 } from "lucide-react";
 
 import { ChartLegend, DonutChart, GroupedBarChart } from "@/components/dashboard/charts";
@@ -23,7 +22,6 @@ import { KpiCard } from "@/components/dashboard/kpi-card";
 import { Panel } from "@/components/dashboard/panel";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -174,78 +172,41 @@ export function StaffDashboard() {
             </h3>
             <Badge variant="secondary">Controller Privileges</Badge>
           </div>
-          <div className="grid gap-4 lg:grid-cols-2">
-            <Panel title="Upcoming Examinations" description="Schedules and hall ticket dispatch status">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Exam Name</TableHead>
-                    <TableHead>Date Range</TableHead>
-                    <TableHead>Tickets</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-semibold text-xs">End Semester Exams</TableCell>
-                    <TableCell className="text-xs">Nov 10 - Nov 25</TableCell>
-                    <TableCell><Badge variant="secondary">Generated</Badge></TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </Panel>
-          </div>
         </div>
       )}
 
-      {hasFlag("isPlacementOfficer") && (
-        <div className="space-y-4 border-b border-border/60 pb-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-primary flex items-center gap-2">
-              <Briefcase className="size-4" /> Training & Placement Portal Overlay
-            </h3>
-            <Badge variant="secondary">Placement Privileges</Badge>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <KpiCard label="Recruiter Registrations" value="42 Companies" icon={Briefcase} tone="info" />
-            <KpiCard label="Eligible Candidates" value="384 Students" icon={Users} />
-            <KpiCard label="Offers Dispatched" value="128 Offers" icon={Award} tone="success" />
-          </div>
-        </div>
-      )}
-
-      {/* 3. WIDGETS SECTION */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-3">
-          Faculty Performance & Metrics
+      {/* 3. DYNAMIC METRIC CARDS REGISTRY */}
+      <div className="space-y-4">
+        <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground flex items-center gap-2">
+          <span>Performance Overview</span>
         </h3>
-        <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+        
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
           <KpiCard
             label="Today's Classes"
             value={String(dashboardData.stats.todaysClasses)}
-            icon={BookOpen}
-            tone="primary"
+            icon={CalendarCheck}
+            tone="info"
             className="hover:-translate-y-1 transition-all duration-300"
           />
           <KpiCard
             label="Total Students"
             value={String(dashboardData.stats.totalStudents)}
             icon={Users}
-            tone="info"
             className="hover:-translate-y-1 transition-all duration-300"
           />
           <KpiCard
-            label="Pending Assignments"
+            label="Pending Homework"
             value={String(dashboardData.stats.pendingAssignments)}
             icon={ClipboardList}
             tone="warning"
             className="hover:-translate-y-1 transition-all duration-300"
           />
           <KpiCard
-            label="Attendance Pending"
+            label="Attendance Status"
             value={dashboardData.stats.attendancePending}
-            icon={CalendarCheck}
-            tone="destructive"
-            className="hover:-translate-y-1 transition-all duration-300"
+            icon={CheckCircle2}
+            className="hover:-translate-y-1 transition-all duration-300 text-xs"
           />
           <KpiCard
             label="Upcoming Exams"

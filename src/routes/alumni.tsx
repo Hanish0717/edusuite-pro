@@ -8,6 +8,10 @@ import {
   Heart,
   Search,
   Plus,
+  UserPlus,
+  Briefcase,
+  MapPin,
+  GraduationCap,
 } from "lucide-react";
 
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
@@ -16,6 +20,22 @@ import { KpiCard } from "@/components/dashboard/kpi-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -82,6 +102,18 @@ export function AlumniPage() {
   const [alumni, setAlumni] = useState(initialAlumni);
   const [search, setSearch] = useState("");
 
+  // Modal State for Add Alumni Record
+  const [isAddAlumniOpen, setIsAddAlumniOpen] = useState(false);
+  const [newAlumniForm, setNewAlumniForm] = useState({
+    name: "",
+    batch: "Batch of 2023",
+    dept: "Computer Science",
+    company: "",
+    designation: "",
+    location: "",
+    mentoring: "Active Mentor",
+  });
+
   const isCellCoordinator =
     role === "super-admin" ||
     hasFlag("isTrainingCoordinator") ||
@@ -94,6 +126,39 @@ export function AlumniPage() {
       a.batch.toLowerCase().includes(search.toLowerCase()) ||
       a.dept.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const handleAddAlumniSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAlumniForm.name || !newAlumniForm.company || !newAlumniForm.designation) {
+      toast.error("Please fill in name, company, and designation.");
+      return;
+    }
+
+    const batchYear = newAlumniForm.batch.split(" ").pop() || "2023";
+    const newRecord = {
+      id: `ALM-${batchYear}-${Math.floor(100 + Math.random() * 900)}`,
+      name: newAlumniForm.name,
+      batch: newAlumniForm.batch,
+      dept: newAlumniForm.dept,
+      company: newAlumniForm.company,
+      designation: newAlumniForm.designation,
+      location: newAlumniForm.location || "Bengaluru, India",
+      mentoring: newAlumniForm.mentoring,
+    };
+
+    setAlumni((prev) => [newRecord, ...prev]);
+    setIsAddAlumniOpen(false);
+    setNewAlumniForm({
+      name: "",
+      batch: "Batch of 2023",
+      dept: "Computer Science",
+      company: "",
+      designation: "",
+      location: "",
+      mentoring: "Active Mentor",
+    });
+    toast.success(`Alumni record for ${newRecord.name} (${newRecord.id}) added successfully!`);
+  };
 
   return (
     <DashboardLayout>
@@ -119,7 +184,7 @@ export function AlumniPage() {
 
         {/* KPIS */}
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <KpiCard label="Registered Alumni" value="12,450" icon={Users} />
+          <KpiCard label="Registered Alumni" value={String(12450 + alumni.length - initialAlumni.length)} icon={Users} />
           <KpiCard label="Active Student Mentors" value="480" icon={Award} tone="success" />
           <KpiCard label="Global Chapters" value="18 Cities" icon={Globe} tone="info" />
           <KpiCard label="Alumni Endowment Fund" value="Rs 1.85 Cr" icon={Heart} tone="warning" />
@@ -127,7 +192,7 @@ export function AlumniPage() {
 
         <Tabs defaultValue="directory" className="space-y-6">
           <TabsList className="bg-background/50 border border-border p-1">
-            <TabsTrigger value="directory">Alumni Directory</TabsTrigger>
+            <TabsTrigger value="directory">Alumni Directory ({alumni.length})</TabsTrigger>
             <TabsTrigger value="mentorship">Mentorship Portal</TabsTrigger>
             <TabsTrigger value="events">Reunions & Meetups</TabsTrigger>
           </TabsList>
@@ -138,7 +203,10 @@ export function AlumniPage() {
               description="Explore alumni records by batch, department, company, or geographical location."
               action={
                 isCellCoordinator ? (
-                  <Button className="bg-brand-gradient shadow-glow gap-1.5 cursor-pointer">
+                  <Button
+                    onClick={() => setIsAddAlumniOpen(true)}
+                    className="bg-brand-gradient shadow-glow gap-1.5 cursor-pointer text-xs font-semibold text-white"
+                  >
                     <Plus className="size-4" /> Add Alumni Record
                   </Button>
                 ) : undefined
@@ -151,7 +219,7 @@ export function AlumniPage() {
                     placeholder="Search name, company, or batch..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="pl-8 h-9"
+                    className="pl-8 h-9 text-xs"
                   />
                 </div>
               </div>
@@ -195,9 +263,29 @@ export function AlumniPage() {
 
           <TabsContent value="mentorship">
             <Panel title="Alumni-Student Mentorship Matching" description="Students connect with alumni for career guidance, mock interviews, and referral requests.">
-              <p className="text-sm text-muted-foreground">
-                Over 120 mock interviews scheduled this month.
-              </p>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Over 120 mock interviews scheduled this month.
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {alumni.map((a) => (
+                    <div key={a.id} className="p-3.5 rounded-xl border border-border bg-card flex items-center justify-between">
+                      <div>
+                        <h4 className="font-bold text-sm">{a.name}</h4>
+                        <p className="text-xs text-muted-foreground">{a.designation} at {a.company}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => toast.success(`Mentorship request sent to ${a.name}!`)}
+                        className="text-xs cursor-pointer"
+                      >
+                        Connect
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </Panel>
           </TabsContent>
 
@@ -209,6 +297,141 @@ export function AlumniPage() {
             </Panel>
           </TabsContent>
         </Tabs>
+
+        {/* DIALOG: ADD ALUMNI RECORD */}
+        <Dialog open={isAddAlumniOpen} onOpenChange={setIsAddAlumniOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-bold flex items-center gap-2">
+                <UserPlus className="size-5 text-primary" /> Add New Alumni Record
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground">
+                Register a new alumnus into the institutional alumni network directory.
+              </DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleAddAlumniSubmit} className="space-y-4 pt-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Alumni Full Name *</Label>
+                <Input
+                  required
+                  placeholder="e.g. Sarah Jenkins"
+                  value={newAlumniForm.name}
+                  onChange={(e) => setNewAlumniForm({ ...newAlumniForm, name: e.target.value })}
+                  className="h-9 text-xs"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">Graduation Batch</Label>
+                  <Select
+                    value={newAlumniForm.batch}
+                    onValueChange={(val) => setNewAlumniForm({ ...newAlumniForm, batch: val })}
+                  >
+                    <SelectTrigger className="h-9 text-xs">
+                      <SelectValue placeholder="Batch" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Batch of 2024" className="text-xs">Batch of 2024</SelectItem>
+                      <SelectItem value="Batch of 2023" className="text-xs">Batch of 2023</SelectItem>
+                      <SelectItem value="Batch of 2022" className="text-xs">Batch of 2022</SelectItem>
+                      <SelectItem value="Batch of 2021" className="text-xs">Batch of 2021</SelectItem>
+                      <SelectItem value="Batch of 2020" className="text-xs">Batch of 2020</SelectItem>
+                      <SelectItem value="Batch of 2019" className="text-xs">Batch of 2019</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">Department</Label>
+                  <Select
+                    value={newAlumniForm.dept}
+                    onValueChange={(val) => setNewAlumniForm({ ...newAlumniForm, dept: val })}
+                  >
+                    <SelectTrigger className="h-9 text-xs">
+                      <SelectValue placeholder="Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Computer Science" className="text-xs">Computer Science</SelectItem>
+                      <SelectItem value="Electronics (ECE)" className="text-xs">Electronics (ECE)</SelectItem>
+                      <SelectItem value="Mechanical (ME)" className="text-xs">Mechanical (ME)</SelectItem>
+                      <SelectItem value="AI & Data Science" className="text-xs">AI & Data Science</SelectItem>
+                      <SelectItem value="Civil Engineering" className="text-xs">Civil Engineering</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">Current Company *</Label>
+                  <Input
+                    required
+                    placeholder="e.g. Google Cloud"
+                    value={newAlumniForm.company}
+                    onChange={(e) => setNewAlumniForm({ ...newAlumniForm, company: e.target.value })}
+                    className="h-9 text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">Designation *</Label>
+                  <Input
+                    required
+                    placeholder="e.g. Senior Software Engineer"
+                    value={newAlumniForm.designation}
+                    onChange={(e) => setNewAlumniForm({ ...newAlumniForm, designation: e.target.value })}
+                    className="h-9 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">Work Location</Label>
+                  <Input
+                    placeholder="e.g. Mountain View, CA"
+                    value={newAlumniForm.location}
+                    onChange={(e) => setNewAlumniForm({ ...newAlumniForm, location: e.target.value })}
+                    className="h-9 text-xs"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold">Mentorship Role</Label>
+                  <Select
+                    value={newAlumniForm.mentoring}
+                    onValueChange={(val) => setNewAlumniForm({ ...newAlumniForm, mentoring: val })}
+                  >
+                    <SelectTrigger className="h-9 text-xs">
+                      <SelectValue placeholder="Mentorship" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Active Mentor" className="text-xs">Active Mentor</SelectItem>
+                      <SelectItem value="Guest Speaker" className="text-xs">Guest Speaker</SelectItem>
+                      <SelectItem value="Advisory Board" className="text-xs">Advisory Board</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <DialogFooter className="pt-3 border-t border-border">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsAddAlumniOpen(false)}
+                  className="text-xs cursor-pointer"
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold cursor-pointer gap-1.5">
+                  <Plus className="size-3.5" /> Save Alumni Record
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

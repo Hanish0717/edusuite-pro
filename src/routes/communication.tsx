@@ -1,19 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MessageSquare } from "lucide-react";
-
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { ModulePage } from "@/components/dashboard/module-page";
+import { StudentNoticeBoard } from "@/components/notice-board/student-noticeboard";
 
 export const Route = createFileRoute("/communication")({
   head: () => ({
     meta: [
-      { title: "Communication — EduSuite Pro" },
+      { title: "Digital Notice Board — EduSuite Pro" },
       {
         name: "description",
-        content: "Circulars, SMS and notifications in EduSuite Pro college ERP.",
+        content: "Official notices published by the college for academics, examinations, placements, scholarships, and events.",
       },
-      { property: "og:title", content: "Communication — EduSuite Pro" },
-      { property: "og:description", content: "Circulars, SMS and notifications." },
+      { property: "og:title", content: "Digital Notice Board — EduSuite Pro" },
+      { property: "og:description", content: "Official notices published by the college for academics, examinations, placements, scholarships, and events." },
     ],
   }),
   component: Page,
@@ -22,18 +20,9 @@ export const Route = createFileRoute("/communication")({
 function Page() {
   return (
     <DashboardLayout>
-      <ModulePage
-        title="Communication"
-        description="Circulars, SMS and notifications"
-        icon={MessageSquare}
-        tabs={["Circulars", "SMS", "Templates"]}
-        highlights={[
-          { label: "Sent Today", value: "1,240" },
-          { label: "Templates", value: "36" },
-          { label: "Delivery", value: "98.6%" },
-          { label: "Unread", value: "6" },
-        ]}
-      />
+      <div className="p-6 max-w-7xl mx-auto">
+        <StudentNoticeBoard />
+      </div>
     </DashboardLayout>
   );
 }

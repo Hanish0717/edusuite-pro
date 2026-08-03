@@ -23,6 +23,8 @@ export const defaultFeatureFlags = {
   library: true,
 };
 
+import { canAccessModule as checkModuleAccess, canAccessRoute as checkRouteAccess, type PermissionAction } from "@/lib/permissions";
+
 interface RoleContextValue {
   role: LoginRole;
   setRole: (role: LoginRole) => void;
@@ -43,6 +45,8 @@ interface RoleContextValue {
   featureFlags: Record<string, boolean>;
   setFeatureFlags: (flags: Record<string, boolean>) => void;
   hasFlag: (flag: string) => boolean;
+  canAccessModule: (moduleId: string, action?: PermissionAction) => boolean;
+  canAccessRoute: (routeUrl: string) => boolean;
 }
 
 const RoleContext = createContext<RoleContextValue | null>(null);
@@ -191,6 +195,14 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     };
   }, [role, flags, department, externalPersona, featureFlags]);
 
+  const canAccessModule = (moduleId: string, action: PermissionAction = "read") => {
+    return checkModuleAccess({ role, flags, department, externalPersona, featureFlags }, moduleId, action);
+  };
+
+  const canAccessRoute = (routeUrl: string) => {
+    return checkRouteAccess({ role, flags, department, externalPersona, featureFlags }, routeUrl);
+  };
+
   const value = useMemo<RoleContextValue>(
     () => ({
       role,
@@ -205,6 +217,8 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       featureFlags,
       setFeatureFlags,
       hasFlag,
+      canAccessModule,
+      canAccessRoute,
     }),
     [role, profile, flags, department, externalPersona, featureFlags],
   );

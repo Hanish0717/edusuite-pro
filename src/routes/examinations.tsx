@@ -1,25 +1,16 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useRole } from "@/context/role-context";
+import { createFileRoute } from "@tanstack/react-router";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { ExaminationsModuleView } from "@/modules/examinations";
 
 export const Route = createFileRoute("/examinations")({
-  component: ExaminationsRedirect,
+  head: () => ({ meta: [{ title: "Examinations & Evaluation — EduSuite Pro" }] }),
+  component: ExaminationsPage,
 });
 
-function ExaminationsRedirect() {
-  const { role, flags } = useRole();
-
-  if (role === "super-admin") {
-    return <Navigate to="/super-admin/dashboard" replace />;
-  }
-  if (role === "staff") {
-    if (flags.includes("isExamController")) {
-      return <Navigate to="/examination/dashboard" replace />;
-    }
-    return <Navigate to="/faculty/examinations" replace />;
-  }
-  if (role === "student") {
-    return <Navigate to="/student/dashboard" replace />;
-  }
-
-  return <Navigate to="/login" replace />;
+export function ExaminationsPage() {
+  return (
+    <DashboardLayout>
+      <ExaminationsModuleView />
+    </DashboardLayout>
+  );
 }
