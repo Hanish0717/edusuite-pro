@@ -1,19 +1,18 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useRole } from "@/context/role-context";
+import { createFileRoute } from "@tanstack/react-router";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { PlacementModuleView } from "@/modules/placement";
 
 export const Route = createFileRoute("/placements")({
-  component: PlacementsRedirect,
+  head: () => ({
+    meta: [{ title: "Placement & Training Cell — EduSuite Pro" }],
+  }),
+  component: PlacementsPage,
 });
 
-function PlacementsRedirect() {
-  const { role } = useRole();
-
-  if (role === "super-admin" || role === "staff") {
-    return <Navigate to="/placement/dashboard" replace />;
-  }
-  if (role === "student") {
-    return <Navigate to="/student/dashboard" replace />;
-  }
-
-  return <Navigate to="/login" replace />;
+export function PlacementsPage() {
+  return (
+    <DashboardLayout>
+      <PlacementModuleView />
+    </DashboardLayout>
+  );
 }

@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { NoticeItem, NoticeCategory } from "./types";
 import { generateMockNotices, SIDEBAR_DEADLINES, SIDEBAR_HOLIDAYS } from "./mock-data";
 import { NoticeFilters } from "./filters";
 import { NoticeCards } from "./notice-cards";
 import { NoticeDetailDrawer } from "./notice-detail-drawer";
+import { PlacementExamModal } from "./placement-exam-modal";
 import { NoticeSidebar } from "./sidebar";
 import {
   Bell,
@@ -25,6 +26,20 @@ export const StudentNoticeBoard: React.FC = () => {
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null);
+  const [isExamModalOpen, setIsExamModalOpen] = useState(false);
+
+  // Check URL search params for auto-opening noticeId (e.g. clicked from topbar notification)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const targetId = params.get("noticeId");
+    if (targetId) {
+      const match = notices.find((n) => n.id === targetId);
+      if (match) {
+        setSelectedNotice(match);
+      }
+    }
+  }, [notices]);
+
 
   // Extract unique departments for filter dropdown
   const departments = useMemo(() => {
@@ -321,7 +336,21 @@ export const StudentNoticeBoard: React.FC = () => {
         notice={selectedNotice}
         onClose={() => setSelectedNotice(null)}
         onToggleBookmark={handleToggleBookmark}
+        onLaunchPlacementExam={() => {
+          window.location.href = "/exam/take?id=AST-GGL-01";
+        }}
+      />
+
+
+
+      {/* Live Proctored Placement Exam Runner Modal */}
+      <PlacementExamModal
+        isOpen={isExamModalOpen}
+        onClose={() => setIsExamModalOpen(false)}
+        examTitle={selectedNotice?.title || "TCS Ninja & Digital Placement Assessment 2026"}
+        companyName={selectedNotice?.department || "Training & Placement Cell"}
       />
     </div>
   );
 };
+
