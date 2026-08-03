@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { SHARED_ASSESSMENT_REQUESTS, getAllStudentSubmissions } from "@/lib/shared-assessment-store";
+import {
+  SHARED_ASSESSMENT_REQUESTS,
+  getAllStudentSubmissions,
+  updateStudentSubmissionRecord,
+  type StudentSubmissionRecord,
+} from "@/lib/shared-assessment-store";
 
 import {
   Code2,
@@ -380,6 +385,77 @@ export function AssessmentRequestsApprovalWorkspace() {
   const [dispatchMinCgpa, setDispatchMinCgpa] = useState("7.5");
   const [sharedAssessmentIds, setSharedAssessmentIds] = useState<Record<string, boolean>>({});
 
+  // Student Submissions State & Edit Modal State
+  const [studentSubmissionsList, setStudentSubmissionsList] = useState<StudentSubmissionRecord[]>(() => getAllStudentSubmissions());
+  const [editingSub, setEditingSub] = useState<StudentSubmissionRecord | null>(null);
+  const [isEditSubModalOpen, setIsEditSubModalOpen] = useState(false);
+  const [editPassStatus, setEditPassStatus] = useState<boolean>(true);
+  const [editMcqScore, setEditMcqScore] = useState<number>(0);
+  const [editCodingScore, setEditCodingScore] = useState<number>(0);
+  const [editRemarks, setEditRemarks] = useState<string>("");
+
+  const refreshStudentSubmissions = () => {
+    setStudentSubmissionsList(getAllStudentSubmissions());
+  };
+
+  const handleQuickTogglePassStatus = (sub: StudentSubmissionRecord) => {
+    const updatedStatus = !sub.passStatus;
+    const updatedRecord: StudentSubmissionRecord = {
+      ...sub,
+      passStatus: updatedStatus,
+    };
+    updateStudentSubmissionRecord(updatedRecord);
+    refreshStudentSubmissions();
+    if (updatedStatus) {
+      toast.success(`Updated ${sub.studentName} (${sub.rollNo}): Changed status to PASSED ✓`);
+    } else {
+      toast.error(`Updated ${sub.studentName} (${sub.rollNo}): Changed status to FAILED ✕`);
+    }
+  };
+
+  const openEditSubModal = (sub: StudentSubmissionRecord) => {
+    setEditingSub(sub);
+    setEditPassStatus(sub.passStatus);
+    setEditMcqScore(sub.mcqScore);
+    setEditCodingScore(sub.codingScore);
+    setEditRemarks("");
+    setIsEditSubModalOpen(true);
+  };
+
+  const handleSaveSubChanges = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSub) return;
+
+    const totalObtained = editMcqScore + editCodingScore;
+    const totalPossible = editingSub.mcqTotal + editingSub.codingTotal;
+    const calculatedPct = totalPossible > 0 ? Math.round((totalObtained / totalPossible) * 100) : editingSub.totalPercentage;
+
+    const updatedRecord: StudentSubmissionRecord = {
+      ...editingSub,
+      passStatus: editPassStatus,
+      mcqScore: editMcqScore,
+      codingScore: editCodingScore,
+      totalPercentage: calculatedPct,
+    };
+
+    updateStudentSubmissionRecord(updatedRecord);
+    refreshStudentSubmissions();
+    setIsEditSubModalOpen(false);
+    toast.success(`Saved updated result for ${editingSub.studentName}! Status: ${editPassStatus ? "PASSED ✓" : "FAILED ✕"}`);
+  };
+
+  const handleSendResultsToRecruiter = () => {
+    const allSubs = getAllStudentSubmissions();
+    const passedCount = allSubs.filter((s) => s.passStatus).length;
+    toast.success(
+      `📢 Sent all ${allSubs.length} candidate scorecards (${passedCount} PASSED) to corporate recruiters via email notification!`
+    );
+  };
+
+  const handleSendSingleResultToRecruiter = (sub: StudentSubmissionRecord) => {
+    toast.success(`📧 Dispatched ${sub.studentName}'s (${sub.rollNo}) verified scorecard directly to the recruiter!`);
+  };
+
   const handleExportStudentResultsCsv = () => {
     const allSubs = getAllStudentSubmissions();
     const headers = "Student Roll No,College Email,Department,Assessment Title,MCQ Score,Coding Score,Total Percentage,Status,Proctoring Warnings,Submission Timestamp\n";
@@ -759,18 +835,27 @@ export function AssessmentRequestsApprovalWorkspace() {
       <Panel
         title="TPO Central Stored Student Assessment Results & Scorecards"
         action={
-          <Button onClick={handleExportStudentResultsCsv} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs">
-            <FileSpreadsheet className="size-3.5" /> Export Stored Results to Excel (.csv)
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              onClick={handleSendResultsToRecruiter}
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs"
+            >
+              <Send className="size-3.5" /> Send Results to Recruiter
+            </Button>
+
+            <Button onClick={handleExportStudentResultsCsv} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs">
+              <Download className="size-3.5" /> Export Stored Results to Excel (.csv)
+            </Button>
+          </div>
         }
       >
         <div className="space-y-4 pt-1 font-sans">
           <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono flex items-center justify-between">
             <span className="font-bold text-emerald-800 dark:text-emerald-200">
-              📊 Live Stored Test Submissions ({getAllStudentSubmissions().length} Students Submitted)
+              📊 Live Stored Test Submissions ({studentSubmissionsList.length} Students Submitted)
             </span>
             <span className="text-muted-foreground text-[0.68rem]">
-              Auto-stored upon candidate completion at http://192.168.1.122:8082/exam/take
+              Auto-stored upon candidate completion • TPO has permission to override status (FAIL ➔ PASS) &amp; dispatch to recruiter
             </span>
           </div>
 
@@ -785,13 +870,12 @@ export function AssessmentRequestsApprovalWorkspace() {
                   <th className="p-3">MCQ Score</th>
                   <th className="p-3">Coding Score</th>
                   <th className="p-3">Overall %</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3 text-right">Submission Time</th>
+                  <th className="p-3">Status (Click to Override)</th>
+                  <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/50 font-mono text-[0.72rem]">
-                {getAllStudentSubmissions().map((sub) => (
-
+                {studentSubmissionsList.map((sub) => (
                   <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-sans font-bold text-foreground">{sub.studentName} ({sub.rollNo})</td>
                     <td className="p-3 text-blue-600">{sub.studentEmail}</td>
@@ -801,11 +885,39 @@ export function AssessmentRequestsApprovalWorkspace() {
                     <td className="p-3 font-bold text-purple-600">{sub.codingScore} / {sub.codingTotal}</td>
                     <td className="p-3 font-bold text-emerald-600">{sub.totalPercentage}%</td>
                     <td className="p-3">
-                      <Badge className={sub.passStatus ? "bg-emerald-600 text-white text-[0.62rem]" : "bg-rose-600 text-white text-[0.62rem]"}>
-                        {sub.passStatus ? "PASSED" : "FAILED"}
-                      </Badge>
+                      <button
+                        type="button"
+                        onClick={() => handleQuickTogglePassStatus(sub)}
+                        className="cursor-pointer group flex items-center gap-1.5"
+                        title="Click to toggle status between PASSED and FAILED"
+                      >
+                        <Badge className={sub.passStatus ? "bg-emerald-600 hover:bg-emerald-700 text-white text-[0.62rem] px-2 py-0.5 rounded-full" : "bg-rose-600 hover:bg-rose-700 text-white text-[0.62rem] px-2 py-0.5 rounded-full"}>
+                          {sub.passStatus ? "PASSED ✓" : "FAILED ✕"}
+                        </Badge>
+                        <span className="text-[0.62rem] text-muted-foreground underline group-hover:text-primary transition-colors font-sans">
+                          (Toggle)
+                        </span>
+                      </button>
                     </td>
-                    <td className="p-3 text-right text-muted-foreground">{sub.submissionTime}</td>
+                    <td className="p-3 text-right">
+                      <div className="flex items-center justify-end gap-1.5 font-sans">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openEditSubModal(sub)}
+                          className="h-7 text-[0.68rem] rounded-lg cursor-pointer px-2.5 font-bold gap-1"
+                        >
+                          <Edit className="size-3" /> Edit Result
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleSendSingleResultToRecruiter(sub)}
+                          className="h-7 text-[0.68rem] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-lg cursor-pointer px-2.5 font-bold gap-1 shadow-xs"
+                        >
+                          <Send className="size-3" /> Send to Recruiter
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -1214,6 +1326,106 @@ export function AssessmentRequestsApprovalWorkspace() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      {/* EDIT STUDENT ASSESSMENT RESULT MODAL */}
+      <Dialog open={isEditSubModalOpen} onOpenChange={setIsEditSubModalOpen}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-[#2563EB] text-white grid place-items-center shadow-md">
+                <Edit className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold text-base">Edit Candidate Assessment Result</DialogTitle>
+                <DialogDescription className="text-xs font-mono">
+                  Override candidate status (FAILED ➔ PASSED) or update score breakdown.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {editingSub && (
+            <form onSubmit={handleSaveSubChanges} className="space-y-4 pt-2 text-xs">
+              <div className="p-3 bg-muted/40 rounded-xl space-y-1 font-mono text-[0.72rem] border">
+                <p>• Student: <strong className="text-foreground">{editingSub.studentName} ({editingSub.rollNo})</strong></p>
+                <p>• Email: <strong className="text-blue-600">{editingSub.studentEmail}</strong></p>
+                <p>• Test Title: <strong className="text-foreground">{editingSub.assessmentTitle}</strong></p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="font-semibold text-xs text-foreground block">Override Result Status (Pass / Fail)</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditPassStatus(true)}
+                    className={`p-3 rounded-xl border text-xs font-bold font-sans cursor-pointer transition-all flex items-center justify-center gap-1.5 ${
+                      editPassStatus
+                        ? "bg-emerald-600 text-white border-emerald-600 shadow-md"
+                        : "bg-background text-slate-700 dark:text-slate-200 border-border hover:bg-muted"
+                    }`}
+                  >
+                    <CheckCircle2 className="size-4" /> PASSED ✓
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditPassStatus(false)}
+                    className={`p-3 rounded-xl border text-xs font-bold font-sans cursor-pointer transition-all flex items-center justify-center gap-1.5 ${
+                      !editPassStatus
+                        ? "bg-rose-600 text-white border-rose-600 shadow-md"
+                        : "bg-background text-slate-700 dark:text-slate-200 border-border hover:bg-muted"
+                    }`}
+                  >
+                    <XCircle className="size-4" /> FAILED ✕
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-xs">MCQ Score (Max {editingSub.mcqTotal})</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={editingSub.mcqTotal}
+                    value={editMcqScore}
+                    onChange={(e) => setEditMcqScore(Number(e.target.value))}
+                    className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-mono font-bold"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-xs">Coding Score (Max {editingSub.codingTotal})</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={editingSub.codingTotal}
+                    value={editCodingScore}
+                    onChange={(e) => setEditCodingScore(Number(e.target.value))}
+                    className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-mono font-bold text-purple-600"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-xs">TPO Override Remarks / Justification</label>
+                <textarea
+                  value={editRemarks}
+                  onChange={(e) => setEditRemarks(e.target.value)}
+                  rows={2}
+                  placeholder="e.g., Manual code inspection approved / Grace marks awarded for technical glitch..."
+                  className="w-full rounded-xl border border-input bg-card p-2.5 text-xs font-mono"
+                />
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button type="button" variant="outline" onClick={() => setIsEditSubModalOpen(false)} className="rounded-xl">Cancel</Button>
+                <Button type="submit" className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold rounded-xl cursor-pointer">
+                  Save Updated Result ✓
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
         </DialogContent>
       </Dialog>
     </div>

@@ -225,9 +225,31 @@ export function getStudentExamSubmission(identifier: string): StudentSubmissionR
       );
     }
   } catch (err) {
-    console.error("Error reading submission from localStorage", err);
+  return undefined;
+}
+
+/**
+ * Update a student submission record (e.g. TPO changing FAILED -> PASSED or updating scores).
+ */
+export function updateStudentSubmissionRecord(updated: StudentSubmissionRecord): void {
+  const index = SHARED_STUDENT_SUBMISSIONS.findIndex((s) => s.id === updated.id);
+  if (index !== -1) {
+    SHARED_STUDENT_SUBMISSIONS[index] = updated;
+  } else {
+    SHARED_STUDENT_SUBMISSIONS.unshift(updated);
   }
 
-  return undefined;
+  try {
+    const all = getAllStudentSubmissions();
+    const map = new Map<string, StudentSubmissionRecord>();
+    all.forEach((s) => map.set(s.id, s));
+    map.set(updated.id, updated);
+    const updatedArray = Array.from(map.values());
+    localStorage.setItem("edusuite_student_submissions", JSON.stringify(updatedArray));
+    localStorage.setItem(`edusuite_submitted_exam_${updated.rollNo}`, JSON.stringify(updated));
+    localStorage.setItem(`edusuite_submitted_exam_${updated.studentEmail}`, JSON.stringify(updated));
+  } catch (err) {
+    console.error("Failed to update student submission in localStorage", err);
+  }
 }
 
