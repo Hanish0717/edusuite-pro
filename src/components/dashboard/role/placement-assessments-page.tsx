@@ -132,14 +132,24 @@ export function PlacementAssessmentsWorkspace() {
             </div>
           </div>
 
-          {/* ACTION BUTTONS — NO GENERIC CREATE MODAL */}
+          {/* ACTION BUTTONS */}
           <div className="flex flex-wrap items-center gap-2.5">
+            <Button
+              onClick={() => {
+                toast.success("📢 TPO Broadcast Sent! Created and dispatched TCS Placement Assessment link to 360 eligible students via notifications and Notice Board.");
+              }}
+              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-md shadow-amber-500/20"
+            >
+              <Sparkles className="size-4" /> Create & Share Assignment to Students
+            </Button>
+
             <Button
               onClick={() => toast.success("Refreshed live proctoring feeds")}
               className="bg-brand-gradient shadow-glow font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5"
             >
               <Monitor className="size-4" /> Live Proctoring Feed
             </Button>
+
             <Button
               variant="outline"
               onClick={() => toast.info("Exported Assessment Operations Audit Log")}
@@ -148,6 +158,7 @@ export function PlacementAssessmentsWorkspace() {
               <Download className="size-3.5" /> Export Logs
             </Button>
           </div>
+
         </div>
       </div>
 

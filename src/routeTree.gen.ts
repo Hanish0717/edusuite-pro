@@ -44,6 +44,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ParentRouteImport } from './routes/parent'
 import { Route as PayrollRouteImport } from './routes/payroll'
 import { Route as PlacementRouteImport } from './routes/placement'
+import { Route as PlacementExamRouteImport } from './routes/placement-exam'
 import { Route as PlacementsRouteImport } from './routes/placements'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ProcurementRouteImport } from './routes/procurement'
@@ -340,6 +341,11 @@ const PayrollRoute = PayrollRouteImport.update({
 const PlacementRoute = PlacementRouteImport.update({
   id: '/placement',
   path: '/placement',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlacementExamRoute = PlacementExamRouteImport.update({
+  id: '/placement-exam',
+  path: '/placement-exam',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlacementsRoute = PlacementsRouteImport.update({
@@ -1005,6 +1011,7 @@ export interface FileRoutesByFullPath {
   '/parent': typeof ParentRouteWithChildren
   '/payroll': typeof PayrollRoute
   '/placement': typeof PlacementRouteWithChildren
+  '/placement-exam': typeof PlacementExamRoute
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
@@ -1152,6 +1159,7 @@ export interface FileRoutesByTo {
   '/lms': typeof LmsRoute
   '/login': typeof LoginRoute
   '/payroll': typeof PayrollRoute
+  '/placement-exam': typeof PlacementExamRoute
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
@@ -1309,6 +1317,7 @@ export interface FileRoutesById {
   '/parent': typeof ParentRouteWithChildren
   '/payroll': typeof PayrollRoute
   '/placement': typeof PlacementRouteWithChildren
+  '/placement-exam': typeof PlacementExamRoute
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
@@ -1470,6 +1479,7 @@ export interface FileRouteTypes {
     | '/parent'
     | '/payroll'
     | '/placement'
+    | '/placement-exam'
     | '/placements'
     | '/pricing'
     | '/procurement'
@@ -1617,6 +1627,7 @@ export interface FileRouteTypes {
     | '/lms'
     | '/login'
     | '/payroll'
+    | '/placement-exam'
     | '/placements'
     | '/pricing'
     | '/procurement'
@@ -1773,6 +1784,7 @@ export interface FileRouteTypes {
     | '/parent'
     | '/payroll'
     | '/placement'
+    | '/placement-exam'
     | '/placements'
     | '/pricing'
     | '/procurement'
@@ -1933,6 +1945,7 @@ export interface RootRouteChildren {
   ParentRoute: typeof ParentRouteWithChildren
   PayrollRoute: typeof PayrollRoute
   PlacementRoute: typeof PlacementRouteWithChildren
+  PlacementExamRoute: typeof PlacementExamRoute
   PlacementsRoute: typeof PlacementsRoute
   PricingRoute: typeof PricingRoute
   ProcurementRoute: typeof ProcurementRoute
@@ -2194,6 +2207,13 @@ declare module '@tanstack/react-router' {
       path: '/placement'
       fullPath: '/placement'
       preLoaderRoute: typeof PlacementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/placement-exam': {
+      id: '/placement-exam'
+      path: '/placement-exam'
+      fullPath: '/placement-exam'
+      preLoaderRoute: typeof PlacementExamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/placements': {
@@ -3465,6 +3485,7 @@ const rootRouteChildren: RootRouteChildren = {
   ParentRoute: ParentRouteWithChildren,
   PayrollRoute: PayrollRoute,
   PlacementRoute: PlacementRouteWithChildren,
+  PlacementExamRoute: PlacementExamRoute,
   PlacementsRoute: PlacementsRoute,
   PricingRoute: PricingRoute,
   ProcurementRoute: ProcurementRoute,

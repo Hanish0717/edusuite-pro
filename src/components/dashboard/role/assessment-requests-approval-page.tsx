@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { SHARED_ASSESSMENT_REQUESTS, SHARED_STUDENT_SUBMISSIONS } from "@/lib/shared-assessment-store";
+import { SHARED_ASSESSMENT_REQUESTS, getAllStudentSubmissions } from "@/lib/shared-assessment-store";
+
 import {
   Code2,
   Search,
@@ -377,12 +378,15 @@ export function AssessmentRequestsApprovalWorkspace() {
   const [dispatchReq, setDispatchReq] = useState<AssessmentRequestRecord | null>(null);
   const [dispatchSeries, setDispatchSeries] = useState("2022 Series (CSE / ECE / CSM)");
   const [dispatchMinCgpa, setDispatchMinCgpa] = useState("7.5");
+  const [sharedAssessmentIds, setSharedAssessmentIds] = useState<Record<string, boolean>>({});
 
   const handleExportStudentResultsCsv = () => {
+    const allSubs = getAllStudentSubmissions();
     const headers = "Student Roll No,College Email,Department,Assessment Title,MCQ Score,Coding Score,Total Percentage,Status,Proctoring Warnings,Submission Timestamp\n";
-    const rows = SHARED_STUDENT_SUBMISSIONS.map((sub) =>
+    const rows = allSubs.map((sub) =>
       `"${sub.rollNo}","${sub.studentEmail}","${sub.department}","${sub.assessmentTitle}","${sub.mcqScore}/${sub.mcqTotal}","${sub.codingScore}/${sub.codingTotal}","${sub.totalPercentage}%","${sub.passStatus ? "PASSED" : "FAILED"}","${sub.violationsLogged} Warnings","${sub.submissionTime}"`
     ).join("\n");
+
 
     const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -670,17 +674,31 @@ export function AssessmentRequestsApprovalWorkspace() {
                         <Eye className="size-3.5 mr-1" /> View
                       </Button>
 
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setDispatchReq(req);
-                          setIsDispatchModalOpen(true);
-                        }}
-                        className="h-7 text-[0.68rem] bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg cursor-pointer font-bold gap-1 shadow-xs"
-                        title="Share Exam Link directly with eligible students"
-                      >
-                        <Send className="size-3" /> Share with Students
-                      </Button>
+                      {sharedAssessmentIds[req.id] ? (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setDispatchReq(req);
+                            setIsDispatchModalOpen(true);
+                          }}
+                          className="h-7 text-[0.68rem] bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 rounded-lg cursor-pointer font-bold gap-1 shadow-2xs"
+                          title="Shared with students. Click to reshare or manage dispatch."
+                        >
+                          <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" /> Shared to Students
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setDispatchReq(req);
+                            setIsDispatchModalOpen(true);
+                          }}
+                          className="h-7 text-[0.68rem] bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg cursor-pointer font-bold gap-1 shadow-xs"
+                          title="Share Exam Link directly with eligible students"
+                        >
+                          <Send className="size-3" /> Share with Students
+                        </Button>
+                      )}
 
                       <Button
                         size="sm"
@@ -743,7 +761,7 @@ export function AssessmentRequestsApprovalWorkspace() {
         <div className="space-y-4 pt-1 font-sans">
           <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono flex items-center justify-between">
             <span className="font-bold text-emerald-800 dark:text-emerald-200">
-              📊 Live Stored Test Submissions ({SHARED_STUDENT_SUBMISSIONS.length} Students Submitted)
+              📊 Live Stored Test Submissions ({getAllStudentSubmissions().length} Students Submitted)
             </span>
             <span className="text-muted-foreground text-[0.68rem]">
               Auto-stored upon candidate completion at http://192.168.1.122:8082/exam/take
@@ -766,7 +784,8 @@ export function AssessmentRequestsApprovalWorkspace() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/50 font-mono text-[0.72rem]">
-                {SHARED_STUDENT_SUBMISSIONS.map((sub) => (
+                {getAllStudentSubmissions().map((sub) => (
+
                   <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-sans font-bold text-foreground">{sub.studentName} ({sub.rollNo})</td>
                     <td className="p-3 text-blue-600">{sub.studentEmail}</td>
@@ -880,16 +899,29 @@ export function AssessmentRequestsApprovalWorkspace() {
                     </div>
                     <div className="flex items-center justify-between text-[0.68rem] text-muted-foreground font-sans">
                       <span>Share this link directly with eligible students for conducting the exam online.</span>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setDispatchReq(selectedReq);
-                          setIsDispatchModalOpen(true);
-                        }}
-                        className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold cursor-pointer gap-1"
-                      >
-                        <Send className="size-3" /> Share with Students
-                      </Button>
+                      {selectedReq && sharedAssessmentIds[selectedReq.id] ? (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setDispatchReq(selectedReq);
+                            setIsDispatchModalOpen(true);
+                          }}
+                          className="h-7 text-xs bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 rounded-lg font-bold cursor-pointer gap-1"
+                        >
+                          <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" /> Shared to Students
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setDispatchReq(selectedReq);
+                            setIsDispatchModalOpen(true);
+                          }}
+                          className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold cursor-pointer gap-1"
+                        >
+                          <Send className="size-3" /> Share with Students
+                        </Button>
+                      )}
                     </div>
                   </div>
 
@@ -1056,6 +1088,9 @@ export function AssessmentRequestsApprovalWorkspace() {
                 <Button
                   type="button"
                   onClick={() => {
+                    if (dispatchReq) {
+                      setSharedAssessmentIds((prev) => ({ ...prev, [dispatchReq.id]: true }));
+                    }
                     setIsDispatchModalOpen(false);
                     toast.success(`Dispatched exam link to all eligible ${dispatchSeries} students! Candidate test results will automatically store below upon submission.`);
                   }}

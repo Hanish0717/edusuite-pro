@@ -1,5 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Bell, Download, Filter, Moon, Search, Sun, Settings as SettingsIcon } from "lucide-react";
+<<<<<<< HEAD
+import { Bell, Download, Filter, Moon, Search, Sun, Settings as SettingsIcon, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -53,7 +54,6 @@ import {
   type DepartmentCode,
 } from "@/config/roles";
 import { useRole } from "@/context/role-context";
-import { notifications } from "@/data/mock";
 import { notificationService, type Notification } from "@/shared/notifications";
 import { eventBus } from "@/shared/services/eventBus";
 
@@ -69,6 +69,7 @@ function useCrumbs() {
 
 export function Topbar() {
   const crumbs = useCrumbs();
+  const navigate = useNavigate();
   const {
     role,
     setRole,
@@ -81,8 +82,8 @@ export function Topbar() {
     setExternalPersona,
   } = useRole();
   const [dark, setDark] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [notifs, setNotifs] = useState<Notification[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -119,7 +120,6 @@ export function Topbar() {
 
     fetchNotifs();
 
-    // Event Bus Listener
     const unsubscribeNew = eventBus.on("notification:new_added", (newNotif) => {
       if (newNotif.target_role === activeNotifRole) {
         fetchNotifs();
@@ -161,7 +161,6 @@ export function Topbar() {
         </div>
 
         <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none py-0.5 max-w-full">
-          {/* Primary 5 Core Login Roles Dropdown */}
           <Select value={role} onValueChange={(v) => setRole(v as LoginRole)}>
             <SelectTrigger className="h-9 w-[160px] font-semibold text-xs border-primary/40 bg-card" aria-label="5 Core Login Roles">
               <SelectValue placeholder="Core Login Role" />
@@ -175,7 +174,6 @@ export function Topbar() {
             </SelectContent>
           </Select>
 
-          {/* Dynamic Sub-Fields Dropdown for Staff */}
           {role === "staff" && (
             <Select value={department || "CSE"} onValueChange={(v) => setDepartment((v || undefined) as DepartmentCode)}>
               <SelectTrigger className="h-9 w-[110px] text-xs font-mono bg-card" aria-label="Department Scope">
@@ -191,7 +189,6 @@ export function Topbar() {
             </Select>
           )}
 
-          {/* Dynamic Sub-Fields Dropdown for External User */}
           {role === "external-user" && (
             <Select
               value={externalPersona || "recruiter"}
@@ -260,12 +257,12 @@ export function Topbar() {
             {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </Button>
 
-          <Sheet>
+          <Sheet open={isNotifOpen} onOpenChange={setIsNotifOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
-                <Bell className="size-4" />
+                <Bell className="size-4 text-slate-700 dark:text-slate-200" />
                 {unread > 0 && (
-                  <span className="absolute right-1.5 top-1.5 grid size-4 place-items-center rounded-full bg-destructive text-[0.6rem] font-semibold text-destructive-foreground">
+                  <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-red-600 text-[0.6rem] font-bold text-white shadow-xs animate-pulse">
                     {unread}
                   </span>
                 )}
@@ -360,6 +357,10 @@ export function Topbar() {
               </div>
             </SheetContent>
           </Sheet>
+              </div>
+            </SheetContent>
+          </Sheet>
+
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

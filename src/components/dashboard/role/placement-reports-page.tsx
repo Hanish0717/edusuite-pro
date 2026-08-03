@@ -23,7 +23,8 @@ import { Panel } from "@/components/dashboard/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SHARED_STUDENT_SUBMISSIONS } from "@/lib/shared-assessment-store";
+import { getAllStudentSubmissions } from "@/lib/shared-assessment-store";
+
 
 export interface InstitutionalReportItem {
   id: string;
@@ -86,22 +87,24 @@ export function PlacementReportsWorkspace() {
     toast.success("Generated NIRF Data Submission Report PDF!");
   };
 
-  const handleExportExcelResults = () => {
+  const allSubmissions = getAllStudentSubmissions();
+
+  const handleExportStudentSubmissionsCSV = () => {
     const headers = [
       "Submission ID",
-      "Roll Number",
-      "Student Email ID",
+      "Student Roll No",
+      "Student Email",
       "Department",
       "Assessment Title",
       "MCQ Score",
-      "Coding Marks",
+      "Coding Score",
       "Total Percentage",
-      "Result Status",
+      "Qualification Status",
       "Proctoring Violations",
       "Submission Timestamp",
     ];
 
-    const rows = SHARED_STUDENT_SUBMISSIONS.map((sub) => [
+    const rows = allSubmissions.map((sub) => [
       sub.id,
       sub.rollNo,
       sub.studentEmail,
@@ -131,21 +134,24 @@ export function PlacementReportsWorkspace() {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    toast.success(`Exported ${SHARED_STUDENT_SUBMISSIONS.length} student assessment results to Excel CSV!`);
+    toast.success(`Exported ${allSubmissions.length} student assessment results to Excel CSV!`);
   };
+
 
   const filteredReports = REPORTS_LIST.filter((r) =>
     r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     r.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredStudentSubmissions = SHARED_STUDENT_SUBMISSIONS.filter(
+  const filteredStudentSubmissions = allSubmissions.filter(
     (sub) =>
+      sub.studentName?.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
       sub.studentEmail.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
       sub.rollNo.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
       sub.department.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
       sub.assessmentTitle.toLowerCase().includes(studentSearchQuery.toLowerCase())
   );
+
 
   return (
     <div className="space-y-6 animate-fade-up">
@@ -177,7 +183,8 @@ export function PlacementReportsWorkspace() {
           {/* ACTION BUTTONS */}
           <div className="flex flex-wrap items-center gap-2.5">
             <Button
-              onClick={handleExportExcelResults}
+              onClick={handleExportStudentSubmissionsCSV}
+
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-md"
             >
               <FileSpreadsheet className="size-4" /> Export Student Results to Excel (.csv)
@@ -199,7 +206,8 @@ export function PlacementReportsWorkspace() {
         action={
           <Button
             size="sm"
-            onClick={handleExportExcelResults}
+            onClick={handleExportStudentSubmissionsCSV}
+
             className="h-8 text-xs bg-emerald-600 text-white font-bold rounded-xl cursor-pointer gap-1"
           >
             <FileSpreadsheet className="size-3.5" /> Export Excel CSV
