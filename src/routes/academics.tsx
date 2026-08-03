@@ -1,25 +1,25 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useRole } from "@/context/role-context";
+import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { AcademicsModuleView } from "@/modules/academics";
 
-export const Route = createFileRoute("/academics")({
-  component: AcademicsRedirect,
+const academicsSearchSchema = z.object({
+  tab: z.enum(["courses", "departments", "curriculum"]).optional(),
 });
 
-function AcademicsRedirect() {
-  const { role } = useRole();
+export const Route = createFileRoute("/academics")({
+  validateSearch: (search) => academicsSearchSchema.parse(search),
+  head: () => ({
+    meta: [{ title: "Academics & Curriculum — EduSuite Pro" }],
+  }),
+  component: AcademicsPage,
+});
 
-  if (role === "super-admin") {
-    return <Navigate to="/super-admin/courses" replace />;
-  }
-  if (role === "student") {
-    return <Navigate to="/student/courses" replace />;
-  }
-  if (role === "staff") {
-    return <Navigate to="/faculty/dashboard" replace />;
-  }
-  if (role === "parent") {
-    return <Navigate to="/parent/dashboard" replace />;
-  }
-
-  return <Navigate to="/login" replace />;
+export function AcademicsPage() {
+  const { tab } = Route.useSearch();
+  return (
+    <DashboardLayout>
+      <AcademicsModuleView initialTab={tab || "departments"} />
+    </DashboardLayout>
+  );
 }

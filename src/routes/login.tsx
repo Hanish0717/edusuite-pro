@@ -1,33 +1,28 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
-  ShieldCheck,
-  UserCog,
-  GraduationCap,
-  Users,
-  Globe,
   ChevronDown,
-  Building,
   CheckCircle2,
-  Lock,
   ArrowRight,
 } from "lucide-react";
 
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   CORE_5_LOGIN_ROLES,
-  DEPARTMENTS,
   type CoreRoleKey,
-  type DepartmentCode,
-  type ExternalPersona,
 } from "@/config/roles";
 import { useRole } from "@/context/role-context";
+import {
+  getDesignationOptionsForCoreRole,
+  getScopeOptionsForDesignation,
+  getDefaultCredentialsForSelection,
+  resolveRoleContextFromSelection,
+} from "@/lib/authService";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -42,6 +37,26 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+// Configuration for roles that operate at the institution level (no branch/department required)
+const institutionLevelRoles = [
+  "Placement Officer",
+  "placement_officer",
+  "Principal",
+  "principal",
+  "Director",
+  "director",
+  "Registrar",
+  "registrar",
+  "Librarian",
+  "library_admin",
+  "transport_officer",
+  "hostel_warden",
+  "finance_officer",
+  "hr_manager",
+  "vice_principal",
+  "exam_controller",
+];
+
 export function LoginPage() {
   const { setRole, setFlags, setDepartment, setExternalPersona } = useRole();
   const navigate = useNavigate();
@@ -55,89 +70,83 @@ export function LoginPage() {
   // STEP 3: 3RD DROPDOWN — BRANCH / DEPARTMENT / FIELD (Dependent on Step 2)
   const [step3Branch, setStep3Branch] = useState<string>("CSE");
 
-  // Get active core role definition
-  const activeCoreRoleDef =
-    (CORE_5_LOGIN_ROLES.find((r) => r.id === step1CoreRole) || CORE_5_LOGIN_ROLES[1])!;
+  // Controlled Credentials State
+  const initialCreds = getDefaultCredentialsForSelection("staff", "hod");
+  const [email, setEmail] = useState<string>(initialCreds.email);
+  const [password, setPassword] = useState<string>(initialCreds.password);
+
+  // Dynamic Designation options driven by auth service
+  const designationOptions = useMemo(() => {
+    return getDesignationOptionsForCoreRole(step1CoreRole);
+  }, [step1CoreRole]);
+
+  // Dynamic Scope options driven by auth service
+  const scopeOptions = useMemo(() => {
+    return getScopeOptionsForDesignation(step1CoreRole, step2Designation);
+  }, [step1CoreRole, step2Designation]);
+
+  // Check if current designation is an institution-level role
+  const isInstitutionLevel =
+    step1CoreRole === "staff" &&
+    institutionLevelRoles.some(
+      (role) =>
+        role.toLowerCase().replace(/_/g, " ") ===
+          step2Designation.toLowerCase().replace(/_/g, " ") ||
+        step2Designation === role
+    );
+
+  // Active core role definition for badge UI
+  const activeCoreRoleDef = useMemo(() => {
+    return CORE_5_LOGIN_ROLES.find((r) => r.id === step1CoreRole) || CORE_5_LOGIN_ROLES[1];
+  }, [step1CoreRole]);
 
   // Handler when 1st dropdown changes
   const handleStep1Change = (newCoreRole: CoreRoleKey) => {
     setStep1CoreRole(newCoreRole);
-    // Reset Step 2 and Step 3 defaults based on Step 1
-    if (newCoreRole === "super-admin") {
-      setStep2Designation("global_admin");
-      setStep3Branch("All Campuses (Global)");
-    } else if (newCoreRole === "staff") {
-      setStep2Designation("hod");
-      setStep3Branch("CSE");
-    } else if (newCoreRole === "student") {
-      setStep2Designation("btech");
-      setStep3Branch("CSE");
-    } else if (newCoreRole === "parent") {
-      setStep2Designation("ward_22cs101");
-      setStep3Branch("Academic & Marks Overview");
-    } else if (newCoreRole === "external-user") {
-      setStep2Designation("recruiter");
-      setStep3Branch("Google Cloud");
-    }
+    const designations = getDesignationOptionsForCoreRole(newCoreRole);
+    const defaultDesignation = designations[0]?.id || "";
+    setStep2Designation(defaultDesignation);
+
+    const scopes = getScopeOptionsForDesignation(newCoreRole, defaultDesignation);
+    const defaultScope = scopes[0]?.value || "";
+    setStep3Branch(defaultScope);
+
+    // Sync mock credentials
+    const creds = getDefaultCredentialsForSelection(newCoreRole, defaultDesignation);
+    setEmail(creds.email);
+    setPassword(creds.password);
   };
 
   // Handler when 2nd dropdown changes
   const handleStep2Change = (newDesignation: string) => {
     setStep2Designation(newDesignation);
-    // Adjust Step 3 options if needed
-    if (step1CoreRole === "external-user") {
-      if (newDesignation === "recruiter") setStep3Branch("Google Cloud");
-      else if (newDesignation === "vendor") setStep3Branch("Cafeteria & Mess Services");
-      else if (newDesignation === "alumni") setStep3Branch("Batch of 2022");
-      else if (newDesignation === "applicant") setStep3Branch("B.Tech CSE Admissions");
-      else if (newDesignation === "guest_faculty") setStep3Branch("Computer Science Dept");
-    }
+    const scopes = getScopeOptionsForDesignation(step1CoreRole, newDesignation);
+    const defaultScope = scopes[0]?.value || "";
+    setStep3Branch(defaultScope);
+
+    // Sync mock credentials
+    const creds = getDefaultCredentialsForSelection(step1CoreRole, newDesignation);
+    setEmail(creds.email);
+    setPassword(creds.password);
+  };
+
+  // Handler when 3rd dropdown changes
+  const handleStep3Change = (newBranch: string) => {
+    setStep3Branch(newBranch);
   };
 
   const handleDirectLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Map 3-step dropdown selections into context
-    if (step1CoreRole === "super-admin") {
-      setRole("super-admin");
-      setFlags(["isSystemAdmin", "isPrincipal"]);
-      toast.success(`Logged in as Super Admin [${step3Branch}]`);
-    } else if (step1CoreRole === "staff") {
-      setRole("staff");
-      const deptCode = (step3Branch as DepartmentCode) || "CSE";
-      setDepartment(deptCode);
+    // Dynamically resolve role context from mock service
+    const resolved = resolveRoleContextFromSelection(step1CoreRole, step2Designation, step3Branch);
 
-      // Map designation flag
-      let flag = "isHod";
-      if (step2Designation === "hod") flag = "isHod";
-      else if (step2Designation === "dean") flag = "isDean";
-      else if (step2Designation === "exam_controller") flag = "isExamController";
-      else if (step2Designation === "placement_officer") flag = "isPlacementOfficer";
-      else if (step2Designation === "transport_officer") flag = "isTransportOfficer";
-      else if (step2Designation === "hostel_warden") flag = "isHostelWarden";
-      else if (step2Designation === "finance_officer") flag = "isFinanceOfficer";
-      else if (step2Designation === "library_admin") flag = "isLibraryAdmin";
-      else if (step2Designation === "hr_manager") flag = "isHRManager";
-      else if (step2Designation === "principal") flag = "isPrincipal";
-      else if (step2Designation === "vice_principal") flag = "isVicePrincipal";
-      else flag = "isMentor";
+    setRole(resolved.role);
+    setFlags(resolved.flags);
+    if (resolved.department) setDepartment(resolved.department);
+    if (resolved.externalPersona) setExternalPersona(resolved.externalPersona);
 
-      setFlags([flag, "isClassAdvisor", "isMentor"]);
-      toast.success(`Logged in as Staff: ${step2Designation.toUpperCase()} — Branch: ${deptCode}`);
-    } else if (step1CoreRole === "student") {
-      setRole("student");
-      setDepartment((step3Branch as DepartmentCode) || "CSE");
-      toast.success(`Logged in as Student (${step2Designation.toUpperCase()} — ${step3Branch})`);
-    } else if (step1CoreRole === "parent") {
-      setRole("parent");
-      toast.success(`Logged in as Parent (${step2Designation}) — View: ${step3Branch}`);
-    } else if (step1CoreRole === "external-user") {
-      setRole("external-user");
-      const persona = (step2Designation as ExternalPersona) || "recruiter";
-      setExternalPersona(persona);
-      toast.success(`Logged in as External User [${persona.toUpperCase()}] — ${step3Branch}`);
-    }
-
+    toast.success(resolved.toastMessage);
     navigate({ to: "/dashboard" });
   };
 
@@ -167,6 +176,7 @@ export function LoginPage() {
             <select
               value={step1CoreRole}
               onChange={(e) => handleStep1Change(e.target.value as CoreRoleKey)}
+              aria-label="1st Dropdown: 5 Core Login Roles"
               className="w-full h-11 rounded-xl border-2 border-primary/60 bg-card px-3.5 pr-10 text-sm font-extrabold text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm appearance-none"
             >
               {CORE_5_LOGIN_ROLES.map((role) => (
@@ -180,7 +190,7 @@ export function LoginPage() {
         </div>
 
         {/* 2ND DROPDOWN: RELATED DESIGNATION / SUB-ROLE (Cascading based on 1st Dropdown) */}
-        <div className="space-y-1.5 p-3.5 rounded-2xl border border-primary/30 bg-primary/5 space-y-3">
+        <div className="space-y-1.5 p-3.5 rounded-2xl border border-primary/30 bg-primary/5 space-y-3 transition-all duration-300">
           <div className="space-y-1.5">
             <Label className="text-xs font-bold uppercase tracking-wider text-primary flex items-center justify-between">
               <span>2nd Dropdown: Designation / Sub-Role</span>
@@ -192,162 +202,67 @@ export function LoginPage() {
               <select
                 value={step2Designation}
                 onChange={(e) => handleStep2Change(e.target.value)}
+                aria-label="2nd Dropdown: Designation / Sub-Role"
                 className="w-full h-10 rounded-xl border border-input bg-card px-3 pr-8 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
               >
-                {step1CoreRole === "staff" && (
-                  <>
-                    <option value="hod">HOD (Head of Department)</option>
-                    <option value="dean">Academic Dean</option>
-                    <option value="faculty">Faculty / Teacher (Default)</option>
-                    <option value="exam_controller">Exam Controller</option>
-                    <option value="placement_officer">Placement Officer</option>
-                    <option value="transport_officer">Transport Officer</option>
-                    <option value="hostel_warden">Hostel Warden</option>
-                    <option value="finance_officer">Finance Officer</option>
-                    <option value="library_admin">Library Admin</option>
-                    <option value="hr_manager">HR Manager</option>
-                    <option value="principal">Principal</option>
-                    <option value="vice_principal">Vice Principal</option>
-                    <option value="lab_incharge">Lab Incharge</option>
-                    <option value="naac_coordinator">NAAC / IQAC Coordinator</option>
-                  </>
-                )}
-
-                {step1CoreRole === "external-user" && (
-                  <>
-                    <option value="recruiter">Recruiter (Campus Drives)</option>
-                    <option value="applicant">Applicant (Pre-Admissions)</option>
-                    <option value="alumni">Alumni (Graduate Network)</option>
-                    <option value="vendor">Vendor (Suppliers & Services)</option>
-                    <option value="guest_faculty">Guest Faculty / Speaker</option>
-                  </>
-                )}
-
-                {step1CoreRole === "student" && (
-                  <>
-                    <option value="btech">B.Tech (Undergraduate Eng.)</option>
-                    <option value="mtech">M.Tech (Postgraduate Eng.)</option>
-                    <option value="mba">MBA (Master of Business Admin)</option>
-                  </>
-                )}
-
-                {step1CoreRole === "parent" && (
-                  <>
-                    <option value="ward_22cs101">K. Sai Teja (Roll 22CS101)</option>
-                    <option value="ward_22ece044">Priya Sundaram (Roll 22ECE044)</option>
-                    <option value="ward_22me089">Anish Kulkarni (Roll 22ME089)</option>
-                  </>
-                )}
-
-                {step1CoreRole === "super-admin" && (
-                  <>
-                    <option value="global_admin">Global System & Platform Owner</option>
-                    <option value="security_admin">Security & Compliance Officer</option>
-                    <option value="audit_admin">Institutional Audit Auditor</option>
-                  </>
-                )}
+                {designationOptions.map((opt) => (
+                  <option key={opt.id} value={opt.id}>
+                    {opt.label}
+                  </option>
+                ))}
               </select>
               <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             </div>
           </div>
 
-          {/* 3RD DROPDOWN: BRANCH / DEPARTMENT / FIELD (Cascading based on 2nd Dropdown) */}
-          <div className="space-y-1.5 pt-2 border-t border-primary/20">
-            <Label className="text-xs font-bold uppercase tracking-wider text-primary flex items-center justify-between">
-              <span>3rd Dropdown: Branch / Department Scope</span>
-              <Badge className="bg-brand-gradient text-white font-mono text-[0.65rem]">
-                Step 3
-              </Badge>
-            </Label>
+          {/* 3RD DROPDOWN: BRANCH / DEPARTMENT / FIELD (Hidden dynamically for Institution Level Roles) */}
+          {!isInstitutionLevel && (
+            <div className="space-y-1.5 pt-2 border-t border-primary/20 transition-all duration-300 animate-in fade-in slide-in-from-top-1">
+              <Label className="text-xs font-bold uppercase tracking-wider text-primary flex items-center justify-between">
+                <span>3rd Dropdown: Branch / Department Scope</span>
+                <Badge className="bg-brand-gradient text-white font-mono text-[0.65rem]">
+                  Step 3
+                </Badge>
+              </Label>
 
             <div className="relative">
               <select
                 value={step3Branch}
-                onChange={(e) => setStep3Branch(e.target.value)}
+                onChange={(e) => handleStep3Change(e.target.value)}
+                aria-label="3rd Dropdown: Branch or Department Scope"
                 className="w-full h-10 rounded-xl border border-input bg-card px-3 pr-8 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
               >
-                {(step1CoreRole === "staff" || step1CoreRole === "student") && (
-                  <>
-                    {DEPARTMENTS.map((d) => (
-                      <option key={d.code} value={d.code}>
-                        Branch: {d.code} — {d.name}
-                      </option>
-                    ))}
-                  </>
-                )}
-
-                {step1CoreRole === "external-user" && (
-                  <>
-                    {step2Designation === "recruiter" && (
-                      <>
-                        <option value="Google Cloud">Company: Google Cloud</option>
-                        <option value="Microsoft India">Company: Microsoft India</option>
-                        <option value="Qualcomm">Company: Qualcomm India</option>
-                        <option value="Tesla Motors">Company: Tesla Motors</option>
-                      </>
-                    )}
-                    {step2Designation === "vendor" && (
-                      <>
-                        <option value="Cafeteria & Mess Services">Vendor: Cafeteria & Mess Services</option>
-                        <option value="IT Hardware Supplier">Vendor: IT Hardware Supplier</option>
-                        <option value="Transport Fleet Service">Vendor: Transport Fleet Service</option>
-                        <option value="Lab Equipment Supplier">Vendor: Lab Equipment Supplier</option>
-                      </>
-                    )}
-                    {step2Designation === "alumni" && (
-                      <>
-                        <option value="Batch of 2022">Batch: Batch of 2022</option>
-                        <option value="Batch of 2021">Batch: Batch of 2021</option>
-                        <option value="Batch of 2020">Batch: Batch of 2020</option>
-                      </>
-                    )}
-                    {step2Designation === "applicant" && (
-                      <>
-                        <option value="B.Tech CSE Admissions">Target: B.Tech CSE Admissions</option>
-                        <option value="B.Tech ECE Admissions">Target: B.Tech ECE Admissions</option>
-                        <option value="MBA Admissions">Target: MBA Admissions</option>
-                      </>
-                    )}
-                    {step2Designation === "guest_faculty" && (
-                      <>
-                        <option value="Computer Science Dept">Visiting: Computer Science Dept</option>
-                        <option value="Electronics Dept">Visiting: Electronics Dept</option>
-                      </>
-                    )}
-                  </>
-                )}
-
-                {step1CoreRole === "parent" && (
-                  <>
-                    <option value="Academic & Marks Overview">View: Academic Performance & Marks</option>
-                    <option value="Attendance Ledger & Alerts">View: Attendance Ledger & Alerts</option>
-                    <option value="Online Fee Payment & Invoices">View: Online Fee Payment & Invoices</option>
-                    <option value="Hostel & Transport Status">View: Hostel & Transport Status</option>
-                  </>
-                )}
-
-                {step1CoreRole === "super-admin" && (
-                  <>
-                    <option value="All Campuses (Global)">Scope: All Campuses & Departments (Global)</option>
-                    <option value="Main Campus (Hyderabad)">Scope: Main Campus (Hyderabad)</option>
-                    <option value="North Campus (Bengaluru)">Scope: North Campus (Bengaluru)</option>
-                  </>
-                )}
+                {scopeOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
               </select>
               <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             </div>
-          </div>
+            </div>
+          )}
         </div>
 
+
         {/* WORKFLOW DIAGRAM SUMMARY BADGE */}
-        <div className="p-3.5 rounded-xl bg-card border border-border/80 text-xs space-y-1.5">
+        <div className="p-3.5 rounded-xl bg-card border border-border/80 text-xs space-y-1.5 transition-all duration-300">
           <div className="flex items-center justify-between text-muted-foreground">
             <span>Selected Login Resolution:</span>
             <CheckCircle2 className="size-4 text-emerald-500" />
           </div>
-          <p className="font-mono font-bold text-foreground text-xs">
-            {activeCoreRoleDef.title} → {step2Designation.toUpperCase()} → {step3Branch}
-          </p>
+          <div className="font-mono font-bold text-foreground text-xs leading-snug">
+            {isInstitutionLevel ? (
+              <div className="space-y-0.5">
+                <div>{(activeCoreRoleDef?.title || "STAFF")} → {step2Designation.toUpperCase()}</div>
+                <div className="text-muted-foreground font-semibold text-[0.725rem]">Institution Level</div>
+              </div>
+            ) : (
+              <div>
+                {(activeCoreRoleDef?.title || "STAFF")} → {step2Designation.toUpperCase()} → {step3Branch}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* AUTH CREDENTIALS */}
@@ -359,17 +274,8 @@ export function LoginPage() {
             <Input
               id="email"
               type="email"
-              defaultValue={
-                step1CoreRole === "super-admin"
-                  ? "superadmin@college.com"
-                  : step1CoreRole === "staff"
-                  ? "faculty@college.com"
-                  : step1CoreRole === "student"
-                  ? "student@college.com"
-                  : step1CoreRole === "parent"
-                  ? "parent@college.com"
-                  : "recruiter@college.com"
-              }
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -383,7 +289,13 @@ export function LoginPage() {
                 Default: password123
               </span>
             </div>
-            <Input id="password" type="password" defaultValue="password123" required />
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
         </div>
 
