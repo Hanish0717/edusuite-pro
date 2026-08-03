@@ -127,9 +127,8 @@ export function WebinarHero({ webinar, onRegisterToggle, onSelectWebinar }: Webi
           )}
         </Button>
         <Button
-          variant="outline"
           onClick={() => onSelectWebinar(webinar)}
-          className="h-10 px-4 rounded-xl border-slate-700 text-slate-200 hover:bg-slate-800 text-xs font-semibold gap-1 cursor-pointer"
+          className="h-10 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs gap-1.5 cursor-pointer shadow-xs border border-slate-700"
         >
           Details <ArrowRight className="size-3.5" />
         </Button>
