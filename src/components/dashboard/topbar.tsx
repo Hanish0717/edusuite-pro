@@ -381,6 +381,11 @@ export function Topbar() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
+                <Link to={profile.role === "super-admin" || profile.role === "super_admin" ? "/super-admin/profile" : profile.role === "student" ? "/student/profile" : "/faculty/profile"}>
+                  My Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link to="/settings">Settings</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>

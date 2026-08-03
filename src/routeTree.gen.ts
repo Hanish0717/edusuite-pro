@@ -142,6 +142,7 @@ import { Route as SuperAdminIndexRouteImport } from './routes/super-admin.index'
 import { Route as SuperAdminCoursesRouteImport } from './routes/super-admin.courses'
 import { Route as SuperAdminDashboardRouteImport } from './routes/super-admin.dashboard'
 import { Route as SuperAdminFacultyRouteImport } from './routes/super-admin.faculty'
+import { Route as SuperAdminProfileRouteImport } from './routes/super-admin.profile'
 import { Route as SuperAdminSettingsRouteImport } from './routes/super-admin.settings'
 import { Route as SuperAdminStudentsRouteImport } from './routes/super-admin.students'
 import { Route as TransportIndexRouteImport } from './routes/transport.index'
@@ -820,6 +821,11 @@ const SuperAdminFacultyRoute = SuperAdminFacultyRouteImport.update({
   path: '/faculty',
   getParentRoute: () => SuperAdminRoute,
 } as any)
+const SuperAdminProfileRoute = SuperAdminProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => SuperAdminRoute,
+} as any)
 const SuperAdminSettingsRoute = SuperAdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -976,6 +982,7 @@ export interface FileRoutesByFullPath {
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
+  '/super-admin/profile': typeof SuperAdminProfileRoute
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
   '/transport/buses': typeof TransportBusesRoute
@@ -1103,6 +1110,7 @@ export interface FileRoutesByTo {
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
+  '/super-admin/profile': typeof SuperAdminProfileRoute
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
   '/transport/buses': typeof TransportBusesRoute
@@ -1246,6 +1254,7 @@ export interface FileRoutesById {
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
+  '/super-admin/profile': typeof SuperAdminProfileRoute
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
   '/transport/buses': typeof TransportBusesRoute
@@ -1390,6 +1399,7 @@ export interface FileRouteTypes {
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
+    | '/super-admin/profile'
     | '/super-admin/settings'
     | '/super-admin/students'
     | '/transport/buses'
@@ -1517,6 +1527,7 @@ export interface FileRouteTypes {
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
+    | '/super-admin/profile'
     | '/super-admin/settings'
     | '/super-admin/students'
     | '/transport/buses'
@@ -1659,6 +1670,7 @@ export interface FileRouteTypes {
     | '/super-admin/courses'
     | '/super-admin/dashboard'
     | '/super-admin/faculty'
+    | '/super-admin/profile'
     | '/super-admin/settings'
     | '/super-admin/students'
     | '/transport/buses'
@@ -2666,6 +2678,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperAdminFacultyRouteImport
       parentRoute: typeof SuperAdminRoute
     }
+    '/super-admin/profile': {
+      id: '/super-admin/profile'
+      path: '/profile'
+      fullPath: '/super-admin/profile'
+      preLoaderRoute: typeof SuperAdminProfileRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
     '/super-admin/settings': {
       id: '/super-admin/settings'
       path: '/settings'
@@ -3004,6 +3023,7 @@ interface SuperAdminRouteChildren {
   SuperAdminCoursesRoute: typeof SuperAdminCoursesRoute
   SuperAdminDashboardRoute: typeof SuperAdminDashboardRoute
   SuperAdminFacultyRoute: typeof SuperAdminFacultyRoute
+  SuperAdminProfileRoute: typeof SuperAdminProfileRoute
   SuperAdminSettingsRoute: typeof SuperAdminSettingsRoute
   SuperAdminStudentsRoute: typeof SuperAdminStudentsRoute
   SuperAdminIndexRoute: typeof SuperAdminIndexRoute
@@ -3013,6 +3033,7 @@ const SuperAdminRouteChildren: SuperAdminRouteChildren = {
   SuperAdminCoursesRoute: SuperAdminCoursesRoute,
   SuperAdminDashboardRoute: SuperAdminDashboardRoute,
   SuperAdminFacultyRoute: SuperAdminFacultyRoute,
+  SuperAdminProfileRoute: SuperAdminProfileRoute,
   SuperAdminSettingsRoute: SuperAdminSettingsRoute,
   SuperAdminStudentsRoute: SuperAdminStudentsRoute,
   SuperAdminIndexRoute: SuperAdminIndexRoute,
