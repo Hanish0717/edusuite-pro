@@ -12,6 +12,7 @@ const academicsSearchSchema = z.object({
       "faculty-status",
       "attendance-mark",
       "syllabus-tracker",
+      "all-classes-attendance",
     ])
     .optional(),
 });
@@ -19,7 +20,7 @@ const academicsSearchSchema = z.object({
 export const Route = createFileRoute("/academics")({
   validateSearch: (search) => academicsSearchSchema.parse(search),
   head: () => ({
-    meta: [{ title: "Academics & Faculty Management — EduSuite Pro" }],
+    meta: [{ title: "Academics & Faculty Governance — EduSuite Pro" }],
   }),
   component: AcademicsPage,
 });
@@ -28,7 +29,7 @@ export function AcademicsPage() {
   const { tab } = Route.useSearch();
   return (
     <DashboardLayout>
-      <AcademicsModuleView initialTab={tab || "faculty-status"} />
+      <AcademicsModuleView initialTab={tab || "all-classes-attendance"} />
     </DashboardLayout>
   );
 }

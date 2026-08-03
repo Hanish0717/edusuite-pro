@@ -91,6 +91,21 @@ export interface SyllabusProgress {
   overallProgressPct: number;
 }
 
+export interface AllClassesAttendanceItem {
+  id: string;
+  className: string;
+  department: string;
+  totalStudents: number;
+  presentCount: number;
+  absentCount: number;
+  lateCount: number;
+  dailyPct: number;
+  weeklyPct: number;
+  monthlyPct: number;
+  classTeacher: string;
+  status: "Normal" | "Defaulter Warning";
+}
+
 export const INITIAL_COURSES: AcademicCourse[] = [
   {
     id: "CRS-101",
@@ -618,5 +633,75 @@ export async function updateSyllabusUnitStatus(
     });
   } catch {}
   return true;
+}
+
+// ----------------------------------------------------
+// 4. ALL CLASSES ATTENDANCE DASHBOARD FOR SUPER ADMIN
+// ----------------------------------------------------
+export const INITIAL_ALL_CLASSES_ATTENDANCE: AllClassesAttendanceItem[] = [
+  {
+    id: "CLA-101",
+    className: "CSE-3A",
+    department: "CSE",
+    totalStudents: 60,
+    presentCount: 56,
+    absentCount: 3,
+    lateCount: 1,
+    dailyPct: 93.3,
+    weeklyPct: 91.5,
+    monthlyPct: 90.2,
+    classTeacher: "Dr. Rajesh K. Varma",
+    status: "Normal",
+  },
+  {
+    id: "CLA-102",
+    className: "ECE-2B",
+    department: "ECE",
+    totalStudents: 55,
+    presentCount: 48,
+    absentCount: 6,
+    lateCount: 1,
+    dailyPct: 87.2,
+    weeklyPct: 86.0,
+    monthlyPct: 85.4,
+    classTeacher: "Dr. Meera Nambiar",
+    status: "Normal",
+  },
+  {
+    id: "CLA-103",
+    className: "AIDS-2A",
+    department: "AI&DS",
+    totalStudents: 62,
+    presentCount: 59,
+    absentCount: 2,
+    lateCount: 1,
+    dailyPct: 95.1,
+    weeklyPct: 94.2,
+    monthlyPct: 93.8,
+    classTeacher: "Prof. Arvind Swaminathan",
+    status: "Normal",
+  },
+  {
+    id: "CLA-104",
+    className: "ME-4A",
+    department: "ME",
+    totalStudents: 50,
+    presentCount: 36,
+    absentCount: 12,
+    lateCount: 2,
+    dailyPct: 72.0,
+    weeklyPct: 71.5,
+    monthlyPct: 70.8,
+    classTeacher: "Dr. Sankar Narayan",
+    status: "Defaulter Warning",
+  },
+];
+
+export async function fetchAllClassesAttendance(): Promise<AllClassesAttendanceItem[]> {
+  try {
+    const res = await api.get("/api/academics/all-classes-attendance");
+    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+  } catch {}
+  return INITIAL_ALL_CLASSES_ATTENDANCE;
 }
 

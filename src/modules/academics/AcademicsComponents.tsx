@@ -32,6 +32,8 @@ import {
   Play,
   RotateCcw,
   BarChart2,
+  CalendarDays,
+  CalendarRange,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -66,6 +68,7 @@ import {
   submitAttendanceMark,
   fetchSyllabusProgress,
   updateSyllabusUnitStatus,
+  fetchAllClassesAttendance,
   createAcademicCourse,
   createAcademicDepartment,
   createCurriculumScheme,
@@ -77,6 +80,7 @@ import {
   INITIAL_FACULTY_STATUS,
   INITIAL_CLASS_STUDENTS,
   INITIAL_SYLLABUS_PROGRESS,
+  INITIAL_ALL_CLASSES_ATTENDANCE,
   type AcademicCourse,
   type AcademicDepartment,
   type CurriculumScheme,
@@ -84,6 +88,7 @@ import {
   type ClassStudentAttendance,
   type SyllabusProgress,
   type SyllabusUnit,
+  type AllClassesAttendanceItem,
 } from "./AcademicsService";
 
 const DEPARTMENTS_LIST = [
@@ -113,7 +118,8 @@ export type AcademicsSubpart =
   | "curriculum"
   | "faculty-status"
   | "attendance-mark"
-  | "syllabus-tracker";
+  | "syllabus-tracker"
+  | "all-classes-attendance";
 
 export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubpart }) {
   const [courses, setCourses] = useState<AcademicCourse[]>(INITIAL_COURSES);
@@ -131,6 +137,10 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
 
   // Feature State 3: Syllabus Tracker
   const [syllabusList, setSyllabusList] = useState<SyllabusProgress[]>(INITIAL_SYLLABUS_PROGRESS);
+
+  // Feature State 4: All Classes Attendance Dashboard (Super Admin)
+  const [allClassesAttendance, setAllClassesAttendance] = useState<AllClassesAttendanceItem[]>(INITIAL_ALL_CLASSES_ATTENDANCE);
+  const [attendanceViewMode, setAttendanceViewMode] = useState<"daily" | "weekly" | "monthly">("daily");
 
   // Active Subpart Tab
   const [activeSubpart, setActiveSubpart] = useState<AcademicsSubpart>(initialTab || "departments");
@@ -191,13 +201,14 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
 
   const loadAllData = async () => {
     setLoading(true);
-    const [crs, dpt, sch, fSt, stR, syl] = await Promise.all([
+    const [crs, dpt, sch, fSt, stR, syl, alc] = await Promise.all([
       fetchAcademicCourses(),
       fetchAcademicDepartments(),
       fetchCurriculumSchemes(),
       fetchLiveFacultyStatus(selectedPeriod),
       fetchClassStudents(selectedClass),
       fetchSyllabusProgress(),
+      fetchAllClassesAttendance(),
     ]);
     setCourses(crs);
     setDepartments(dpt);
@@ -205,6 +216,7 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
     setFacultyStatuses(fSt);
     setStudentRoster(stR);
     setSyllabusList(syl);
+    setAllClassesAttendance(alc);
     setLoading(false);
   };
 
@@ -241,6 +253,12 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
   const filteredFacultyStatus = facultyStatuses.filter((f) => {
     const matchesSearch = f.name.toLowerCase().includes(searchQuery.toLowerCase()) || f.department.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesDept = selectedDeptFilter === "All Departments" || f.department === selectedDeptFilter;
+    return matchesSearch && matchesDept;
+  });
+
+  const filteredAllClassesAttendance = allClassesAttendance.filter((c) => {
+    const matchesSearch = c.className.toLowerCase().includes(searchQuery.toLowerCase()) || c.classTeacher.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesDept = selectedDeptFilter === "All Departments" || c.department === selectedDeptFilter;
     return matchesSearch && matchesDept;
   });
 
@@ -384,6 +402,10 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
       filename = `Faculty_Live_Status_Period_${selectedPeriod}_${new Date().toISOString().split("T")[0]}.csv`;
       headers = ["Faculty Name", "Department", "Live Status", "Assigned Class", "Subject", "Room No", "Time Slot"];
       rows = filteredFacultyStatus.map((f) => [f.name, f.department, f.status, f.currentClass || "N/A", f.subject || "N/A", f.roomNo || "N/A", f.timeSlot || "N/A"]);
+    } else if (activeSubpart === "all-classes-attendance") {
+      filename = `All_Classes_Attendance_${attendanceViewMode}_${new Date().toISOString().split("T")[0]}.csv`;
+      headers = ["Class Name", "Department", "Total Students", "Present", "Absent", "Late", "Daily %", "Weekly %", "Monthly %", "Class Teacher", "Status"];
+      rows = filteredAllClassesAttendance.map((c) => [c.className, c.department, c.totalStudents, c.presentCount, c.absentCount, c.lateCount, c.dailyPct, c.weeklyPct, c.monthlyPct, `"${c.classTeacher}"`, c.status]);
     } else {
       filename = `Academic_Curriculum_Schemes_${new Date().toISOString().split("T")[0]}.csv`;
       headers = ["Scheme ID", "Regulation", "Program Name", "Batch", "Total Credits", "Core Credits", "Lab Credits", "Elective Credits"];
@@ -419,7 +441,7 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
               </Badge>
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-              Live Faculty Status Matrix, Period Attendance Marking, Syllabus Tracker & Academic Governance.
+              Live Faculty Status Matrix, All-Classes Attendance Dashboard (Daily/Weekly/Monthly), Period Marking & Syllabus Tracker.
             </p>
           </div>
         </div>
@@ -463,11 +485,20 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
 
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Syllabus Completion</span>
-            <BarChart2 className="size-4 text-blue-500" />
+            <span>Class Attendance Avg</span>
+            <UserCheck className="size-4 text-blue-500" />
           </div>
-          <p className="text-2xl font-bold font-mono text-blue-600">71% Overall</p>
-          <p className="text-[0.68rem] text-muted-foreground">32 / 45 Classes Completed</p>
+          <p className="text-2xl font-bold font-mono text-blue-600">91.8% Institutional</p>
+          <p className="text-[0.68rem] text-muted-foreground">Daily / Weekly / Monthly Track</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Syllabus Completion</span>
+            <BarChart2 className="size-4 text-purple-500" />
+          </div>
+          <p className="text-2xl font-bold font-mono text-purple-600">71% Overall</p>
+          <p className="text-[0.68rem] text-purple-600 font-medium">32 / 45 Classes Completed</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
@@ -478,19 +509,19 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
           <p className="text-2xl font-bold font-mono text-primary">{departments.length} Depts</p>
           <p className="text-[0.68rem] text-muted-foreground">CSE, ECE, ME, AI&DS</p>
         </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Cataloged Courses</span>
-            <BookOpen className="size-4 text-purple-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-purple-600">{courses.length} Courses</p>
-          <p className="text-[0.68rem] text-purple-600 font-medium">R24 & R22 Regulations</p>
-        </div>
       </div>
 
-      {/* SIX SUBPARTS NAVIGATION TAB BAR */}
+      {/* SEVEN SUBPARTS NAVIGATION TAB BAR */}
       <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
+        <button
+          onClick={() => setActiveSubpart("all-classes-attendance")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "all-classes-attendance" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <UserCheck className="size-3.5" /> 🏛️ All Classes Attendance Dashboard
+        </button>
+
         <button
           onClick={() => setActiveSubpart("faculty-status")}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
@@ -515,7 +546,7 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
             activeSubpart === "syllabus-tracker" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <BarChart2 className="size-3.5" /> 📊 Academic Calendar & Syllabus
+          <BarChart2 className="size-3.5" /> 📊 Syllabus Tracker
         </button>
 
         <button
@@ -533,7 +564,7 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
             activeSubpart === "courses" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <BookOpen className="size-3.5" /> Courses Catalog ({courses.length})
+          <BookOpen className="size-3.5" /> Courses ({courses.length})
         </button>
 
         <button
@@ -542,9 +573,115 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
             activeSubpart === "curriculum" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <Bookmark className="size-3.5" /> Curriculum Schemes
+          <Bookmark className="size-3.5" /> Curriculum
         </button>
       </div>
+
+      {/* FEATURE 4: ALL CLASSES ATTENDANCE DASHBOARD (SUPER ADMIN GOVERNANCE) */}
+      {activeSubpart === "all-classes-attendance" && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-muted-foreground uppercase shrink-0">Timeframe:</span>
+              <div className="inline-flex p-1 rounded-xl bg-muted/60 border border-border/60">
+                <button
+                  onClick={() => setAttendanceViewMode("daily")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "daily" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  📅 Daily View
+                </button>
+                <button
+                  onClick={() => setAttendanceViewMode("weekly")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "weekly" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  📆 Weekly View
+                </button>
+                <button
+                  onClick={() => setAttendanceViewMode("monthly")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "monthly" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  🗓️ Monthly View
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Select value={selectedDeptFilter} onValueChange={setSelectedDeptFilter}>
+                <SelectTrigger className="h-9 text-xs w-[160px] rounded-xl"><SelectValue placeholder="Department" /></SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS_LIST.map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}
+                </SelectContent>
+              </Select>
+              <div className="relative flex-1 min-w-[150px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                <Input placeholder="Search class or teacher..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-8 h-9 text-xs rounded-xl" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                  <tr>
+                    <th className="py-3 px-3">Class / Section</th>
+                    <th className="py-3 px-3">Department</th>
+                    <th className="py-3 px-3">Total Enrolled</th>
+                    <th className="py-3 px-3">Present</th>
+                    <th className="py-3 px-3">Absent</th>
+                    <th className="py-3 px-3">Late</th>
+                    <th className="py-3 px-3">Attendance % ({attendanceViewMode.toUpperCase()})</th>
+                    <th className="py-3 px-3">Class Teacher</th>
+                    <th className="py-3 px-3">Governance Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {filteredAllClassesAttendance.map((c) => {
+                    const pct = attendanceViewMode === "daily" ? c.dailyPct : attendanceViewMode === "weekly" ? c.weeklyPct : c.monthlyPct;
+                    const isDefaulter = pct < 75;
+                    return (
+                      <tr key={c.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="py-3 px-3 font-mono font-bold text-foreground">{c.className}</td>
+                        <td className="py-3 px-3 font-semibold">{c.department}</td>
+                        <td className="py-3 px-3 font-mono">{c.totalStudents} Students</td>
+                        <td className="py-3 px-3 font-mono text-emerald-600 font-bold">{c.presentCount}</td>
+                        <td className="py-3 px-3 font-mono text-rose-600 font-bold">{c.absentCount}</td>
+                        <td className="py-3 px-3 font-mono text-amber-600 font-bold">{c.lateCount}</td>
+                        <td className="py-3 px-3 min-w-[130px]">
+                          <div className="flex items-center gap-2">
+                            <Progress value={pct} className="h-2 flex-1" />
+                            <span className={`font-mono text-xs font-bold ${isDefaulter ? "text-rose-600" : "text-emerald-600"}`}>
+                              {pct}%
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-muted-foreground">{c.classTeacher}</td>
+                        <td className="py-3 px-3">
+                          {isDefaulter ? (
+                            <Badge className="bg-rose-500/10 text-rose-600 border-rose-500/30">
+                              ⚠️ &lt;75% Defaulter Alert
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-emerald-500/10 text-emerald-600">
+                              ✅ Satisfactory ({pct}%)
+                            </Badge>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* FEATURE 1: REAL-TIME FACULTY STATUS MATRIX */}
       {activeSubpart === "faculty-status" && (
