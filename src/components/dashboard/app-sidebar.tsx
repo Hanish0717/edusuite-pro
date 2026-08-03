@@ -44,32 +44,32 @@ export function AppSidebar() {
     .filter((section) => section.items.length > 0);
 
   return (
-    <Sidebar collapsible="icon" className="border-sidebar-border">
-      <SidebarHeader className="gap-3 px-3 pt-4">
+    <Sidebar collapsible="icon" className="border-r border-[#24356B] bg-[#0F1B44] text-[#F5F7FF]">
+      <SidebarHeader className="gap-3 px-3 pt-4 pb-2">
         <Link to="/dashboard" className="flex min-w-0 items-center">
-          <Logo showName={!collapsed} tone="mono" nameClassName="text-sidebar-foreground" />
+          <Logo showName={!collapsed} tone="mono" nameClassName="text-[#F5F7FF]" />
         </Link>
         {!collapsed && (
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-sidebar-foreground/50" />
+          <div className="relative mt-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#4D78FF]" />
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search menu..."
-              className="h-9 border-sidebar-border bg-sidebar-accent/50 pl-8 text-sidebar-foreground placeholder:text-sidebar-foreground/50 focus-visible:ring-sidebar-ring"
+              className="h-9 w-full border border-[#24356B] bg-[#16234F] pl-9 text-xs text-white placeholder:text-[#8F9CC3] rounded-[12px] focus-visible:ring-1 focus-visible:ring-[#4D78FF] transition-all duration-200"
             />
           </div>
         )}
       </SidebarHeader>
 
-      <SidebarContent className="px-1">
+      <SidebarContent className="px-2 py-2">
         {sections.map((section) => (
-          <SidebarGroup key={section.label}>
-            <SidebarGroupLabel className="text-[0.68rem] uppercase tracking-[0.14em] text-sidebar-foreground/50">
+          <SidebarGroup key={section.label} className="py-1">
+            <SidebarGroupLabel className="text-[0.68rem] font-semibold uppercase tracking-[2px] text-[#7F8DB5] px-2 py-1.5">
               {section.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
+              <SidebarMenu className="space-y-1">
                 {section.items.map((item) => {
                   const currentCleanPath = pathname.split("?")[0];
                   const hasQueryParam = item.url.includes("?");
@@ -100,15 +100,15 @@ export function AppSidebar() {
                             <SidebarMenuButton
                               isActive={isItemActive}
                               tooltip={item.title}
-                              className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-bold transition-all duration-200"
+                              className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
                             >
-                              <item.icon className="size-4 shrink-0 text-primary/80" />
+                              <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
                               <span className="truncate">{item.title}</span>
-                              <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90 text-sidebar-foreground/50" />
+                              <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90 text-[#7F8DB5]" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent className="transition-all duration-200 ease-in-out data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                            <SidebarMenuSub className="ml-3.5 border-l border-primary/20 pl-2.5 space-y-0.5 my-1">
+                            <SidebarMenuSub className="ml-4 border-l border-[#24356B] pl-3 space-y-1 my-1">
                               {item.children.map((child) => {
                                 const childCleanPath = child.url.split("?")[0];
                                 const isSubActive = currentCleanPath === childCleanPath;
@@ -117,7 +117,7 @@ export function AppSidebar() {
                                     <SidebarMenuSubButton
                                       asChild
                                       isActive={isSubActive}
-                                      className="text-xs data-[active=true]:font-bold data-[active=true]:text-primary data-[active=true]:bg-primary/5 rounded-lg px-2 py-1"
+                                      className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#4D78FF] data-[active=true]:bg-[#1A285D] rounded-[10px] px-3 py-1.5 transition-all duration-200"
                                     >
                                       <Link to={child.url} search={child.search}>{child.title}</Link>
                                     </SidebarMenuSubButton>
@@ -137,13 +137,13 @@ export function AppSidebar() {
                         asChild
                         isActive={isItemActive}
                         tooltip={item.title}
-                        className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-bold transition-all duration-200"
+                        className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
                       >
-                        <Link to={item.url} className="flex items-center gap-2">
-                          <item.icon className="size-4 shrink-0 text-primary/80" />
+                        <Link to={item.url} className="flex items-center gap-3">
+                          <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
                           <span className="truncate">{item.title}</span>
                           {item.badge && !collapsed && (
-                            <Badge className="ml-auto h-5 bg-sidebar-primary px-1.5 text-[0.65rem] text-sidebar-primary-foreground">
+                            <Badge className="ml-auto h-5 bg-[#4D78FF] px-1.5 text-[0.65rem] text-white font-bold rounded-md">
                               {item.badge}
                             </Badge>
                           )}
@@ -158,22 +158,22 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border">
-        <div className={cn("flex items-center gap-3 px-1 py-2", collapsed && "justify-center")}>
-          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground">
+      <SidebarFooter className="border-t border-[#24356B] bg-[#13204C] p-3">
+        <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#4D78FF] text-xs font-bold text-white ring-2 ring-[#4D78FF]/30 shadow-xs">
             {profile.initials}
           </span>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-bold text-sidebar-foreground">
+              <p className="truncate text-xs font-bold text-white">
                 {profile.personaName}
               </p>
-              <p className="truncate text-[11px] text-sidebar-foreground/60 font-mono">
+              <p className="truncate text-[11px] text-[#8F9CC3] font-mono">
                 {role === "student" ? "Roll No: 22CS101" : profile.label}
               </p>
               {role === "student" && (
-                <div className="flex items-center gap-1 mt-0.5 text-[10px] text-emerald-500 font-medium font-mono">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-emerald-400 font-medium font-mono">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   <span>Online</span>
                 </div>
               )}
