@@ -228,7 +228,10 @@ export function StudentWebinarsModule() {
               {/* Top Categories Card */}
               <CategoryChips
                 selectedCategory={selectedCategory}
-                onSelectCategory={setSelectedCategory}
+                onSelectCategory={(cat) => {
+                  setSelectedCategory(cat);
+                  setActiveTab("upcoming");
+                }}
               />
             </div>
 
