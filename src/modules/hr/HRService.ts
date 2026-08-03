@@ -25,6 +25,22 @@ export interface JobRequisition {
   status: "Open Recruiting" | "Interview Stage" | "Closed";
 }
 
+export interface FacultyLeaveApplication {
+  id: string;
+  leaveId: string;
+  empId: string;
+  facultyName: string;
+  department: string;
+  leaveType: "Casual Leave" | "Medical Leave" | "Earned Leave" | "Sabbatical" | "Duty Leave";
+  startDate: string;
+  endDate: string;
+  totalDays: number;
+  reason: string;
+  substituteFaculty: string;
+  status: "Pending HR Approval" | "Approved" | "Rejected";
+  appliedOn: string;
+}
+
 export const INITIAL_EMPLOYEES: HREmployee[] = [
   {
     id: "EMP-101",
@@ -139,5 +155,100 @@ export async function postJobRequisition(data: Partial<JobRequisition>): Promise
     hiringManager: "HR Department",
     postingDate: new Date().toISOString().split("T")[0],
     status: "Open Recruiting",
+  };
+}
+
+// ----------------------------------------------------
+// FACULTY & STAFF LEAVE MANAGEMENT (HR GOVERNANCE)
+// ----------------------------------------------------
+export const INITIAL_FACULTY_LEAVES: FacultyLeaveApplication[] = [
+  {
+    id: "LEV-101",
+    leaveId: "LEV-2026-088",
+    empId: "FAC-2022-014",
+    facultyName: "Dr. Rajesh K. Varma",
+    department: "CSE",
+    leaveType: "Medical Leave",
+    startDate: "2026-08-05",
+    endDate: "2026-08-08",
+    totalDays: 4,
+    reason: "Hospitalization and post-op recovery.",
+    substituteFaculty: "Ms. Ananya Sharma",
+    status: "Pending HR Approval",
+    appliedOn: "2026-08-02",
+  },
+  {
+    id: "LEV-102",
+    leaveId: "LEV-2026-092",
+    empId: "FAC-2023-088",
+    facultyName: "Dr. Meera Nambiar",
+    department: "ECE",
+    leaveType: "Casual Leave",
+    startDate: "2026-08-12",
+    endDate: "2026-08-13",
+    totalDays: 2,
+    reason: "Attending IEEE International Conference in Bangalore.",
+    substituteFaculty: "Dr. K. Sai Teja",
+    status: "Approved",
+    appliedOn: "2026-07-30",
+  },
+  {
+    id: "LEV-103",
+    leaveId: "LEV-2026-095",
+    empId: "FAC-2024-102",
+    facultyName: "Prof. Arvind Swaminathan",
+    department: "AI&DS",
+    leaveType: "Duty Leave",
+    startDate: "2026-08-18",
+    endDate: "2026-08-19",
+    totalDays: 2,
+    reason: "External University PhD Examiner Duty.",
+    substituteFaculty: "Dr. Rajesh K. Varma",
+    status: "Approved",
+    appliedOn: "2026-08-01",
+  },
+];
+
+export async function fetchFacultyLeaves(): Promise<FacultyLeaveApplication[]> {
+  try {
+    const res = await api.get("/api/hr/leaves");
+    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+  } catch {}
+  return INITIAL_FACULTY_LEAVES;
+}
+
+export async function approveFacultyLeave(id: string): Promise<boolean> {
+  try {
+    await api.post(`/api/hr/leaves/${id}/approve`);
+  } catch {}
+  return true;
+}
+
+export async function rejectFacultyLeave(id: string): Promise<boolean> {
+  try {
+    await api.post(`/api/hr/leaves/${id}/reject`);
+  } catch {}
+  return true;
+}
+
+export async function applyFacultyLeave(data: Partial<FacultyLeaveApplication>): Promise<FacultyLeaveApplication> {
+  try {
+    const res = await api.post("/api/hr/leaves", data);
+    if (res && res.data && res.data.id) return res.data;
+  } catch {}
+  return {
+    id: `LEV-${Math.floor(104 + Math.random() * 900)}`,
+    leaveId: `LEV-2026-${Math.floor(100 + Math.random() * 900)}`,
+    empId: data.empId || "FAC-2024-105",
+    facultyName: data.facultyName || "Dr. Assigned Faculty",
+    department: data.department || "CSE",
+    leaveType: data.leaveType || "Casual Leave",
+    startDate: data.startDate || "2026-08-10",
+    endDate: data.endDate || "2026-08-11",
+    totalDays: Number(data.totalDays) || 2,
+    reason: data.reason || "Personal work.",
+    substituteFaculty: data.substituteFaculty || "Ms. Ananya Sharma",
+    status: "Pending HR Approval",
+    appliedOn: new Date().toISOString().split("T")[0],
   };
 }

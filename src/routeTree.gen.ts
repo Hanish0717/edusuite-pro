@@ -23,6 +23,7 @@ import { Route as CommunicationRouteImport } from './routes/communication'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DeanRouteImport } from './routes/dean'
+import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as EmployeeManagementRouteImport } from './routes/employee-management'
 import { Route as ExaminationRouteImport } from './routes/examination'
 import { Route as ExaminationsRouteImport } from './routes/examinations'
@@ -144,6 +145,8 @@ import { Route as SuperAdminAllClassesAttendanceRouteImport } from './routes/sup
 import { Route as SuperAdminAttendanceMarkRouteImport } from './routes/super-admin.attendance-mark'
 import { Route as SuperAdminCoursesRouteImport } from './routes/super-admin.courses'
 import { Route as SuperAdminDashboardRouteImport } from './routes/super-admin.dashboard'
+import { Route as SuperAdminEmergencyRouteImport } from './routes/super-admin.emergency'
+import { Route as SuperAdminEmergencyAlertsRouteImport } from './routes/super-admin.emergency-alerts'
 import { Route as SuperAdminFacultyRouteImport } from './routes/super-admin.faculty'
 import { Route as SuperAdminFacultyStatusRouteImport } from './routes/super-admin.faculty-status'
 import { Route as SuperAdminProfileRouteImport } from './routes/super-admin.profile'
@@ -230,6 +233,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const DeanRoute = DeanRouteImport.update({
   id: '/dean',
   path: '/dean',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmergencyRoute = EmergencyRouteImport.update({
+  id: '/emergency',
+  path: '/emergency',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmployeeManagementRoute = EmployeeManagementRouteImport.update({
@@ -844,6 +852,17 @@ const SuperAdminDashboardRoute = SuperAdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => SuperAdminRoute,
 } as any)
+const SuperAdminEmergencyRoute = SuperAdminEmergencyRouteImport.update({
+  id: '/emergency',
+  path: '/emergency',
+  getParentRoute: () => SuperAdminRoute,
+} as any)
+const SuperAdminEmergencyAlertsRoute =
+  SuperAdminEmergencyAlertsRouteImport.update({
+    id: '/emergency-alerts',
+    path: '/emergency-alerts',
+    getParentRoute: () => SuperAdminRoute,
+  } as any)
 const SuperAdminFacultyRoute = SuperAdminFacultyRouteImport.update({
   id: '/faculty',
   path: '/faculty',
@@ -952,6 +971,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dean': typeof DeanRouteWithChildren
+  '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
   '/examination': typeof ExaminationRouteWithChildren
   '/examinations': typeof ExaminationsRoute
@@ -1059,6 +1079,8 @@ export interface FileRoutesByFullPath {
   '/super-admin/attendance-mark': typeof SuperAdminAttendanceMarkRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
+  '/super-admin/emergency': typeof SuperAdminEmergencyRoute
+  '/super-admin/emergency-alerts': typeof SuperAdminEmergencyAlertsRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
   '/super-admin/faculty-status': typeof SuperAdminFacultyStatusRoute
   '/super-admin/profile': typeof SuperAdminProfileRoute
@@ -1104,6 +1126,7 @@ export interface FileRoutesByTo {
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
   '/examinations': typeof ExaminationsRoute
   '/features': typeof FeaturesRoute
@@ -1198,6 +1221,8 @@ export interface FileRoutesByTo {
   '/super-admin/attendance-mark': typeof SuperAdminAttendanceMarkRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
+  '/super-admin/emergency': typeof SuperAdminEmergencyRoute
+  '/super-admin/emergency-alerts': typeof SuperAdminEmergencyAlertsRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
   '/super-admin/faculty-status': typeof SuperAdminFacultyStatusRoute
   '/super-admin/profile': typeof SuperAdminProfileRoute
@@ -1246,6 +1271,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dean': typeof DeanRouteWithChildren
+  '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
   '/examination': typeof ExaminationRouteWithChildren
   '/examinations': typeof ExaminationsRoute
@@ -1353,6 +1379,8 @@ export interface FileRoutesById {
   '/super-admin/attendance-mark': typeof SuperAdminAttendanceMarkRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
+  '/super-admin/emergency': typeof SuperAdminEmergencyRoute
+  '/super-admin/emergency-alerts': typeof SuperAdminEmergencyAlertsRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
   '/super-admin/faculty-status': typeof SuperAdminFacultyStatusRoute
   '/super-admin/profile': typeof SuperAdminProfileRoute
@@ -1402,6 +1430,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/dean'
+    | '/emergency'
     | '/employee-management'
     | '/examination'
     | '/examinations'
@@ -1509,6 +1538,8 @@ export interface FileRouteTypes {
     | '/super-admin/attendance-mark'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
+    | '/super-admin/emergency'
+    | '/super-admin/emergency-alerts'
     | '/super-admin/faculty'
     | '/super-admin/faculty-status'
     | '/super-admin/profile'
@@ -1554,6 +1585,7 @@ export interface FileRouteTypes {
     | '/communication'
     | '/contact'
     | '/dashboard'
+    | '/emergency'
     | '/employee-management'
     | '/examinations'
     | '/features'
@@ -1648,6 +1680,8 @@ export interface FileRouteTypes {
     | '/super-admin/attendance-mark'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
+    | '/super-admin/emergency'
+    | '/super-admin/emergency-alerts'
     | '/super-admin/faculty'
     | '/super-admin/faculty-status'
     | '/super-admin/profile'
@@ -1695,6 +1729,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/dean'
+    | '/emergency'
     | '/employee-management'
     | '/examination'
     | '/examinations'
@@ -1802,6 +1837,8 @@ export interface FileRouteTypes {
     | '/super-admin/attendance-mark'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
+    | '/super-admin/emergency'
+    | '/super-admin/emergency-alerts'
     | '/super-admin/faculty'
     | '/super-admin/faculty-status'
     | '/super-admin/profile'
@@ -1850,6 +1887,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   DeanRoute: typeof DeanRouteWithChildren
+  EmergencyRoute: typeof EmergencyRoute
   EmployeeManagementRoute: typeof EmployeeManagementRoute
   ExaminationRoute: typeof ExaminationRouteWithChildren
   ExaminationsRoute: typeof ExaminationsRoute
@@ -1984,6 +2022,13 @@ declare module '@tanstack/react-router' {
       path: '/dean'
       fullPath: '/dean'
       preLoaderRoute: typeof DeanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/emergency': {
+      id: '/emergency'
+      path: '/emergency'
+      fullPath: '/emergency'
+      preLoaderRoute: typeof EmergencyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/employee-management': {
@@ -2833,6 +2878,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperAdminDashboardRouteImport
       parentRoute: typeof SuperAdminRoute
     }
+    '/super-admin/emergency': {
+      id: '/super-admin/emergency'
+      path: '/emergency'
+      fullPath: '/super-admin/emergency'
+      preLoaderRoute: typeof SuperAdminEmergencyRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
+    '/super-admin/emergency-alerts': {
+      id: '/super-admin/emergency-alerts'
+      path: '/emergency-alerts'
+      fullPath: '/super-admin/emergency-alerts'
+      preLoaderRoute: typeof SuperAdminEmergencyAlertsRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
     '/super-admin/faculty': {
       id: '/super-admin/faculty'
       path: '/faculty'
@@ -3277,6 +3336,8 @@ interface SuperAdminRouteChildren {
   SuperAdminAttendanceMarkRoute: typeof SuperAdminAttendanceMarkRoute
   SuperAdminCoursesRoute: typeof SuperAdminCoursesRoute
   SuperAdminDashboardRoute: typeof SuperAdminDashboardRoute
+  SuperAdminEmergencyRoute: typeof SuperAdminEmergencyRoute
+  SuperAdminEmergencyAlertsRoute: typeof SuperAdminEmergencyAlertsRoute
   SuperAdminFacultyRoute: typeof SuperAdminFacultyRoute
   SuperAdminFacultyStatusRoute: typeof SuperAdminFacultyStatusRoute
   SuperAdminProfileRoute: typeof SuperAdminProfileRoute
@@ -3292,6 +3353,8 @@ const SuperAdminRouteChildren: SuperAdminRouteChildren = {
   SuperAdminAttendanceMarkRoute: SuperAdminAttendanceMarkRoute,
   SuperAdminCoursesRoute: SuperAdminCoursesRoute,
   SuperAdminDashboardRoute: SuperAdminDashboardRoute,
+  SuperAdminEmergencyRoute: SuperAdminEmergencyRoute,
+  SuperAdminEmergencyAlertsRoute: SuperAdminEmergencyAlertsRoute,
   SuperAdminFacultyRoute: SuperAdminFacultyRoute,
   SuperAdminFacultyStatusRoute: SuperAdminFacultyStatusRoute,
   SuperAdminProfileRoute: SuperAdminProfileRoute,
@@ -3338,6 +3401,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRouteWithChildren,
   DeanRoute: DeanRouteWithChildren,
+  EmergencyRoute: EmergencyRoute,
   EmployeeManagementRoute: EmployeeManagementRoute,
   ExaminationRoute: ExaminationRouteWithChildren,
   ExaminationsRoute: ExaminationsRoute,
