@@ -1075,10 +1075,10 @@ export function AssessmentRequestsApprovalWorkspace() {
               </div>
 
               {/* LIVE EXAM LINK PREVIEW */}
-              <div className="p-3 rounded-xl bg-slate-950 text-slate-100 font-mono text-[0.68rem] space-y-2">
-                <p className="font-bold text-emerald-400">📨 Email Preview Dispatched to Students:</p>
-                <p className="text-slate-300">"Dear Student (e.g. 23341a4229@college.edu.in), you are invited to attempt the official online assessment '{dispatchReq.name}'. Please use your student college email ID to log in."</p>
-                <p className="text-blue-400 underline font-bold">http://192.168.1.122:8082/exam/take?id={dispatchReq.assessmentId}</p>
+              <div className="p-3.5 rounded-xl bg-white dark:bg-card border border-border/80 text-foreground font-mono text-[0.68rem] space-y-2 shadow-2xs">
+                <p className="font-bold text-emerald-600 dark:text-emerald-400">📨 Email Preview Dispatched to Students:</p>
+                <p className="text-muted-foreground font-sans">"Dear Student (e.g. 23341a4229@college.edu.in), you are invited to attempt the official online assessment '{dispatchReq.name}'. Please use your student college email ID to log in."</p>
+                <p className="text-blue-600 dark:text-blue-400 underline font-bold">http://192.168.1.122:8082/exam/take?id={dispatchReq.assessmentId}</p>
               </div>
 
               <DialogFooter className="pt-2 gap-2">
