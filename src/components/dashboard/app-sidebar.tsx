@@ -9,7 +9,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -157,30 +156,6 @@ export function AppSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
-
-      <SidebarFooter className="border-t border-sidebar-border">
-        <div className={cn("flex items-center gap-3 px-1 py-2", collapsed && "justify-center")}>
-          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground">
-            {profile.initials}
-          </span>
-          {!collapsed && (
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-bold text-sidebar-foreground">
-                {profile.personaName}
-              </p>
-              <p className="truncate text-[11px] text-sidebar-foreground/60 font-mono">
-                {role === "student" ? "Roll No: 22CS101" : profile.label}
-              </p>
-              {role === "student" && (
-                <div className="flex items-center gap-1 mt-0.5 text-[10px] text-emerald-500 font-medium font-mono">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Online</span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 }
