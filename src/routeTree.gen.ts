@@ -36,6 +36,7 @@ import { Route as HostelRouteImport } from './routes/hostel'
 import { Route as HrRouteImport } from './routes/hr'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as LeaveRouteImport } from './routes/leave'
+import { Route as LibrarianRouteImport } from './routes/librarian'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LmsRouteImport } from './routes/lms'
 import { Route as LoginRouteImport } from './routes/login'
@@ -55,6 +56,7 @@ import { Route as SuperAdminRouteImport } from './routes/super-admin'
 import { Route as TimetableRouteImport } from './routes/timetable'
 import { Route as TransportRouteImport } from './routes/transport'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as DashboardLibrarianRouteImport } from './routes/dashboard.librarian'
 import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
 import { Route as ExamTakeRouteImport } from './routes/exam.take'
@@ -79,13 +81,42 @@ import { Route as HodDashboardRouteImport } from './routes/hod.dashboard'
 import { Route as HodFacultyRouteImport } from './routes/hod.faculty'
 import { Route as HodReportsRouteImport } from './routes/hod.reports'
 import { Route as HostelIndexRouteImport } from './routes/hostel.index'
+import { Route as HostelAttendanceRouteImport } from './routes/hostel.attendance'
+import { Route as HostelComplaintsRouteImport } from './routes/hostel.complaints'
 import { Route as HostelDashboardRouteImport } from './routes/hostel.dashboard'
+import { Route as HostelFeesRouteImport } from './routes/hostel.fees'
+import { Route as HostelMessFeesRouteImport } from './routes/hostel.mess-fees'
+import { Route as HostelMessMenusRouteImport } from './routes/hostel.mess-menus'
+import { Route as HostelNotificationsRouteImport } from './routes/hostel.notifications'
 import { Route as HostelRoomsRouteImport } from './routes/hostel.rooms'
+import { Route as HostelSettingsRouteImport } from './routes/hostel.settings'
 import { Route as HostelStudentsRouteImport } from './routes/hostel.students'
+import { Route as HostelVisitorsRouteImport } from './routes/hostel.visitors'
 import { Route as HrIndexRouteImport } from './routes/hr.index'
 import { Route as HrDashboardRouteImport } from './routes/hr.dashboard'
 import { Route as HrEmployeesRouteImport } from './routes/hr.employees'
 import { Route as HrPayrollRouteImport } from './routes/hr.payroll'
+import { Route as LibrarianIndexRouteImport } from './routes/librarian.index'
+import { Route as LibrarianAcquisitionRouteImport } from './routes/librarian.acquisition'
+import { Route as LibrarianAuditLogsRouteImport } from './routes/librarian.audit-logs'
+import { Route as LibrarianBooksRouteImport } from './routes/librarian.books'
+import { Route as LibrarianCatalogRouteImport } from './routes/librarian.catalog'
+import { Route as LibrarianCirculationRouteImport } from './routes/librarian.circulation'
+import { Route as LibrarianDashboardRouteImport } from './routes/librarian.dashboard'
+import { Route as LibrarianDigitalRouteImport } from './routes/librarian.digital'
+import { Route as LibrarianEntryRouteImport } from './routes/librarian.entry'
+import { Route as LibrarianFinesRouteImport } from './routes/librarian.fines'
+import { Route as LibrarianIdCardsRouteImport } from './routes/librarian.id-cards'
+import { Route as LibrarianInventoryRouteImport } from './routes/librarian.inventory'
+import { Route as LibrarianIssueBooksRouteImport } from './routes/librarian.issue-books'
+import { Route as LibrarianMembersRouteImport } from './routes/librarian.members'
+import { Route as LibrarianNotificationsRouteImport } from './routes/librarian.notifications'
+import { Route as LibrarianReadingHallRouteImport } from './routes/librarian.reading-hall'
+import { Route as LibrarianReportsRouteImport } from './routes/librarian.reports'
+import { Route as LibrarianReservationsRouteImport } from './routes/librarian.reservations'
+import { Route as LibrarianReturnBooksRouteImport } from './routes/librarian.return-books'
+import { Route as LibrarianSearchRouteImport } from './routes/librarian.search'
+import { Route as LibrarianSettingsRouteImport } from './routes/librarian.settings'
 import { Route as LibraryIndexRouteImport } from './routes/library.index'
 import { Route as LibraryBooksRouteImport } from './routes/library.books'
 import { Route as LibraryDashboardRouteImport } from './routes/library.dashboard'
@@ -137,7 +168,22 @@ import { Route as SuperAdminStudentsRouteImport } from './routes/super-admin.stu
 import { Route as TransportIndexRouteImport } from './routes/transport.index'
 import { Route as TransportBusesRouteImport } from './routes/transport.buses'
 import { Route as TransportDashboardRouteImport } from './routes/transport.dashboard'
+import { Route as TransportFeesRouteImport } from './routes/transport.fees'
+import { Route as TransportNotificationsRouteImport } from './routes/transport.notifications'
+import { Route as TransportPassengersRouteImport } from './routes/transport.passengers'
 import { Route as TransportRoutesRouteImport } from './routes/transport.routes'
+import { Route as TransportSettingsRouteImport } from './routes/transport.settings'
+import { Route as DashboardLibrarianIndexRouteImport } from './routes/dashboard.librarian.index'
+import { Route as DashboardLibrarianBooksRouteImport } from './routes/dashboard.librarian.books'
+import { Route as DashboardLibrarianDigitalRouteImport } from './routes/dashboard.librarian.digital'
+import { Route as DashboardLibrarianFinesRouteImport } from './routes/dashboard.librarian.fines'
+import { Route as DashboardLibrarianIdCardsRouteImport } from './routes/dashboard.librarian.id-cards'
+import { Route as DashboardLibrarianIssueBooksRouteImport } from './routes/dashboard.librarian.issue-books'
+import { Route as DashboardLibrarianMembersRouteImport } from './routes/dashboard.librarian.members'
+import { Route as DashboardLibrarianNotificationsRouteImport } from './routes/dashboard.librarian.notifications'
+import { Route as DashboardLibrarianReportsRouteImport } from './routes/dashboard.librarian.reports'
+import { Route as DashboardLibrarianReturnBooksRouteImport } from './routes/dashboard.librarian.return-books'
+import { Route as DashboardLibrarianSettingsRouteImport } from './routes/dashboard.librarian.settings'
 import { Route as PlacementDrivesDriveIdRouteImport } from './routes/placement.drives_.$driveId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -275,6 +321,11 @@ const LeaveRoute = LeaveRouteImport.update({
   path: '/leave',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LibrarianRoute = LibrarianRouteImport.update({
+  id: '/librarian',
+  path: '/librarian',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LibraryRoute = LibraryRouteImport.update({
   id: '/library',
   path: '/library',
@@ -369,6 +420,11 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
   path: '/verify-email',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardLibrarianRoute = DashboardLibrarianRouteImport.update({
+  id: '/librarian',
+  path: '/librarian',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DeanIndexRoute = DeanIndexRouteImport.update({
   id: '/',
@@ -490,9 +546,39 @@ const HostelIndexRoute = HostelIndexRouteImport.update({
   path: '/',
   getParentRoute: () => HostelRoute,
 } as any)
+const HostelAttendanceRoute = HostelAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelComplaintsRoute = HostelComplaintsRouteImport.update({
+  id: '/complaints',
+  path: '/complaints',
+  getParentRoute: () => HostelRoute,
+} as any)
 const HostelDashboardRoute = HostelDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelFeesRoute = HostelFeesRouteImport.update({
+  id: '/fees',
+  path: '/fees',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelMessFeesRoute = HostelMessFeesRouteImport.update({
+  id: '/mess-fees',
+  path: '/mess-fees',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelMessMenusRoute = HostelMessMenusRouteImport.update({
+  id: '/mess-menus',
+  path: '/mess-menus',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelNotificationsRoute = HostelNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => HostelRoute,
 } as any)
 const HostelRoomsRoute = HostelRoomsRouteImport.update({
@@ -500,9 +586,19 @@ const HostelRoomsRoute = HostelRoomsRouteImport.update({
   path: '/rooms',
   getParentRoute: () => HostelRoute,
 } as any)
+const HostelSettingsRoute = HostelSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => HostelRoute,
+} as any)
 const HostelStudentsRoute = HostelStudentsRouteImport.update({
   id: '/students',
   path: '/students',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelVisitorsRoute = HostelVisitorsRouteImport.update({
+  id: '/visitors',
+  path: '/visitors',
   getParentRoute: () => HostelRoute,
 } as any)
 const HrIndexRoute = HrIndexRouteImport.update({
@@ -524,6 +620,111 @@ const HrPayrollRoute = HrPayrollRouteImport.update({
   id: '/payroll',
   path: '/payroll',
   getParentRoute: () => HrRoute,
+} as any)
+const LibrarianIndexRoute = LibrarianIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianAcquisitionRoute = LibrarianAcquisitionRouteImport.update({
+  id: '/acquisition',
+  path: '/acquisition',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianAuditLogsRoute = LibrarianAuditLogsRouteImport.update({
+  id: '/audit-logs',
+  path: '/audit-logs',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianBooksRoute = LibrarianBooksRouteImport.update({
+  id: '/books',
+  path: '/books',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianCatalogRoute = LibrarianCatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianCirculationRoute = LibrarianCirculationRouteImport.update({
+  id: '/circulation',
+  path: '/circulation',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianDashboardRoute = LibrarianDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianDigitalRoute = LibrarianDigitalRouteImport.update({
+  id: '/digital',
+  path: '/digital',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianEntryRoute = LibrarianEntryRouteImport.update({
+  id: '/entry',
+  path: '/entry',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianFinesRoute = LibrarianFinesRouteImport.update({
+  id: '/fines',
+  path: '/fines',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianIdCardsRoute = LibrarianIdCardsRouteImport.update({
+  id: '/id-cards',
+  path: '/id-cards',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianInventoryRoute = LibrarianInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianIssueBooksRoute = LibrarianIssueBooksRouteImport.update({
+  id: '/issue-books',
+  path: '/issue-books',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianMembersRoute = LibrarianMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianNotificationsRoute = LibrarianNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianReadingHallRoute = LibrarianReadingHallRouteImport.update({
+  id: '/reading-hall',
+  path: '/reading-hall',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianReportsRoute = LibrarianReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianReservationsRoute = LibrarianReservationsRouteImport.update({
+  id: '/reservations',
+  path: '/reservations',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianReturnBooksRoute = LibrarianReturnBooksRouteImport.update({
+  id: '/return-books',
+  path: '/return-books',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianSearchRoute = LibrarianSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => LibrarianRoute,
+} as any)
+const LibrarianSettingsRoute = LibrarianSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => LibrarianRoute,
 } as any)
 const LibraryIndexRoute = LibraryIndexRouteImport.update({
   id: '/',
@@ -782,11 +983,94 @@ const TransportDashboardRoute = TransportDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => TransportRoute,
 } as any)
+const TransportFeesRoute = TransportFeesRouteImport.update({
+  id: '/fees',
+  path: '/fees',
+  getParentRoute: () => TransportRoute,
+} as any)
+const TransportNotificationsRoute = TransportNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => TransportRoute,
+} as any)
+const TransportPassengersRoute = TransportPassengersRouteImport.update({
+  id: '/passengers',
+  path: '/passengers',
+  getParentRoute: () => TransportRoute,
+} as any)
 const TransportRoutesRoute = TransportRoutesRouteImport.update({
   id: '/routes',
   path: '/routes',
   getParentRoute: () => TransportRoute,
 } as any)
+const TransportSettingsRoute = TransportSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => TransportRoute,
+} as any)
+const DashboardLibrarianIndexRoute = DashboardLibrarianIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardLibrarianRoute,
+} as any)
+const DashboardLibrarianBooksRoute = DashboardLibrarianBooksRouteImport.update({
+  id: '/books',
+  path: '/books',
+  getParentRoute: () => DashboardLibrarianRoute,
+} as any)
+const DashboardLibrarianDigitalRoute =
+  DashboardLibrarianDigitalRouteImport.update({
+    id: '/digital',
+    path: '/digital',
+    getParentRoute: () => DashboardLibrarianRoute,
+  } as any)
+const DashboardLibrarianFinesRoute = DashboardLibrarianFinesRouteImport.update({
+  id: '/fines',
+  path: '/fines',
+  getParentRoute: () => DashboardLibrarianRoute,
+} as any)
+const DashboardLibrarianIdCardsRoute =
+  DashboardLibrarianIdCardsRouteImport.update({
+    id: '/id-cards',
+    path: '/id-cards',
+    getParentRoute: () => DashboardLibrarianRoute,
+  } as any)
+const DashboardLibrarianIssueBooksRoute =
+  DashboardLibrarianIssueBooksRouteImport.update({
+    id: '/issue-books',
+    path: '/issue-books',
+    getParentRoute: () => DashboardLibrarianRoute,
+  } as any)
+const DashboardLibrarianMembersRoute =
+  DashboardLibrarianMembersRouteImport.update({
+    id: '/members',
+    path: '/members',
+    getParentRoute: () => DashboardLibrarianRoute,
+  } as any)
+const DashboardLibrarianNotificationsRoute =
+  DashboardLibrarianNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => DashboardLibrarianRoute,
+  } as any)
+const DashboardLibrarianReportsRoute =
+  DashboardLibrarianReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => DashboardLibrarianRoute,
+  } as any)
+const DashboardLibrarianReturnBooksRoute =
+  DashboardLibrarianReturnBooksRouteImport.update({
+    id: '/return-books',
+    path: '/return-books',
+    getParentRoute: () => DashboardLibrarianRoute,
+  } as any)
+const DashboardLibrarianSettingsRoute =
+  DashboardLibrarianSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => DashboardLibrarianRoute,
+  } as any)
 const PlacementDrivesDriveIdRoute = PlacementDrivesDriveIdRouteImport.update({
   id: '/drives_/$driveId',
   path: '/drives/$driveId',
@@ -805,7 +1089,7 @@ export interface FileRoutesByFullPath {
   '/campus-events': typeof CampusEventsRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/dean': typeof DeanRouteWithChildren
   '/employee-management': typeof EmployeeManagementRoute
   '/examination': typeof ExaminationRouteWithChildren
@@ -821,6 +1105,7 @@ export interface FileRoutesByFullPath {
   '/hr': typeof HrRouteWithChildren
   '/inventory': typeof InventoryRoute
   '/leave': typeof LeaveRoute
+  '/librarian': typeof LibrarianRouteWithChildren
   '/library': typeof LibraryRouteWithChildren
   '/lms': typeof LmsRoute
   '/login': typeof LoginRoute
@@ -840,6 +1125,7 @@ export interface FileRoutesByFullPath {
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
   '/dean/dashboard': typeof DeanDashboardRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
@@ -857,12 +1143,40 @@ export interface FileRoutesByFullPath {
   '/hod/dashboard': typeof HodDashboardRoute
   '/hod/faculty': typeof HodFacultyRoute
   '/hod/reports': typeof HodReportsRoute
+  '/hostel/attendance': typeof HostelAttendanceRoute
+  '/hostel/complaints': typeof HostelComplaintsRoute
   '/hostel/dashboard': typeof HostelDashboardRoute
+  '/hostel/fees': typeof HostelFeesRoute
+  '/hostel/mess-fees': typeof HostelMessFeesRoute
+  '/hostel/mess-menus': typeof HostelMessMenusRoute
+  '/hostel/notifications': typeof HostelNotificationsRoute
   '/hostel/rooms': typeof HostelRoomsRoute
+  '/hostel/settings': typeof HostelSettingsRoute
   '/hostel/students': typeof HostelStudentsRoute
+  '/hostel/visitors': typeof HostelVisitorsRoute
   '/hr/dashboard': typeof HrDashboardRoute
   '/hr/employees': typeof HrEmployeesRoute
   '/hr/payroll': typeof HrPayrollRoute
+  '/librarian/acquisition': typeof LibrarianAcquisitionRoute
+  '/librarian/audit-logs': typeof LibrarianAuditLogsRoute
+  '/librarian/books': typeof LibrarianBooksRoute
+  '/librarian/catalog': typeof LibrarianCatalogRoute
+  '/librarian/circulation': typeof LibrarianCirculationRoute
+  '/librarian/dashboard': typeof LibrarianDashboardRoute
+  '/librarian/digital': typeof LibrarianDigitalRoute
+  '/librarian/entry': typeof LibrarianEntryRoute
+  '/librarian/fines': typeof LibrarianFinesRoute
+  '/librarian/id-cards': typeof LibrarianIdCardsRoute
+  '/librarian/inventory': typeof LibrarianInventoryRoute
+  '/librarian/issue-books': typeof LibrarianIssueBooksRoute
+  '/librarian/members': typeof LibrarianMembersRoute
+  '/librarian/notifications': typeof LibrarianNotificationsRoute
+  '/librarian/reading-hall': typeof LibrarianReadingHallRoute
+  '/librarian/reports': typeof LibrarianReportsRoute
+  '/librarian/reservations': typeof LibrarianReservationsRoute
+  '/librarian/return-books': typeof LibrarianReturnBooksRoute
+  '/librarian/search': typeof LibrarianSearchRoute
+  '/librarian/settings': typeof LibrarianSettingsRoute
   '/library/books': typeof LibraryBooksRoute
   '/library/dashboard': typeof LibraryDashboardRoute
   '/library/issues': typeof LibraryIssuesRoute
@@ -908,7 +1222,11 @@ export interface FileRoutesByFullPath {
   '/super-admin/students': typeof SuperAdminStudentsRoute
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
+  '/transport/fees': typeof TransportFeesRoute
+  '/transport/notifications': typeof TransportNotificationsRoute
+  '/transport/passengers': typeof TransportPassengersRoute
   '/transport/routes': typeof TransportRoutesRoute
+  '/transport/settings': typeof TransportSettingsRoute
   '/dean/': typeof DeanIndexRoute
   '/examination/': typeof ExaminationIndexRoute
   '/external-user/': typeof ExternalUserIndexRoute
@@ -917,13 +1235,25 @@ export interface FileRoutesByFullPath {
   '/hod/': typeof HodIndexRoute
   '/hostel/': typeof HostelIndexRoute
   '/hr/': typeof HrIndexRoute
+  '/librarian/': typeof LibrarianIndexRoute
   '/library/': typeof LibraryIndexRoute
   '/parent/': typeof ParentIndexRoute
   '/placement/': typeof PlacementIndexRoute
   '/student/': typeof StudentIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
+  '/dashboard/librarian/books': typeof DashboardLibrarianBooksRoute
+  '/dashboard/librarian/digital': typeof DashboardLibrarianDigitalRoute
+  '/dashboard/librarian/fines': typeof DashboardLibrarianFinesRoute
+  '/dashboard/librarian/id-cards': typeof DashboardLibrarianIdCardsRoute
+  '/dashboard/librarian/issue-books': typeof DashboardLibrarianIssueBooksRoute
+  '/dashboard/librarian/members': typeof DashboardLibrarianMembersRoute
+  '/dashboard/librarian/notifications': typeof DashboardLibrarianNotificationsRoute
+  '/dashboard/librarian/reports': typeof DashboardLibrarianReportsRoute
+  '/dashboard/librarian/return-books': typeof DashboardLibrarianReturnBooksRoute
+  '/dashboard/librarian/settings': typeof DashboardLibrarianSettingsRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -937,7 +1267,7 @@ export interface FileRoutesByTo {
   '/campus-events': typeof CampusEventsRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/employee-management': typeof EmployeeManagementRoute
   '/examinations': typeof ExaminationsRoute
   '/features': typeof FeaturesRoute
@@ -975,12 +1305,40 @@ export interface FileRoutesByTo {
   '/hod/dashboard': typeof HodDashboardRoute
   '/hod/faculty': typeof HodFacultyRoute
   '/hod/reports': typeof HodReportsRoute
+  '/hostel/attendance': typeof HostelAttendanceRoute
+  '/hostel/complaints': typeof HostelComplaintsRoute
   '/hostel/dashboard': typeof HostelDashboardRoute
+  '/hostel/fees': typeof HostelFeesRoute
+  '/hostel/mess-fees': typeof HostelMessFeesRoute
+  '/hostel/mess-menus': typeof HostelMessMenusRoute
+  '/hostel/notifications': typeof HostelNotificationsRoute
   '/hostel/rooms': typeof HostelRoomsRoute
+  '/hostel/settings': typeof HostelSettingsRoute
   '/hostel/students': typeof HostelStudentsRoute
+  '/hostel/visitors': typeof HostelVisitorsRoute
   '/hr/dashboard': typeof HrDashboardRoute
   '/hr/employees': typeof HrEmployeesRoute
   '/hr/payroll': typeof HrPayrollRoute
+  '/librarian/acquisition': typeof LibrarianAcquisitionRoute
+  '/librarian/audit-logs': typeof LibrarianAuditLogsRoute
+  '/librarian/books': typeof LibrarianBooksRoute
+  '/librarian/catalog': typeof LibrarianCatalogRoute
+  '/librarian/circulation': typeof LibrarianCirculationRoute
+  '/librarian/dashboard': typeof LibrarianDashboardRoute
+  '/librarian/digital': typeof LibrarianDigitalRoute
+  '/librarian/entry': typeof LibrarianEntryRoute
+  '/librarian/fines': typeof LibrarianFinesRoute
+  '/librarian/id-cards': typeof LibrarianIdCardsRoute
+  '/librarian/inventory': typeof LibrarianInventoryRoute
+  '/librarian/issue-books': typeof LibrarianIssueBooksRoute
+  '/librarian/members': typeof LibrarianMembersRoute
+  '/librarian/notifications': typeof LibrarianNotificationsRoute
+  '/librarian/reading-hall': typeof LibrarianReadingHallRoute
+  '/librarian/reports': typeof LibrarianReportsRoute
+  '/librarian/reservations': typeof LibrarianReservationsRoute
+  '/librarian/return-books': typeof LibrarianReturnBooksRoute
+  '/librarian/search': typeof LibrarianSearchRoute
+  '/librarian/settings': typeof LibrarianSettingsRoute
   '/library/books': typeof LibraryBooksRoute
   '/library/dashboard': typeof LibraryDashboardRoute
   '/library/issues': typeof LibraryIssuesRoute
@@ -1026,7 +1384,11 @@ export interface FileRoutesByTo {
   '/super-admin/students': typeof SuperAdminStudentsRoute
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
+  '/transport/fees': typeof TransportFeesRoute
+  '/transport/notifications': typeof TransportNotificationsRoute
+  '/transport/passengers': typeof TransportPassengersRoute
   '/transport/routes': typeof TransportRoutesRoute
+  '/transport/settings': typeof TransportSettingsRoute
   '/dean': typeof DeanIndexRoute
   '/examination': typeof ExaminationIndexRoute
   '/external-user': typeof ExternalUserIndexRoute
@@ -1035,13 +1397,25 @@ export interface FileRoutesByTo {
   '/hod': typeof HodIndexRoute
   '/hostel': typeof HostelIndexRoute
   '/hr': typeof HrIndexRoute
+  '/librarian': typeof LibrarianIndexRoute
   '/library': typeof LibraryIndexRoute
   '/parent': typeof ParentIndexRoute
   '/placement': typeof PlacementIndexRoute
   '/student': typeof StudentIndexRoute
   '/super-admin': typeof SuperAdminIndexRoute
   '/transport': typeof TransportIndexRoute
+  '/dashboard/librarian/books': typeof DashboardLibrarianBooksRoute
+  '/dashboard/librarian/digital': typeof DashboardLibrarianDigitalRoute
+  '/dashboard/librarian/fines': typeof DashboardLibrarianFinesRoute
+  '/dashboard/librarian/id-cards': typeof DashboardLibrarianIdCardsRoute
+  '/dashboard/librarian/issue-books': typeof DashboardLibrarianIssueBooksRoute
+  '/dashboard/librarian/members': typeof DashboardLibrarianMembersRoute
+  '/dashboard/librarian/notifications': typeof DashboardLibrarianNotificationsRoute
+  '/dashboard/librarian/reports': typeof DashboardLibrarianReportsRoute
+  '/dashboard/librarian/return-books': typeof DashboardLibrarianReturnBooksRoute
+  '/dashboard/librarian/settings': typeof DashboardLibrarianSettingsRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/dashboard/librarian': typeof DashboardLibrarianIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1056,7 +1430,7 @@ export interface FileRoutesById {
   '/campus-events': typeof CampusEventsRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/dean': typeof DeanRouteWithChildren
   '/employee-management': typeof EmployeeManagementRoute
   '/examination': typeof ExaminationRouteWithChildren
@@ -1072,6 +1446,7 @@ export interface FileRoutesById {
   '/hr': typeof HrRouteWithChildren
   '/inventory': typeof InventoryRoute
   '/leave': typeof LeaveRoute
+  '/librarian': typeof LibrarianRouteWithChildren
   '/library': typeof LibraryRouteWithChildren
   '/lms': typeof LmsRoute
   '/login': typeof LoginRoute
@@ -1091,6 +1466,7 @@ export interface FileRoutesById {
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
   '/dean/dashboard': typeof DeanDashboardRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
@@ -1108,12 +1484,40 @@ export interface FileRoutesById {
   '/hod/dashboard': typeof HodDashboardRoute
   '/hod/faculty': typeof HodFacultyRoute
   '/hod/reports': typeof HodReportsRoute
+  '/hostel/attendance': typeof HostelAttendanceRoute
+  '/hostel/complaints': typeof HostelComplaintsRoute
   '/hostel/dashboard': typeof HostelDashboardRoute
+  '/hostel/fees': typeof HostelFeesRoute
+  '/hostel/mess-fees': typeof HostelMessFeesRoute
+  '/hostel/mess-menus': typeof HostelMessMenusRoute
+  '/hostel/notifications': typeof HostelNotificationsRoute
   '/hostel/rooms': typeof HostelRoomsRoute
+  '/hostel/settings': typeof HostelSettingsRoute
   '/hostel/students': typeof HostelStudentsRoute
+  '/hostel/visitors': typeof HostelVisitorsRoute
   '/hr/dashboard': typeof HrDashboardRoute
   '/hr/employees': typeof HrEmployeesRoute
   '/hr/payroll': typeof HrPayrollRoute
+  '/librarian/acquisition': typeof LibrarianAcquisitionRoute
+  '/librarian/audit-logs': typeof LibrarianAuditLogsRoute
+  '/librarian/books': typeof LibrarianBooksRoute
+  '/librarian/catalog': typeof LibrarianCatalogRoute
+  '/librarian/circulation': typeof LibrarianCirculationRoute
+  '/librarian/dashboard': typeof LibrarianDashboardRoute
+  '/librarian/digital': typeof LibrarianDigitalRoute
+  '/librarian/entry': typeof LibrarianEntryRoute
+  '/librarian/fines': typeof LibrarianFinesRoute
+  '/librarian/id-cards': typeof LibrarianIdCardsRoute
+  '/librarian/inventory': typeof LibrarianInventoryRoute
+  '/librarian/issue-books': typeof LibrarianIssueBooksRoute
+  '/librarian/members': typeof LibrarianMembersRoute
+  '/librarian/notifications': typeof LibrarianNotificationsRoute
+  '/librarian/reading-hall': typeof LibrarianReadingHallRoute
+  '/librarian/reports': typeof LibrarianReportsRoute
+  '/librarian/reservations': typeof LibrarianReservationsRoute
+  '/librarian/return-books': typeof LibrarianReturnBooksRoute
+  '/librarian/search': typeof LibrarianSearchRoute
+  '/librarian/settings': typeof LibrarianSettingsRoute
   '/library/books': typeof LibraryBooksRoute
   '/library/dashboard': typeof LibraryDashboardRoute
   '/library/issues': typeof LibraryIssuesRoute
@@ -1159,7 +1563,11 @@ export interface FileRoutesById {
   '/super-admin/students': typeof SuperAdminStudentsRoute
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
+  '/transport/fees': typeof TransportFeesRoute
+  '/transport/notifications': typeof TransportNotificationsRoute
+  '/transport/passengers': typeof TransportPassengersRoute
   '/transport/routes': typeof TransportRoutesRoute
+  '/transport/settings': typeof TransportSettingsRoute
   '/dean/': typeof DeanIndexRoute
   '/examination/': typeof ExaminationIndexRoute
   '/external-user/': typeof ExternalUserIndexRoute
@@ -1168,13 +1576,25 @@ export interface FileRoutesById {
   '/hod/': typeof HodIndexRoute
   '/hostel/': typeof HostelIndexRoute
   '/hr/': typeof HrIndexRoute
+  '/librarian/': typeof LibrarianIndexRoute
   '/library/': typeof LibraryIndexRoute
   '/parent/': typeof ParentIndexRoute
   '/placement/': typeof PlacementIndexRoute
   '/student/': typeof StudentIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
+  '/dashboard/librarian/books': typeof DashboardLibrarianBooksRoute
+  '/dashboard/librarian/digital': typeof DashboardLibrarianDigitalRoute
+  '/dashboard/librarian/fines': typeof DashboardLibrarianFinesRoute
+  '/dashboard/librarian/id-cards': typeof DashboardLibrarianIdCardsRoute
+  '/dashboard/librarian/issue-books': typeof DashboardLibrarianIssueBooksRoute
+  '/dashboard/librarian/members': typeof DashboardLibrarianMembersRoute
+  '/dashboard/librarian/notifications': typeof DashboardLibrarianNotificationsRoute
+  '/dashboard/librarian/reports': typeof DashboardLibrarianReportsRoute
+  '/dashboard/librarian/return-books': typeof DashboardLibrarianReturnBooksRoute
+  '/dashboard/librarian/settings': typeof DashboardLibrarianSettingsRoute
   '/placement/drives_/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1206,6 +1626,7 @@ export interface FileRouteTypes {
     | '/hr'
     | '/inventory'
     | '/leave'
+    | '/librarian'
     | '/library'
     | '/lms'
     | '/login'
@@ -1225,6 +1646,7 @@ export interface FileRouteTypes {
     | '/timetable'
     | '/transport'
     | '/verify-email'
+    | '/dashboard/librarian'
     | '/dean/dashboard'
     | '/exam/take'
     | '/examination/dashboard'
@@ -1242,12 +1664,40 @@ export interface FileRouteTypes {
     | '/hod/dashboard'
     | '/hod/faculty'
     | '/hod/reports'
+    | '/hostel/attendance'
+    | '/hostel/complaints'
     | '/hostel/dashboard'
+    | '/hostel/fees'
+    | '/hostel/mess-fees'
+    | '/hostel/mess-menus'
+    | '/hostel/notifications'
     | '/hostel/rooms'
+    | '/hostel/settings'
     | '/hostel/students'
+    | '/hostel/visitors'
     | '/hr/dashboard'
     | '/hr/employees'
     | '/hr/payroll'
+    | '/librarian/acquisition'
+    | '/librarian/audit-logs'
+    | '/librarian/books'
+    | '/librarian/catalog'
+    | '/librarian/circulation'
+    | '/librarian/dashboard'
+    | '/librarian/digital'
+    | '/librarian/entry'
+    | '/librarian/fines'
+    | '/librarian/id-cards'
+    | '/librarian/inventory'
+    | '/librarian/issue-books'
+    | '/librarian/members'
+    | '/librarian/notifications'
+    | '/librarian/reading-hall'
+    | '/librarian/reports'
+    | '/librarian/reservations'
+    | '/librarian/return-books'
+    | '/librarian/search'
+    | '/librarian/settings'
     | '/library/books'
     | '/library/dashboard'
     | '/library/issues'
@@ -1293,7 +1743,11 @@ export interface FileRouteTypes {
     | '/super-admin/students'
     | '/transport/buses'
     | '/transport/dashboard'
+    | '/transport/fees'
+    | '/transport/notifications'
+    | '/transport/passengers'
     | '/transport/routes'
+    | '/transport/settings'
     | '/dean/'
     | '/examination/'
     | '/external-user/'
@@ -1302,13 +1756,25 @@ export interface FileRouteTypes {
     | '/hod/'
     | '/hostel/'
     | '/hr/'
+    | '/librarian/'
     | '/library/'
     | '/parent/'
     | '/placement/'
     | '/student/'
     | '/super-admin/'
     | '/transport/'
+    | '/dashboard/librarian/books'
+    | '/dashboard/librarian/digital'
+    | '/dashboard/librarian/fines'
+    | '/dashboard/librarian/id-cards'
+    | '/dashboard/librarian/issue-books'
+    | '/dashboard/librarian/members'
+    | '/dashboard/librarian/notifications'
+    | '/dashboard/librarian/reports'
+    | '/dashboard/librarian/return-books'
+    | '/dashboard/librarian/settings'
     | '/placement/drives/$driveId'
+    | '/dashboard/librarian/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1360,12 +1826,40 @@ export interface FileRouteTypes {
     | '/hod/dashboard'
     | '/hod/faculty'
     | '/hod/reports'
+    | '/hostel/attendance'
+    | '/hostel/complaints'
     | '/hostel/dashboard'
+    | '/hostel/fees'
+    | '/hostel/mess-fees'
+    | '/hostel/mess-menus'
+    | '/hostel/notifications'
     | '/hostel/rooms'
+    | '/hostel/settings'
     | '/hostel/students'
+    | '/hostel/visitors'
     | '/hr/dashboard'
     | '/hr/employees'
     | '/hr/payroll'
+    | '/librarian/acquisition'
+    | '/librarian/audit-logs'
+    | '/librarian/books'
+    | '/librarian/catalog'
+    | '/librarian/circulation'
+    | '/librarian/dashboard'
+    | '/librarian/digital'
+    | '/librarian/entry'
+    | '/librarian/fines'
+    | '/librarian/id-cards'
+    | '/librarian/inventory'
+    | '/librarian/issue-books'
+    | '/librarian/members'
+    | '/librarian/notifications'
+    | '/librarian/reading-hall'
+    | '/librarian/reports'
+    | '/librarian/reservations'
+    | '/librarian/return-books'
+    | '/librarian/search'
+    | '/librarian/settings'
     | '/library/books'
     | '/library/dashboard'
     | '/library/issues'
@@ -1411,7 +1905,11 @@ export interface FileRouteTypes {
     | '/super-admin/students'
     | '/transport/buses'
     | '/transport/dashboard'
+    | '/transport/fees'
+    | '/transport/notifications'
+    | '/transport/passengers'
     | '/transport/routes'
+    | '/transport/settings'
     | '/dean'
     | '/examination'
     | '/external-user'
@@ -1420,13 +1918,25 @@ export interface FileRouteTypes {
     | '/hod'
     | '/hostel'
     | '/hr'
+    | '/librarian'
     | '/library'
     | '/parent'
     | '/placement'
     | '/student'
     | '/super-admin'
     | '/transport'
+    | '/dashboard/librarian/books'
+    | '/dashboard/librarian/digital'
+    | '/dashboard/librarian/fines'
+    | '/dashboard/librarian/id-cards'
+    | '/dashboard/librarian/issue-books'
+    | '/dashboard/librarian/members'
+    | '/dashboard/librarian/notifications'
+    | '/dashboard/librarian/reports'
+    | '/dashboard/librarian/return-books'
+    | '/dashboard/librarian/settings'
     | '/placement/drives/$driveId'
+    | '/dashboard/librarian'
   id:
     | '__root__'
     | '/'
@@ -1456,6 +1966,7 @@ export interface FileRouteTypes {
     | '/hr'
     | '/inventory'
     | '/leave'
+    | '/librarian'
     | '/library'
     | '/lms'
     | '/login'
@@ -1475,6 +1986,7 @@ export interface FileRouteTypes {
     | '/timetable'
     | '/transport'
     | '/verify-email'
+    | '/dashboard/librarian'
     | '/dean/dashboard'
     | '/exam/take'
     | '/examination/dashboard'
@@ -1492,12 +2004,40 @@ export interface FileRouteTypes {
     | '/hod/dashboard'
     | '/hod/faculty'
     | '/hod/reports'
+    | '/hostel/attendance'
+    | '/hostel/complaints'
     | '/hostel/dashboard'
+    | '/hostel/fees'
+    | '/hostel/mess-fees'
+    | '/hostel/mess-menus'
+    | '/hostel/notifications'
     | '/hostel/rooms'
+    | '/hostel/settings'
     | '/hostel/students'
+    | '/hostel/visitors'
     | '/hr/dashboard'
     | '/hr/employees'
     | '/hr/payroll'
+    | '/librarian/acquisition'
+    | '/librarian/audit-logs'
+    | '/librarian/books'
+    | '/librarian/catalog'
+    | '/librarian/circulation'
+    | '/librarian/dashboard'
+    | '/librarian/digital'
+    | '/librarian/entry'
+    | '/librarian/fines'
+    | '/librarian/id-cards'
+    | '/librarian/inventory'
+    | '/librarian/issue-books'
+    | '/librarian/members'
+    | '/librarian/notifications'
+    | '/librarian/reading-hall'
+    | '/librarian/reports'
+    | '/librarian/reservations'
+    | '/librarian/return-books'
+    | '/librarian/search'
+    | '/librarian/settings'
     | '/library/books'
     | '/library/dashboard'
     | '/library/issues'
@@ -1543,7 +2083,11 @@ export interface FileRouteTypes {
     | '/super-admin/students'
     | '/transport/buses'
     | '/transport/dashboard'
+    | '/transport/fees'
+    | '/transport/notifications'
+    | '/transport/passengers'
     | '/transport/routes'
+    | '/transport/settings'
     | '/dean/'
     | '/examination/'
     | '/external-user/'
@@ -1552,13 +2096,25 @@ export interface FileRouteTypes {
     | '/hod/'
     | '/hostel/'
     | '/hr/'
+    | '/librarian/'
     | '/library/'
     | '/parent/'
     | '/placement/'
     | '/student/'
     | '/super-admin/'
     | '/transport/'
+    | '/dashboard/librarian/books'
+    | '/dashboard/librarian/digital'
+    | '/dashboard/librarian/fines'
+    | '/dashboard/librarian/id-cards'
+    | '/dashboard/librarian/issue-books'
+    | '/dashboard/librarian/members'
+    | '/dashboard/librarian/notifications'
+    | '/dashboard/librarian/reports'
+    | '/dashboard/librarian/return-books'
+    | '/dashboard/librarian/settings'
     | '/placement/drives_/$driveId'
+    | '/dashboard/librarian/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1573,7 +2129,7 @@ export interface RootRouteChildren {
   CampusEventsRoute: typeof CampusEventsRoute
   CommunicationRoute: typeof CommunicationRoute
   ContactRoute: typeof ContactRoute
-  DashboardRoute: typeof DashboardRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   DeanRoute: typeof DeanRouteWithChildren
   EmployeeManagementRoute: typeof EmployeeManagementRoute
   ExaminationRoute: typeof ExaminationRouteWithChildren
@@ -1589,6 +2145,7 @@ export interface RootRouteChildren {
   HrRoute: typeof HrRouteWithChildren
   InventoryRoute: typeof InventoryRoute
   LeaveRoute: typeof LeaveRoute
+  LibrarianRoute: typeof LibrarianRouteWithChildren
   LibraryRoute: typeof LibraryRouteWithChildren
   LmsRoute: typeof LmsRoute
   LoginRoute: typeof LoginRoute
@@ -1802,6 +2359,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/librarian': {
+      id: '/librarian'
+      path: '/librarian'
+      fullPath: '/librarian'
+      preLoaderRoute: typeof LibrarianRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/library': {
       id: '/library'
       path: '/library'
@@ -1934,6 +2498,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/verify-email'
       preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/librarian': {
+      id: '/dashboard/librarian'
+      path: '/librarian'
+      fullPath: '/dashboard/librarian'
+      preLoaderRoute: typeof DashboardLibrarianRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/dean/': {
       id: '/dean/'
@@ -2103,11 +2674,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HostelIndexRouteImport
       parentRoute: typeof HostelRoute
     }
+    '/hostel/attendance': {
+      id: '/hostel/attendance'
+      path: '/attendance'
+      fullPath: '/hostel/attendance'
+      preLoaderRoute: typeof HostelAttendanceRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/complaints': {
+      id: '/hostel/complaints'
+      path: '/complaints'
+      fullPath: '/hostel/complaints'
+      preLoaderRoute: typeof HostelComplaintsRouteImport
+      parentRoute: typeof HostelRoute
+    }
     '/hostel/dashboard': {
       id: '/hostel/dashboard'
       path: '/dashboard'
       fullPath: '/hostel/dashboard'
       preLoaderRoute: typeof HostelDashboardRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/fees': {
+      id: '/hostel/fees'
+      path: '/fees'
+      fullPath: '/hostel/fees'
+      preLoaderRoute: typeof HostelFeesRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/mess-fees': {
+      id: '/hostel/mess-fees'
+      path: '/mess-fees'
+      fullPath: '/hostel/mess-fees'
+      preLoaderRoute: typeof HostelMessFeesRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/mess-menus': {
+      id: '/hostel/mess-menus'
+      path: '/mess-menus'
+      fullPath: '/hostel/mess-menus'
+      preLoaderRoute: typeof HostelMessMenusRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/notifications': {
+      id: '/hostel/notifications'
+      path: '/notifications'
+      fullPath: '/hostel/notifications'
+      preLoaderRoute: typeof HostelNotificationsRouteImport
       parentRoute: typeof HostelRoute
     }
     '/hostel/rooms': {
@@ -2117,11 +2730,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HostelRoomsRouteImport
       parentRoute: typeof HostelRoute
     }
+    '/hostel/settings': {
+      id: '/hostel/settings'
+      path: '/settings'
+      fullPath: '/hostel/settings'
+      preLoaderRoute: typeof HostelSettingsRouteImport
+      parentRoute: typeof HostelRoute
+    }
     '/hostel/students': {
       id: '/hostel/students'
       path: '/students'
       fullPath: '/hostel/students'
       preLoaderRoute: typeof HostelStudentsRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/visitors': {
+      id: '/hostel/visitors'
+      path: '/visitors'
+      fullPath: '/hostel/visitors'
+      preLoaderRoute: typeof HostelVisitorsRouteImport
       parentRoute: typeof HostelRoute
     }
     '/hr/': {
@@ -2151,6 +2778,153 @@ declare module '@tanstack/react-router' {
       fullPath: '/hr/payroll'
       preLoaderRoute: typeof HrPayrollRouteImport
       parentRoute: typeof HrRoute
+    }
+    '/librarian/': {
+      id: '/librarian/'
+      path: '/'
+      fullPath: '/librarian/'
+      preLoaderRoute: typeof LibrarianIndexRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/acquisition': {
+      id: '/librarian/acquisition'
+      path: '/acquisition'
+      fullPath: '/librarian/acquisition'
+      preLoaderRoute: typeof LibrarianAcquisitionRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/audit-logs': {
+      id: '/librarian/audit-logs'
+      path: '/audit-logs'
+      fullPath: '/librarian/audit-logs'
+      preLoaderRoute: typeof LibrarianAuditLogsRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/books': {
+      id: '/librarian/books'
+      path: '/books'
+      fullPath: '/librarian/books'
+      preLoaderRoute: typeof LibrarianBooksRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/catalog': {
+      id: '/librarian/catalog'
+      path: '/catalog'
+      fullPath: '/librarian/catalog'
+      preLoaderRoute: typeof LibrarianCatalogRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/circulation': {
+      id: '/librarian/circulation'
+      path: '/circulation'
+      fullPath: '/librarian/circulation'
+      preLoaderRoute: typeof LibrarianCirculationRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/dashboard': {
+      id: '/librarian/dashboard'
+      path: '/dashboard'
+      fullPath: '/librarian/dashboard'
+      preLoaderRoute: typeof LibrarianDashboardRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/digital': {
+      id: '/librarian/digital'
+      path: '/digital'
+      fullPath: '/librarian/digital'
+      preLoaderRoute: typeof LibrarianDigitalRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/entry': {
+      id: '/librarian/entry'
+      path: '/entry'
+      fullPath: '/librarian/entry'
+      preLoaderRoute: typeof LibrarianEntryRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/fines': {
+      id: '/librarian/fines'
+      path: '/fines'
+      fullPath: '/librarian/fines'
+      preLoaderRoute: typeof LibrarianFinesRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/id-cards': {
+      id: '/librarian/id-cards'
+      path: '/id-cards'
+      fullPath: '/librarian/id-cards'
+      preLoaderRoute: typeof LibrarianIdCardsRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/inventory': {
+      id: '/librarian/inventory'
+      path: '/inventory'
+      fullPath: '/librarian/inventory'
+      preLoaderRoute: typeof LibrarianInventoryRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/issue-books': {
+      id: '/librarian/issue-books'
+      path: '/issue-books'
+      fullPath: '/librarian/issue-books'
+      preLoaderRoute: typeof LibrarianIssueBooksRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/members': {
+      id: '/librarian/members'
+      path: '/members'
+      fullPath: '/librarian/members'
+      preLoaderRoute: typeof LibrarianMembersRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/notifications': {
+      id: '/librarian/notifications'
+      path: '/notifications'
+      fullPath: '/librarian/notifications'
+      preLoaderRoute: typeof LibrarianNotificationsRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/reading-hall': {
+      id: '/librarian/reading-hall'
+      path: '/reading-hall'
+      fullPath: '/librarian/reading-hall'
+      preLoaderRoute: typeof LibrarianReadingHallRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/reports': {
+      id: '/librarian/reports'
+      path: '/reports'
+      fullPath: '/librarian/reports'
+      preLoaderRoute: typeof LibrarianReportsRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/reservations': {
+      id: '/librarian/reservations'
+      path: '/reservations'
+      fullPath: '/librarian/reservations'
+      preLoaderRoute: typeof LibrarianReservationsRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/return-books': {
+      id: '/librarian/return-books'
+      path: '/return-books'
+      fullPath: '/librarian/return-books'
+      preLoaderRoute: typeof LibrarianReturnBooksRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/search': {
+      id: '/librarian/search'
+      path: '/search'
+      fullPath: '/librarian/search'
+      preLoaderRoute: typeof LibrarianSearchRouteImport
+      parentRoute: typeof LibrarianRoute
+    }
+    '/librarian/settings': {
+      id: '/librarian/settings'
+      path: '/settings'
+      fullPath: '/librarian/settings'
+      preLoaderRoute: typeof LibrarianSettingsRouteImport
+      parentRoute: typeof LibrarianRoute
     }
     '/library/': {
       id: '/library/'
@@ -2509,12 +3283,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TransportDashboardRouteImport
       parentRoute: typeof TransportRoute
     }
+    '/transport/fees': {
+      id: '/transport/fees'
+      path: '/fees'
+      fullPath: '/transport/fees'
+      preLoaderRoute: typeof TransportFeesRouteImport
+      parentRoute: typeof TransportRoute
+    }
+    '/transport/notifications': {
+      id: '/transport/notifications'
+      path: '/notifications'
+      fullPath: '/transport/notifications'
+      preLoaderRoute: typeof TransportNotificationsRouteImport
+      parentRoute: typeof TransportRoute
+    }
+    '/transport/passengers': {
+      id: '/transport/passengers'
+      path: '/passengers'
+      fullPath: '/transport/passengers'
+      preLoaderRoute: typeof TransportPassengersRouteImport
+      parentRoute: typeof TransportRoute
+    }
     '/transport/routes': {
       id: '/transport/routes'
       path: '/routes'
       fullPath: '/transport/routes'
       preLoaderRoute: typeof TransportRoutesRouteImport
       parentRoute: typeof TransportRoute
+    }
+    '/transport/settings': {
+      id: '/transport/settings'
+      path: '/settings'
+      fullPath: '/transport/settings'
+      preLoaderRoute: typeof TransportSettingsRouteImport
+      parentRoute: typeof TransportRoute
+    }
+    '/dashboard/librarian/': {
+      id: '/dashboard/librarian/'
+      path: '/'
+      fullPath: '/dashboard/librarian/'
+      preLoaderRoute: typeof DashboardLibrarianIndexRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/books': {
+      id: '/dashboard/librarian/books'
+      path: '/books'
+      fullPath: '/dashboard/librarian/books'
+      preLoaderRoute: typeof DashboardLibrarianBooksRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/digital': {
+      id: '/dashboard/librarian/digital'
+      path: '/digital'
+      fullPath: '/dashboard/librarian/digital'
+      preLoaderRoute: typeof DashboardLibrarianDigitalRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/fines': {
+      id: '/dashboard/librarian/fines'
+      path: '/fines'
+      fullPath: '/dashboard/librarian/fines'
+      preLoaderRoute: typeof DashboardLibrarianFinesRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/id-cards': {
+      id: '/dashboard/librarian/id-cards'
+      path: '/id-cards'
+      fullPath: '/dashboard/librarian/id-cards'
+      preLoaderRoute: typeof DashboardLibrarianIdCardsRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/issue-books': {
+      id: '/dashboard/librarian/issue-books'
+      path: '/issue-books'
+      fullPath: '/dashboard/librarian/issue-books'
+      preLoaderRoute: typeof DashboardLibrarianIssueBooksRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/members': {
+      id: '/dashboard/librarian/members'
+      path: '/members'
+      fullPath: '/dashboard/librarian/members'
+      preLoaderRoute: typeof DashboardLibrarianMembersRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/notifications': {
+      id: '/dashboard/librarian/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/librarian/notifications'
+      preLoaderRoute: typeof DashboardLibrarianNotificationsRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/reports': {
+      id: '/dashboard/librarian/reports'
+      path: '/reports'
+      fullPath: '/dashboard/librarian/reports'
+      preLoaderRoute: typeof DashboardLibrarianReportsRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/return-books': {
+      id: '/dashboard/librarian/return-books'
+      path: '/return-books'
+      fullPath: '/dashboard/librarian/return-books'
+      preLoaderRoute: typeof DashboardLibrarianReturnBooksRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/settings': {
+      id: '/dashboard/librarian/settings'
+      path: '/settings'
+      fullPath: '/dashboard/librarian/settings'
+      preLoaderRoute: typeof DashboardLibrarianSettingsRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/placement/drives_/$driveId': {
       id: '/placement/drives_/$driveId'
@@ -2525,6 +3404,49 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface DashboardLibrarianRouteChildren {
+  DashboardLibrarianBooksRoute: typeof DashboardLibrarianBooksRoute
+  DashboardLibrarianDigitalRoute: typeof DashboardLibrarianDigitalRoute
+  DashboardLibrarianFinesRoute: typeof DashboardLibrarianFinesRoute
+  DashboardLibrarianIdCardsRoute: typeof DashboardLibrarianIdCardsRoute
+  DashboardLibrarianIssueBooksRoute: typeof DashboardLibrarianIssueBooksRoute
+  DashboardLibrarianMembersRoute: typeof DashboardLibrarianMembersRoute
+  DashboardLibrarianNotificationsRoute: typeof DashboardLibrarianNotificationsRoute
+  DashboardLibrarianReportsRoute: typeof DashboardLibrarianReportsRoute
+  DashboardLibrarianReturnBooksRoute: typeof DashboardLibrarianReturnBooksRoute
+  DashboardLibrarianSettingsRoute: typeof DashboardLibrarianSettingsRoute
+  DashboardLibrarianIndexRoute: typeof DashboardLibrarianIndexRoute
+}
+
+const DashboardLibrarianRouteChildren: DashboardLibrarianRouteChildren = {
+  DashboardLibrarianBooksRoute: DashboardLibrarianBooksRoute,
+  DashboardLibrarianDigitalRoute: DashboardLibrarianDigitalRoute,
+  DashboardLibrarianFinesRoute: DashboardLibrarianFinesRoute,
+  DashboardLibrarianIdCardsRoute: DashboardLibrarianIdCardsRoute,
+  DashboardLibrarianIssueBooksRoute: DashboardLibrarianIssueBooksRoute,
+  DashboardLibrarianMembersRoute: DashboardLibrarianMembersRoute,
+  DashboardLibrarianNotificationsRoute: DashboardLibrarianNotificationsRoute,
+  DashboardLibrarianReportsRoute: DashboardLibrarianReportsRoute,
+  DashboardLibrarianReturnBooksRoute: DashboardLibrarianReturnBooksRoute,
+  DashboardLibrarianSettingsRoute: DashboardLibrarianSettingsRoute,
+  DashboardLibrarianIndexRoute: DashboardLibrarianIndexRoute,
+}
+
+const DashboardLibrarianRouteWithChildren =
+  DashboardLibrarianRoute._addFileChildren(DashboardLibrarianRouteChildren)
+
+interface DashboardRouteChildren {
+  DashboardLibrarianRoute: typeof DashboardLibrarianRouteWithChildren
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardLibrarianRoute: DashboardLibrarianRouteWithChildren,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
 
 interface DeanRouteChildren {
   DeanDashboardRoute: typeof DeanDashboardRoute
@@ -2625,16 +3547,32 @@ const HodRouteChildren: HodRouteChildren = {
 const HodRouteWithChildren = HodRoute._addFileChildren(HodRouteChildren)
 
 interface HostelRouteChildren {
+  HostelAttendanceRoute: typeof HostelAttendanceRoute
+  HostelComplaintsRoute: typeof HostelComplaintsRoute
   HostelDashboardRoute: typeof HostelDashboardRoute
+  HostelFeesRoute: typeof HostelFeesRoute
+  HostelMessFeesRoute: typeof HostelMessFeesRoute
+  HostelMessMenusRoute: typeof HostelMessMenusRoute
+  HostelNotificationsRoute: typeof HostelNotificationsRoute
   HostelRoomsRoute: typeof HostelRoomsRoute
+  HostelSettingsRoute: typeof HostelSettingsRoute
   HostelStudentsRoute: typeof HostelStudentsRoute
+  HostelVisitorsRoute: typeof HostelVisitorsRoute
   HostelIndexRoute: typeof HostelIndexRoute
 }
 
 const HostelRouteChildren: HostelRouteChildren = {
+  HostelAttendanceRoute: HostelAttendanceRoute,
+  HostelComplaintsRoute: HostelComplaintsRoute,
   HostelDashboardRoute: HostelDashboardRoute,
+  HostelFeesRoute: HostelFeesRoute,
+  HostelMessFeesRoute: HostelMessFeesRoute,
+  HostelMessMenusRoute: HostelMessMenusRoute,
+  HostelNotificationsRoute: HostelNotificationsRoute,
   HostelRoomsRoute: HostelRoomsRoute,
+  HostelSettingsRoute: HostelSettingsRoute,
   HostelStudentsRoute: HostelStudentsRoute,
+  HostelVisitorsRoute: HostelVisitorsRoute,
   HostelIndexRoute: HostelIndexRoute,
 }
 
@@ -2656,6 +3594,58 @@ const HrRouteChildren: HrRouteChildren = {
 }
 
 const HrRouteWithChildren = HrRoute._addFileChildren(HrRouteChildren)
+
+interface LibrarianRouteChildren {
+  LibrarianAcquisitionRoute: typeof LibrarianAcquisitionRoute
+  LibrarianAuditLogsRoute: typeof LibrarianAuditLogsRoute
+  LibrarianBooksRoute: typeof LibrarianBooksRoute
+  LibrarianCatalogRoute: typeof LibrarianCatalogRoute
+  LibrarianCirculationRoute: typeof LibrarianCirculationRoute
+  LibrarianDashboardRoute: typeof LibrarianDashboardRoute
+  LibrarianDigitalRoute: typeof LibrarianDigitalRoute
+  LibrarianEntryRoute: typeof LibrarianEntryRoute
+  LibrarianFinesRoute: typeof LibrarianFinesRoute
+  LibrarianIdCardsRoute: typeof LibrarianIdCardsRoute
+  LibrarianInventoryRoute: typeof LibrarianInventoryRoute
+  LibrarianIssueBooksRoute: typeof LibrarianIssueBooksRoute
+  LibrarianMembersRoute: typeof LibrarianMembersRoute
+  LibrarianNotificationsRoute: typeof LibrarianNotificationsRoute
+  LibrarianReadingHallRoute: typeof LibrarianReadingHallRoute
+  LibrarianReportsRoute: typeof LibrarianReportsRoute
+  LibrarianReservationsRoute: typeof LibrarianReservationsRoute
+  LibrarianReturnBooksRoute: typeof LibrarianReturnBooksRoute
+  LibrarianSearchRoute: typeof LibrarianSearchRoute
+  LibrarianSettingsRoute: typeof LibrarianSettingsRoute
+  LibrarianIndexRoute: typeof LibrarianIndexRoute
+}
+
+const LibrarianRouteChildren: LibrarianRouteChildren = {
+  LibrarianAcquisitionRoute: LibrarianAcquisitionRoute,
+  LibrarianAuditLogsRoute: LibrarianAuditLogsRoute,
+  LibrarianBooksRoute: LibrarianBooksRoute,
+  LibrarianCatalogRoute: LibrarianCatalogRoute,
+  LibrarianCirculationRoute: LibrarianCirculationRoute,
+  LibrarianDashboardRoute: LibrarianDashboardRoute,
+  LibrarianDigitalRoute: LibrarianDigitalRoute,
+  LibrarianEntryRoute: LibrarianEntryRoute,
+  LibrarianFinesRoute: LibrarianFinesRoute,
+  LibrarianIdCardsRoute: LibrarianIdCardsRoute,
+  LibrarianInventoryRoute: LibrarianInventoryRoute,
+  LibrarianIssueBooksRoute: LibrarianIssueBooksRoute,
+  LibrarianMembersRoute: LibrarianMembersRoute,
+  LibrarianNotificationsRoute: LibrarianNotificationsRoute,
+  LibrarianReadingHallRoute: LibrarianReadingHallRoute,
+  LibrarianReportsRoute: LibrarianReportsRoute,
+  LibrarianReservationsRoute: LibrarianReservationsRoute,
+  LibrarianReturnBooksRoute: LibrarianReturnBooksRoute,
+  LibrarianSearchRoute: LibrarianSearchRoute,
+  LibrarianSettingsRoute: LibrarianSettingsRoute,
+  LibrarianIndexRoute: LibrarianIndexRoute,
+}
+
+const LibrarianRouteWithChildren = LibrarianRoute._addFileChildren(
+  LibrarianRouteChildren,
+)
 
 interface LibraryRouteChildren {
   LibraryBooksRoute: typeof LibraryBooksRoute
@@ -2805,14 +3795,22 @@ const SuperAdminRouteWithChildren = SuperAdminRoute._addFileChildren(
 interface TransportRouteChildren {
   TransportBusesRoute: typeof TransportBusesRoute
   TransportDashboardRoute: typeof TransportDashboardRoute
+  TransportFeesRoute: typeof TransportFeesRoute
+  TransportNotificationsRoute: typeof TransportNotificationsRoute
+  TransportPassengersRoute: typeof TransportPassengersRoute
   TransportRoutesRoute: typeof TransportRoutesRoute
+  TransportSettingsRoute: typeof TransportSettingsRoute
   TransportIndexRoute: typeof TransportIndexRoute
 }
 
 const TransportRouteChildren: TransportRouteChildren = {
   TransportBusesRoute: TransportBusesRoute,
   TransportDashboardRoute: TransportDashboardRoute,
+  TransportFeesRoute: TransportFeesRoute,
+  TransportNotificationsRoute: TransportNotificationsRoute,
+  TransportPassengersRoute: TransportPassengersRoute,
   TransportRoutesRoute: TransportRoutesRoute,
+  TransportSettingsRoute: TransportSettingsRoute,
   TransportIndexRoute: TransportIndexRoute,
 }
 
@@ -2832,7 +3830,7 @@ const rootRouteChildren: RootRouteChildren = {
   CampusEventsRoute: CampusEventsRoute,
   CommunicationRoute: CommunicationRoute,
   ContactRoute: ContactRoute,
-  DashboardRoute: DashboardRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   DeanRoute: DeanRouteWithChildren,
   EmployeeManagementRoute: EmployeeManagementRoute,
   ExaminationRoute: ExaminationRouteWithChildren,
@@ -2848,6 +3846,7 @@ const rootRouteChildren: RootRouteChildren = {
   HrRoute: HrRouteWithChildren,
   InventoryRoute: InventoryRoute,
   LeaveRoute: LeaveRoute,
+  LibrarianRoute: LibrarianRouteWithChildren,
   LibraryRoute: LibraryRouteWithChildren,
   LmsRoute: LmsRoute,
   LoginRoute: LoginRoute,

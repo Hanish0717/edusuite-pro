@@ -270,11 +270,11 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       if (title === "Students") return "/placement/students";
     }
     if (flags.includes("isLibraryAdmin")) {
-      if (url === "/dashboard" || url === "/library") return "/library/dashboard";
-      if (url === "/settings") return "/faculty/profile";
+      if (url === "/dashboard" || url === "/library") return "/librarian";
+      if (url === "/settings") return "/librarian/settings";
       if (title === "Books" || title === "Search Catalogue" || title === "Catalogue")
-        return "/library/books";
-      if (title === "Issues" || title === "Circulation") return "/library/issues";
+        return "/librarian/books";
+      if (title === "Issues" || title === "Circulation") return "/librarian/issue-books";
     }
     if (flags.includes("isTransportOfficer")) {
       if (url === "/dashboard" || url === "/transport") return "/transport/dashboard";
