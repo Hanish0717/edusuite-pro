@@ -53,6 +53,24 @@ export interface LiveFacultyStatus {
   period: number; // 1 to 8
 }
 
+export interface FacultyPeriodSlot {
+  periodNumber: number;
+  timeSlot: string;
+  status: "FREE" | "IN CLASS" | "ON LEAVE" | "BREAK";
+  subject?: string;
+  className?: string;
+  roomNo?: string;
+}
+
+export interface FacultyFullDaySchedule {
+  facultyId: string;
+  name: string;
+  department: string;
+  designation: string;
+  email: string;
+  periods: FacultyPeriodSlot[];
+}
+
 export interface ClassStudentAttendance {
   id: string;
   rollNo: string;
@@ -476,6 +494,100 @@ export async function fetchLiveFacultyStatus(period: number = 2): Promise<LiveFa
     if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
   } catch {}
   return INITIAL_FACULTY_STATUS.map((f) => ({ ...f, period }));
+}
+
+export async function fetchFacultyFullDaySchedule(facultyName: string): Promise<FacultyFullDaySchedule> {
+  try {
+    const res = await api.get(`/api/academics/faculty/schedule?name=${encodeURIComponent(facultyName)}`);
+    if (res && res.data && res.data.periods) return res.data;
+  } catch {}
+
+  if (facultyName.includes("Sankar")) {
+    return {
+      facultyId: "FAC-104",
+      name: "Dr. Sankar Narayan",
+      department: "ME",
+      designation: "Professor",
+      email: "sankar.n@edusuite.edu.in",
+      periods: [1, 2, 3, 4, 5, 6, 7, 8].map((p) => ({
+        periodNumber: p,
+        timeSlot: getTimeSlotForPeriod(p),
+        status: "ON LEAVE" as const,
+      })),
+    };
+  }
+
+  if (facultyName.includes("Rajesh")) {
+    return {
+      facultyId: "FAC-101",
+      name: "Dr. Rajesh K. Varma",
+      department: "CSE",
+      designation: "Professor & HOD",
+      email: "rajesh.varma@edusuite.edu.in",
+      periods: [
+        { periodNumber: 1, timeSlot: "09:00 AM - 10:00 AM", status: "FREE" },
+        { periodNumber: 2, timeSlot: "10:00 AM - 11:00 AM", status: "IN CLASS", subject: "Data Structures & Algorithms", className: "CSE-3A", roomNo: "Block B - 302" },
+        { periodNumber: 3, timeSlot: "11:15 AM - 12:15 PM", status: "FREE" },
+        { periodNumber: 4, timeSlot: "12:15 PM - 01:15 PM", status: "IN CLASS", subject: "Object Oriented Programming", className: "CSE-2B", roomNo: "Block B - 104" },
+        { periodNumber: 5, timeSlot: "02:00 PM - 03:00 PM", status: "FREE" },
+        { periodNumber: 6, timeSlot: "03:00 PM - 04:00 PM", status: "IN CLASS", subject: "Data Structures Lab", className: "CSE-3A", roomNo: "Lab - CSE 2" },
+        { periodNumber: 7, timeSlot: "04:00 PM - 05:00 PM", status: "IN CLASS", subject: "Data Structures Lab", className: "CSE-3A", roomNo: "Lab - CSE 2" },
+        { periodNumber: 8, timeSlot: "05:00 PM - 06:00 PM", status: "FREE" },
+      ],
+    };
+  }
+
+  if (facultyName.includes("Meera")) {
+    return {
+      facultyId: "FAC-102",
+      name: "Dr. Meera Nambiar",
+      department: "ECE",
+      designation: "Associate Professor",
+      email: "meera.nambiar@edusuite.edu.in",
+      periods: [
+        { periodNumber: 1, timeSlot: "09:00 AM - 10:00 AM", status: "IN CLASS", subject: "VLSI Design & Systems", className: "ECE-4A", roomNo: "Block C - 201" },
+        { periodNumber: 2, timeSlot: "10:00 AM - 11:00 AM", status: "FREE" },
+        { periodNumber: 3, timeSlot: "11:15 AM - 12:15 PM", status: "IN CLASS", subject: "Digital Signal Processing", className: "ECE-3B", roomNo: "Block C - 102" },
+        { periodNumber: 4, timeSlot: "12:15 PM - 01:15 PM", status: "FREE" },
+        { periodNumber: 5, timeSlot: "02:00 PM - 03:00 PM", status: "IN CLASS", subject: "Embedded Systems Lab", className: "ECE-3A", roomNo: "Lab - ECE 1" },
+        { periodNumber: 6, timeSlot: "03:00 PM - 04:00 PM", status: "IN CLASS", subject: "Embedded Systems Lab", className: "ECE-3A", roomNo: "Lab - ECE 1" },
+        { periodNumber: 7, timeSlot: "04:00 PM - 05:00 PM", status: "FREE" },
+        { periodNumber: 8, timeSlot: "05:00 PM - 06:00 PM", status: "FREE" },
+      ],
+    };
+  }
+
+  return {
+    facultyId: "FAC-109",
+    name: facultyName,
+    department: "CSE",
+    designation: "Faculty Member",
+    email: `${facultyName.toLowerCase().replace(/[^a-z]/g, ".")}@edusuite.edu.in`,
+    periods: [
+      { periodNumber: 1, timeSlot: "09:00 AM - 10:00 AM", status: "IN CLASS", subject: "Computer Networks", className: "CSE-3B", roomNo: "Block B - 204" },
+      { periodNumber: 2, timeSlot: "10:00 AM - 11:00 AM", status: "FREE" },
+      { periodNumber: 3, timeSlot: "11:15 AM - 12:15 PM", status: "IN CLASS", subject: "Operating Systems", className: "CSE-3A", roomNo: "Block B - 302" },
+      { periodNumber: 4, timeSlot: "12:15 PM - 01:15 PM", status: "FREE" },
+      { periodNumber: 5, timeSlot: "02:00 PM - 03:00 PM", status: "FREE" },
+      { periodNumber: 6, timeSlot: "03:00 PM - 04:00 PM", status: "IN CLASS", subject: "Web Technologies Lab", className: "CSE-2A", roomNo: "Lab - CSE 1" },
+      { periodNumber: 7, timeSlot: "04:00 PM - 05:00 PM", status: "IN CLASS", subject: "Web Technologies Lab", className: "CSE-2A", roomNo: "Lab - CSE 1" },
+      { periodNumber: 8, timeSlot: "05:00 PM - 06:00 PM", status: "FREE" },
+    ],
+  };
+}
+
+function getTimeSlotForPeriod(period: number): string {
+  const slots: Record<number, string> = {
+    1: "09:00 AM - 10:00 AM",
+    2: "10:00 AM - 11:00 AM",
+    3: "11:15 AM - 12:15 PM",
+    4: "12:15 PM - 01:15 PM",
+    5: "02:00 PM - 03:00 PM",
+    6: "03:00 PM - 04:00 PM",
+    7: "04:00 PM - 05:00 PM",
+    8: "05:00 PM - 06:00 PM",
+  };
+  return slots[period] || "Period Slot";
 }
 
 // ----------------------------------------------------

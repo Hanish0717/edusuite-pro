@@ -34,6 +34,10 @@ import {
   BarChart2,
   CalendarDays,
   CalendarRange,
+  ExternalLink,
+  MapPin,
+  Mail,
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -69,6 +73,7 @@ import {
   fetchSyllabusProgress,
   updateSyllabusUnitStatus,
   fetchAllClassesAttendance,
+  fetchFacultyFullDaySchedule,
   createAcademicCourse,
   createAcademicDepartment,
   createCurriculumScheme,
@@ -89,6 +94,7 @@ import {
   type SyllabusProgress,
   type SyllabusUnit,
   type AllClassesAttendanceItem,
+  type FacultyFullDaySchedule,
 } from "./AcademicsService";
 
 const DEPARTMENTS_LIST = [
@@ -129,6 +135,11 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
   // Feature State 1: Faculty Live Status Matrix
   const [facultyStatuses, setFacultyStatuses] = useState<LiveFacultyStatus[]>(INITIAL_FACULTY_STATUS);
   const [selectedPeriod, setSelectedPeriod] = useState<number>(2);
+
+  // Modal State for Faculty Full-Day Timetable
+  const [isTimetableModalOpen, setIsTimetableModalOpen] = useState(false);
+  const [selectedFacultySchedule, setSelectedFacultySchedule] = useState<FacultyFullDaySchedule | null>(null);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
 
   // Feature State 2: Attendance Marking Portal
   const [studentRoster, setStudentRoster] = useState<ClassStudentAttendance[]>(INITIAL_CLASS_STUDENTS);
@@ -223,6 +234,15 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
   useEffect(() => {
     loadAllData();
   }, [selectedPeriod, selectedClass]);
+
+  // Handler to open faculty full-day timetable modal
+  const handleOpenFacultySchedule = async (facultyName: string) => {
+    setScheduleLoading(true);
+    setIsTimetableModalOpen(true);
+    const sched = await fetchFacultyFullDaySchedule(facultyName);
+    setSelectedFacultySchedule(sched);
+    setScheduleLoading(false);
+  };
 
   // Filtered lists
   const filteredCourses = courses.filter((c) => {
@@ -441,7 +461,7 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
               </Badge>
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-              Live Faculty Status Matrix, All-Classes Attendance Dashboard (Daily/Weekly/Monthly), Period Marking & Syllabus Tracker.
+              Click any faculty card to inspect full-day period timetable. Live Faculty Status, Attendance & Syllabus Tracker.
             </p>
           </div>
         </div>
@@ -514,21 +534,21 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
       {/* SEVEN SUBPARTS NAVIGATION TAB BAR */}
       <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
         <button
-          onClick={() => setActiveSubpart("all-classes-attendance")}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
-            activeSubpart === "all-classes-attendance" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <UserCheck className="size-3.5" /> 🏛️ All Classes Attendance Dashboard
-        </button>
-
-        <button
           onClick={() => setActiveSubpart("faculty-status")}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
             activeSubpart === "faculty-status" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
           }`}
         >
           <Clock className="size-3.5" /> 🟢 Real-Time Faculty Status Matrix
+        </button>
+
+        <button
+          onClick={() => setActiveSubpart("all-classes-attendance")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "all-classes-attendance" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <UserCheck className="size-3.5" /> 🏛️ All Classes Attendance Dashboard
         </button>
 
         <button
@@ -576,6 +596,105 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
           <Bookmark className="size-3.5" /> Curriculum
         </button>
       </div>
+
+      {/* FEATURE 1: REAL-TIME FACULTY STATUS MATRIX */}
+      {activeSubpart === "faculty-status" && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+              <span className="text-xs font-bold text-muted-foreground uppercase shrink-0">Current Period:</span>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setSelectedPeriod(p)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    selectedPeriod === p ? "bg-primary text-white shadow-sm" : "bg-muted/40 text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  Period {p}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Select value={selectedDeptFilter} onValueChange={setSelectedDeptFilter}>
+                <SelectTrigger className="h-9 text-xs w-[160px] rounded-xl"><SelectValue placeholder="Department" /></SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS_LIST.map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}
+                </SelectContent>
+              </Select>
+              <div className="relative flex-1 min-w-[150px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                <Input placeholder="Search faculty..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-8 h-9 text-xs rounded-xl" />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredFacultyStatus.map((f) => (
+              <div
+                key={f.id}
+                onClick={() => handleOpenFacultySchedule(f.name)}
+                className="p-4 rounded-2xl border border-border/80 bg-card space-y-3 shadow-sm hover:border-primary hover:shadow-md transition-all cursor-pointer group relative"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
+                      {f.name} <ExternalLink className="size-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
+                    </h3>
+                    <p className="text-xs text-muted-foreground font-mono">{f.department} Department</p>
+                  </div>
+                  {f.status === "FREE" && (
+                    <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 font-bold">
+                      🟢 FREE
+                    </Badge>
+                  )}
+                  {f.status === "IN CLASS / WORKING" && (
+                    <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-300 font-bold">
+                      🔵 IN CLASS
+                    </Badge>
+                  )}
+                  {f.status === "ON LEAVE" && (
+                    <Badge className="bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-300 font-bold">
+                      🔴 ON LEAVE
+                    </Badge>
+                  )}
+                </div>
+
+                {f.status === "IN CLASS / WORKING" && (
+                  <div className="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/30 text-xs space-y-1">
+                    <p className="font-bold text-blue-900 dark:text-blue-300">{f.subject}</p>
+                    <div className="flex items-center justify-between text-muted-foreground font-mono text-[0.7rem] pt-1">
+                      <span>Class: <strong className="text-foreground">{f.currentClass}</strong></span>
+                      <span>Room: <strong className="text-foreground">{f.roomNo}</strong></span>
+                    </div>
+                    <p className="text-[0.68rem] font-mono text-blue-600 dark:text-blue-400">Slot: {f.timeSlot}</p>
+                  </div>
+                )}
+
+                {f.status === "FREE" && (
+                  <div className="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 text-xs">
+                    <p className="text-emerald-700 dark:text-emerald-300 font-medium">Unassigned in Period {selectedPeriod}</p>
+                    <p className="text-[0.68rem] text-muted-foreground">Available for proxy / substitution</p>
+                  </div>
+                )}
+
+                {f.status === "ON LEAVE" && (
+                  <div className="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/50 text-xs">
+                    <p className="text-rose-700 dark:text-rose-300 font-semibold">{f.leaveReason || "Approved Leave"}</p>
+                    <p className="text-[0.68rem] text-muted-foreground">Substitute assigned by HOD</p>
+                  </div>
+                )}
+
+                <div className="text-[0.68rem] text-primary/80 font-semibold flex items-center justify-end gap-1 pt-1 border-t border-border/40">
+                  <span>Click to view full-day timetable</span>
+                  <Calendar className="size-3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* FEATURE 4: ALL CLASSES ATTENDANCE DASHBOARD (SUPER ADMIN GOVERNANCE) */}
       {activeSubpart === "all-classes-attendance" && (
@@ -679,94 +798,6 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
                 </tbody>
               </table>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* FEATURE 1: REAL-TIME FACULTY STATUS MATRIX */}
-      {activeSubpart === "faculty-status" && (
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm">
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-              <span className="text-xs font-bold text-muted-foreground uppercase shrink-0">Current Period:</span>
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setSelectedPeriod(p)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    selectedPeriod === p ? "bg-primary text-white shadow-sm" : "bg-muted/40 text-muted-foreground hover:bg-muted"
-                  }`}
-                >
-                  Period {p}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Select value={selectedDeptFilter} onValueChange={setSelectedDeptFilter}>
-                <SelectTrigger className="h-9 text-xs w-[160px] rounded-xl"><SelectValue placeholder="Department" /></SelectTrigger>
-                <SelectContent>
-                  {DEPARTMENTS_LIST.map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}
-                </SelectContent>
-              </Select>
-              <div className="relative flex-1 min-w-[150px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                <Input placeholder="Search faculty..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-8 h-9 text-xs rounded-xl" />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredFacultyStatus.map((f) => (
-              <div key={f.id} className="p-4 rounded-2xl border border-border/80 bg-card space-y-3 shadow-sm hover:border-primary/40 transition-all">
-                <div className="flex items-center justify-between gap-2">
-                  <div>
-                    <h3 className="font-bold text-sm text-foreground">{f.name}</h3>
-                    <p className="text-xs text-muted-foreground font-mono">{f.department} Department</p>
-                  </div>
-                  {f.status === "FREE" && (
-                    <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 font-bold">
-                      🟢 FREE
-                    </Badge>
-                  )}
-                  {f.status === "IN CLASS / WORKING" && (
-                    <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-300 font-bold">
-                      🔵 IN CLASS
-                    </Badge>
-                  )}
-                  {f.status === "ON LEAVE" && (
-                    <Badge className="bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-300 font-bold">
-                      🔴 ON LEAVE
-                    </Badge>
-                  )}
-                </div>
-
-                {f.status === "IN CLASS / WORKING" && (
-                  <div className="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/30 text-xs space-y-1">
-                    <p className="font-bold text-blue-900 dark:text-blue-300">{f.subject}</p>
-                    <div className="flex items-center justify-between text-muted-foreground font-mono text-[0.7rem] pt-1">
-                      <span>Class: <strong className="text-foreground">{f.currentClass}</strong></span>
-                      <span>Room: <strong className="text-foreground">{f.roomNo}</strong></span>
-                    </div>
-                    <p className="text-[0.68rem] font-mono text-blue-600 dark:text-blue-400">Slot: {f.timeSlot}</p>
-                  </div>
-                )}
-
-                {f.status === "FREE" && (
-                  <div className="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 text-xs">
-                    <p className="text-emerald-700 dark:text-emerald-300 font-medium">Unassigned in Period {selectedPeriod}</p>
-                    <p className="text-[0.68rem] text-muted-foreground">Available for proxy / substitution</p>
-                  </div>
-                )}
-
-                {f.status === "ON LEAVE" && (
-                  <div className="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/50 text-xs">
-                    <p className="text-rose-700 dark:text-rose-300 font-semibold">{f.leaveReason || "Approved Leave"}</p>
-                    <p className="text-[0.68rem] text-muted-foreground">Substitute assigned by HOD</p>
-                  </div>
-                )}
-              </div>
-            ))}
           </div>
         </div>
       )}
@@ -990,6 +1021,104 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
           ))}
         </div>
       )}
+
+      {/* MODAL: FACULTY FULL-DAY PERIOD TIMETABLE */}
+      <Dialog open={isTimetableModalOpen} onOpenChange={setIsTimetableModalOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center justify-between gap-2 border-b border-border pb-3">
+              <div className="flex items-center gap-2">
+                <CalendarRange className="size-5 text-primary" />
+                <span>Full-Day Period Schedule: {selectedFacultySchedule?.name}</span>
+              </div>
+              <Badge variant="outline" className="font-mono text-xs text-primary">
+                {selectedFacultySchedule?.department} Dept
+              </Badge>
+            </DialogTitle>
+            <DialogDescription className="text-xs pt-1">
+              Detailed period-by-period class assignments, free slots, and room allocations for today.
+            </DialogDescription>
+          </DialogHeader>
+
+          {scheduleLoading || !selectedFacultySchedule ? (
+            <div className="p-8 text-center space-y-2">
+              <RefreshCw className="size-6 animate-spin mx-auto text-primary" />
+              <p className="text-xs text-muted-foreground">Loading faculty timetable schedule...</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-muted/40 border border-border/60 text-xs">
+                <div>
+                  <p className="font-bold text-foreground">{selectedFacultySchedule.name} ({selectedFacultySchedule.facultyId})</p>
+                  <p className="text-muted-foreground">{selectedFacultySchedule.designation} • {selectedFacultySchedule.email}</p>
+                </div>
+                <div className="flex items-center gap-2 font-mono">
+                  <Badge className="bg-emerald-500/10 text-emerald-600 font-bold">
+                    🟢 Free Slots: {selectedFacultySchedule.periods.filter((p) => p.status === "FREE").length}
+                  </Badge>
+                  <Badge className="bg-blue-500/10 text-blue-600 font-bold">
+                    🔵 Teaching Periods: {selectedFacultySchedule.periods.filter((p) => p.status === "IN CLASS").length}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto rounded-xl border border-border/70">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-muted/60 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                    <tr>
+                      <th className="py-2.5 px-3">Period</th>
+                      <th className="py-2.5 px-3">Time Slot</th>
+                      <th className="py-2.5 px-3">Scheduled Status</th>
+                      <th className="py-2.5 px-3">Subject / Course</th>
+                      <th className="py-2.5 px-3">Class & Section</th>
+                      <th className="py-2.5 px-3">Room / Lab No.</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {selectedFacultySchedule.periods.map((slot) => (
+                      <tr key={slot.periodNumber} className="hover:bg-muted/20 transition-colors">
+                        <td className="py-3 px-3 font-mono font-bold text-primary">Period {slot.periodNumber}</td>
+                        <td className="py-3 px-3 font-mono text-muted-foreground">{slot.timeSlot}</td>
+                        <td className="py-3 px-3">
+                          {slot.status === "FREE" && (
+                            <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 font-bold">
+                              🟢 FREE
+                            </Badge>
+                          )}
+                          {slot.status === "IN CLASS" && (
+                            <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-300 font-bold">
+                              🔵 IN CLASS
+                            </Badge>
+                          )}
+                          {slot.status === "ON LEAVE" && (
+                            <Badge className="bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-300 font-bold">
+                              🔴 ON LEAVE
+                            </Badge>
+                          )}
+                          {slot.status === "BREAK" && (
+                            <Badge variant="outline" className="text-amber-600 border-amber-300 font-bold">
+                              🟡 LUNCH BREAK
+                            </Badge>
+                          )}
+                        </td>
+                        <td className="py-3 px-3 font-bold text-foreground">{slot.subject || "— (Unassigned)"}</td>
+                        <td className="py-3 px-3 font-mono font-semibold">{slot.className || "—"}</td>
+                        <td className="py-3 px-3 font-mono text-muted-foreground">{slot.roomNo || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="pt-2 border-t border-border">
+            <Button variant="outline" onClick={() => setIsTimetableModalOpen(false)} className="text-xs rounded-xl">
+              Close Schedule
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
