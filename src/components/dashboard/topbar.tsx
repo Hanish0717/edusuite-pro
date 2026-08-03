@@ -1,5 +1,5 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Bell, Download, Filter, Moon, Search, Sun, Settings as SettingsIcon } from "lucide-react";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { Bell, Download, Filter, Moon, Search, Sun, Settings as SettingsIcon, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -53,7 +53,8 @@ import {
   type DepartmentCode,
 } from "@/config/roles";
 import { useRole } from "@/context/role-context";
-import { notifications } from "@/data/mock";
+import { notificationService, type Notification } from "@/shared/notifications";
+import { eventBus } from "@/shared/services/eventBus";
 
 function useCrumbs() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
@@ -67,6 +68,7 @@ function useCrumbs() {
 
 export function Topbar() {
   const crumbs = useCrumbs();
+  const navigate = useNavigate();
   const {
     role,
     setRole,
@@ -79,12 +81,72 @@ export function Topbar() {
     setExternalPersona,
   } = useRole();
   const [dark, setDark] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [notifs, setNotifs] = useState<Notification[]>([]);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
 
-  const unread = notifications.filter((n) => n.unread).length;
+  const getTargetNotifRole = (): string => {
+    if (role === "student") return "student";
+    if (role === "parent") return "parent";
+    if (role === "super-admin" || role === "super_admin") return "super-admin";
+    if (role === "staff") {
+      if (flags.includes("isHod")) return "hod";
+      if (flags.includes("isLibraryAdmin")) return "librarian";
+      if (flags.includes("isPlacementOfficer")) return "placement";
+      if (flags.includes("isExamController")) return "exam_cell";
+      if (flags.includes("isFinanceOfficer")) return "accounts";
+      if (flags.includes("isHostelWarden")) return "warden";
+      if (flags.includes("isTransportOfficer")) return "transport";
+      return "faculty";
+    }
+    return "external-user";
+  };
+
+  const activeNotifRole = getTargetNotifRole();
+
+  useEffect(() => {
+    let active = true;
+    const fetchNotifs = () => {
+      notificationService.getNotificationsForRole(activeNotifRole).then((data) => {
+        if (active) {
+          setNotifs(data);
+        }
+      });
+    };
+
+    fetchNotifs();
+
+    const unsubscribeNew = eventBus.on("notification:new_added", (newNotif) => {
+      if (newNotif.target_role === activeNotifRole) {
+        fetchNotifs();
+      }
+    });
+
+    return () => {
+      active = false;
+      unsubscribeNew();
+    };
+  }, [activeNotifRole]);
+
+  const unread = notifs.filter((n) => n.status === "unread").length;
+
+  const getPriorityBadge = (priority: string) => {
+    switch (priority) {
+      case "Critical":
+        return <span className="bg-red-600 text-white animate-pulse text-[0.6rem] font-bold px-1.5 py-0.5 rounded">Critical</span>;
+      case "High":
+        return <span className="bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300 text-[0.6rem] font-bold px-1.5 py-0.5 rounded">High</span>;
+      case "Medium":
+        return <span className="bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 text-[0.6rem] font-bold px-1.5 py-0.5 rounded">Medium</span>;
+      case "Low":
+        return <span className="bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 text-[0.6rem] font-bold px-1.5 py-0.5 rounded">Low</span>;
+      default:
+        return <span className="bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300 text-[0.6rem] font-bold px-1.5 py-0.5 rounded">Info</span>;
+    }
+  };
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
@@ -98,7 +160,6 @@ export function Topbar() {
         </div>
 
         <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none py-0.5 max-w-full">
-          {/* Primary 5 Core Login Roles Dropdown */}
           <Select value={role} onValueChange={(v) => setRole(v as LoginRole)}>
             <SelectTrigger className="h-9 w-[160px] font-semibold text-xs border-primary/40 bg-card" aria-label="5 Core Login Roles">
               <SelectValue placeholder="Core Login Role" />
@@ -112,7 +173,6 @@ export function Topbar() {
             </SelectContent>
           </Select>
 
-          {/* Dynamic Sub-Fields Dropdown for Staff */}
           {role === "staff" && (
             <Select value={department || "CSE"} onValueChange={(v) => setDepartment((v || undefined) as DepartmentCode)}>
               <SelectTrigger className="h-9 w-[110px] text-xs font-mono bg-card" aria-label="Department Scope">
@@ -128,7 +188,6 @@ export function Topbar() {
             </Select>
           )}
 
-          {/* Dynamic Sub-Fields Dropdown for External User */}
           {role === "external-user" && (
             <Select
               value={externalPersona || "recruiter"}
@@ -197,32 +256,103 @@ export function Topbar() {
             {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </Button>
 
-          <Sheet>
+          <Sheet open={isNotifOpen} onOpenChange={setIsNotifOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
-                <Bell className="size-4" />
+                <Bell className="size-4 text-slate-700 dark:text-slate-200" />
                 {unread > 0 && (
-                  <span className="absolute right-1.5 top-1.5 grid size-4 place-items-center rounded-full bg-destructive text-[0.6rem] font-semibold text-destructive-foreground">
+                  <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-red-600 text-[0.6rem] font-bold text-white shadow-xs animate-pulse">
                     {unread}
                   </span>
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-full sm:max-w-sm">
-              <SheetHeader>
+            <SheetContent className="w-full sm:max-w-sm flex flex-col h-full p-6">
+              <SheetHeader className="mb-4 shrink-0">
                 <SheetTitle>Notifications</SheetTitle>
                 <SheetDescription>Campus updates for {profile.personaName}</SheetDescription>
               </SheetHeader>
-              <div className="mt-4 space-y-2 px-4 pb-4">
-                {notifications.map((n) => (
-                  <div
-                    key={n.title}
-                    className="rounded-xl border border-border bg-card p-3 shadow-card transition-colors hover:bg-accent/40"
-                  >
-                    <p className="text-sm font-medium">{n.title}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{n.meta}</p>
+              <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+                {notifs.length === 0 ? (
+                  <div className="text-center py-10 text-sm text-muted-foreground">
+                    No notifications for this role.
                   </div>
-                ))}
+                ) : (
+                  notifs.map((n) => (
+                    <div
+                      key={n.id}
+                      onClick={async () => {
+                        if (n.status === "unread") {
+                          await notificationService.markNotificationAsRead(n.id, profile.personaName);
+                          setNotifs((prev) =>
+                            prev.map((x) => (x.id === n.id ? { ...x, status: "read" } : x))
+                          );
+                        } else {
+                          await notificationService.trackClick(n.id, profile.personaName);
+                        }
+                        if (n.route) {
+                          navigate({ to: n.route });
+                        }
+                      }}
+                      className={`rounded-xl border border-border bg-card p-3 shadow-card transition-colors hover:bg-accent/40 cursor-pointer ${
+                        n.status === "unread" ? "border-l-4 border-l-primary" : ""
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[0.65rem] px-2 py-0.5 rounded font-semibold ${
+                            n.type === "Warning" ? "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300" :
+                            n.type === "Error" || n.type === "Emergency" ? "bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300" :
+                            n.type === "Success" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300" :
+                            "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300"
+                          }`}>
+                            {n.type}
+                          </span>
+                          {getPriorityBadge(n.priority)}
+                        </div>
+                        <span className="text-[0.65rem] text-muted-foreground font-mono">
+                          {n.module}
+                        </span>
+                      </div>
+                      <p className="text-sm font-semibold mt-1.5">{n.title}</p>
+                      <p className="mt-1 text-xs text-muted-foreground leading-normal">{n.message}</p>
+                      
+                      {n.actions && n.actions.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-border/40">
+                          {n.actions.map((act) => (
+                            <Button
+                              key={act.label}
+                              size="sm"
+                              variant={act.actionType === "approve" ? "default" : act.actionType === "reject" ? "destructive" : "outline"}
+                              className={`text-[0.65rem] h-6 py-0 px-2 ${
+                                act.actionType === "approve" ? "bg-emerald-600 text-white hover:bg-emerald-700 border-none shadow-none" : ""
+                              }`}
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (act.actionType === "link" && act.route) {
+                                  navigate({ to: act.route });
+                                } else {
+                                  toast.success(`Action "${act.label}" succeeded.`);
+                                }
+                                await notificationService.markNotificationAsRead(n.id, profile.personaName);
+                                setNotifs((prev) =>
+                                  prev.map((x) => (x.id === n.id ? { ...x, status: "read" } : x))
+                                );
+                              }}
+                            >
+                              {act.label}
+                            </Button>
+                          ))}
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-border/40 text-[0.65rem] text-muted-foreground">
+                        <span>By: {n.created_by}</span>
+                        <span>{new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </SheetContent>
           </Sheet>
@@ -246,6 +376,11 @@ export function Topbar() {
                 <p className="text-xs font-normal text-muted-foreground">{profile.personaMeta}</p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to={role === "super-admin" || role === "super_admin" ? "/super-admin/profile" : role === "student" ? "/student/profile" : "/faculty/profile"}>
+                  My Profile
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/settings">Settings</Link>
               </DropdownMenuItem>

@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { LeaveModuleView } from "@/modules/leave";
+import { HRModuleView } from "@/modules/hr";
 
 export const Route = createFileRoute("/leave")({
   head: () => ({
-    meta: [{ title: "Leave Management — EduSuite Pro" }],
+    meta: [{ title: "Faculty & Staff Leave Governance (HR) — EduSuite Pro" }],
   }),
   component: LeavePage,
 });
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/leave")({
 function LeavePage() {
   return (
     <DashboardLayout>
-      <LeaveModuleView />
+      <HRModuleView />
     </DashboardLayout>
   );
 }

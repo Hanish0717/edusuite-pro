@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AcademicsRouteImport } from './routes/academics'
 import { Route as AccreditationRouteImport } from './routes/accreditation'
 import { Route as AdmissionRouteImport } from './routes/admission'
+import { Route as AiAnalyticsRouteImport } from './routes/ai-analytics'
 import { Route as AlumniRouteImport } from './routes/alumni'
 import { Route as ApprovalWorkflowsRouteImport } from './routes/approval-workflows'
 import { Route as AttendanceRouteImport } from './routes/attendance'
@@ -22,6 +23,7 @@ import { Route as CommunicationRouteImport } from './routes/communication'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DeanRouteImport } from './routes/dean'
+import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as EmployeeManagementRouteImport } from './routes/employee-management'
 import { Route as ExaminationRouteImport } from './routes/examination'
 import { Route as ExaminationsRouteImport } from './routes/examinations'
@@ -43,6 +45,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ParentRouteImport } from './routes/parent'
 import { Route as PayrollRouteImport } from './routes/payroll'
 import { Route as PlacementRouteImport } from './routes/placement'
+import { Route as PlacementExamRouteImport } from './routes/placement-exam'
 import { Route as PlacementsRouteImport } from './routes/placements'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ProcurementRouteImport } from './routes/procurement'
@@ -56,6 +59,15 @@ import { Route as SuperAdminRouteImport } from './routes/super-admin'
 import { Route as TimetableRouteImport } from './routes/timetable'
 import { Route as TransportRouteImport } from './routes/transport'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as AiAnalyticsIndexRouteImport } from './routes/ai-analytics.index'
+import { Route as AiAnalyticsAttendancePredictionRouteImport } from './routes/ai-analytics.attendance-prediction'
+import { Route as AiAnalyticsChatbotRouteImport } from './routes/ai-analytics.chatbot'
+import { Route as AiAnalyticsDashboardRouteImport } from './routes/ai-analytics.dashboard'
+import { Route as AiAnalyticsModelInsightsRouteImport } from './routes/ai-analytics.model-insights'
+import { Route as AiAnalyticsNotificationsRouteImport } from './routes/ai-analytics.notifications'
+import { Route as AiAnalyticsReportsRouteImport } from './routes/ai-analytics.reports'
+import { Route as AiAnalyticsSettingsRouteImport } from './routes/ai-analytics.settings'
+import { Route as AiAnalyticsStudentRiskRouteImport } from './routes/ai-analytics.student-risk'
 import { Route as DashboardLibrarianRouteImport } from './routes/dashboard.librarian'
 import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
@@ -160,11 +172,20 @@ import { Route as StudentTimetableRouteImport } from './routes/student.timetable
 import { Route as StudentUpdatesRouteImport } from './routes/student.updates'
 import { Route as StudentWebinarsRouteImport } from './routes/student.webinars'
 import { Route as SuperAdminIndexRouteImport } from './routes/super-admin.index'
+import { Route as SuperAdminAcademicsRouteImport } from './routes/super-admin.academics'
+import { Route as SuperAdminAllClassesAttendanceRouteImport } from './routes/super-admin.all-classes-attendance'
+import { Route as SuperAdminAttendanceMarkRouteImport } from './routes/super-admin.attendance-mark'
 import { Route as SuperAdminCoursesRouteImport } from './routes/super-admin.courses'
 import { Route as SuperAdminDashboardRouteImport } from './routes/super-admin.dashboard'
+import { Route as SuperAdminEmergencyRouteImport } from './routes/super-admin.emergency'
+import { Route as SuperAdminEmergencyAlertsRouteImport } from './routes/super-admin.emergency-alerts'
 import { Route as SuperAdminFacultyRouteImport } from './routes/super-admin.faculty'
+import { Route as SuperAdminFacultyStatusRouteImport } from './routes/super-admin.faculty-status'
+import { Route as SuperAdminProfileRouteImport } from './routes/super-admin.profile'
 import { Route as SuperAdminSettingsRouteImport } from './routes/super-admin.settings'
 import { Route as SuperAdminStudentsRouteImport } from './routes/super-admin.students'
+import { Route as SuperAdminSyllabusTrackerRouteImport } from './routes/super-admin.syllabus-tracker'
+import { Route as SuperAdminTimetableRouteImport } from './routes/super-admin.timetable'
 import { Route as TransportIndexRouteImport } from './routes/transport.index'
 import { Route as TransportBusesRouteImport } from './routes/transport.buses'
 import { Route as TransportDashboardRouteImport } from './routes/transport.dashboard'
@@ -173,6 +194,9 @@ import { Route as TransportNotificationsRouteImport } from './routes/transport.n
 import { Route as TransportPassengersRouteImport } from './routes/transport.passengers'
 import { Route as TransportRoutesRouteImport } from './routes/transport.routes'
 import { Route as TransportSettingsRouteImport } from './routes/transport.settings'
+import { Route as DashboardAcademicsFacultyStatusRouteImport } from './routes/dashboard.academics.faculty-status'
+import { Route as DashboardAcademicsSyllabusTrackerRouteImport } from './routes/dashboard.academics.syllabus-tracker'
+import { Route as DashboardAcademicsTimetableRouteImport } from './routes/dashboard.academics.timetable'
 import { Route as DashboardLibrarianIndexRouteImport } from './routes/dashboard.librarian.index'
 import { Route as DashboardLibrarianBooksRouteImport } from './routes/dashboard.librarian.books'
 import { Route as DashboardLibrarianDigitalRouteImport } from './routes/dashboard.librarian.digital'
@@ -185,6 +209,10 @@ import { Route as DashboardLibrarianReportsRouteImport } from './routes/dashboar
 import { Route as DashboardLibrarianReturnBooksRouteImport } from './routes/dashboard.librarian.return-books'
 import { Route as DashboardLibrarianSettingsRouteImport } from './routes/dashboard.librarian.settings'
 import { Route as PlacementDrivesDriveIdRouteImport } from './routes/placement.drives_.$driveId'
+import { Route as SuperAdminAcademicsFacultyStatusRouteImport } from './routes/super-admin.academics.faculty-status'
+import { Route as SuperAdminAcademicsSyllabusTrackerRouteImport } from './routes/super-admin.academics.syllabus-tracker'
+import { Route as DashboardAcademicsAttendanceMarkRouteImport } from './routes/dashboard.academics.attendance.mark'
+import { Route as SuperAdminAcademicsAttendanceMarkRouteImport } from './routes/super-admin.academics.attendance.mark'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -209,6 +237,11 @@ const AccreditationRoute = AccreditationRouteImport.update({
 const AdmissionRoute = AdmissionRouteImport.update({
   id: '/admission',
   path: '/admission',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiAnalyticsRoute = AiAnalyticsRouteImport.update({
+  id: '/ai-analytics',
+  path: '/ai-analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AlumniRoute = AlumniRouteImport.update({
@@ -249,6 +282,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const DeanRoute = DeanRouteImport.update({
   id: '/dean',
   path: '/dean',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmergencyRoute = EmergencyRouteImport.update({
+  id: '/emergency',
+  path: '/emergency',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmployeeManagementRoute = EmployeeManagementRouteImport.update({
@@ -356,6 +394,11 @@ const PlacementRoute = PlacementRouteImport.update({
   path: '/placement',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlacementExamRoute = PlacementExamRouteImport.update({
+  id: '/placement-exam',
+  path: '/placement-exam',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlacementsRoute = PlacementsRouteImport.update({
   id: '/placements',
   path: '/placements',
@@ -420,6 +463,54 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
   id: '/verify-email',
   path: '/verify-email',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AiAnalyticsIndexRoute = AiAnalyticsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AiAnalyticsRoute,
+} as any)
+const AiAnalyticsAttendancePredictionRoute =
+  AiAnalyticsAttendancePredictionRouteImport.update({
+    id: '/attendance-prediction',
+    path: '/attendance-prediction',
+    getParentRoute: () => AiAnalyticsRoute,
+  } as any)
+const AiAnalyticsChatbotRoute = AiAnalyticsChatbotRouteImport.update({
+  id: '/chatbot',
+  path: '/chatbot',
+  getParentRoute: () => AiAnalyticsRoute,
+} as any)
+const AiAnalyticsDashboardRoute = AiAnalyticsDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AiAnalyticsRoute,
+} as any)
+const AiAnalyticsModelInsightsRoute =
+  AiAnalyticsModelInsightsRouteImport.update({
+    id: '/model-insights',
+    path: '/model-insights',
+    getParentRoute: () => AiAnalyticsRoute,
+  } as any)
+const AiAnalyticsNotificationsRoute =
+  AiAnalyticsNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AiAnalyticsRoute,
+  } as any)
+const AiAnalyticsReportsRoute = AiAnalyticsReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AiAnalyticsRoute,
+} as any)
+const AiAnalyticsSettingsRoute = AiAnalyticsSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AiAnalyticsRoute,
+} as any)
+const AiAnalyticsStudentRiskRoute = AiAnalyticsStudentRiskRouteImport.update({
+  id: '/student-risk',
+  path: '/student-risk',
+  getParentRoute: () => AiAnalyticsRoute,
 } as any)
 const DashboardLibrarianRoute = DashboardLibrarianRouteImport.update({
   id: '/librarian',
@@ -943,6 +1034,23 @@ const SuperAdminIndexRoute = SuperAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => SuperAdminRoute,
 } as any)
+const SuperAdminAcademicsRoute = SuperAdminAcademicsRouteImport.update({
+  id: '/academics',
+  path: '/academics',
+  getParentRoute: () => SuperAdminRoute,
+} as any)
+const SuperAdminAllClassesAttendanceRoute =
+  SuperAdminAllClassesAttendanceRouteImport.update({
+    id: '/all-classes-attendance',
+    path: '/all-classes-attendance',
+    getParentRoute: () => SuperAdminRoute,
+  } as any)
+const SuperAdminAttendanceMarkRoute =
+  SuperAdminAttendanceMarkRouteImport.update({
+    id: '/attendance-mark',
+    path: '/attendance-mark',
+    getParentRoute: () => SuperAdminRoute,
+  } as any)
 const SuperAdminCoursesRoute = SuperAdminCoursesRouteImport.update({
   id: '/courses',
   path: '/courses',
@@ -953,9 +1061,30 @@ const SuperAdminDashboardRoute = SuperAdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => SuperAdminRoute,
 } as any)
+const SuperAdminEmergencyRoute = SuperAdminEmergencyRouteImport.update({
+  id: '/emergency',
+  path: '/emergency',
+  getParentRoute: () => SuperAdminRoute,
+} as any)
+const SuperAdminEmergencyAlertsRoute =
+  SuperAdminEmergencyAlertsRouteImport.update({
+    id: '/emergency-alerts',
+    path: '/emergency-alerts',
+    getParentRoute: () => SuperAdminRoute,
+  } as any)
 const SuperAdminFacultyRoute = SuperAdminFacultyRouteImport.update({
   id: '/faculty',
   path: '/faculty',
+  getParentRoute: () => SuperAdminRoute,
+} as any)
+const SuperAdminFacultyStatusRoute = SuperAdminFacultyStatusRouteImport.update({
+  id: '/faculty-status',
+  path: '/faculty-status',
+  getParentRoute: () => SuperAdminRoute,
+} as any)
+const SuperAdminProfileRoute = SuperAdminProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => SuperAdminRoute,
 } as any)
 const SuperAdminSettingsRoute = SuperAdminSettingsRouteImport.update({
@@ -966,6 +1095,17 @@ const SuperAdminSettingsRoute = SuperAdminSettingsRouteImport.update({
 const SuperAdminStudentsRoute = SuperAdminStudentsRouteImport.update({
   id: '/students',
   path: '/students',
+  getParentRoute: () => SuperAdminRoute,
+} as any)
+const SuperAdminSyllabusTrackerRoute =
+  SuperAdminSyllabusTrackerRouteImport.update({
+    id: '/syllabus-tracker',
+    path: '/syllabus-tracker',
+    getParentRoute: () => SuperAdminRoute,
+  } as any)
+const SuperAdminTimetableRoute = SuperAdminTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
   getParentRoute: () => SuperAdminRoute,
 } as any)
 const TransportIndexRoute = TransportIndexRouteImport.update({
@@ -1008,6 +1148,24 @@ const TransportSettingsRoute = TransportSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => TransportRoute,
 } as any)
+const DashboardAcademicsFacultyStatusRoute =
+  DashboardAcademicsFacultyStatusRouteImport.update({
+    id: '/academics/faculty-status',
+    path: '/academics/faculty-status',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAcademicsSyllabusTrackerRoute =
+  DashboardAcademicsSyllabusTrackerRouteImport.update({
+    id: '/academics/syllabus-tracker',
+    path: '/academics/syllabus-tracker',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAcademicsTimetableRoute =
+  DashboardAcademicsTimetableRouteImport.update({
+    id: '/academics/timetable',
+    path: '/academics/timetable',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const DashboardLibrarianIndexRoute = DashboardLibrarianIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -1076,6 +1234,30 @@ const PlacementDrivesDriveIdRoute = PlacementDrivesDriveIdRouteImport.update({
   path: '/drives/$driveId',
   getParentRoute: () => PlacementRoute,
 } as any)
+const SuperAdminAcademicsFacultyStatusRoute =
+  SuperAdminAcademicsFacultyStatusRouteImport.update({
+    id: '/faculty-status',
+    path: '/faculty-status',
+    getParentRoute: () => SuperAdminAcademicsRoute,
+  } as any)
+const SuperAdminAcademicsSyllabusTrackerRoute =
+  SuperAdminAcademicsSyllabusTrackerRouteImport.update({
+    id: '/syllabus-tracker',
+    path: '/syllabus-tracker',
+    getParentRoute: () => SuperAdminAcademicsRoute,
+  } as any)
+const DashboardAcademicsAttendanceMarkRoute =
+  DashboardAcademicsAttendanceMarkRouteImport.update({
+    id: '/academics/attendance/mark',
+    path: '/academics/attendance/mark',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const SuperAdminAcademicsAttendanceMarkRoute =
+  SuperAdminAcademicsAttendanceMarkRouteImport.update({
+    id: '/attendance/mark',
+    path: '/attendance/mark',
+    getParentRoute: () => SuperAdminAcademicsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -1083,6 +1265,7 @@ export interface FileRoutesByFullPath {
   '/academics': typeof AcademicsRoute
   '/accreditation': typeof AccreditationRoute
   '/admission': typeof AdmissionRoute
+  '/ai-analytics': typeof AiAnalyticsRouteWithChildren
   '/alumni': typeof AlumniRoute
   '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
@@ -1091,6 +1274,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dean': typeof DeanRouteWithChildren
+  '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
   '/examination': typeof ExaminationRouteWithChildren
   '/examinations': typeof ExaminationsRoute
@@ -1112,6 +1296,7 @@ export interface FileRoutesByFullPath {
   '/parent': typeof ParentRouteWithChildren
   '/payroll': typeof PayrollRoute
   '/placement': typeof PlacementRouteWithChildren
+  '/placement-exam': typeof PlacementExamRoute
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
@@ -1125,6 +1310,14 @@ export interface FileRoutesByFullPath {
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/ai-analytics/attendance-prediction': typeof AiAnalyticsAttendancePredictionRoute
+  '/ai-analytics/chatbot': typeof AiAnalyticsChatbotRoute
+  '/ai-analytics/dashboard': typeof AiAnalyticsDashboardRoute
+  '/ai-analytics/model-insights': typeof AiAnalyticsModelInsightsRoute
+  '/ai-analytics/notifications': typeof AiAnalyticsNotificationsRoute
+  '/ai-analytics/reports': typeof AiAnalyticsReportsRoute
+  '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
+  '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
   '/dean/dashboard': typeof DeanDashboardRoute
   '/exam/take': typeof ExamTakeRoute
@@ -1215,11 +1408,20 @@ export interface FileRoutesByFullPath {
   '/student/timetable': typeof StudentTimetableRoute
   '/student/updates': typeof StudentUpdatesRoute
   '/student/webinars': typeof StudentWebinarsRoute
+  '/super-admin/academics': typeof SuperAdminAcademicsRouteWithChildren
+  '/super-admin/all-classes-attendance': typeof SuperAdminAllClassesAttendanceRoute
+  '/super-admin/attendance-mark': typeof SuperAdminAttendanceMarkRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
+  '/super-admin/emergency': typeof SuperAdminEmergencyRoute
+  '/super-admin/emergency-alerts': typeof SuperAdminEmergencyAlertsRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
+  '/super-admin/faculty-status': typeof SuperAdminFacultyStatusRoute
+  '/super-admin/profile': typeof SuperAdminProfileRoute
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
+  '/super-admin/syllabus-tracker': typeof SuperAdminSyllabusTrackerRoute
+  '/super-admin/timetable': typeof SuperAdminTimetableRoute
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
   '/transport/fees': typeof TransportFeesRoute
@@ -1227,6 +1429,7 @@ export interface FileRoutesByFullPath {
   '/transport/passengers': typeof TransportPassengersRoute
   '/transport/routes': typeof TransportRoutesRoute
   '/transport/settings': typeof TransportSettingsRoute
+  '/ai-analytics/': typeof AiAnalyticsIndexRoute
   '/dean/': typeof DeanIndexRoute
   '/examination/': typeof ExaminationIndexRoute
   '/external-user/': typeof ExternalUserIndexRoute
@@ -1242,6 +1445,9 @@ export interface FileRoutesByFullPath {
   '/student/': typeof StudentIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
+  '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
+  '/dashboard/academics/syllabus-tracker': typeof DashboardAcademicsSyllabusTrackerRoute
+  '/dashboard/academics/timetable': typeof DashboardAcademicsTimetableRoute
   '/dashboard/librarian/books': typeof DashboardLibrarianBooksRoute
   '/dashboard/librarian/digital': typeof DashboardLibrarianDigitalRoute
   '/dashboard/librarian/fines': typeof DashboardLibrarianFinesRoute
@@ -1253,7 +1459,11 @@ export interface FileRoutesByFullPath {
   '/dashboard/librarian/return-books': typeof DashboardLibrarianReturnBooksRoute
   '/dashboard/librarian/settings': typeof DashboardLibrarianSettingsRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
+  '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
+  '/dashboard/academics/attendance/mark': typeof DashboardAcademicsAttendanceMarkRoute
+  '/super-admin/academics/attendance/mark': typeof SuperAdminAcademicsAttendanceMarkRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -1268,6 +1478,7 @@ export interface FileRoutesByTo {
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
   '/examinations': typeof ExaminationsRoute
   '/features': typeof FeaturesRoute
@@ -1278,6 +1489,7 @@ export interface FileRoutesByTo {
   '/lms': typeof LmsRoute
   '/login': typeof LoginRoute
   '/payroll': typeof PayrollRoute
+  '/placement-exam': typeof PlacementExamRoute
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
@@ -1288,6 +1500,14 @@ export interface FileRoutesByTo {
   '/students': typeof StudentsRoute
   '/timetable': typeof TimetableRoute
   '/verify-email': typeof VerifyEmailRoute
+  '/ai-analytics/attendance-prediction': typeof AiAnalyticsAttendancePredictionRoute
+  '/ai-analytics/chatbot': typeof AiAnalyticsChatbotRoute
+  '/ai-analytics/dashboard': typeof AiAnalyticsDashboardRoute
+  '/ai-analytics/model-insights': typeof AiAnalyticsModelInsightsRoute
+  '/ai-analytics/notifications': typeof AiAnalyticsNotificationsRoute
+  '/ai-analytics/reports': typeof AiAnalyticsReportsRoute
+  '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
+  '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
@@ -1377,11 +1597,20 @@ export interface FileRoutesByTo {
   '/student/timetable': typeof StudentTimetableRoute
   '/student/updates': typeof StudentUpdatesRoute
   '/student/webinars': typeof StudentWebinarsRoute
+  '/super-admin/academics': typeof SuperAdminAcademicsRouteWithChildren
+  '/super-admin/all-classes-attendance': typeof SuperAdminAllClassesAttendanceRoute
+  '/super-admin/attendance-mark': typeof SuperAdminAttendanceMarkRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
+  '/super-admin/emergency': typeof SuperAdminEmergencyRoute
+  '/super-admin/emergency-alerts': typeof SuperAdminEmergencyAlertsRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
+  '/super-admin/faculty-status': typeof SuperAdminFacultyStatusRoute
+  '/super-admin/profile': typeof SuperAdminProfileRoute
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
+  '/super-admin/syllabus-tracker': typeof SuperAdminSyllabusTrackerRoute
+  '/super-admin/timetable': typeof SuperAdminTimetableRoute
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
   '/transport/fees': typeof TransportFeesRoute
@@ -1389,6 +1618,7 @@ export interface FileRoutesByTo {
   '/transport/passengers': typeof TransportPassengersRoute
   '/transport/routes': typeof TransportRoutesRoute
   '/transport/settings': typeof TransportSettingsRoute
+  '/ai-analytics': typeof AiAnalyticsIndexRoute
   '/dean': typeof DeanIndexRoute
   '/examination': typeof ExaminationIndexRoute
   '/external-user': typeof ExternalUserIndexRoute
@@ -1404,6 +1634,9 @@ export interface FileRoutesByTo {
   '/student': typeof StudentIndexRoute
   '/super-admin': typeof SuperAdminIndexRoute
   '/transport': typeof TransportIndexRoute
+  '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
+  '/dashboard/academics/syllabus-tracker': typeof DashboardAcademicsSyllabusTrackerRoute
+  '/dashboard/academics/timetable': typeof DashboardAcademicsTimetableRoute
   '/dashboard/librarian/books': typeof DashboardLibrarianBooksRoute
   '/dashboard/librarian/digital': typeof DashboardLibrarianDigitalRoute
   '/dashboard/librarian/fines': typeof DashboardLibrarianFinesRoute
@@ -1415,7 +1648,11 @@ export interface FileRoutesByTo {
   '/dashboard/librarian/return-books': typeof DashboardLibrarianReturnBooksRoute
   '/dashboard/librarian/settings': typeof DashboardLibrarianSettingsRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
+  '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/librarian': typeof DashboardLibrarianIndexRoute
+  '/dashboard/academics/attendance/mark': typeof DashboardAcademicsAttendanceMarkRoute
+  '/super-admin/academics/attendance/mark': typeof SuperAdminAcademicsAttendanceMarkRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1424,6 +1661,7 @@ export interface FileRoutesById {
   '/academics': typeof AcademicsRoute
   '/accreditation': typeof AccreditationRoute
   '/admission': typeof AdmissionRoute
+  '/ai-analytics': typeof AiAnalyticsRouteWithChildren
   '/alumni': typeof AlumniRoute
   '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
@@ -1432,6 +1670,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dean': typeof DeanRouteWithChildren
+  '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
   '/examination': typeof ExaminationRouteWithChildren
   '/examinations': typeof ExaminationsRoute
@@ -1453,6 +1692,7 @@ export interface FileRoutesById {
   '/parent': typeof ParentRouteWithChildren
   '/payroll': typeof PayrollRoute
   '/placement': typeof PlacementRouteWithChildren
+  '/placement-exam': typeof PlacementExamRoute
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
@@ -1466,6 +1706,14 @@ export interface FileRoutesById {
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
+  '/ai-analytics/attendance-prediction': typeof AiAnalyticsAttendancePredictionRoute
+  '/ai-analytics/chatbot': typeof AiAnalyticsChatbotRoute
+  '/ai-analytics/dashboard': typeof AiAnalyticsDashboardRoute
+  '/ai-analytics/model-insights': typeof AiAnalyticsModelInsightsRoute
+  '/ai-analytics/notifications': typeof AiAnalyticsNotificationsRoute
+  '/ai-analytics/reports': typeof AiAnalyticsReportsRoute
+  '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
+  '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
   '/dean/dashboard': typeof DeanDashboardRoute
   '/exam/take': typeof ExamTakeRoute
@@ -1556,11 +1804,20 @@ export interface FileRoutesById {
   '/student/timetable': typeof StudentTimetableRoute
   '/student/updates': typeof StudentUpdatesRoute
   '/student/webinars': typeof StudentWebinarsRoute
+  '/super-admin/academics': typeof SuperAdminAcademicsRouteWithChildren
+  '/super-admin/all-classes-attendance': typeof SuperAdminAllClassesAttendanceRoute
+  '/super-admin/attendance-mark': typeof SuperAdminAttendanceMarkRoute
   '/super-admin/courses': typeof SuperAdminCoursesRoute
   '/super-admin/dashboard': typeof SuperAdminDashboardRoute
+  '/super-admin/emergency': typeof SuperAdminEmergencyRoute
+  '/super-admin/emergency-alerts': typeof SuperAdminEmergencyAlertsRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
+  '/super-admin/faculty-status': typeof SuperAdminFacultyStatusRoute
+  '/super-admin/profile': typeof SuperAdminProfileRoute
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
+  '/super-admin/syllabus-tracker': typeof SuperAdminSyllabusTrackerRoute
+  '/super-admin/timetable': typeof SuperAdminTimetableRoute
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
   '/transport/fees': typeof TransportFeesRoute
@@ -1568,6 +1825,7 @@ export interface FileRoutesById {
   '/transport/passengers': typeof TransportPassengersRoute
   '/transport/routes': typeof TransportRoutesRoute
   '/transport/settings': typeof TransportSettingsRoute
+  '/ai-analytics/': typeof AiAnalyticsIndexRoute
   '/dean/': typeof DeanIndexRoute
   '/examination/': typeof ExaminationIndexRoute
   '/external-user/': typeof ExternalUserIndexRoute
@@ -1583,6 +1841,9 @@ export interface FileRoutesById {
   '/student/': typeof StudentIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
+  '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
+  '/dashboard/academics/syllabus-tracker': typeof DashboardAcademicsSyllabusTrackerRoute
+  '/dashboard/academics/timetable': typeof DashboardAcademicsTimetableRoute
   '/dashboard/librarian/books': typeof DashboardLibrarianBooksRoute
   '/dashboard/librarian/digital': typeof DashboardLibrarianDigitalRoute
   '/dashboard/librarian/fines': typeof DashboardLibrarianFinesRoute
@@ -1594,7 +1855,11 @@ export interface FileRoutesById {
   '/dashboard/librarian/return-books': typeof DashboardLibrarianReturnBooksRoute
   '/dashboard/librarian/settings': typeof DashboardLibrarianSettingsRoute
   '/placement/drives_/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
+  '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
+  '/dashboard/academics/attendance/mark': typeof DashboardAcademicsAttendanceMarkRoute
+  '/super-admin/academics/attendance/mark': typeof SuperAdminAcademicsAttendanceMarkRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1604,6 +1869,7 @@ export interface FileRouteTypes {
     | '/academics'
     | '/accreditation'
     | '/admission'
+    | '/ai-analytics'
     | '/alumni'
     | '/approval-workflows'
     | '/attendance'
@@ -1612,6 +1878,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/dean'
+    | '/emergency'
     | '/employee-management'
     | '/examination'
     | '/examinations'
@@ -1633,6 +1900,7 @@ export interface FileRouteTypes {
     | '/parent'
     | '/payroll'
     | '/placement'
+    | '/placement-exam'
     | '/placements'
     | '/pricing'
     | '/procurement'
@@ -1646,6 +1914,14 @@ export interface FileRouteTypes {
     | '/timetable'
     | '/transport'
     | '/verify-email'
+    | '/ai-analytics/attendance-prediction'
+    | '/ai-analytics/chatbot'
+    | '/ai-analytics/dashboard'
+    | '/ai-analytics/model-insights'
+    | '/ai-analytics/notifications'
+    | '/ai-analytics/reports'
+    | '/ai-analytics/settings'
+    | '/ai-analytics/student-risk'
     | '/dashboard/librarian'
     | '/dean/dashboard'
     | '/exam/take'
@@ -1736,11 +2012,20 @@ export interface FileRouteTypes {
     | '/student/timetable'
     | '/student/updates'
     | '/student/webinars'
+    | '/super-admin/academics'
+    | '/super-admin/all-classes-attendance'
+    | '/super-admin/attendance-mark'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
+    | '/super-admin/emergency'
+    | '/super-admin/emergency-alerts'
     | '/super-admin/faculty'
+    | '/super-admin/faculty-status'
+    | '/super-admin/profile'
     | '/super-admin/settings'
     | '/super-admin/students'
+    | '/super-admin/syllabus-tracker'
+    | '/super-admin/timetable'
     | '/transport/buses'
     | '/transport/dashboard'
     | '/transport/fees'
@@ -1748,6 +2033,7 @@ export interface FileRouteTypes {
     | '/transport/passengers'
     | '/transport/routes'
     | '/transport/settings'
+    | '/ai-analytics/'
     | '/dean/'
     | '/examination/'
     | '/external-user/'
@@ -1763,6 +2049,9 @@ export interface FileRouteTypes {
     | '/student/'
     | '/super-admin/'
     | '/transport/'
+    | '/dashboard/academics/faculty-status'
+    | '/dashboard/academics/syllabus-tracker'
+    | '/dashboard/academics/timetable'
     | '/dashboard/librarian/books'
     | '/dashboard/librarian/digital'
     | '/dashboard/librarian/fines'
@@ -1774,7 +2063,11 @@ export interface FileRouteTypes {
     | '/dashboard/librarian/return-books'
     | '/dashboard/librarian/settings'
     | '/placement/drives/$driveId'
+    | '/super-admin/academics/faculty-status'
+    | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/librarian/'
+    | '/dashboard/academics/attendance/mark'
+    | '/super-admin/academics/attendance/mark'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1789,6 +2082,7 @@ export interface FileRouteTypes {
     | '/communication'
     | '/contact'
     | '/dashboard'
+    | '/emergency'
     | '/employee-management'
     | '/examinations'
     | '/features'
@@ -1799,6 +2093,7 @@ export interface FileRouteTypes {
     | '/lms'
     | '/login'
     | '/payroll'
+    | '/placement-exam'
     | '/placements'
     | '/pricing'
     | '/procurement'
@@ -1809,6 +2104,14 @@ export interface FileRouteTypes {
     | '/students'
     | '/timetable'
     | '/verify-email'
+    | '/ai-analytics/attendance-prediction'
+    | '/ai-analytics/chatbot'
+    | '/ai-analytics/dashboard'
+    | '/ai-analytics/model-insights'
+    | '/ai-analytics/notifications'
+    | '/ai-analytics/reports'
+    | '/ai-analytics/settings'
+    | '/ai-analytics/student-risk'
     | '/dean/dashboard'
     | '/exam/take'
     | '/examination/dashboard'
@@ -1898,11 +2201,20 @@ export interface FileRouteTypes {
     | '/student/timetable'
     | '/student/updates'
     | '/student/webinars'
+    | '/super-admin/academics'
+    | '/super-admin/all-classes-attendance'
+    | '/super-admin/attendance-mark'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
+    | '/super-admin/emergency'
+    | '/super-admin/emergency-alerts'
     | '/super-admin/faculty'
+    | '/super-admin/faculty-status'
+    | '/super-admin/profile'
     | '/super-admin/settings'
     | '/super-admin/students'
+    | '/super-admin/syllabus-tracker'
+    | '/super-admin/timetable'
     | '/transport/buses'
     | '/transport/dashboard'
     | '/transport/fees'
@@ -1910,6 +2222,7 @@ export interface FileRouteTypes {
     | '/transport/passengers'
     | '/transport/routes'
     | '/transport/settings'
+    | '/ai-analytics'
     | '/dean'
     | '/examination'
     | '/external-user'
@@ -1925,6 +2238,9 @@ export interface FileRouteTypes {
     | '/student'
     | '/super-admin'
     | '/transport'
+    | '/dashboard/academics/faculty-status'
+    | '/dashboard/academics/syllabus-tracker'
+    | '/dashboard/academics/timetable'
     | '/dashboard/librarian/books'
     | '/dashboard/librarian/digital'
     | '/dashboard/librarian/fines'
@@ -1936,7 +2252,11 @@ export interface FileRouteTypes {
     | '/dashboard/librarian/return-books'
     | '/dashboard/librarian/settings'
     | '/placement/drives/$driveId'
+    | '/super-admin/academics/faculty-status'
+    | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/librarian'
+    | '/dashboard/academics/attendance/mark'
+    | '/super-admin/academics/attendance/mark'
   id:
     | '__root__'
     | '/'
@@ -1944,6 +2264,7 @@ export interface FileRouteTypes {
     | '/academics'
     | '/accreditation'
     | '/admission'
+    | '/ai-analytics'
     | '/alumni'
     | '/approval-workflows'
     | '/attendance'
@@ -1952,6 +2273,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/dean'
+    | '/emergency'
     | '/employee-management'
     | '/examination'
     | '/examinations'
@@ -1973,6 +2295,7 @@ export interface FileRouteTypes {
     | '/parent'
     | '/payroll'
     | '/placement'
+    | '/placement-exam'
     | '/placements'
     | '/pricing'
     | '/procurement'
@@ -1986,6 +2309,14 @@ export interface FileRouteTypes {
     | '/timetable'
     | '/transport'
     | '/verify-email'
+    | '/ai-analytics/attendance-prediction'
+    | '/ai-analytics/chatbot'
+    | '/ai-analytics/dashboard'
+    | '/ai-analytics/model-insights'
+    | '/ai-analytics/notifications'
+    | '/ai-analytics/reports'
+    | '/ai-analytics/settings'
+    | '/ai-analytics/student-risk'
     | '/dashboard/librarian'
     | '/dean/dashboard'
     | '/exam/take'
@@ -2076,11 +2407,20 @@ export interface FileRouteTypes {
     | '/student/timetable'
     | '/student/updates'
     | '/student/webinars'
+    | '/super-admin/academics'
+    | '/super-admin/all-classes-attendance'
+    | '/super-admin/attendance-mark'
     | '/super-admin/courses'
     | '/super-admin/dashboard'
+    | '/super-admin/emergency'
+    | '/super-admin/emergency-alerts'
     | '/super-admin/faculty'
+    | '/super-admin/faculty-status'
+    | '/super-admin/profile'
     | '/super-admin/settings'
     | '/super-admin/students'
+    | '/super-admin/syllabus-tracker'
+    | '/super-admin/timetable'
     | '/transport/buses'
     | '/transport/dashboard'
     | '/transport/fees'
@@ -2088,6 +2428,7 @@ export interface FileRouteTypes {
     | '/transport/passengers'
     | '/transport/routes'
     | '/transport/settings'
+    | '/ai-analytics/'
     | '/dean/'
     | '/examination/'
     | '/external-user/'
@@ -2103,6 +2444,9 @@ export interface FileRouteTypes {
     | '/student/'
     | '/super-admin/'
     | '/transport/'
+    | '/dashboard/academics/faculty-status'
+    | '/dashboard/academics/syllabus-tracker'
+    | '/dashboard/academics/timetable'
     | '/dashboard/librarian/books'
     | '/dashboard/librarian/digital'
     | '/dashboard/librarian/fines'
@@ -2114,7 +2458,11 @@ export interface FileRouteTypes {
     | '/dashboard/librarian/return-books'
     | '/dashboard/librarian/settings'
     | '/placement/drives_/$driveId'
+    | '/super-admin/academics/faculty-status'
+    | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/librarian/'
+    | '/dashboard/academics/attendance/mark'
+    | '/super-admin/academics/attendance/mark'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -2123,6 +2471,7 @@ export interface RootRouteChildren {
   AcademicsRoute: typeof AcademicsRoute
   AccreditationRoute: typeof AccreditationRoute
   AdmissionRoute: typeof AdmissionRoute
+  AiAnalyticsRoute: typeof AiAnalyticsRouteWithChildren
   AlumniRoute: typeof AlumniRoute
   ApprovalWorkflowsRoute: typeof ApprovalWorkflowsRoute
   AttendanceRoute: typeof AttendanceRoute
@@ -2131,6 +2480,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   DeanRoute: typeof DeanRouteWithChildren
+  EmergencyRoute: typeof EmergencyRoute
   EmployeeManagementRoute: typeof EmployeeManagementRoute
   ExaminationRoute: typeof ExaminationRouteWithChildren
   ExaminationsRoute: typeof ExaminationsRoute
@@ -2152,6 +2502,7 @@ export interface RootRouteChildren {
   ParentRoute: typeof ParentRouteWithChildren
   PayrollRoute: typeof PayrollRoute
   PlacementRoute: typeof PlacementRouteWithChildren
+  PlacementExamRoute: typeof PlacementExamRoute
   PlacementsRoute: typeof PlacementsRoute
   PricingRoute: typeof PricingRoute
   ProcurementRoute: typeof ProcurementRoute
@@ -2203,6 +2554,13 @@ declare module '@tanstack/react-router' {
       path: '/admission'
       fullPath: '/admission'
       preLoaderRoute: typeof AdmissionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-analytics': {
+      id: '/ai-analytics'
+      path: '/ai-analytics'
+      fullPath: '/ai-analytics'
+      preLoaderRoute: typeof AiAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/alumni': {
@@ -2259,6 +2617,13 @@ declare module '@tanstack/react-router' {
       path: '/dean'
       fullPath: '/dean'
       preLoaderRoute: typeof DeanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/emergency': {
+      id: '/emergency'
+      path: '/emergency'
+      fullPath: '/emergency'
+      preLoaderRoute: typeof EmergencyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/employee-management': {
@@ -2408,6 +2773,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlacementRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/placement-exam': {
+      id: '/placement-exam'
+      path: '/placement-exam'
+      fullPath: '/placement-exam'
+      preLoaderRoute: typeof PlacementExamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/placements': {
       id: '/placements'
       path: '/placements'
@@ -2498,6 +2870,69 @@ declare module '@tanstack/react-router' {
       fullPath: '/verify-email'
       preLoaderRoute: typeof VerifyEmailRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/ai-analytics/': {
+      id: '/ai-analytics/'
+      path: '/'
+      fullPath: '/ai-analytics/'
+      preLoaderRoute: typeof AiAnalyticsIndexRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/attendance-prediction': {
+      id: '/ai-analytics/attendance-prediction'
+      path: '/attendance-prediction'
+      fullPath: '/ai-analytics/attendance-prediction'
+      preLoaderRoute: typeof AiAnalyticsAttendancePredictionRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/chatbot': {
+      id: '/ai-analytics/chatbot'
+      path: '/chatbot'
+      fullPath: '/ai-analytics/chatbot'
+      preLoaderRoute: typeof AiAnalyticsChatbotRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/dashboard': {
+      id: '/ai-analytics/dashboard'
+      path: '/dashboard'
+      fullPath: '/ai-analytics/dashboard'
+      preLoaderRoute: typeof AiAnalyticsDashboardRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/model-insights': {
+      id: '/ai-analytics/model-insights'
+      path: '/model-insights'
+      fullPath: '/ai-analytics/model-insights'
+      preLoaderRoute: typeof AiAnalyticsModelInsightsRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/notifications': {
+      id: '/ai-analytics/notifications'
+      path: '/notifications'
+      fullPath: '/ai-analytics/notifications'
+      preLoaderRoute: typeof AiAnalyticsNotificationsRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/reports': {
+      id: '/ai-analytics/reports'
+      path: '/reports'
+      fullPath: '/ai-analytics/reports'
+      preLoaderRoute: typeof AiAnalyticsReportsRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/settings': {
+      id: '/ai-analytics/settings'
+      path: '/settings'
+      fullPath: '/ai-analytics/settings'
+      preLoaderRoute: typeof AiAnalyticsSettingsRouteImport
+      parentRoute: typeof AiAnalyticsRoute
+    }
+    '/ai-analytics/student-risk': {
+      id: '/ai-analytics/student-risk'
+      path: '/student-risk'
+      fullPath: '/ai-analytics/student-risk'
+      preLoaderRoute: typeof AiAnalyticsStudentRiskRouteImport
+      parentRoute: typeof AiAnalyticsRoute
     }
     '/dashboard/librarian': {
       id: '/dashboard/librarian'
@@ -3227,6 +3662,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperAdminIndexRouteImport
       parentRoute: typeof SuperAdminRoute
     }
+    '/super-admin/academics': {
+      id: '/super-admin/academics'
+      path: '/academics'
+      fullPath: '/super-admin/academics'
+      preLoaderRoute: typeof SuperAdminAcademicsRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
+    '/super-admin/all-classes-attendance': {
+      id: '/super-admin/all-classes-attendance'
+      path: '/all-classes-attendance'
+      fullPath: '/super-admin/all-classes-attendance'
+      preLoaderRoute: typeof SuperAdminAllClassesAttendanceRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
+    '/super-admin/attendance-mark': {
+      id: '/super-admin/attendance-mark'
+      path: '/attendance-mark'
+      fullPath: '/super-admin/attendance-mark'
+      preLoaderRoute: typeof SuperAdminAttendanceMarkRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
     '/super-admin/courses': {
       id: '/super-admin/courses'
       path: '/courses'
@@ -3241,11 +3697,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperAdminDashboardRouteImport
       parentRoute: typeof SuperAdminRoute
     }
+    '/super-admin/emergency': {
+      id: '/super-admin/emergency'
+      path: '/emergency'
+      fullPath: '/super-admin/emergency'
+      preLoaderRoute: typeof SuperAdminEmergencyRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
+    '/super-admin/emergency-alerts': {
+      id: '/super-admin/emergency-alerts'
+      path: '/emergency-alerts'
+      fullPath: '/super-admin/emergency-alerts'
+      preLoaderRoute: typeof SuperAdminEmergencyAlertsRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
     '/super-admin/faculty': {
       id: '/super-admin/faculty'
       path: '/faculty'
       fullPath: '/super-admin/faculty'
       preLoaderRoute: typeof SuperAdminFacultyRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
+    '/super-admin/faculty-status': {
+      id: '/super-admin/faculty-status'
+      path: '/faculty-status'
+      fullPath: '/super-admin/faculty-status'
+      preLoaderRoute: typeof SuperAdminFacultyStatusRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
+    '/super-admin/profile': {
+      id: '/super-admin/profile'
+      path: '/profile'
+      fullPath: '/super-admin/profile'
+      preLoaderRoute: typeof SuperAdminProfileRouteImport
       parentRoute: typeof SuperAdminRoute
     }
     '/super-admin/settings': {
@@ -3260,6 +3744,20 @@ declare module '@tanstack/react-router' {
       path: '/students'
       fullPath: '/super-admin/students'
       preLoaderRoute: typeof SuperAdminStudentsRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
+    '/super-admin/syllabus-tracker': {
+      id: '/super-admin/syllabus-tracker'
+      path: '/syllabus-tracker'
+      fullPath: '/super-admin/syllabus-tracker'
+      preLoaderRoute: typeof SuperAdminSyllabusTrackerRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
+    '/super-admin/timetable': {
+      id: '/super-admin/timetable'
+      path: '/timetable'
+      fullPath: '/super-admin/timetable'
+      preLoaderRoute: typeof SuperAdminTimetableRouteImport
       parentRoute: typeof SuperAdminRoute
     }
     '/transport/': {
@@ -3317,6 +3815,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/transport/settings'
       preLoaderRoute: typeof TransportSettingsRouteImport
       parentRoute: typeof TransportRoute
+    }
+    '/dashboard/academics/faculty-status': {
+      id: '/dashboard/academics/faculty-status'
+      path: '/academics/faculty-status'
+      fullPath: '/dashboard/academics/faculty-status'
+      preLoaderRoute: typeof DashboardAcademicsFacultyStatusRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/academics/syllabus-tracker': {
+      id: '/dashboard/academics/syllabus-tracker'
+      path: '/academics/syllabus-tracker'
+      fullPath: '/dashboard/academics/syllabus-tracker'
+      preLoaderRoute: typeof DashboardAcademicsSyllabusTrackerRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/academics/timetable': {
+      id: '/dashboard/academics/timetable'
+      path: '/academics/timetable'
+      fullPath: '/dashboard/academics/timetable'
+      preLoaderRoute: typeof DashboardAcademicsTimetableRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/librarian/': {
       id: '/dashboard/librarian/'
@@ -3402,8 +3921,64 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlacementDrivesDriveIdRouteImport
       parentRoute: typeof PlacementRoute
     }
+    '/super-admin/academics/faculty-status': {
+      id: '/super-admin/academics/faculty-status'
+      path: '/faculty-status'
+      fullPath: '/super-admin/academics/faculty-status'
+      preLoaderRoute: typeof SuperAdminAcademicsFacultyStatusRouteImport
+      parentRoute: typeof SuperAdminAcademicsRoute
+    }
+    '/super-admin/academics/syllabus-tracker': {
+      id: '/super-admin/academics/syllabus-tracker'
+      path: '/syllabus-tracker'
+      fullPath: '/super-admin/academics/syllabus-tracker'
+      preLoaderRoute: typeof SuperAdminAcademicsSyllabusTrackerRouteImport
+      parentRoute: typeof SuperAdminAcademicsRoute
+    }
+    '/dashboard/academics/attendance/mark': {
+      id: '/dashboard/academics/attendance/mark'
+      path: '/academics/attendance/mark'
+      fullPath: '/dashboard/academics/attendance/mark'
+      preLoaderRoute: typeof DashboardAcademicsAttendanceMarkRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/super-admin/academics/attendance/mark': {
+      id: '/super-admin/academics/attendance/mark'
+      path: '/attendance/mark'
+      fullPath: '/super-admin/academics/attendance/mark'
+      preLoaderRoute: typeof SuperAdminAcademicsAttendanceMarkRouteImport
+      parentRoute: typeof SuperAdminAcademicsRoute
+    }
   }
 }
+
+interface AiAnalyticsRouteChildren {
+  AiAnalyticsAttendancePredictionRoute: typeof AiAnalyticsAttendancePredictionRoute
+  AiAnalyticsChatbotRoute: typeof AiAnalyticsChatbotRoute
+  AiAnalyticsDashboardRoute: typeof AiAnalyticsDashboardRoute
+  AiAnalyticsModelInsightsRoute: typeof AiAnalyticsModelInsightsRoute
+  AiAnalyticsNotificationsRoute: typeof AiAnalyticsNotificationsRoute
+  AiAnalyticsReportsRoute: typeof AiAnalyticsReportsRoute
+  AiAnalyticsSettingsRoute: typeof AiAnalyticsSettingsRoute
+  AiAnalyticsStudentRiskRoute: typeof AiAnalyticsStudentRiskRoute
+  AiAnalyticsIndexRoute: typeof AiAnalyticsIndexRoute
+}
+
+const AiAnalyticsRouteChildren: AiAnalyticsRouteChildren = {
+  AiAnalyticsAttendancePredictionRoute: AiAnalyticsAttendancePredictionRoute,
+  AiAnalyticsChatbotRoute: AiAnalyticsChatbotRoute,
+  AiAnalyticsDashboardRoute: AiAnalyticsDashboardRoute,
+  AiAnalyticsModelInsightsRoute: AiAnalyticsModelInsightsRoute,
+  AiAnalyticsNotificationsRoute: AiAnalyticsNotificationsRoute,
+  AiAnalyticsReportsRoute: AiAnalyticsReportsRoute,
+  AiAnalyticsSettingsRoute: AiAnalyticsSettingsRoute,
+  AiAnalyticsStudentRiskRoute: AiAnalyticsStudentRiskRoute,
+  AiAnalyticsIndexRoute: AiAnalyticsIndexRoute,
+}
+
+const AiAnalyticsRouteWithChildren = AiAnalyticsRoute._addFileChildren(
+  AiAnalyticsRouteChildren,
+)
 
 interface DashboardLibrarianRouteChildren {
   DashboardLibrarianBooksRoute: typeof DashboardLibrarianBooksRoute
@@ -3438,10 +4013,19 @@ const DashboardLibrarianRouteWithChildren =
 
 interface DashboardRouteChildren {
   DashboardLibrarianRoute: typeof DashboardLibrarianRouteWithChildren
+  DashboardAcademicsFacultyStatusRoute: typeof DashboardAcademicsFacultyStatusRoute
+  DashboardAcademicsSyllabusTrackerRoute: typeof DashboardAcademicsSyllabusTrackerRoute
+  DashboardAcademicsTimetableRoute: typeof DashboardAcademicsTimetableRoute
+  DashboardAcademicsAttendanceMarkRoute: typeof DashboardAcademicsAttendanceMarkRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardLibrarianRoute: DashboardLibrarianRouteWithChildren,
+  DashboardAcademicsFacultyStatusRoute: DashboardAcademicsFacultyStatusRoute,
+  DashboardAcademicsSyllabusTrackerRoute:
+    DashboardAcademicsSyllabusTrackerRoute,
+  DashboardAcademicsTimetableRoute: DashboardAcademicsTimetableRoute,
+  DashboardAcademicsAttendanceMarkRoute: DashboardAcademicsAttendanceMarkRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
@@ -3770,21 +4354,56 @@ const StudentRouteChildren: StudentRouteChildren = {
 const StudentRouteWithChildren =
   StudentRoute._addFileChildren(StudentRouteChildren)
 
+interface SuperAdminAcademicsRouteChildren {
+  SuperAdminAcademicsFacultyStatusRoute: typeof SuperAdminAcademicsFacultyStatusRoute
+  SuperAdminAcademicsSyllabusTrackerRoute: typeof SuperAdminAcademicsSyllabusTrackerRoute
+  SuperAdminAcademicsAttendanceMarkRoute: typeof SuperAdminAcademicsAttendanceMarkRoute
+}
+
+const SuperAdminAcademicsRouteChildren: SuperAdminAcademicsRouteChildren = {
+  SuperAdminAcademicsFacultyStatusRoute: SuperAdminAcademicsFacultyStatusRoute,
+  SuperAdminAcademicsSyllabusTrackerRoute:
+    SuperAdminAcademicsSyllabusTrackerRoute,
+  SuperAdminAcademicsAttendanceMarkRoute:
+    SuperAdminAcademicsAttendanceMarkRoute,
+}
+
+const SuperAdminAcademicsRouteWithChildren =
+  SuperAdminAcademicsRoute._addFileChildren(SuperAdminAcademicsRouteChildren)
+
 interface SuperAdminRouteChildren {
+  SuperAdminAcademicsRoute: typeof SuperAdminAcademicsRouteWithChildren
+  SuperAdminAllClassesAttendanceRoute: typeof SuperAdminAllClassesAttendanceRoute
+  SuperAdminAttendanceMarkRoute: typeof SuperAdminAttendanceMarkRoute
   SuperAdminCoursesRoute: typeof SuperAdminCoursesRoute
   SuperAdminDashboardRoute: typeof SuperAdminDashboardRoute
+  SuperAdminEmergencyRoute: typeof SuperAdminEmergencyRoute
+  SuperAdminEmergencyAlertsRoute: typeof SuperAdminEmergencyAlertsRoute
   SuperAdminFacultyRoute: typeof SuperAdminFacultyRoute
+  SuperAdminFacultyStatusRoute: typeof SuperAdminFacultyStatusRoute
+  SuperAdminProfileRoute: typeof SuperAdminProfileRoute
   SuperAdminSettingsRoute: typeof SuperAdminSettingsRoute
   SuperAdminStudentsRoute: typeof SuperAdminStudentsRoute
+  SuperAdminSyllabusTrackerRoute: typeof SuperAdminSyllabusTrackerRoute
+  SuperAdminTimetableRoute: typeof SuperAdminTimetableRoute
   SuperAdminIndexRoute: typeof SuperAdminIndexRoute
 }
 
 const SuperAdminRouteChildren: SuperAdminRouteChildren = {
+  SuperAdminAcademicsRoute: SuperAdminAcademicsRouteWithChildren,
+  SuperAdminAllClassesAttendanceRoute: SuperAdminAllClassesAttendanceRoute,
+  SuperAdminAttendanceMarkRoute: SuperAdminAttendanceMarkRoute,
   SuperAdminCoursesRoute: SuperAdminCoursesRoute,
   SuperAdminDashboardRoute: SuperAdminDashboardRoute,
+  SuperAdminEmergencyRoute: SuperAdminEmergencyRoute,
+  SuperAdminEmergencyAlertsRoute: SuperAdminEmergencyAlertsRoute,
   SuperAdminFacultyRoute: SuperAdminFacultyRoute,
+  SuperAdminFacultyStatusRoute: SuperAdminFacultyStatusRoute,
+  SuperAdminProfileRoute: SuperAdminProfileRoute,
   SuperAdminSettingsRoute: SuperAdminSettingsRoute,
   SuperAdminStudentsRoute: SuperAdminStudentsRoute,
+  SuperAdminSyllabusTrackerRoute: SuperAdminSyllabusTrackerRoute,
+  SuperAdminTimetableRoute: SuperAdminTimetableRoute,
   SuperAdminIndexRoute: SuperAdminIndexRoute,
 }
 
@@ -3824,6 +4443,7 @@ const rootRouteChildren: RootRouteChildren = {
   AcademicsRoute: AcademicsRoute,
   AccreditationRoute: AccreditationRoute,
   AdmissionRoute: AdmissionRoute,
+  AiAnalyticsRoute: AiAnalyticsRouteWithChildren,
   AlumniRoute: AlumniRoute,
   ApprovalWorkflowsRoute: ApprovalWorkflowsRoute,
   AttendanceRoute: AttendanceRoute,
@@ -3832,6 +4452,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRouteWithChildren,
   DeanRoute: DeanRouteWithChildren,
+  EmergencyRoute: EmergencyRoute,
   EmployeeManagementRoute: EmployeeManagementRoute,
   ExaminationRoute: ExaminationRouteWithChildren,
   ExaminationsRoute: ExaminationsRoute,
@@ -3853,6 +4474,7 @@ const rootRouteChildren: RootRouteChildren = {
   ParentRoute: ParentRouteWithChildren,
   PayrollRoute: PayrollRoute,
   PlacementRoute: PlacementRouteWithChildren,
+  PlacementExamRoute: PlacementExamRoute,
   PlacementsRoute: PlacementsRoute,
   PricingRoute: PricingRoute,
   ProcurementRoute: ProcurementRoute,
@@ -3871,13 +4493,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

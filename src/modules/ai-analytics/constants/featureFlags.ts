@@ -1,0 +1,10 @@
+export const AI_FEATURE_FLAGS = {
+  ENABLE_LSTM_ATTENDANCE: true,
+  ENABLE_XGBOOST_RISK: true,
+  ENABLE_CAMPUS_CHATBOT: true,
+  ENABLE_COMPLIANCE_REPORTS: true,
+  ENABLE_REALTIME_TRIGGERS: true,
+  ENABLE_MODEL_REDUNDANCY: false,
+} as const;
+
+export type AIFeatureFlagKey = keyof typeof AI_FEATURE_FLAGS;

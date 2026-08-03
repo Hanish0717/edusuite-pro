@@ -11,7 +11,10 @@ import {
   Search,
   Filter,
   Download,
+  Printer,
   Send,
+  Save,
+  Menu,
   Sparkles,
   BarChart3,
   Calendar,
@@ -50,7 +53,6 @@ import {
   TrendingUp,
   Brain,
   FileDown,
-  Printer,
   ShieldCheck,
   SlidersHorizontal,
   Play,
@@ -331,24 +333,88 @@ export const SAMPLE_20_MCQS = [
   { id: 20, question: "What is the worst-case time complexity of QuickSort when the pivot chosen is consistently the smallest or largest element?", options: ["A. O(N log N)", "B. O(N^2)", "C. O(N)", "D. O(log N)"], correct: 1 },
 ];
 
-export const SAMPLE_2_CODING_CHALLENGES = [
+export interface CodingTestCase {
+  id: string;
+  name: string;
+  input: string;
+  output: string;
+  explanation?: string;
+  isHidden: boolean;
+  category?: string;
+}
+
+export interface CodingChallenge {
+  id: string;
+  title: string;
+  marks: number;
+  timeLimit: string;
+  memoryLimit: string;
+  statement: string;
+  compilers: Array<{ name: string; code: string }>;
+  sampleInput: string;
+  sampleOutput: string;
+  normalTestCases: CodingTestCase[];
+  hiddenTestCases: CodingTestCase[];
+}
+
+export const SAMPLE_2_CODING_CHALLENGES: CodingChallenge[] = [
   {
     id: "CODING-01",
     title: "Problem 1: Distributed Cache Eviction (LRU-K Policy)",
     marks: 20,
     timeLimit: "2.0 Seconds",
     memoryLimit: "256 MB",
-    statement: "Implement an LRU-K cache eviction strategy. The LRU-K algorithm evicts the page whose K-th backward distance is maximum. If a page has been accessed less than K times, its backward distance is defined as infinity.",
+    statement: "Implement an LRU-K cache eviction strategy. The LRU-K algorithm evicts the page whose K-th backward distance is maximum. If a page has been accessed less than K times, its backward distance is defined as infinity. If multiple pages have infinite backward distance, LRU on first access time is used as the tie-breaker.",
     compilers: [
-      { name: "Java 17", code: `import java.util.*;\n\npublic class Solution {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int capacity = sc.nextInt();\n        int k = sc.nextInt();\n        // Write LRU-K cache solution here\n        System.out.println("Evicted Node ID = 4");\n    }\n}` },
-      { name: "Python 3.11", code: `import sys\n\ndef solve():\n    # Read capacity and K\n    capacity, k = map(int, sys.stdin.readline().split())\n    # Implement LRU-K logic\n    print("Evicted Node ID = 4")\n\nif __name__ == '__main__':\n    solve()` },
-      { name: "C++ 20", code: `#include <iostream>\n#include <unordered_map>\n#include <list>\nusing namespace std;\n\nint main() {\n    int capacity, k;\n    cin >> capacity >> k;\n    // LRU-K Implementation\n    cout << "Evicted Node ID = 4" << endl;\n    return 0;\n}` },
-      { name: "C (GCC)", code: `#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int capacity, k;\n    if (scanf("%d %d", &capacity, &k) == 2) {\n        printf("Evicted Node ID = 4\\n");\n    }\n    return 0;\n}` },
-      { name: "C# 10", code: `using System;\n\nclass Program {\n    static void Main() {\n        string[] input = Console.ReadLine().Split();\n        int capacity = int.Parse(input[0]);\n        int k = int.Parse(input[1]);\n        Console.WriteLine("Evicted Node ID = 4");\n    }\n}` },
-      { name: "Go 1.20", code: `package main\nimport "fmt"\n\nfunc main() {\n    var capacity, k int\n    fmt.Scanf("%d %d", &capacity, &k)\n    fmt.Println("Evicted Node ID = 4")\n}` }
+      { name: "Java 17", code: `import java.util.*;\n\npublic class Solution {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int capacity = sc.nextInt();\n        int k = sc.nextInt();\n        // Write LRU-K cache solution here\n        System.out.println("Evicted Node ID = 2");\n    }\n}` },
+      { name: "Python 3.11", code: `import sys\n\ndef solve():\n    # Read capacity and K\n    capacity, k = map(int, sys.stdin.readline().split())\n    # Implement LRU-K logic\n    print("Evicted Node ID = 2")\n\nif __name__ == '__main__':\n    solve()` },
+      { name: "C++ 20", code: `#include <iostream>\n#include <unordered_map>\n#include <list>\nusing namespace std;\n\nint main() {\n    int capacity, k;\n    cin >> capacity >> k;\n    // LRU-K Implementation\n    cout << "Evicted Node ID = 2" << endl;\n    return 0;\n}` },
+      { name: "C (GCC)", code: `#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int capacity, k;\n    if (scanf("%d %d", &capacity, &k) == 2) {\n        printf("Evicted Node ID = 2\\n");\n    }\n    return 0;\n}` },
+      { name: "C# 10", code: `using System;\n\nclass Program {\n    static void Main() {\n        string[] input = Console.ReadLine().Split();\n        int capacity = int.Parse(input[0]);\n        int k = int.Parse(input[1]);\n        Console.WriteLine("Evicted Node ID = 2");\n    }\n}` },
+      { name: "Go 1.20", code: `package main\nimport "fmt"\n\nfunc main() {\n    var capacity, k int\n    fmt.Scanf("%d %d", &capacity, &k)\n    fmt.Println("Evicted Node ID = 2")\n}` }
     ],
     sampleInput: "Capacity = 3, K = 2\nPage Requests: 1, 2, 3, 1, 4",
-    sampleOutput: "Evicted Node ID = 4"
+    sampleOutput: "Evicted Node ID = 2",
+    normalTestCases: [
+      {
+        id: "TC-NORM-101",
+        name: "Normal Case 1 (Standard LRU-K Eviction)",
+        input: "Capacity = 3, K = 2\nRequests: 1, 2, 3, 1, 4",
+        output: "Evicted Node ID = 2",
+        explanation: "Page 2 has only 1 access (backward distance = infinity), while Page 1 reached K=2 accesses. Page 2 is evicted to make room for Page 4.",
+        isHidden: false
+      },
+      {
+        id: "TC-NORM-102",
+        name: "Normal Case 2 (Infinite Distance Tie-Breaking)",
+        input: "Capacity = 3, K = 2\nRequests: 1, 2, 1, 2, 3, 4",
+        output: "Evicted Node ID = 3",
+        explanation: "Page 3 is accessed only once (< K=2). Hence it has infinite backward distance and is chosen for eviction over Pages 1 and 2.",
+        isHidden: false
+      },
+      {
+        id: "TC-NORM-103",
+        name: "Normal Case 3 (All Pages Reached K Accesses)",
+        input: "Capacity = 3, K = 2\nRequests: 1, 2, 3, 1, 2, 3, 5",
+        output: "Evicted Node ID = 1",
+        explanation: "Pages 1, 2, and 3 all have 2 accesses. Page 1's 2nd previous access was oldest among all, making its backward distance largest.",
+        isHidden: false
+      }
+    ],
+    hiddenTestCases: [
+      { id: "TC-HIDD-101", name: "Hidden Test Case 1", input: "Capacity = 1, K = 2\nRequests: 10, 20, 30", output: "Evicted Node ID = 10", category: "Single Element Capacity Edge Case", isHidden: true },
+      { id: "TC-HIDD-102", name: "Hidden Test Case 2", input: "Capacity = 4, K = 1\nRequests: 1, 2, 3, 4, 5", output: "Evicted Node ID = 1", category: "K=1 Standard LRU Fallback", isHidden: true },
+      { id: "TC-HIDD-103", name: "Hidden Test Case 3", input: "Capacity = 3, K = 3\nRequests: 5, 5, 5, 5, 6, 7, 8", output: "Evicted Node ID = 6", category: "Repeated Access Frequency", isHidden: true },
+      { id: "TC-HIDD-104", name: "Hidden Test Case 4", input: "Capacity = 4, K = 2\nRequests: 1, 2, 3, 4, 5", output: "Evicted Node ID = 1", category: "First-In Tie-Breaker Order", isHidden: true },
+      { id: "TC-HIDD-105", name: "Hidden Test Case 5", input: "Capacity = 3, K = 2\nRequests: 10, 20, 10, 30, 20, 40", output: "Evicted Node ID = 30", category: "Interleaved Access Patterns", isHidden: true },
+      { id: "TC-HIDD-106", name: "Hidden Test Case 6", input: "Capacity = 5, K = 2\nRequests: 1, 2, 3, 4, 5", output: "No Eviction Required", category: "Zero Eviction Under-Capacity Limit", isHidden: true },
+      { id: "TC-HIDD-107", name: "Hidden Test Case 7", input: "Capacity = 3, K = 5\nRequests: 1, 2, 3, 1, 2, 1, 4", output: "Evicted Node ID = 3", category: "Large K Value (K > Unique Hits)", isHidden: true },
+      { id: "TC-HIDD-108", name: "Hidden Test Case 8", input: "Capacity = 2, K = 2\nRequests: 100, 200, 100, 300, 400", output: "Evicted Node ID = 200", category: "Rapid Turnover Cache Thrashing", isHidden: true },
+      { id: "TC-HIDD-109", name: "Hidden Test Case 9", input: "Capacity = 1000, K = 2\nRequests: 1..1000, 1001", output: "Evicted Node ID = 1", category: "Max Capacity Scale Boundary (N=1000)", isHidden: true },
+      { id: "TC-HIDD-110", name: "Hidden Test Case 10", input: "Capacity = 500, K = 3\nRequests: Random Stream N=100k Ops", output: "Execution Time < 0.05s", category: "Time Complexity Stress (N=10^5)", isHidden: true },
+      { id: "TC-HIDD-111", name: "Hidden Test Case 11", input: "Capacity = 3, K = 2\nRequests: 7, 7, 8, 8, 9, 9, 10", output: "Evicted Node ID = 7", category: "Duplicate Burst Hits Queue", isHidden: true },
+      { id: "TC-HIDD-112", name: "Hidden Test Case 12", input: "Capacity = 2000, K = 10\nRequests: Dense Access Stream", output: "Pass (Memory < 12MB)", category: "Memory Limit Bounds", isHidden: true }
+    ]
   },
   {
     id: "CODING-02",
@@ -365,8 +431,48 @@ export const SAMPLE_2_CODING_CHALLENGES = [
       { name: "C# 10", code: `using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Minimum Subgraph Cost = 1420");\n    }\n}` },
       { name: "Go 1.20", code: `package main\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Minimum Subgraph Cost = 1420")\n}` }
     ],
-    sampleInput: "Nodes = 5, Edges = 7, K = 1\nEdges: (1,2,100), (2,3,200), (3,4,150), (4,5,300)",
-    sampleOutput: "Minimum Subgraph Cost = 1420"
+    sampleInput: "Nodes = 5, Edges = 7, K = 1\nEdges: (1,2,100), (2,3,200), (3,4,150), (4,5,300), (1,3,400), (2,4,250), (3,5,220)",
+    sampleOutput: "Minimum Subgraph Cost = 1420",
+    normalTestCases: [
+      {
+        id: "TC-NORM-201",
+        name: "Normal Case 1 (Basic 5-Node Cloud Topology)",
+        input: "Nodes = 5, Edges = 7, K = 1\nEdges: (1,2,100), (2,3,200), (3,4,150), (4,5,300), (1,3,400), (2,4,250), (3,5,220)",
+        output: "Minimum Subgraph Cost = 1420",
+        explanation: "Standard 5-node cloud cluster network. Selects optimum weighted fiber links respecting single-link fault tolerance K=1.",
+        isHidden: false
+      },
+      {
+        id: "TC-NORM-202",
+        name: "Normal Case 2 (Linear Chain Topology)",
+        input: "Nodes = 4, Edges = 3, K = 2\nEdges: (1,2,50), (2,3,80), (3,4,60)",
+        output: "Minimum Subgraph Cost = 190",
+        explanation: "Tree directly connects 4 nodes in a line with edge weights 50 + 80 + 60 = 190, satisfying failure tolerance K=2.",
+        isHidden: false
+      },
+      {
+        id: "TC-NORM-203",
+        name: "Normal Case 3 (Fully Connected Mesh Topology)",
+        input: "Nodes = 4, Edges = 6, K = 1\nEdges: (1,2,10), (1,3,20), (1,4,30), (2,3,15), (2,4,25), (3,4,35)",
+        output: "Minimum Subgraph Cost = 45",
+        explanation: "Selects lowest cost edges (1,2,10), (2,3,15), and (1,3,20) avoiding cut-set partitions exceeding K=1.",
+        isHidden: false
+      }
+    ],
+    hiddenTestCases: [
+      { id: "TC-HIDD-201", name: "Hidden Test Case 1", input: "Nodes = 5, Edges = 3, K = 1\nEdges: (1,2,10), (3,4,20), (4,5,30)", output: "Disconnected Graph (-1)", category: "Unreachable Graph / Disconnected Nodes", isHidden: true },
+      { id: "TC-HIDD-202", name: "Hidden Test Case 2", input: "Nodes = 1, Edges = 0, K = 1", output: "Minimum Subgraph Cost = 0", category: "Trivial Single-Node Cloud Instance", isHidden: true },
+      { id: "TC-HIDD-203", name: "Hidden Test Case 3", input: "Nodes = 2, Edges = 1, K = 1\nEdges: (1,2,999)", output: "Minimum Subgraph Cost = 999", category: "Two Nodes Single Link Boundary", isHidden: true },
+      { id: "TC-HIDD-204", name: "Hidden Test Case 4", input: "Nodes = 4, Edges = 5, K = 0\nEdges: (1,2,10), (2,3,10), (3,4,10), (4,1,10), (1,3,15)", output: "Minimum Subgraph Cost = 40", category: "K=0 Zero Disconnection Tolerance", isHidden: true },
+      { id: "TC-HIDD-205", name: "Hidden Test Case 5", input: "Nodes = 6, Edges = 8, K = 2\nEdges: all weights = 100", output: "Minimum Subgraph Cost = 500", category: "Equal Fiber Weights & MST Tie", isHidden: true },
+      { id: "TC-HIDD-206", name: "Hidden Test Case 6", input: "Nodes = 7, Edges = 6, K = 3\nEdges: (1,2,5), (1,3,5), (1,4,5), (1,5,5), (1,6,5), (1,7,5)", output: "Minimum Subgraph Cost = 30", category: "Star Hub Topology Network", isHidden: true },
+      { id: "TC-HIDD-207", name: "Hidden Test Case 7", input: "Nodes = 1000, Edges = 5000, K = 5", output: "Minimum Subgraph Cost = 84520", category: "Large Subgraph Scaling (N=1000)", isHidden: true },
+      { id: "TC-HIDD-208", name: "Hidden Test Case 8", input: "Nodes = 3, Edges = 3, K = 1\nEdges: (1,2,10^9), (2,3,10^9), (1,3,2*10^9)", output: "Minimum Subgraph Cost = 2000000000", category: "64-bit Overflow & Huge Weights", isHidden: true },
+      { id: "TC-HIDD-209", name: "Hidden Test Case 9", input: "Nodes = 8, Edges = 12, K = 2", output: "Minimum Subgraph Cost = 3280", category: "Cyclic Loop Redundancy Check", isHidden: true },
+      { id: "TC-HIDD-210", name: "Hidden Test Case 10", input: "Nodes = 50000, Edges = 200000, K = 10", output: "Execution Time < 0.12s", category: "Stress Test (N=50,000 Nodes)", isHidden: true },
+      { id: "TC-HIDD-211", name: "Hidden Test Case 11", input: "Nodes = 4, Edges = 8, K = 1", output: "Minimum Subgraph Cost = 240", category: "Self Loops & Parallel Link Filter", isHidden: true },
+      { id: "TC-HIDD-212", name: "Hidden Test Case 12", input: "Nodes = 10, Edges = 15, K = 2", output: "Minimum Subgraph Cost = 5120", category: "Bottleneck Cut-Set Partition", isHidden: true }
+    ]
   }
 ];
 
@@ -830,6 +936,128 @@ Bengaluru, Karnataka
     marks: number;
   }>>([]);
 
+  // Create Assessment Question Bank Auto-Generator State
+  const [newAstMcqCount, setNewAstMcqCount] = useState("20");
+  const [newAstMcqSubject, setNewAstMcqSubject] = useState("Data Structures & Algorithms");
+  const [newAstCodingCount, setNewAstCodingCount] = useState("2");
+  const [newAstCodingSubject, setNewAstCodingSubject] = useState("Data Structures & Algorithms");
+  const [isPaperAutoGenerated, setIsPaperAutoGenerated] = useState(false);
+  const [isPreviewPaperModalOpen, setIsPreviewPaperModalOpen] = useState(false);
+  const [dispatchedAstIds, setDispatchedAstIds] = useState<Record<string, boolean>>({});
+
+  // Placement Portal Preview States
+  const [previewSearchQuery, setPreviewSearchQuery] = useState("");
+  const [previewDiffFilter, setPreviewDiffFilter] = useState<"All" | "Easy" | "Medium" | "Hard">("All");
+  const [previewSectionFilter, setPreviewSectionFilter] = useState<"All" | "Aptitude" | "Technical" | "Coding">("All");
+  const [expandedExplanations, setExpandedExplanations] = useState<Record<number, boolean>>({});
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    aptitude: true,
+    technical: true,
+    coding: true,
+  });
+
+  const [paperBreakdown, setPaperBreakdown] = useState({
+
+
+    easyMcq: 8,
+    mediumMcq: 8,
+    hardMcq: 4,
+    easyCoding: 1,
+    mediumCoding: 1,
+    hardCoding: 0,
+    totalQuestions: 22,
+    totalMarks: 70,
+  });
+
+  const handleAutoGeneratePaper = () => {
+    const mcqs = parseInt(newAstMcqCount) || 20;
+    const codings = parseInt(newAstCodingCount) || 2;
+
+    const easyM = Math.round(mcqs * 0.4);
+    const medM = Math.round(mcqs * 0.4);
+    const hardM = mcqs - easyM - medM;
+
+    const easyC = Math.ceil(codings / 2);
+    const medC = codings - easyC;
+    const hardC = 0;
+
+    const totQ = mcqs + codings;
+    const totM = mcqs * 1 + codings * 25;
+
+    setPaperBreakdown({
+      easyMcq: easyM,
+      mediumMcq: medM,
+      hardMcq: hardM,
+      easyCoding: easyC,
+      mediumCoding: medC,
+      hardCoding: hardC,
+      totalQuestions: totQ,
+      totalMarks: totM,
+    });
+    setIsPaperAutoGenerated(true);
+
+    toast.success(`🎉 Auto-picked ${mcqs} MCQs (${newAstMcqSubject}) & ${codings} Coding Problems (${newAstCodingSubject}) from Question Bank! Difficulty: 40% Easy, 40% Medium, 20% Hard.`);
+  };
+
+  const handleDownloadPaperPdf = (astTitle?: string) => {
+    const title = astTitle || newAstTitle || "Google Cloud Technical Placement Assessment 2026";
+    const mcqSubject = newAstMcqSubject || "Data Structures & Algorithms";
+    const codingSubject = newAstCodingSubject || "Data Structures & Algorithms";
+
+    let docText = `================================================================================\n`;
+    docText += `OFFICIAL TPO EXAMINATION QUESTION PAPER (CONFIDENTIAL)\n`;
+    docText += `Assessment Title: ${title}\n`;
+    docText += `Date: ${new Date().toLocaleDateString("en-IN")}\n`;
+    docText += `MCQ Domain: ${mcqSubject} (${newAstMcqCount || 20} Questions)\n`;
+    docText += `Coding Domain: ${codingSubject} (${newAstCodingCount || 2} Problems)\n`;
+    docText += `Total Marks: ${paperBreakdown.totalMarks} Marks | Duration: ${newAstDuration || "90 Mins"}\n`;
+    docText += `================================================================================\n\n`;
+
+    docText += `SECTION A: TECHNICAL & APTITUDE MCQS (20 QUESTIONS)\n--------------------------------------------------------------------------------\n\n`;
+
+    const sampleMcqs = [
+      { q: "What is the time complexity of searching an element in a balanced AVL Binary Search Tree?", opt: ["A) O(N)", "B) O(log N)", "C) O(N log N)", "D) O(1)"], ans: "B) O(log N)" },
+      { q: "Which graph traversal algorithm uses a Queue data structure to explore vertices level by level?", opt: ["A) BFS", "B) DFS", "C) Dijkstra", "D) Topological"], ans: "A) BFS" },
+      { q: "In relational database indexing, what prevents B+ Tree leaves from becoming unbalanced during random inserts?", opt: ["A) Table locking", "B) Automatic hashing", "C) Node splitting", "D) Compaction"], ans: "C) Node splitting" },
+      { q: "What algorithm is used to detect deadlocks in an operating system resource allocation graph?", opt: ["A) Banker's Algorithm", "B) Round Robin", "C) SJF", "D) Peterson"], ans: "A) Banker's Algorithm" },
+      { q: "Which data structure is optimal for evaluating infix/postfix arithmetic expressions?", opt: ["A) Stack", "B) Queue", "C) Priority Queue", "D) HashMap"], ans: "A) Stack" },
+    ];
+
+    sampleMcqs.forEach((m, idx) => {
+      docText += `Q${idx + 1}. ${m.q}\n`;
+      m.opt.forEach((o) => (docText += `   ${o}\n`));
+      docText += `   [Correct Answer: ${m.ans}]\n\n`;
+    });
+
+    docText += `\nSECTION B: LIVE CODING CHALLENGES (2 PROBLEMS)\n--------------------------------------------------------------------------------\n\n`;
+    docText += `Problem 1: Distributed Cache Eviction (LRU-K Policy) [20 Marks]\n`;
+    docText += `Statement: Implement an LRU-K cache eviction strategy.\n`;
+    docText += `Sample Test Case: Input: Capacity = 3, K = 2 -> Output: Evicted Node ID = 2\n\n`;
+
+    docText += `Problem 2: Optimal Cloud Subgraph Network Connectivity [30 Marks]\n`;
+    docText += `Statement: Calculate the minimum cost MST subtree connecting all nodes under fault tolerance K.\n`;
+    docText += `Sample Test Case: Input: Nodes = 5, Edges = 7, K = 1 -> Output: Cost = 1420\n\n`;
+    docText += `================================================================================\nEND OF QUESTION PAPER - TPO AUDIT CERTIFIED\n`;
+
+    const blob = new Blob([docText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Question_Paper_${title.replaceAll(" ", "_")}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast.success(`Downloaded official Question Paper document for "${title}"!`);
+  };
+
+  const handlePrintPaper = () => {
+    window.print();
+  };
+
+
+
   const handleDownloadSampleCsv = () => {
     const sampleHeaders = "Subject,Question Type,Title / Problem Statement,Options / Constraints,Difficulty,Marks\n";
     const sampleRows = [
@@ -935,21 +1163,25 @@ Bengaluru, Karnataka
 
   const handleCreateAssessmentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const mcqCnt = parseInt(newAstMcqCount) || 20;
+    const codingCnt = parseInt(newAstCodingCount) || 2;
+
     const newAst: RecruiterAssessment = {
       id: `AST-GGL-${Date.now().toString().slice(-3)}`,
-      title: newAstTitle || "Google Cloud New Technical Assessment",
+      title: newAstTitle || `Google Cloud ${newAstMcqSubject} Assessment`,
       type: newAstType,
-      mcqCount: 35,
-      codingCount: 4,
-      sqlCount: 4,
-      duration: newAstDuration,
-      totalMarks: 100,
+      mcqCount: mcqCnt,
+      codingCount: codingCnt,
+      sqlCount: 0,
+      duration: newAstDuration || "90 Mins",
+      totalMarks: paperBreakdown.totalMarks || 70,
       passingMarksPct: parseInt(newAstPassingPct) || 75,
       version: "v1.0",
       requestStatus: "Submitted",
-      reviewerNotes: "Submitted to Placement Officer for drive approval.",
+      reviewerNotes: `Auto-generated from Question Bank: ${mcqCnt} MCQs (${newAstMcqSubject}) & ${codingCnt} Coding Problems (${newAstCodingSubject}). Difficulty: 40% Easy, 40% Medium, 20% Hard.`,
       lastUpdated: "Just now",
     };
+
 
     MOCK_RECRUITER_ASSESSMENTS.unshift(newAst);
 
@@ -995,6 +1227,7 @@ Bengaluru, Karnataka
       }],
     });
 
+    setDispatchedAstIds((prev) => ({ ...prev, [newAst.id]: true }));
     setIsCreateAssessmentModalOpen(false);
     setNewAstTitle("");
     toast.success(`Created & submitted assessment "${newAst.title}" to Placement Officer for approval!`);
@@ -1016,8 +1249,10 @@ Bengaluru, Karnataka
     const link = `${origin}/exam/take?id=${sendToTpoAst.id}`;
     setGeneratedTestLink(link);
     setIsSendSuccess(true);
+    setDispatchedAstIds((prev) => ({ ...prev, [sendToTpoAst.id]: true }));
     toast.success(`Test "${sendToTpoAst.title}" sent to TPO ${sendTpoName} successfully!`);
   };
+
 
   // ── SECURITY RESTRICTIONS WHEN SIMULATION MODE IS ACTIVE ─────────────────
   useEffect(() => {
@@ -1595,14 +1830,25 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                     >
                       <Edit className="size-3.5" /> Edit
                     </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => handleOpenSendToTpo(ast)}
-                      className="w-full mt-1 bg-blue-600 hover:bg-blue-700 text-white text-[0.68rem] h-8 rounded-xl font-bold cursor-pointer gap-1.5"
-                      title="Send Test to TPO"
-                    >
-                      <Send className="size-3.5" /> Send Test to TPO
-                    </Button>
+                    {dispatchedAstIds[ast.id] || ast.requestStatus === "Submitted" ? (
+                      <Button
+                        size="sm"
+                        disabled
+                        className="w-full mt-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 text-[0.68rem] h-8 rounded-xl font-bold gap-1.5 opacity-100 cursor-default"
+                      >
+                        <CheckCircle className="size-3.5 text-emerald-600" /> Submitted &amp; Dispatched to TPO ✓
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() => handleOpenSendToTpo(ast)}
+                        className="w-full mt-1 bg-blue-600 hover:bg-blue-700 text-white text-[0.68rem] h-8 rounded-xl font-bold cursor-pointer gap-1.5"
+                        title="Send Test to TPO"
+                      >
+                        <Send className="size-3.5" /> Send Test to TPO
+                      </Button>
+                    )}
+
                   </div>
                 </div>
               ))}
@@ -2023,14 +2269,21 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                     >
                       <Eye className="size-3.5" /> Preview Exam
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleOpenSendToTpo(ast)}
-                      className="text-xs h-8 rounded-xl cursor-pointer gap-1"
-                    >
-                      <Send className="size-3.5" /> Send Test to TPO
-                    </Button>
+                    {dispatchedAstIds[ast.id] || ast.requestStatus === "Submitted" ? (
+                      <Badge className="bg-emerald-100 text-emerald-800 border-emerald-300 text-[0.68rem] px-3 py-1.5 font-mono flex items-center gap-1 font-bold">
+                        <CheckCircle className="size-3.5 text-emerald-600" /> Submitted to TPO
+                      </Badge>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleOpenSendToTpo(ast)}
+                        className="text-xs h-8 rounded-xl cursor-pointer gap-1"
+                      >
+                        <Send className="size-3.5" /> Send Test to TPO
+                      </Button>
+                    )}
+
                     {ast.requestStatus === "Changes Requested" && (
                       <Button
                         size="sm"
@@ -3731,43 +3984,1015 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
 
       {/* CREATE ASSESSMENT MODAL DIALOG */}
       <Dialog open={isCreateAssessmentModalOpen} onOpenChange={setIsCreateAssessmentModalOpen}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
-          <DialogHeader>
-            <DialogTitle>Create & Submit Recruiter Assessment</DialogTitle>
-            <DialogDescription>Draft assessment structure for Placement Officer approval.</DialogDescription>
+        <DialogContent className="sm:max-w-2xl max-h-[88vh] flex flex-col p-0 overflow-hidden rounded-3xl border border-border shadow-2xl">
+          <DialogHeader className="p-5 pb-4 border-b border-border bg-muted/20 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-2xl bg-purple-600 text-white grid place-items-center shadow-glow shrink-0">
+                <Code2 className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold font-sans text-base">Create &amp; Submit Recruiter Assessment</DialogTitle>
+                <DialogDescription className="text-[0.7rem] font-mono">
+                  Configure question counts, select subjects, and auto-generate paper from Question Bank for TPO approval.
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
 
-          <form onSubmit={handleCreateAssessmentSubmit} className="space-y-3 pt-2 text-xs">
-            <div className="space-y-1">
-              <label className="font-semibold">Assessment Title</label>
-              <Input value={newAstTitle} onChange={(e) => setNewAstTitle(e.target.value)} placeholder="e.g. Google Cloud Coding & System Design Round 1" required className="h-9 text-xs rounded-xl" />
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1">
-                <label className="font-semibold">Assessment Type</label>
-                <select value={newAstType} onChange={(e) => setNewAstType(e.target.value as any)} className="w-full h-9 rounded-xl border border-input bg-card px-2.5 text-xs font-semibold cursor-pointer">
-                  <option value="MCQ + Coding + SQL">MCQ + Coding + SQL</option>
-                  <option value="Coding Only">Coding Only</option>
-                  <option value="Aptitude & MCQ">Aptitude & MCQ</option>
-                </select>
+          <form onSubmit={handleCreateAssessmentSubmit} className="flex-1 overflow-y-auto p-5 space-y-4 text-xs font-sans">
+            {/* Title & Basic Meta */}
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="sm:col-span-2 space-y-1">
+                <label className="font-bold text-foreground">Assessment Title</label>
+                <Input
+                  value={newAstTitle}
+                  onChange={(e) => setNewAstTitle(e.target.value)}
+                  placeholder="e.g. Google Cloud Coding & System Design Round 1"
+                  required
+                  className="h-9 text-xs rounded-xl"
+                />
               </div>
 
               <div className="space-y-1">
-                <label className="font-semibold">Test Duration</label>
-                <Input value={newAstDuration} onChange={(e) => setNewAstDuration(e.target.value)} placeholder="90 Mins" required className="h-9 text-xs rounded-xl font-mono" />
+                <label className="font-bold text-foreground">Test Duration</label>
+                <Input
+                  value={newAstDuration}
+                  onChange={(e) => setNewAstDuration(e.target.value)}
+                  placeholder="90 Mins"
+                  required
+                  className="h-9 text-xs rounded-xl font-mono"
+                />
               </div>
             </div>
 
-            <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => setIsCreateAssessmentModalOpen(false)} className="rounded-xl">Cancel</Button>
-              <Button type="submit" className="bg-brand-gradient shadow-glow font-bold rounded-xl cursor-pointer">
-                Submit to Placement Officer ✓
+            {/* MCQ & CODING SPECIFICATIONS SIDE-BY-SIDE */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* MCQ CARD */}
+              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-amber-700 dark:text-amber-300 font-mono text-xs flex items-center gap-1">
+                    📚 MCQ Question Setup
+                  </span>
+                  <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[0.6rem]">
+                    Step 1
+                  </Badge>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <label className="font-semibold text-foreground text-[0.68rem]">Number of MCQs</label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="100"
+                      value={newAstMcqCount}
+                      onChange={(e) => setNewAstMcqCount(e.target.value)}
+                      required
+                      className="h-8 text-xs rounded-xl font-mono"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="font-semibold text-foreground text-[0.68rem]">MCQ Subject Domain</label>
+                    <select
+                      value={newAstMcqSubject}
+                      onChange={(e) => setNewAstMcqSubject(e.target.value)}
+                      className="w-full h-8 rounded-xl border border-input bg-card px-2 text-xs font-semibold cursor-pointer"
+                    >
+                      <option value="Data Structures & Algorithms">Data Structures &amp; Algorithms</option>
+                      <option value="Quantitative Aptitude">Quantitative Aptitude &amp; Verbal</option>
+                      <option value="Core Systems (OS & Networks)">Core Systems (OS &amp; Networks)</option>
+                      <option value="Database Management Systems (DBMS)">DBMS &amp; SQL Queries</option>
+                      <option value="Java/Python Technical">Java / Python Technical</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* CODING CARD */}
+              <div className="p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/20 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-purple-700 dark:text-purple-300 font-mono text-xs flex items-center gap-1">
+                    💻 Coding Challenge Setup
+                  </span>
+                  <Badge className="bg-purple-500/20 text-purple-700 dark:text-purple-300 text-[0.6rem]">
+                    Step 2
+                  </Badge>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <label className="font-semibold text-foreground text-[0.68rem]">Number of Coding Problems</label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="10"
+                      value={newAstCodingCount}
+                      onChange={(e) => setNewAstCodingCount(e.target.value)}
+                      required
+                      className="h-8 text-xs rounded-xl font-mono"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="font-semibold text-foreground text-[0.68rem]">Coding Subject Domain</label>
+                    <select
+                      value={newAstCodingSubject}
+                      onChange={(e) => setNewAstCodingSubject(e.target.value)}
+                      className="w-full h-8 rounded-xl border border-input bg-card px-2 text-xs font-semibold cursor-pointer"
+                    >
+                      <option value="Data Structures & Algorithms">Data Structures &amp; Algorithms</option>
+                      <option value="System Design & Architecture">System Design &amp; Architecture</option>
+                      <option value="Dynamic Programming & Graphs">Dynamic Programming &amp; Graphs</option>
+                      <option value="Database SQL Queries">Database SQL Queries</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ACTION BUTTONS ROW */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+              <Button
+                type="button"
+                onClick={handleAutoGeneratePaper}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-extrabold h-9 rounded-xl gap-1.5 cursor-pointer shadow-sm text-xs"
+              >
+                🎲 Auto-Pick &amp; Generate Paper
               </Button>
-            </DialogFooter>
+
+              <Button
+                type="button"
+                onClick={() => {
+                  if (!isPaperAutoGenerated) {
+                    handleAutoGeneratePaper();
+                  }
+                  setIsCreateAssessmentModalOpen(false);
+                  setIsPreviewPaperModalOpen(true);
+                }}
+                variant="outline"
+                className="border-blue-500/40 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 font-bold h-9 rounded-xl gap-1.5 cursor-pointer text-xs"
+              >
+                👁️ Preview Generated Paper ({paperBreakdown.totalQuestions} Qs)
+              </Button>
+
+            </div>
+
+            {/* COMPACT DIFFICULTY BREAKDOWN PILLS */}
+            {isPaperAutoGenerated && (
+              <div className="p-3 rounded-2xl bg-muted/40 border border-border flex items-center justify-between text-[0.68rem] font-mono animate-fade-up">
+                <span className="font-bold text-foreground font-sans">Difficulty Distribution:</span>
+                <div className="flex items-center gap-1.5">
+                  <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 text-[0.6rem]">
+                    🟢 40% Easy ({paperBreakdown.easyMcq} MCQ, {paperBreakdown.easyCoding} Coding)
+                  </Badge>
+                  <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 text-[0.6rem]">
+                    🟡 40% Med ({paperBreakdown.mediumMcq} MCQ, {paperBreakdown.mediumCoding} Coding)
+                  </Badge>
+                  <Badge className="bg-rose-500/15 text-rose-700 border-rose-500/30 text-[0.6rem]">
+                    🔴 20% Hard ({paperBreakdown.hardMcq} MCQ)
+                  </Badge>
+                </div>
+              </div>
+            )}
           </form>
+
+          {/* FIXED MODAL FOOTER */}
+          <div className="p-4 border-t border-border bg-card flex items-center justify-end gap-2 shrink-0">
+            <Button type="button" variant="outline" onClick={() => setIsCreateAssessmentModalOpen(false)} className="rounded-xl text-xs">
+              Cancel
+            </Button>
+            <Button onClick={handleCreateAssessmentSubmit} type="button" className="bg-brand-gradient shadow-glow font-bold rounded-xl cursor-pointer text-xs">
+              Submit Assessment to Placement Officer (TPO) ✓
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
+
+      {/* FULL BROWSER WIDTH SINGLE-COLUMN ASSESSMENT PREVIEW (HACKERRANK / LEETCODE / CODILITY STYLE) */}
+      {isPreviewPaperModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-50 dark:bg-slate-950 text-foreground flex flex-col w-full min-h-screen overflow-y-auto font-sans select-none animate-in fade-in duration-200">
+          {/* 1. TOP BREADCRUMB & HEADER BAR */}
+          <header className="bg-card border-b border-border/80 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0 shadow-2xs z-20 w-full">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsPreviewPaperModalOpen(false)}
+                className="rounded-full size-8 text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <Menu className="size-4" />
+              </Button>
+              <div>
+                <div className="flex items-center gap-1.5 text-[0.7rem] text-muted-foreground font-mono">
+                  <span>Home</span>
+                  <span>&gt;</span>
+                  <span>Assessments</span>
+                  <span>&gt;</span>
+                  <span>Google Cloud SDE Assessment 2026</span>
+                  <span>&gt;</span>
+                  <span className="font-bold text-foreground">Preview</span>
+                </div>
+                <h1 className="text-lg font-extrabold text-foreground tracking-tight">
+                  {newAstTitle || "Google Cloud SDE Placement & Systems Assessment 2026"}
+                </h1>
+              </div>
+            </div>
+
+            {/* TOP RIGHT ACTION BUTTONS */}
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrintPaper}
+                className="h-9 px-3.5 rounded-xl text-xs font-bold gap-1.5 cursor-pointer bg-card hover:bg-muted"
+                title="Print Question Paper"
+              >
+                <Printer className="size-4 text-slate-600 dark:text-slate-300" /> Print
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDownloadPaperPdf()}
+                className="h-9 px-3.5 rounded-xl text-xs font-bold gap-1.5 cursor-pointer bg-card hover:bg-muted border-purple-500/30 text-purple-600"
+                title="Export PDF Document"
+              >
+                <Download className="size-4" /> Download PDF
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsPreviewPaperModalOpen(false);
+                  setIsCreateAssessmentModalOpen(true);
+                }}
+                className="h-9 px-3.5 rounded-xl text-xs font-bold gap-1.5 cursor-pointer bg-card hover:bg-muted text-blue-600"
+              >
+                <Edit className="size-4" /> Edit Setup
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsPreviewPaperModalOpen(false)}
+                className="rounded-full size-9 text-muted-foreground hover:text-foreground cursor-pointer ml-1"
+              >
+                <X className="size-5" />
+              </Button>
+            </div>
+          </header>
+
+          {/* 2. MAIN FULL-WIDTH BODY (NO MAX-WIDTH LIMIT, NO INNER SCROLLBARS) */}
+          <main className="w-full max-w-none p-4 sm:p-8 space-y-6 flex-1 bg-slate-50 dark:bg-slate-950">
+
+            {/* HORIZONTAL SUMMARY CARDS ROW (100% WIDTH GRID) */}
+            <div className="w-full max-w-none bg-card border border-border/80 rounded-2xl p-5 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-xl bg-purple-600/10 border border-purple-500/20 text-purple-600 grid place-items-center shrink-0">
+                    <Building className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-foreground text-sm font-sans">Assessment Metrics Summary</h3>
+                    <p className="text-[0.68rem] text-muted-foreground font-mono">Organization: Google Cloud India • Confidential TPO Specification</p>
+                  </div>
+                </div>
+                <Badge className="bg-emerald-600 text-white font-mono text-xs px-2.5 py-0.5 font-bold">
+                  Status: Published &amp; Audit Verified
+                </Badge>
+              </div>
+
+              {/* 8 FULL-WIDTH SUMMARY KPI CARDS */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 font-mono text-xs">
+                <div className="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-muted-foreground block font-sans">Total Questions</span>
+                  <span className="text-lg font-extrabold text-purple-600">{paperBreakdown.totalQuestions} Qs</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-muted-foreground block font-sans">Total Marks</span>
+                  <span className="text-lg font-extrabold text-emerald-600">{paperBreakdown.totalMarks} Mks</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-amber-700 dark:text-amber-300 block font-sans">Duration</span>
+                  <span className="text-lg font-extrabold text-amber-600">90 Mins</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-blue-700 dark:text-blue-300 block font-sans">Difficulty</span>
+                  <span className="text-lg font-extrabold text-blue-600">Moderate</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-emerald-700 block font-sans">🟢 Easy Split</span>
+                  <span className="text-sm font-bold text-emerald-700">8 Qs (36.4%)</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-amber-700 block font-sans">🟡 Medium Split</span>
+                  <span className="text-sm font-bold text-amber-700">9 Qs (40.9%)</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-rose-700 block font-sans">🔴 Hard Split</span>
+                  <span className="text-sm font-bold text-rose-700">5 Qs (22.7%)</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-500/10 border border-slate-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-muted-foreground block font-sans">Negative Mark</span>
+                  <span className="text-sm font-bold text-foreground">None (0%)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* STICKY TOP TOOLBAR FOR QUESTION NAVIGATOR & FILTERS (FULL WIDTH 100%) */}
+            <div className="w-full max-w-none bg-card border border-border/80 rounded-2xl p-4 shadow-2xs sticky top-0 z-10 space-y-3 font-mono">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-3 font-sans">
+                  <span className="font-extrabold text-sm text-foreground flex items-center gap-1.5">
+                    <Search className="size-4 text-purple-600" /> Question Toolbar
+                  </span>
+                  <div className="relative w-64">
+                    <Search className="size-3.5 absolute left-3 top-3 text-muted-foreground" />
+                    <Input
+                      value={previewSearchQuery}
+                      onChange={(e) => setPreviewSearchQuery(e.target.value)}
+                      placeholder="Search question keyword..."
+                      className="h-9 pl-9 text-xs rounded-xl font-mono"
+                    />
+                  </div>
+
+                  <select
+                    value={previewSectionFilter}
+                    onChange={(e) => setPreviewSectionFilter(e.target.value as any)}
+                    className="h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold cursor-pointer"
+                  >
+                    <option value="All">All Sections (5 Sections)</option>
+                    <option value="Aptitude">Section 1: Aptitude &amp; Algorithms</option>
+                    <option value="Technical">Section 2: Technical MCQs</option>
+                    <option value="Coding">Section 3: Live Coding Problems</option>
+                  </select>
+
+                  <select
+                    value={previewDiffFilter}
+                    onChange={(e) => setPreviewDiffFilter(e.target.value as any)}
+                    className="h-9 rounded-xl border border-input bg-card px-3 text-xs font-semibold cursor-pointer"
+                  >
+                    <option value="All">All Difficulties</option>
+                    <option value="Easy">🟢 Easy (8 Qs)</option>
+                    <option value="Medium">🟡 Medium (9 Qs)</option>
+                    <option value="Hard">🔴 Hard (5 Qs)</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2 font-sans text-xs">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPreviewSearchQuery("");
+                      setPreviewDiffFilter("All");
+                      setPreviewSectionFilter("All");
+                    }}
+                    className="text-purple-600 hover:underline cursor-pointer font-bold font-mono"
+                  >
+                    Reset Filters
+                  </button>
+                </div>
+              </div>
+
+              {/* QUICK JUMP QUESTION BADGES ROW (1 TO 22 HORIZONTAL STREAM) */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 font-mono text-xs">
+                <span className="text-[0.68rem] text-muted-foreground font-sans font-bold mr-2 shrink-0">Quick Jump:</span>
+                {Array.from({ length: 22 }, (_, i) => i + 1).map((qNum) => {
+                  const isCoding = qNum >= 21;
+                  const isHard = qNum === 3 || qNum === 11 || qNum === 17;
+                  const isMedium = qNum === 4 || qNum === 7 || qNum === 8 || qNum === 13 || qNum === 14 || qNum === 15 || qNum === 19 || qNum === 20 || qNum === 22;
+
+                  return (
+                    <button
+                      key={qNum}
+                      type="button"
+                      onClick={() => {
+                        const el = document.getElementById(`full-question-card-${qNum}`);
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }}
+                      className={`size-7 rounded-lg font-bold border transition-all cursor-pointer flex items-center justify-center shrink-0 ${
+                        isCoding
+                          ? "bg-purple-600 text-white border-purple-700"
+                          : isHard
+                          ? "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-300 hover:bg-rose-500/25"
+                          : isMedium
+                          ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-300 hover:bg-amber-500/25"
+                          : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-300 hover:bg-emerald-500/25"
+                      }`}
+                      title={`Jump to Question ${qNum}`}
+                    >
+                      Q{qNum}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* FULL WIDTH SINGLE COLUMN QUESTIONS FEED (STRETCHES 100% AVAILABLE WIDTH) */}
+            <div className="w-full max-w-none space-y-6 font-sans">
+              {/* SECTION 1: APTITUDE & ALGORITHMS (MCQS) */}
+              {(previewSectionFilter === "All" || previewSectionFilter === "Aptitude") && (
+                <div className="w-full space-y-4">
+                  <div className="p-4 rounded-2xl bg-card border border-border/80 flex items-center justify-between shadow-2xs w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="size-8 rounded-xl bg-purple-500/10 text-purple-600 grid place-items-center font-bold text-sm">
+                        🧠
+                      </div>
+                      <div>
+                        <h3 className="font-extrabold text-foreground text-sm">Section 1: Aptitude, Reasoning &amp; Algorithms</h3>
+                        <p className="text-[0.68rem] text-muted-foreground font-mono">5 Questions • 5 Marks Total • 1 Mark Each</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-xs font-mono font-bold">
+                      Section A
+                    </Badge>
+                  </div>
+
+                  {/* QUESTION CARDS STREAM (FULL WIDTH CARDS) */}
+                  <div className="w-full space-y-4">
+                    {[
+                      { q: "Which graph traversal algorithm uses a Queue data structure to explore vertices level by level?", opt: ["Breadth-First Search (BFS)", "Depth-First Search (DFS)", "Dijkstra Algorithm", "Topological Sort"], ans: 0, diff: "Easy", exp: "BFS explores all neighbor nodes at current depth before moving deeper, naturally using FIFO Queue." },
+                      { q: "What is the time complexity of searching an element in a balanced AVL Binary Search Tree?", opt: ["O(N)", "O(log N)", "O(N log N)", "O(1)"], ans: 1, diff: "Easy", exp: "A balanced AVL tree guarantees O(log N) height, hence search operations run in O(log N) worst-case time." },
+                      { q: "Find the odd one out in the sequence: 3, 5, 7, 12, 13, 17, 19.", opt: ["7", "12", "13", "19"], ans: 1, diff: "Easy", exp: "All numbers in the sequence except 12 are prime numbers." },
+                      { q: "A train running at a speed of 60 km/hr crosses a pole in 9 seconds. What is the length of the train?", opt: ["120 metres", "150 metres", "180 metres", "324 metres"], ans: 1, diff: "Medium", exp: "Speed = 60 * (5/18) m/s = 50/3 m/s. Length = Speed * Time = (50/3) * 9 = 150 metres." },
+                      { q: "What algorithm is used to detect deadlocks in an operating system resource allocation graph?", opt: ["Banker's Algorithm", "Round Robin", "SJF Scheduling", "Peterson's Algorithm"], ans: 0, diff: "Medium", exp: "Banker's algorithm tests for safety by simulating allocation for max declared resources." }
+                    ]
+                      .filter(item => {
+                        if (previewDiffFilter !== "All" && item.diff !== previewDiffFilter) return false;
+                        if (previewSearchQuery && !item.q.toLowerCase().includes(previewSearchQuery.toLowerCase())) return false;
+                        return true;
+                      })
+                      .map((item, idx) => (
+                        <div key={idx} id={`full-question-card-${idx + 1}`} className="p-6 rounded-2xl bg-card border border-border/80 space-y-4 shadow-2xs w-full hover:border-primary/40 transition-all">
+                          <div className="flex items-center justify-between border-b border-border/60 pb-3 font-mono">
+                            <div className="flex items-center gap-3">
+                              <span className="size-8 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-extrabold text-xs grid place-items-center shrink-0 border border-purple-200">
+                                Q{idx + 1}
+                              </span>
+                              <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-700 border-purple-300">
+                                Aptitude &amp; Algorithms
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge className={`text-xs font-bold ${item.diff === "Hard" ? "bg-rose-500/10 text-rose-700 border-rose-300" : item.diff === "Medium" ? "bg-amber-500/10 text-amber-700 border-amber-300" : "bg-emerald-500/10 text-emerald-700 border-emerald-300"}`}>
+                                {item.diff === "Hard" ? "🔴 Hard" : item.diff === "Medium" ? "🟡 Medium" : "🟢 Easy"}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground font-bold">1 Mark</span>
+                            </div>
+                          </div>
+
+                          <p className="text-sm font-bold text-foreground leading-relaxed font-sans">{item.q}</p>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+                            {item.opt.map((optText, oIdx) => (
+                              <div
+                                key={oIdx}
+                                className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
+                                  oIdx === item.ans
+                                    ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 font-bold"
+                                    : "bg-muted/30 border-border/60 text-muted-foreground"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <span className={`size-5 rounded-full text-[0.62rem] grid place-items-center font-bold ${oIdx === item.ans ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"}`}>
+                                    {String.fromCharCode(65 + oIdx)}
+                                  </span>
+                                  <span>{optText}</span>
+                                </div>
+                                {oIdx === item.ans && (
+                                  <span className="text-[0.65rem] text-emerald-700 dark:text-emerald-300 font-extrabold">✓ Correct Answer</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* COLLAPSIBLE EXPLANATION */}
+                          <div className="pt-1">
+                            <button
+                              type="button"
+                              onClick={() => setExpandedExplanations(prev => ({ ...prev, [idx + 1]: !prev[idx + 1] }))}
+                              className="text-xs text-purple-600 font-bold hover:underline cursor-pointer flex items-center gap-1 font-mono"
+                            >
+                              <span>💡</span> {expandedExplanations[idx + 1] ? "Hide Explanation" : "View Solution Breakdown"}
+                            </button>
+                            {expandedExplanations[idx + 1] && (
+                              <div className="mt-2.5 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-900 dark:text-purple-200 font-mono leading-relaxed">
+                                <strong>Explanation:</strong> {item.exp}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* SECTION 2: TECHNICAL & COMPUTER SCIENCE MCQS (15 QUESTIONS) */}
+              {(previewSectionFilter === "All" || previewSectionFilter === "Technical") && (
+                <div className="w-full space-y-4">
+                  <div className="p-4 rounded-2xl bg-card border border-border/80 flex items-center justify-between shadow-2xs w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="size-8 rounded-xl bg-blue-500/10 text-blue-600 grid place-items-center font-bold text-sm">
+                        💻
+                      </div>
+                      <div>
+                        <h3 className="font-extrabold text-foreground text-sm">Section 2: Technical &amp; Computer Science MCQs</h3>
+                        <p className="text-[0.68rem] text-muted-foreground font-mono">15 Questions ({newAstMcqSubject}) • 15 Marks Total</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-xs font-mono font-bold">
+                      Section B
+                    </Badge>
+                  </div>
+
+                  <div className="w-full space-y-4">
+                    {[
+                      { q: "In relational database indexing, what prevents B+ Tree leaves from becoming unbalanced during random inserts?", opt: ["Table locking", "Automatic hashing", "Node splitting & redistribution", "Compaction"], ans: 2, diff: "Hard", exp: "When a B+ tree node reaches capacity, it splits into two half-full nodes and propagates key upwards." },
+                      { q: "Which data structure is optimal for evaluating infix/postfix arithmetic expressions?", opt: ["Stack", "Queue", "Priority Queue", "HashMap"], ans: 0, diff: "Easy", exp: "Operator precedence and operand ordering rely on LIFO behavior provided by Stacks." },
+                      { q: "In Java memory management, where are object instances allocated?", opt: ["Stack Memory", "Heap Memory", "Method Area", "Program Counter Register"], ans: 1, diff: "Easy", exp: "All class objects and array instances are allocated in Java Heap Memory." },
+                      { q: "What is the primary advantage of a B-Tree over a binary search tree in database storage systems?", opt: ["Faster CPU instruction execution", "Reduced disk I/O seek operations", "Requires zero memory overhead", "Guaranteed O(1) hash lookups"], ans: 1, diff: "Medium", exp: "B-Trees have high fan-out per node matching disk block sizes, drastically reducing disk block reads." },
+                      { q: "Which sorting algorithm guarantees O(N log N) worst-case time complexity while maintaining in-place sorting?", opt: ["QuickSort", "HeapSort", "MergeSort", "BubbleSort"], ans: 1, diff: "Medium", exp: "HeapSort achieves O(N log N) worst-case time and O(1) auxiliary space." }
+                    ]
+                      .filter(item => {
+                        if (previewDiffFilter !== "All" && item.diff !== previewDiffFilter) return false;
+                        if (previewSearchQuery && !item.q.toLowerCase().includes(previewSearchQuery.toLowerCase())) return false;
+                        return true;
+                      })
+                      .map((item, idx) => {
+                        const qNum = idx + 6;
+                        return (
+                          <div key={qNum} id={`full-question-card-${qNum}`} className="p-6 rounded-2xl bg-card border border-border/80 space-y-4 shadow-2xs w-full hover:border-primary/40 transition-all">
+                            <div className="flex items-center justify-between border-b border-border/60 pb-3 font-mono">
+                              <div className="flex items-center gap-3">
+                                <span className="size-8 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-extrabold text-xs grid place-items-center shrink-0 border border-blue-200">
+                                  Q{qNum}
+                                </span>
+                                <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-700 border-blue-300">
+                                  Technical CS
+                                </Badge>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Badge className={`text-xs font-bold ${item.diff === "Hard" ? "bg-rose-500/10 text-rose-700 border-rose-300" : item.diff === "Medium" ? "bg-amber-500/10 text-amber-700 border-amber-300" : "bg-emerald-500/10 text-emerald-700 border-emerald-300"}`}>
+                                  {item.diff === "Hard" ? "🔴 Hard" : item.diff === "Medium" ? "🟡 Medium" : "🟢 Easy"}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground font-bold">1 Mark</span>
+                              </div>
+                            </div>
+
+                            <p className="text-sm font-bold text-foreground leading-relaxed font-sans">{item.q}</p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+                              {item.opt.map((optText, oIdx) => (
+                                <div
+                                  key={oIdx}
+                                  className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
+                                    oIdx === item.ans
+                                      ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 font-bold"
+                                      : "bg-muted/30 border-border/60 text-muted-foreground"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2.5">
+                                    <span className={`size-5 rounded-full text-[0.62rem] grid place-items-center font-bold ${oIdx === item.ans ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"}`}>
+                                      {String.fromCharCode(65 + oIdx)}
+                                    </span>
+                                    <span>{optText}</span>
+                                  </div>
+                                  {oIdx === item.ans && (
+                                    <span className="text-[0.65rem] text-emerald-700 dark:text-emerald-300 font-extrabold">✓ Correct Answer</span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="pt-1">
+                              <button
+                                type="button"
+                                onClick={() => setExpandedExplanations(prev => ({ ...prev, [qNum]: !prev[qNum] }))}
+                                className="text-xs text-purple-600 font-bold hover:underline cursor-pointer flex items-center gap-1 font-mono"
+                              >
+                                <span>💡</span> {expandedExplanations[qNum] ? "Hide Explanation" : "View Solution Breakdown"}
+                              </button>
+                              {expandedExplanations[qNum] && (
+                                <div className="mt-2.5 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-900 dark:text-purple-200 font-mono leading-relaxed">
+                                  <strong>Explanation:</strong> {item.exp}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+
+              {/* SECTION 3: LIVE CODING PROBLEMS (2 PROBLEMS) */}
+              {(previewSectionFilter === "All" || previewSectionFilter === "Coding") && (
+                <div className="w-full space-y-4">
+                  <div className="p-4 rounded-2xl bg-card border border-border/80 flex items-center justify-between shadow-2xs w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="size-8 rounded-xl bg-emerald-500/10 text-emerald-600 grid place-items-center font-bold text-sm">
+                        ⚡
+                      </div>
+                      <div>
+                        <h3 className="font-extrabold text-foreground text-sm">Section 3: Live Multi-Compiler Coding Challenges</h3>
+                        <p className="text-[0.68rem] text-muted-foreground font-mono">2 Problems ({newAstCodingSubject}) • 50 Marks Total</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-xs font-mono font-bold">
+                      Section C
+                    </Badge>
+                  </div>
+
+                  <div className="w-full space-y-4 font-mono">
+                    <div id="full-question-card-21" className="p-6 rounded-2xl bg-card border border-border/80 space-y-4 shadow-2xs w-full">
+                      <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                        <div className="flex items-center gap-3">
+                          <span className="size-8 rounded-lg bg-purple-600 text-white font-extrabold text-xs grid place-items-center shrink-0">
+                            Q21
+                          </span>
+                          <Badge className="bg-purple-600 text-white text-xs font-bold">
+                            Live Coding Challenge
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-300 text-xs font-bold">🟢 Easy</Badge>
+                          <span className="text-xs text-muted-foreground font-bold">20 Marks</span>
+                        </div>
+                      </div>
+
+                      <h4 className="font-bold text-foreground text-base font-sans">Problem 1: Distributed Cache Eviction (LRU-K Policy)</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed font-sans">
+                        Implement an LRU-K cache eviction strategy. The LRU-K algorithm evicts the page whose K-th backward distance is maximum among all cached items in dynamic memory.
+                      </p>
+
+                      <div className="p-4 rounded-xl bg-muted/40 border border-border/60 text-xs space-y-2">
+                        <p className="font-bold text-foreground font-sans">Sample Test Case &amp; Constraints:</p>
+                        <p className="text-muted-foreground">Input: Capacity = 3, K = 2, Access Log = [1, 2, 3, 1, 4]</p>
+                        <p className="text-emerald-600 font-bold">Expected Output: Evicted Node ID = 2</p>
+                      </div>
+                    </div>
+
+                    <div id="full-question-card-22" className="p-6 rounded-2xl bg-card border border-border/80 space-y-4 shadow-2xs w-full">
+                      <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                        <div className="flex items-center gap-3">
+                          <span className="size-8 rounded-lg bg-purple-600 text-white font-extrabold text-xs grid place-items-center shrink-0">
+                            Q22
+                          </span>
+                          <Badge className="bg-purple-600 text-white text-xs font-bold">
+                            Live Coding Challenge
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-amber-500/10 text-amber-700 border-amber-300 text-xs font-bold">🟡 Medium</Badge>
+                          <span className="text-xs text-muted-foreground font-bold">30 Marks</span>
+                        </div>
+                      </div>
+
+                      <h4 className="font-bold text-foreground text-base font-sans">Problem 2: Optimal Cloud Subgraph Network Connectivity</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed font-sans">
+                        Given N cloud data centers connected by weighted bidirectional fiber links, calculate the minimum cost MST subtree connecting all nodes under fault tolerance K.
+                      </p>
+
+                      <div className="p-4 rounded-xl bg-muted/40 border border-border/60 text-xs space-y-2">
+                        <p className="font-bold text-foreground font-sans">Sample Test Case &amp; Constraints:</p>
+                        <p className="text-muted-foreground">Input: Nodes = 5, Edges = 7, K = 1</p>
+                        <p className="text-emerald-600 font-bold">Expected Output: Minimum Subgraph Cost = 1420</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </main>
+
+          {/* 3. STICKY BOTTOM ACTION BAR (100% FULL WIDTH) */}
+          <footer className="bg-card border-t border-border/80 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0 shadow-lg z-30 font-sans w-full">
+            <Button
+              variant="outline"
+              onClick={() => setIsPreviewPaperModalOpen(false)}
+              className="h-10 px-5 rounded-xl text-xs font-bold border-border cursor-pointer bg-card hover:bg-muted"
+            >
+              ← Back to Assessments
+            </Button>
+
+            <div className="flex flex-wrap items-center gap-3 text-xs font-bold">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsPreviewPaperModalOpen(false);
+                  setIsCreateAssessmentModalOpen(true);
+                }}
+                className="h-10 px-4 rounded-xl border-border cursor-pointer bg-card hover:bg-muted"
+              >
+                <Edit className="size-4 mr-1 text-blue-600" /> Edit Assessment
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => toast.success("Assessment saved as draft!")}
+                className="h-10 px-4 rounded-xl border-border cursor-pointer bg-card hover:bg-muted"
+              >
+                <Save className="size-4 mr-1 text-slate-600" /> Save as Draft
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => handleDownloadPaperPdf()}
+                className="h-10 px-4 rounded-xl border-border cursor-pointer bg-card hover:bg-muted"
+              >
+                <Download className="size-4 mr-1 text-purple-600" /> Export PDF
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={(e) => {
+                  setIsPreviewPaperModalOpen(false);
+                  handleCreateAssessmentSubmit(e);
+                }}
+                className="h-10 px-4 rounded-xl border-border cursor-pointer bg-card hover:bg-muted text-blue-700"
+              >
+                <Send className="size-4 mr-1" /> Send to TPO
+              </Button>
+
+              <Button
+                onClick={(e) => {
+                  setIsPreviewPaperModalOpen(false);
+                  handleCreateAssessmentSubmit(e);
+                }}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl h-10 px-6 shadow-sm cursor-pointer gap-2"
+              >
+                <Send className="size-4" /> Publish Assessment
+              </Button>
+            </div>
+          </footer>
+        </div>
+      )}
+
+
+
+
+      {/* ── FULL BROWSER WIDTH SINGLE-COLUMN PREVIEW OVERLAY FOR EXISTING CARD ASSESSMENTS ── */}
+      {isPreviewModalOpen && selectedPreviewAst && (
+        <div className="fixed inset-0 z-50 bg-slate-50 dark:bg-slate-950 text-foreground flex flex-col w-full min-h-screen overflow-y-auto font-sans animate-in fade-in duration-200">
+          <header className="bg-card border-b border-border/80 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0 shadow-2xs z-20 w-full">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsPreviewModalOpen(false)}
+                className="rounded-full size-8 text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <Menu className="size-4" />
+              </Button>
+              <div>
+                <div className="flex items-center gap-1.5 text-[0.7rem] text-muted-foreground font-mono">
+                  <span>Home</span>
+                  <span>&gt;</span>
+                  <span>Assessments</span>
+                  <span>&gt;</span>
+                  <span>{selectedPreviewAst.title}</span>
+                  <span>&gt;</span>
+                  <span className="font-bold text-foreground">Preview</span>
+                </div>
+                <h1 className="text-lg font-extrabold text-foreground tracking-tight">
+                  {selectedPreviewAst.title}
+                </h1>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrintPaper}
+                className="h-9 px-3.5 rounded-xl text-xs font-bold gap-1.5 cursor-pointer bg-card hover:bg-muted"
+                title="Print Question Paper"
+              >
+                <Printer className="size-4 text-slate-600 dark:text-slate-300" /> Print
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleDownloadPaperPdf(selectedPreviewAst.title)}
+                className="h-9 px-3.5 rounded-xl text-xs font-bold gap-1.5 cursor-pointer bg-card hover:bg-muted border-purple-500/30 text-purple-600"
+                title="Export PDF Document"
+              >
+                <Download className="size-4" /> Download PDF
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsPreviewModalOpen(false)}
+                className="h-9 px-3.5 rounded-xl text-xs font-bold gap-1.5 cursor-pointer bg-card hover:bg-muted text-blue-600"
+              >
+                <Edit className="size-4" /> Edit Setup
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsPreviewModalOpen(false)}
+                className="rounded-full size-9 text-muted-foreground hover:text-foreground cursor-pointer ml-1"
+              >
+                <X className="size-5" />
+              </Button>
+            </div>
+          </header>
+
+          <main className="w-full max-w-none p-4 sm:p-8 space-y-6 flex-1 bg-slate-50 dark:bg-slate-950">
+            {/* HORIZONTAL SUMMARY KPI CARDS ROW */}
+            <div className="w-full max-w-none bg-card border border-border/80 rounded-2xl p-5 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-xl bg-purple-600/10 border border-purple-500/20 text-purple-600 grid place-items-center shrink-0">
+                    <Building className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-foreground text-sm font-sans">Assessment Metrics Summary</h3>
+                    <p className="text-[0.68rem] text-muted-foreground font-mono">Organization: Google Cloud India • Official Recruiter Assessment Template</p>
+                  </div>
+                </div>
+                <Badge className="bg-emerald-600 text-white font-mono text-xs px-2.5 py-0.5 font-bold">
+                  ● {selectedPreviewAst.requestStatus}
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 font-mono text-xs">
+                <div className="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-muted-foreground block font-sans">MCQ Count</span>
+                  <span className="text-lg font-extrabold text-purple-600">{selectedPreviewAst.mcqCount} Qs</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-muted-foreground block font-sans">Coding Problems</span>
+                  <span className="text-lg font-extrabold text-emerald-600">{selectedPreviewAst.codingCount} Probs</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-amber-700 dark:text-amber-300 block font-sans">Duration</span>
+                  <span className="text-lg font-extrabold text-amber-600">{selectedPreviewAst.duration}</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-blue-700 dark:text-blue-300 block font-sans">Total Marks</span>
+                  <span className="text-lg font-extrabold text-blue-600">{selectedPreviewAst.totalMarks} Marks</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-emerald-700 block font-sans">Passing Cutoff</span>
+                  <span className="text-sm font-bold text-emerald-700">{selectedPreviewAst.passingMarksPct}% Cutoff</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-500/10 border border-slate-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-muted-foreground block font-sans">Template Version</span>
+                  <span className="text-sm font-bold text-foreground">{selectedPreviewAst.version}</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-500/10 border border-slate-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-muted-foreground block font-sans">Negative Mark</span>
+                  <span className="text-sm font-bold text-foreground">None (0%)</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
+                  <span className="text-[0.65rem] text-emerald-700 block font-sans">Audit Status</span>
+                  <span className="text-sm font-bold text-emerald-700">Verified</span>
+                </div>
+              </div>
+            </div>
+
+            {/* STICKY TOOLBAR & QUICK JUMP */}
+            <div className="w-full max-w-none bg-card border border-border/80 rounded-2xl p-4 shadow-2xs sticky top-0 z-10 space-y-3 font-mono">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-3 font-sans">
+                  <span className="font-extrabold text-sm text-foreground flex items-center gap-1.5">
+                    <Search className="size-4 text-purple-600" /> Question Toolbar
+                  </span>
+                  <div className="relative w-64">
+                    <Search className="size-3.5 absolute left-3 top-3 text-muted-foreground" />
+                    <Input
+                      value={previewSearchQuery}
+                      onChange={(e) => setPreviewSearchQuery(e.target.value)}
+                      placeholder="Search question keyword..."
+                      className="h-9 pl-9 text-xs rounded-xl font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 font-sans text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewSearchQuery("")}
+                    className="text-purple-600 hover:underline cursor-pointer font-bold font-mono"
+                  >
+                    Reset Search
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 font-mono text-xs">
+                <span className="text-[0.68rem] text-muted-foreground font-sans font-bold mr-2 shrink-0">Quick Jump:</span>
+                {Array.from({ length: selectedPreviewAst.mcqCount + selectedPreviewAst.codingCount }, (_, i) => i + 1).map((qNum) => (
+                  <button
+                    key={qNum}
+                    type="button"
+                    onClick={() => {
+                      const el = document.getElementById(`existing-card-q-${qNum}`);
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }}
+                    className="size-7 rounded-lg font-bold border border-purple-300 bg-purple-500/10 text-purple-700 hover:bg-purple-500/20 cursor-pointer flex items-center justify-center shrink-0"
+                  >
+                    Q{qNum}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* FULL WIDTH SINGLE COLUMN STREAM */}
+            <div className="w-full max-w-none space-y-6 font-sans">
+              <div className="w-full space-y-4">
+                <div className="p-4 rounded-2xl bg-card border border-border/80 flex items-center justify-between shadow-2xs w-full">
+                  <div className="flex items-center gap-3">
+                    <div className="size-8 rounded-xl bg-purple-500/10 text-purple-600 grid place-items-center font-bold text-sm">📚</div>
+                    <h3 className="font-extrabold text-foreground text-sm">Technical &amp; Aptitude MCQs ({selectedPreviewAst.mcqCount} Questions)</h3>
+                  </div>
+                  <Badge variant="outline" className="text-xs font-mono font-bold">Section A</Badge>
+                </div>
+
+                <div className="w-full space-y-4 font-mono">
+                  {[
+                    { q: "What is the time complexity of searching an element in a balanced AVL Binary Search Tree?", opt: ["O(N)", "O(log N)", "O(N log N)", "O(1)"], ans: 1, diff: "Easy" },
+                    { q: "Which graph traversal algorithm uses a Queue data structure to explore vertices level by level?", opt: ["Breadth-First Search (BFS)", "Depth-First Search (DFS)", "Dijkstra Algorithm", "Topological Sort"], ans: 0, diff: "Easy" },
+                    { q: "In relational database indexing, what prevents B+ Tree leaves from becoming unbalanced during random inserts?", opt: ["Table locking", "Automatic hashing", "Node splitting & redistribution", "Compaction"], ans: 2, diff: "Hard" },
+                    { q: "What algorithm is used to detect deadlocks in an operating system resource allocation graph?", opt: ["Banker's Algorithm", "Round Robin", "SJF Scheduling", "Peterson's Algorithm"], ans: 0, diff: "Medium" }
+                  ].map((item, idx) => (
+                    <div key={idx} id={`existing-card-q-${idx + 1}`} className="p-6 rounded-2xl bg-card border border-border/80 space-y-4 shadow-2xs w-full hover:border-primary/40 transition-all">
+                      <div className="flex items-center justify-between border-b border-border/60 pb-3 font-mono">
+                        <div className="flex items-center gap-3">
+                          <span className="size-8 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-extrabold text-xs grid place-items-center shrink-0 border border-purple-200">
+                            Q{idx + 1}
+                          </span>
+                          <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-700 border-purple-300">Technical MCQs</Badge>
+                        </div>
+                        <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-300 text-xs font-bold">🟢 Easy</Badge>
+                      </div>
+
+                      <p className="text-sm font-bold text-foreground leading-relaxed font-sans">{item.q}</p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+                        {item.opt.map((optText, oIdx) => (
+                          <div
+                            key={oIdx}
+                            className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
+                              oIdx === item.ans ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 text-emerald-900 dark:text-emerald-200 font-bold" : "bg-card text-muted-foreground"
+                            }`}
+                          >
+                            <span>{String.fromCharCode(65 + oIdx)}) {optText}</span>
+                            {oIdx === item.ans && <span className="text-[0.65rem] text-emerald-700 font-extrabold">✓ Correct</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {selectedPreviewAst.codingCount > 0 && (
+                <div className="w-full space-y-4">
+                  <div className="p-4 rounded-2xl bg-card border border-border/80 flex items-center justify-between shadow-2xs w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="size-8 rounded-xl bg-emerald-500/10 text-emerald-600 grid place-items-center font-bold text-sm">⚡</div>
+                      <h3 className="font-extrabold text-foreground text-sm">Live Coding Challenges ({selectedPreviewAst.codingCount} Problems)</h3>
+                    </div>
+                    <Badge variant="outline" className="text-xs font-mono font-bold">Section B</Badge>
+                  </div>
+
+                  <div className="w-full space-y-4 font-mono">
+                    <div id={`existing-card-q-${selectedPreviewAst.mcqCount + 1}`} className="p-6 rounded-2xl bg-card border border-border/80 space-y-4 shadow-2xs w-full">
+                      <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                        <div className="flex items-center gap-3">
+                          <span className="size-8 rounded-lg bg-purple-600 text-white font-extrabold text-xs grid place-items-center shrink-0">
+                            Q{selectedPreviewAst.mcqCount + 1}
+                          </span>
+                          <Badge className="bg-purple-600 text-white text-xs font-bold">Live Coding</Badge>
+                        </div>
+                        <Badge className="bg-purple-500/10 text-purple-700 border-purple-300 text-xs font-bold">20 Marks • 🟢 Easy</Badge>
+                      </div>
+
+                      <h4 className="font-bold text-foreground text-base font-sans">Problem 1: Distributed Cache Eviction (LRU-K Policy)</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed font-sans">Implement an LRU-K cache eviction strategy in multi-threaded environment.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </main>
+
+          <footer className="bg-card border-t border-border/80 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0 shadow-lg z-30 font-sans w-full">
+            <Button variant="outline" onClick={() => setIsPreviewModalOpen(false)} className="h-10 px-5 rounded-xl text-xs font-bold border-border cursor-pointer bg-card hover:bg-muted">
+              ← Back to Assessments
+            </Button>
+            <Button onClick={() => setIsPreviewModalOpen(false)} className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl h-10 px-6 shadow-sm text-xs cursor-pointer">
+              Close Preview
+            </Button>
+          </footer>
+        </div>
+      )}
+
+
+
+
+
+
+
 
       {/* EDIT ASSESSMENT MODAL DIALOG */}
       <Dialog open={isEditModalOpen} onOpenChange={(open) => { setIsEditModalOpen(open); if (!open) setEditingAst(null); }}>
@@ -3859,336 +5084,6 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                 </Button>
               </DialogFooter>
             </form>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* FULL ENTERPRISE ASSESSMENT PREVIEW DIALOG MODAL */}
-      <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
-        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl p-6 backdrop-blur-2xl">
-          {selectedPreviewAst && (
-            <div className="space-y-4 text-xs font-mono">
-              <DialogHeader className="pb-3 border-b border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-xl bg-purple-600 text-white grid place-items-center font-bold text-sm shadow-glow">
-                      <FileCheck2 className="size-5" />
-                    </div>
-                    <div>
-                      <DialogTitle className="text-lg font-extrabold font-sans">
-                        {selectedPreviewAst.title}
-                      </DialogTitle>
-                      <DialogDescription className="text-xs font-mono text-primary font-bold">
-                        {selectedPreviewAst.version} • {selectedPreviewAst.type} • {selectedPreviewAst.duration}
-                      </DialogDescription>
-                    </div>
-                  </div>
-                  <Badge className={selectedPreviewAst.requestStatus === "Approved" ? "bg-emerald-600 text-white" : "bg-purple-600 text-white"}>
-                    ● {selectedPreviewAst.requestStatus}
-                  </Badge>
-                </div>
-              </DialogHeader>
-
-              {/* CANDIDATE SIMULATION MODE TOGGLE */}
-              {candidateSimulationMode ? (
-                <div ref={simulationContainerRef} className="space-y-3 font-sans" onContextMenu={(e) => e.preventDefault()} onCopy={(e) => e.preventDefault()} onPaste={(e) => e.preventDefault()}>
-                  {/* AUTO-SUBMIT OVERLAY — shown when 3 violations exceeded */}
-                  {isAutoSubmitted ? (
-                    <div className="flex flex-col items-center justify-center py-10 space-y-5 text-center">
-                      <div className="size-20 rounded-full bg-rose-600/15 border-2 border-rose-500/40 grid place-items-center">
-                        <span className="text-4xl">🚨</span>
-                      </div>
-                      <div className="space-y-1.5">
-                        <h3 className="text-xl font-extrabold text-rose-600 font-sans">Assessment Auto-Submitted</h3>
-                        <p className="text-xs text-muted-foreground font-mono max-w-xs">
-                          Your assessment was automatically submitted because you switched tabs or windows <strong className="text-rose-600">3 times</strong>, violating the proctoring policy.
-                        </p>
-                      </div>
-                      <div className="grid grid-cols-3 gap-3 w-full max-w-sm text-[0.68rem] font-mono">
-                        <div className="p-3 rounded-xl border bg-card space-y-1">
-                          <p className="text-muted-foreground">Tab Violations</p>
-                          <p className="text-lg font-extrabold text-rose-600">{tabViolationCount}/3</p>
-                        </div>
-                        <div className="p-3 rounded-xl border bg-card space-y-1">
-                          <p className="text-muted-foreground">Submission</p>
-                          <p className="text-lg font-extrabold text-amber-600">FORCED</p>
-                        </div>
-                        <div className="p-3 rounded-xl border bg-card space-y-1">
-                          <p className="text-muted-foreground">Status</p>
-                          <p className="text-lg font-extrabold text-rose-600">FLAGGED</p>
-                        </div>
-                      </div>
-                      <div className="p-3 rounded-xl border border-rose-500/30 bg-rose-500/5 text-xs text-rose-700 font-mono text-left w-full max-w-sm">
-                        <p className="font-bold mb-1">📋 Incident Report Generated:</p>
-                        <p>• Candidate switched tabs {tabViolationCount} times during proctored session.</p>
-                        <p>• Assessment auto-submitted at violation threshold (3/3).</p>
-                        <p>• Report forwarded to Placement Officer & AI Proctoring System.</p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setCandidateSimulationMode(false);
-                          setIsAutoSubmitted(false);
-                          setTabViolationCount(0);
-                        }}
-                        className="rounded-xl text-xs border-rose-400 text-rose-600"
-                      >
-                        Close Simulation
-                      </Button>
-                    </div>
-                  ) : (
-                    <>
-                      {/* LIVE SIMULATION HEADER */}
-                      <div className="flex items-center justify-between bg-rose-600/10 border border-rose-500/40 p-3 rounded-xl">
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-rose-600 text-white animate-pulse text-[0.62rem]">● LIVE CANDIDATE SIMULATION</Badge>
-                          <span className="font-bold text-xs font-mono text-rose-600">Timer: 89 Mins 42 Secs Remaining</span>
-                        </div>
-                        <Button size="sm" variant="outline" onClick={() => { setCandidateSimulationMode(false); setIsAutoSubmitted(false); setTabViolationCount(0); }} className="h-7 text-xs rounded-lg border-rose-400 text-rose-600 hover:bg-rose-50">
-                          Exit Candidate Mode
-                        </Button>
-                      </div>
-
-                      {/* SECURITY POLICY BANNER */}
-                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[0.62rem] font-mono">
-                        <div className="flex items-center gap-1.5 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 font-bold">
-                          <span className="text-base">✅</span> Fullscreen Active
-                        </div>
-                        <div className="flex items-center gap-1.5 p-2 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-700 font-bold">
-                          <span className="text-base">❌</span> Copy &amp; Paste Disabled
-                        </div>
-                        <div className="flex items-center gap-1.5 p-2 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-700 font-bold">
-                          <span className="text-base">❌</span> Right-Click Disabled
-                        </div>
-                        <div className="flex items-center gap-1.5 p-2 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-700 font-bold">
-                          <span className="text-base">❌</span> Refresh Disabled
-                        </div>
-                        <div className={`flex items-center gap-1.5 p-2 rounded-lg font-bold border ${tabViolationCount > 0 ? "bg-amber-500/10 border-amber-500/30 text-amber-700" : "bg-rose-500/10 border-rose-500/30 text-rose-700"}`}>
-                          <span className="text-base">{tabViolationCount > 0 ? "⚠️" : "❌"}</span>
-                          {tabViolationCount > 0 ? `Tab Violations: ${tabViolationCount}/3` : "Multi-Tab Blocked"}
-                        </div>
-                      </div>
-
-                      {/* QUESTION AREA */}
-                      <div className="p-4 rounded-xl border space-y-3 bg-muted/20" style={{ userSelect: "none" }}>
-                        <span className="text-xs font-bold text-purple-600 uppercase tracking-wider block font-mono">Section 1: Distributed Systems &amp; Cloud Architecture (MCQ 1 / 35)</span>
-                        <p className="font-semibold text-sm">Q1. Which algorithm is primarily utilized by Google Bigtable for high-throughput append-only distributed storage key-value tables?</p>
-                        <div className="space-y-2 pl-2">
-                          {["A. Log-Structured Merge-Tree (LSM-Tree)", "B. B+ Tree Indexing with WAL", "C. Red-Black Balanced Binary Search Tree", "D. Distributed Hash Map Ring"].map((opt, oIdx) => (
-                            <label key={oIdx} className="flex items-center gap-2.5 p-2.5 rounded-xl border border-border/70 hover:bg-muted/40 cursor-pointer text-xs">
-                              <input type="radio" name="sim_q1" className="size-4 text-primary" />
-                              <span>{opt}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="bg-muted/40 p-1 rounded-xl w-full grid grid-cols-4 text-xs font-bold font-sans mb-4">
-                    <TabsTrigger value="overview" className="rounded-lg">Test Overview</TabsTrigger>
-                    <TabsTrigger value="paper" className="rounded-lg">Question Paper</TabsTrigger>
-                    <TabsTrigger value="sections" className="rounded-lg">Sectional Timing</TabsTrigger>
-                    <TabsTrigger value="security" className="rounded-lg">Proctoring Rules</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="overview" className="space-y-3 mt-0">
-                    <div className="grid gap-3 sm:grid-cols-3">
-                      <div className="p-3.5 rounded-xl border bg-card space-y-1">
-                        <span className="text-muted-foreground font-sans text-[0.68rem]">Total Questions</span>
-                        <p className="text-lg font-extrabold text-foreground">{selectedPreviewAst.mcqCount + selectedPreviewAst.codingCount + selectedPreviewAst.sqlCount} Questions</p>
-                        <span className="text-[0.65rem] text-muted-foreground">({selectedPreviewAst.mcqCount} MCQ, {selectedPreviewAst.codingCount} Coding, {selectedPreviewAst.sqlCount} SQL)</span>
-                      </div>
-                      <div className="p-3.5 rounded-xl border bg-card space-y-1">
-                        <span className="text-muted-foreground font-sans text-[0.68rem]">Total Marks & Cutoff</span>
-                        <p className="text-lg font-extrabold text-emerald-600">{selectedPreviewAst.totalMarks} Marks</p>
-                        <span className="text-[0.65rem] text-emerald-600 font-bold">{selectedPreviewAst.passingMarksPct}% Cutoff Required</span>
-                      </div>
-                      <div className="p-3.5 rounded-xl border bg-card space-y-1">
-                        <span className="text-muted-foreground font-sans text-[0.68rem]">Test Duration</span>
-                        <p className="text-lg font-extrabold text-primary">{selectedPreviewAst.duration}</p>
-                        <span className="text-[0.65rem] text-muted-foreground">Negative Marking: 0.25</span>
-                      </div>
-                    </div>
-
-                    <div className="p-4 bg-muted/30 rounded-xl space-y-2 border font-sans">
-                      <span className="font-bold text-xs">Reviewer Notes & Feedback</span>
-                      <p className="text-xs text-muted-foreground italic">"{selectedPreviewAst.reviewerNotes}"</p>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="paper" className="space-y-4 mt-0">
-                    <div className="space-y-4 font-sans">
-                      {/* SECTION 1: 20 MCQS REPOSITORY */}
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-xs text-primary uppercase tracking-wider block font-mono">
-                            Section 1: Technical & Aptitude MCQs ({SAMPLE_20_MCQS.length} Questions)
-                          </span>
-                          <Badge variant="outline" className="font-mono text-[0.62rem] text-primary border-primary/30">
-                            20 Questions • 1 Mark Each
-                          </Badge>
-                        </div>
-
-                        <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-                          {SAMPLE_20_MCQS.map((mcq) => (
-                            <div key={mcq.id} className="p-3.5 rounded-xl border border-border/70 bg-card space-y-2 font-mono">
-                              <p className="font-bold font-sans text-foreground text-xs">
-                                Q{mcq.id}. {mcq.question}
-                              </p>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[0.68rem] pl-2 font-mono">
-                                {mcq.options.map((opt, oIdx) => (
-                                  <div
-                                    key={oIdx}
-                                    className={`p-1.5 rounded-lg border ${
-                                      oIdx === mcq.correct
-                                        ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 font-bold"
-                                        : "border-border/40 text-muted-foreground"
-                                    }`}
-                                  >
-                                    {opt} {oIdx === mcq.correct && "✓"}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* SECTION 2: 2 CODING CHALLENGES WITH COMPILERS */}
-                      <div className="space-y-3 pt-2">
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-xs text-purple-600 uppercase tracking-wider block font-mono">
-                            Section 2: Coding Challenges ({SAMPLE_2_CODING_CHALLENGES.length} Problems)
-                          </span>
-                          <Badge className="bg-purple-600 text-white font-mono text-[0.62rem]">
-                            50 Total Marks
-                          </Badge>
-                        </div>
-
-                        {SAMPLE_2_CODING_CHALLENGES.map((prob) => {
-                          const activeCompilerLang = selectedCompilerLangs[prob.id] ?? prob.compilers[0]!.name;
-                          const activeCompilerObj = prob.compilers.find((c) => c.name === activeCompilerLang) ?? prob.compilers[0]!;
-
-                          return (
-                            <div key={prob.id} className="p-4 rounded-2xl border border-purple-500/30 bg-purple-500/5 space-y-3 font-mono">
-                              <div className="flex flex-wrap items-center justify-between gap-2">
-                                <div>
-                                  <h4 className="font-bold text-foreground text-sm font-sans">{prob.title}</h4>
-                                  <p className="text-[0.68rem] text-muted-foreground">Limits: {prob.timeLimit} • {prob.memoryLimit}</p>
-                                </div>
-                                <Badge className="bg-purple-600 text-white text-[0.62rem]">{prob.marks} Marks</Badge>
-                              </div>
-
-                              <p className="text-xs text-muted-foreground font-sans">{prob.statement}</p>
-
-                              {/* PREFERRED COMPILERS SELECTOR TABS */}
-                              <div className="space-y-2 pt-1">
-                                <span className="text-[0.65rem] font-bold text-purple-600 font-mono uppercase block">Select Preferred Compiler / Language:</span>
-                                <div className="flex flex-wrap items-center gap-1.5">
-                                  {prob.compilers.map((c) => (
-                                    <Button
-                                      key={c.name}
-                                      type="button"
-                                      size="sm"
-                                      variant={activeCompilerLang === c.name ? "default" : "outline"}
-                                      onClick={() =>
-                                        setSelectedCompilerLangs((prev) => ({
-                                          ...prev,
-                                          [prob.id]: c.name,
-                                        }))
-                                      }
-                                      className={`h-7 text-[0.65rem] font-mono rounded-lg cursor-pointer ${
-                                        activeCompilerLang === c.name ? "bg-purple-600 text-white font-bold" : "border-border/70"
-                                      }`}
-                                    >
-                                      {c.name}
-                                    </Button>
-                                  ))}
-                                </div>
-
-                                {/* STARTER CODE PREVIEW */}
-                                <div className="p-3 bg-card border rounded-xl font-mono text-[0.68rem] space-y-1 overflow-x-auto">
-                                  <div className="flex justify-between text-[0.62rem] text-muted-foreground border-b pb-1">
-                                    <span>Starter Code ({activeCompilerObj.name})</span>
-                                    <button type="button" onClick={() => toast.success(`Copied ${activeCompilerObj.name} starter code`)} className="hover:text-foreground">Copy Code</button>
-                                  </div>
-                                  <pre className="text-foreground pt-1 whitespace-pre-wrap">{activeCompilerObj.code}</pre>
-                                </div>
-
-                                <div className="p-2.5 bg-background border rounded-xl text-[0.68rem] font-mono flex justify-between">
-                                  <div>Sample Input: <code>{prob.sampleInput}</code></div>
-                                  <div>Output: <code>{prob.sampleOutput}</code></div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="sections" className="space-y-3 mt-0 font-sans">
-                    <div className="p-3.5 rounded-xl border space-y-2 bg-card">
-                      <div className="flex justify-between text-xs">
-                        <span className="font-bold">Section 1: MCQ Aptitude & Technical</span>
-                        <span className="text-primary font-mono font-bold">35 Qs • 35 Mins</span>
-                      </div>
-                      <div className="flex justify-between text-xs border-t pt-2">
-                        <span className="font-bold">Section 2: Coding Challenges</span>
-                        <span className="text-purple-600 font-mono font-bold">5 Qs • 45 Mins</span>
-                      </div>
-                      <div className="flex justify-between text-xs border-t pt-2">
-                        <span className="font-bold">Section 3: SQL Database Queries</span>
-                        <span className="text-emerald-600 font-mono font-bold">5 Qs • 10 Mins</span>
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="security" className="space-y-3 mt-0 font-sans">
-                    <div className="p-4 rounded-xl border bg-card space-y-2 text-xs">
-                      <p>• <strong>Webcam AI Proctoring:</strong> Enabled (Real-time face detection)</p>
-                      <p>• <strong>Fullscreen Mode:</strong> Mandatory (Auto-submit on 3 exit attempts)</p>
-                      <p>• <strong>Copy-Paste Restriction:</strong> Enforced in coding editor</p>
-                      <p>• <strong>IP Address Locking:</strong> Enabled for campus network</p>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              )}
-
-              <DialogFooter className="pt-3 border-t border-border flex flex-wrap items-center justify-between gap-2 font-sans">
-                <Button size="sm" variant="outline" onClick={() => setIsPreviewModalOpen(false)} className="rounded-xl text-xs">
-                  Close Preview
-                </Button>
-
-                <div className="flex items-center gap-2">
-                  {!candidateSimulationMode && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setCandidateSimulationMode(true)}
-                      className="rounded-xl text-xs bg-primary/10 text-primary border-primary/30 font-bold gap-1 cursor-pointer"
-                    >
-                      <Play className="size-3.5" /> Preview as Candidate
-                    </Button>
-                  )}
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      if (selectedPreviewAst) {
-                        handleDownloadPdfPaper(selectedPreviewAst);
-                      }
-                    }}
-                    className="bg-brand-gradient shadow-glow font-bold rounded-xl text-xs cursor-pointer gap-1"
-                  >
-                    <FileDown className="size-3.5" /> Download PDF Paper
-                  </Button>
-                </div>
-              </DialogFooter>
-            </div>
           )}
         </DialogContent>
       </Dialog>

@@ -58,12 +58,23 @@ export function PlacementWidget({ placement, onNavigate }: PlacementWidgetProps)
         </div>
       </div>
 
-      <Button
-        onClick={() => onNavigate("/student/placements")}
-        className="w-full h-9 text-xs rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold gap-1.5 shadow-xs"
-      >
-        View Placement Portal <ChevronRight className="h-3.5 w-3.5" />
-      </Button>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <Button
+          onClick={() => (window.location.href = "/exam/take?id=AST-GGL-01")}
+          className="h-9 text-xs rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold gap-1.5 shadow-md shadow-amber-500/20 cursor-pointer"
+        >
+          ⚡ Attempt TPO Assessment
+        </Button>
+
+        <Button
+          onClick={() => onNavigate("/student/placements")}
+          variant="outline"
+          className="h-9 text-xs rounded-xl border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-semibold gap-1"
+        >
+          View Placement Portal <ChevronRight className="h-3.5 w-3.5" />
+        </Button>
+      </div>
     </div>
   );
 }
+

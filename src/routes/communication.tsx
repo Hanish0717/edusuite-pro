@@ -1,28 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { StudentNoticeBoard } from "@/components/notice-board/student-noticeboard";
+import { CommunicationModuleView } from "@/modules/communication";
 
 export const Route = createFileRoute("/communication")({
   head: () => ({
-    meta: [
-      { title: "Digital Notice Board — EduSuite Pro" },
-      {
-        name: "description",
-        content: "Official notices published by the college for academics, examinations, placements, scholarships, and events.",
-      },
-      { property: "og:title", content: "Digital Notice Board — EduSuite Pro" },
-      { property: "og:description", content: "Official notices published by the college for academics, examinations, placements, scholarships, and events." },
-    ],
+    meta: [{ title: "Digital Notice Board — EduSuite Pro" }],
   }),
-  component: Page,
+  component: CommunicationPage,
 });
 
-function Page() {
+function CommunicationPage() {
   return (
     <DashboardLayout>
-      <div className="p-6 max-w-7xl mx-auto">
-        <StudentNoticeBoard />
-      </div>
+      <CommunicationModuleView />
     </DashboardLayout>
   );
 }

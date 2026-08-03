@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { SHARED_ASSESSMENT_REQUESTS, SHARED_STUDENT_SUBMISSIONS } from "@/lib/shared-assessment-store";
+import {
+  SHARED_ASSESSMENT_REQUESTS,
+  getAllStudentSubmissions,
+  updateStudentSubmissionRecord,
+  type StudentSubmissionRecord,
+} from "@/lib/shared-assessment-store";
+
 import {
   Code2,
   Search,
@@ -377,12 +383,109 @@ export function AssessmentRequestsApprovalWorkspace() {
   const [dispatchReq, setDispatchReq] = useState<AssessmentRequestRecord | null>(null);
   const [dispatchSeries, setDispatchSeries] = useState("2022 Series (CSE / ECE / CSM)");
   const [dispatchMinCgpa, setDispatchMinCgpa] = useState("7.5");
+  const [sharedAssessmentIds, setSharedAssessmentIds] = useState<Record<string, boolean>>({});
+
+  // Student Submissions State & Edit Modal State
+  const [studentSubmissionsList, setStudentSubmissionsList] = useState<StudentSubmissionRecord[]>(() => getAllStudentSubmissions());
+  const [editingSub, setEditingSub] = useState<StudentSubmissionRecord | null>(null);
+  const [isEditSubModalOpen, setIsEditSubModalOpen] = useState(false);
+  const [editPassStatus, setEditPassStatus] = useState<boolean>(true);
+  const [editMcqScore, setEditMcqScore] = useState<number>(0);
+  const [editCodingScore, setEditCodingScore] = useState<number>(0);
+  const [editRemarks, setEditRemarks] = useState<string>("");
+
+  const refreshStudentSubmissions = () => {
+    setStudentSubmissionsList(getAllStudentSubmissions());
+  };
+
+  const handleQuickTogglePassStatus = (sub: StudentSubmissionRecord) => {
+    const updatedStatus = !sub.passStatus;
+    const updatedRecord: StudentSubmissionRecord = {
+      ...sub,
+      passStatus: updatedStatus,
+    };
+    updateStudentSubmissionRecord(updatedRecord);
+    refreshStudentSubmissions();
+    if (updatedStatus) {
+      toast.success(`Updated ${sub.studentName} (${sub.rollNo}): Changed status to PASSED ✓`);
+    } else {
+      toast.error(`Updated ${sub.studentName} (${sub.rollNo}): Changed status to FAILED ✕`);
+    }
+  };
+
+  const openEditSubModal = (sub: StudentSubmissionRecord) => {
+    setEditingSub(sub);
+    setEditPassStatus(sub.passStatus);
+    setEditMcqScore(sub.mcqScore);
+    setEditCodingScore(sub.codingScore);
+    setEditRemarks("");
+    setIsEditSubModalOpen(true);
+  };
+
+  const handleSaveSubChanges = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSub) return;
+
+    const totalObtained = editMcqScore + editCodingScore;
+    const totalPossible = editingSub.mcqTotal + editingSub.codingTotal;
+    const calculatedPct = totalPossible > 0 ? Math.round((totalObtained / totalPossible) * 100) : editingSub.totalPercentage;
+
+    const updatedRecord: StudentSubmissionRecord = {
+      ...editingSub,
+      passStatus: editPassStatus,
+      mcqScore: editMcqScore,
+      codingScore: editCodingScore,
+      totalPercentage: calculatedPct,
+    };
+
+    updateStudentSubmissionRecord(updatedRecord);
+    refreshStudentSubmissions();
+    setIsEditSubModalOpen(false);
+    toast.success(`Saved updated result for ${editingSub.studentName}! Status: ${editPassStatus ? "PASSED ✓" : "FAILED ✕"}`);
+  };
+
+  // Send Results to Recruiter Modal State
+  const [isSendToRecruiterModalOpen, setIsSendToRecruiterModalOpen] = useState(false);
+  const [selectedRecruiterCompany, setSelectedRecruiterCompany] = useState("Google Cloud India (David Miller - david.miller@google.com)");
+  const [sendCandidatesOption, setSendCandidatesOption] = useState<"PASSED_ONLY" | "ALL_SUBMISSIONS" | "SINGLE_CANDIDATE">("PASSED_ONLY");
+  const [singleCandidateSub, setSingleCandidateSub] = useState<StudentSubmissionRecord | null>(null);
+  const [customRecruiterNote, setCustomRecruiterNote] = useState("");
+
+  const handleOpenSendResultsModal = (sub?: StudentSubmissionRecord) => {
+    if (sub) {
+      setSingleCandidateSub(sub);
+      setSendCandidatesOption("SINGLE_CANDIDATE");
+    } else {
+      setSingleCandidateSub(null);
+      setSendCandidatesOption("PASSED_ONLY");
+    }
+    setCustomRecruiterNote("");
+    setIsSendToRecruiterModalOpen(true);
+  };
+
+  const handleConfirmSendToRecruiter = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSendToRecruiterModalOpen(false);
+    if (singleCandidateSub) {
+      toast.success(
+        `🚀 Dispatched ${singleCandidateSub.studentName}'s (${singleCandidateSub.rollNo}) verified scorecard to ${selectedRecruiterCompany}!`
+      );
+    } else {
+      const allSubs = getAllStudentSubmissions();
+      const count = sendCandidatesOption === "PASSED_ONLY" ? allSubs.filter((s) => s.passStatus).length : allSubs.length;
+      toast.success(
+        `🚀 Successfully dispatched ${count} candidate scorecards to ${selectedRecruiterCompany}! Email report & PDF scorecards sent.`
+      );
+    }
+  };
 
   const handleExportStudentResultsCsv = () => {
+    const allSubs = getAllStudentSubmissions();
     const headers = "Student Roll No,College Email,Department,Assessment Title,MCQ Score,Coding Score,Total Percentage,Status,Proctoring Warnings,Submission Timestamp\n";
-    const rows = SHARED_STUDENT_SUBMISSIONS.map((sub) =>
+    const rows = allSubs.map((sub) =>
       `"${sub.rollNo}","${sub.studentEmail}","${sub.department}","${sub.assessmentTitle}","${sub.mcqScore}/${sub.mcqTotal}","${sub.codingScore}/${sub.codingTotal}","${sub.totalPercentage}%","${sub.passStatus ? "PASSED" : "FAILED"}","${sub.violationsLogged} Warnings","${sub.submissionTime}"`
     ).join("\n");
+
 
     const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -502,21 +605,27 @@ export function AssessmentRequestsApprovalWorkspace() {
       </div>
 
       {/* 2. TOP KPI CARDS */}
-      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+      <div className="grid gap-3.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
         {[
-          { label: "Pending Requests", val: `${requests.filter((r) => r.status === "Submitted" || r.status === "Under Review").length}`, desc: "Awaiting TPO Action", color: "text-amber-600 bg-amber-500/10" },
-          { label: "Approved Today", val: `${requests.filter((r) => r.status === "Approved").length + 10}`, desc: "Ready for Drives", color: "text-emerald-600 bg-emerald-500/10" },
-          { label: "Rejected Requests", val: `${requests.filter((r) => r.status === "Rejected").length + 1}`, desc: "Non-Compliant", color: "text-rose-600 bg-rose-500/10" },
-          { label: "Needs Revision", val: `${requests.filter((r) => r.status === "Changes Requested").length}`, desc: "Sent to Recruiter", color: "text-purple-600 bg-purple-500/10" },
-          { label: "Avg Review Time", val: "1.4 Hours", desc: "Speed Index", color: "text-blue-600 bg-blue-500/10" },
-          { label: "High Priority", val: `${requests.filter((r) => r.priority === "High").length}`, desc: "Urgent Campus Test", color: "text-rose-600 bg-rose-500/10" },
+          { label: "Pending Requests", val: `${requests.filter((r) => r.status === "Submitted" || r.status === "Under Review").length}`, badge: "Awaiting TPO Action", pct: 60, sub: "Recruiter submissions" },
+          { label: "Approved Today", val: `${requests.filter((r) => r.status === "Approved").length + 10}`, badge: "Ready for Drives", pct: 90, sub: "Verified corporate tests" },
+          { label: "Rejected Requests", val: `${requests.filter((r) => r.status === "Rejected").length + 1}`, badge: "Non-Compliant", pct: 20, sub: "Rejected by TPO" },
+          { label: "Needs Revision", val: `${requests.filter((r) => r.status === "Changes Requested").length}`, badge: "Sent to Recruiter", pct: 35, sub: "Awaiting edits" },
+          { label: "Avg Review Time", val: "1.4 Hours", badge: "Speed Index", pct: 85, sub: "TPO response time" },
+          { label: "High Priority", val: `${requests.filter((r) => r.priority === "High").length}`, badge: "Urgent Campus Test", pct: 50, sub: "Priority reviews" },
         ].map((kpi) => (
-          <div key={kpi.label} className="p-3.5 rounded-2xl border border-border/70 bg-card space-y-1 shadow-xs">
-            <span className="text-xs font-semibold text-muted-foreground block truncate">{kpi.label}</span>
-            <p className="font-display text-2xl font-extrabold">{kpi.val}</p>
-            <span className={`text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block ${kpi.color}`}>
-              {kpi.desc}
-            </span>
+          <div key={kpi.label} className="p-4 rounded-2xl border border-slate-200/80 dark:border-border bg-white dark:bg-card space-y-2 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">{kpi.label}</span>
+              <span className="text-[0.65rem] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                {kpi.badge}
+              </span>
+            </div>
+            <p className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">{kpi.val}</p>
+            <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-3">
+              <div className="h-full bg-[#2563EB] rounded-full transition-all duration-500" style={{ width: `${kpi.pct}%` }} />
+            </div>
+            <p className="text-[0.68rem] text-slate-400 dark:text-slate-500 font-mono mt-1">{kpi.sub}</p>
           </div>
         ))}
       </div>
@@ -670,17 +779,31 @@ export function AssessmentRequestsApprovalWorkspace() {
                         <Eye className="size-3.5 mr-1" /> View
                       </Button>
 
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setDispatchReq(req);
-                          setIsDispatchModalOpen(true);
-                        }}
-                        className="h-7 text-[0.68rem] bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg cursor-pointer font-bold gap-1 shadow-xs"
-                        title="Share Exam Link directly with eligible students"
-                      >
-                        <Send className="size-3" /> Share with Students
-                      </Button>
+                      {sharedAssessmentIds[req.id] ? (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setDispatchReq(req);
+                            setIsDispatchModalOpen(true);
+                          }}
+                          className="h-7 text-[0.68rem] bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 rounded-lg cursor-pointer font-bold gap-1 shadow-2xs"
+                          title="Shared with students. Click to reshare or manage dispatch."
+                        >
+                          <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" /> Shared to Students
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setDispatchReq(req);
+                            setIsDispatchModalOpen(true);
+                          }}
+                          className="h-7 text-[0.68rem] bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg cursor-pointer font-bold gap-1 shadow-xs"
+                          title="Share Exam Link directly with eligible students"
+                        >
+                          <Send className="size-3" /> Share with Students
+                        </Button>
+                      )}
 
                       <Button
                         size="sm"
@@ -735,18 +858,27 @@ export function AssessmentRequestsApprovalWorkspace() {
       <Panel
         title="TPO Central Stored Student Assessment Results & Scorecards"
         action={
-          <Button onClick={handleExportStudentResultsCsv} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs">
-            <FileSpreadsheet className="size-3.5" /> Export Stored Results to Excel (.csv)
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              onClick={() => handleOpenSendResultsModal()}
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs"
+            >
+              <Send className="size-3.5" /> Send Results to Recruiter
+            </Button>
+
+            <Button onClick={handleExportStudentResultsCsv} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs">
+              <Download className="size-3.5" /> Export Stored Results to Excel (.csv)
+            </Button>
+          </div>
         }
       >
         <div className="space-y-4 pt-1 font-sans">
           <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono flex items-center justify-between">
             <span className="font-bold text-emerald-800 dark:text-emerald-200">
-              📊 Live Stored Test Submissions ({SHARED_STUDENT_SUBMISSIONS.length} Students Submitted)
+              📊 Live Stored Test Submissions ({studentSubmissionsList.length} Students Submitted)
             </span>
             <span className="text-muted-foreground text-[0.68rem]">
-              Auto-stored upon candidate completion at http://192.168.1.122:8082/exam/take
+              Auto-stored upon candidate completion • TPO has permission to override status (FAIL ➔ PASS) &amp; dispatch to recruiter
             </span>
           </div>
 
@@ -761,12 +893,12 @@ export function AssessmentRequestsApprovalWorkspace() {
                   <th className="p-3">MCQ Score</th>
                   <th className="p-3">Coding Score</th>
                   <th className="p-3">Overall %</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3 text-right">Submission Time</th>
+                  <th className="p-3">Status (Click to Override)</th>
+                  <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/50 font-mono text-[0.72rem]">
-                {SHARED_STUDENT_SUBMISSIONS.map((sub) => (
+                {studentSubmissionsList.map((sub) => (
                   <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-sans font-bold text-foreground">{sub.studentName} ({sub.rollNo})</td>
                     <td className="p-3 text-blue-600">{sub.studentEmail}</td>
@@ -776,11 +908,39 @@ export function AssessmentRequestsApprovalWorkspace() {
                     <td className="p-3 font-bold text-purple-600">{sub.codingScore} / {sub.codingTotal}</td>
                     <td className="p-3 font-bold text-emerald-600">{sub.totalPercentage}%</td>
                     <td className="p-3">
-                      <Badge className={sub.passStatus ? "bg-emerald-600 text-white text-[0.62rem]" : "bg-rose-600 text-white text-[0.62rem]"}>
-                        {sub.passStatus ? "PASSED" : "FAILED"}
-                      </Badge>
+                      <button
+                        type="button"
+                        onClick={() => handleQuickTogglePassStatus(sub)}
+                        className="cursor-pointer group flex items-center gap-1.5"
+                        title="Click to toggle status between PASSED and FAILED"
+                      >
+                        <Badge className={sub.passStatus ? "bg-emerald-600 hover:bg-emerald-700 text-white text-[0.62rem] px-2 py-0.5 rounded-full" : "bg-rose-600 hover:bg-rose-700 text-white text-[0.62rem] px-2 py-0.5 rounded-full"}>
+                          {sub.passStatus ? "PASSED ✓" : "FAILED ✕"}
+                        </Badge>
+                        <span className="text-[0.62rem] text-muted-foreground underline group-hover:text-primary transition-colors font-sans">
+                          (Toggle)
+                        </span>
+                      </button>
                     </td>
-                    <td className="p-3 text-right text-muted-foreground">{sub.submissionTime}</td>
+                    <td className="p-3 text-right">
+                      <div className="flex items-center justify-end gap-1.5 font-sans">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openEditSubModal(sub)}
+                          className="h-7 text-[0.68rem] rounded-lg cursor-pointer px-2.5 font-bold gap-1"
+                        >
+                          <Edit className="size-3" /> Edit Result
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleOpenSendResultsModal(sub)}
+                          className="h-7 text-[0.68rem] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-lg cursor-pointer px-2.5 font-bold gap-1 shadow-xs"
+                        >
+                          <Send className="size-3" /> Send to Recruiter
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -880,16 +1040,29 @@ export function AssessmentRequestsApprovalWorkspace() {
                     </div>
                     <div className="flex items-center justify-between text-[0.68rem] text-muted-foreground font-sans">
                       <span>Share this link directly with eligible students for conducting the exam online.</span>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          setDispatchReq(selectedReq);
-                          setIsDispatchModalOpen(true);
-                        }}
-                        className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold cursor-pointer gap-1"
-                      >
-                        <Send className="size-3" /> Share with Students
-                      </Button>
+                      {selectedReq && sharedAssessmentIds[selectedReq.id] ? (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setDispatchReq(selectedReq);
+                            setIsDispatchModalOpen(true);
+                          }}
+                          className="h-7 text-xs bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 rounded-lg font-bold cursor-pointer gap-1"
+                        >
+                          <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" /> Shared to Students
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setDispatchReq(selectedReq);
+                            setIsDispatchModalOpen(true);
+                          }}
+                          className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold cursor-pointer gap-1"
+                        >
+                          <Send className="size-3" /> Share with Students
+                        </Button>
+                      )}
                     </div>
                   </div>
 
@@ -1043,10 +1216,10 @@ export function AssessmentRequestsApprovalWorkspace() {
               </div>
 
               {/* LIVE EXAM LINK PREVIEW */}
-              <div className="p-3 rounded-xl bg-slate-950 text-slate-100 font-mono text-[0.68rem] space-y-2">
-                <p className="font-bold text-emerald-400">📨 Email Preview Dispatched to Students:</p>
-                <p className="text-slate-300">"Dear Student (e.g. 23341a4229@college.edu.in), you are invited to attempt the official online assessment '{dispatchReq.name}'. Please use your student college email ID to log in."</p>
-                <p className="text-blue-400 underline font-bold">http://192.168.1.122:8082/exam/take?id={dispatchReq.assessmentId}</p>
+              <div className="p-3.5 rounded-xl bg-white dark:bg-card border border-border/80 text-foreground font-mono text-[0.68rem] space-y-2 shadow-2xs">
+                <p className="font-bold text-emerald-600 dark:text-emerald-400">📨 Email Preview Dispatched to Students:</p>
+                <p className="text-muted-foreground font-sans">"Dear Student (e.g. 23341a4229@college.edu.in), you are invited to attempt the official online assessment '{dispatchReq.name}'. Please use your student college email ID to log in."</p>
+                <p className="text-blue-600 dark:text-blue-400 underline font-bold">http://192.168.1.122:8082/exam/take?id={dispatchReq.assessmentId}</p>
               </div>
 
               <DialogFooter className="pt-2 gap-2">
@@ -1056,6 +1229,9 @@ export function AssessmentRequestsApprovalWorkspace() {
                 <Button
                   type="button"
                   onClick={() => {
+                    if (dispatchReq) {
+                      setSharedAssessmentIds((prev) => ({ ...prev, [dispatchReq.id]: true }));
+                    }
                     setIsDispatchModalOpen(false);
                     toast.success(`Dispatched exam link to all eligible ${dispatchSeries} students! Candidate test results will automatically store below upon submission.`);
                   }}
@@ -1170,6 +1346,220 @@ export function AssessmentRequestsApprovalWorkspace() {
               <Button type="button" variant="outline" onClick={() => setIsRequestChangesModalOpen(false)} className="rounded-xl">Cancel</Button>
               <Button type="submit" className="bg-brand-gradient shadow-glow font-bold rounded-xl cursor-pointer">
                 Send Back to Recruiter
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* EDIT STUDENT ASSESSMENT RESULT MODAL */}
+      <Dialog open={isEditSubModalOpen} onOpenChange={setIsEditSubModalOpen}>
+        <DialogContent className="sm:max-w-md rounded-2xl">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="size-10 rounded-xl bg-[#2563EB] text-white grid place-items-center shadow-md">
+                <Edit className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold text-base">Edit Candidate Assessment Result</DialogTitle>
+                <DialogDescription className="text-xs font-mono">
+                  Override candidate status (FAILED ➔ PASSED) or update score breakdown.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {editingSub && (
+            <form onSubmit={handleSaveSubChanges} className="space-y-4 pt-2 text-xs">
+              <div className="p-3 bg-muted/40 rounded-xl space-y-1 font-mono text-[0.72rem] border">
+                <p>• Student: <strong className="text-foreground">{editingSub.studentName} ({editingSub.rollNo})</strong></p>
+                <p>• Email: <strong className="text-blue-600">{editingSub.studentEmail}</strong></p>
+                <p>• Test Title: <strong className="text-foreground">{editingSub.assessmentTitle}</strong></p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="font-semibold text-xs text-foreground block">Override Result Status (Pass / Fail)</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditPassStatus(true)}
+                    className={`p-3 rounded-xl border text-xs font-bold font-sans cursor-pointer transition-all flex items-center justify-center gap-1.5 ${
+                      editPassStatus
+                        ? "bg-emerald-600 text-white border-emerald-600 shadow-md"
+                        : "bg-background text-slate-700 dark:text-slate-200 border-border hover:bg-muted"
+                    }`}
+                  >
+                    <CheckCircle2 className="size-4" /> PASSED ✓
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditPassStatus(false)}
+                    className={`p-3 rounded-xl border text-xs font-bold font-sans cursor-pointer transition-all flex items-center justify-center gap-1.5 ${
+                      !editPassStatus
+                        ? "bg-rose-600 text-white border-rose-600 shadow-md"
+                        : "bg-background text-slate-700 dark:text-slate-200 border-border hover:bg-muted"
+                    }`}
+                  >
+                    <XCircle className="size-4" /> FAILED ✕
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-xs">MCQ Score (Max {editingSub.mcqTotal})</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={editingSub.mcqTotal}
+                    value={editMcqScore}
+                    onChange={(e) => setEditMcqScore(Number(e.target.value))}
+                    className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-mono font-bold"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-xs">Coding Score (Max {editingSub.codingTotal})</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={editingSub.codingTotal}
+                    value={editCodingScore}
+                    onChange={(e) => setEditCodingScore(Number(e.target.value))}
+                    className="w-full h-9 rounded-xl border border-input bg-card px-3 text-xs font-mono font-bold text-purple-600"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-semibold text-xs">TPO Override Remarks / Justification</label>
+                <textarea
+                  value={editRemarks}
+                  onChange={(e) => setEditRemarks(e.target.value)}
+                  rows={2}
+                  placeholder="e.g., Manual code inspection approved / Grace marks awarded for technical glitch..."
+                  className="w-full rounded-xl border border-input bg-card p-2.5 text-xs font-mono"
+                />
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button type="button" variant="outline" onClick={() => setIsEditSubModalOpen(false)} className="rounded-xl">Cancel</Button>
+                <Button type="submit" className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold rounded-xl cursor-pointer">
+                  Save Updated Result ✓
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      {/* DISPATCH RESULTS TO RECRUITER MODAL */}
+      <Dialog open={isSendToRecruiterModalOpen} onOpenChange={setIsSendToRecruiterModalOpen}>
+        <DialogContent className="sm:max-w-lg rounded-2xl">
+          <DialogHeader className="pb-2 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-11 rounded-xl bg-[#2563EB] text-white grid place-items-center shadow-md">
+                <Send className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold text-base">Dispatch Assessment Results &amp; Scorecards to Recruiter</DialogTitle>
+                <DialogDescription className="text-xs font-mono">
+                  Official TPO email dispatch of verified candidate test scores to corporate recruiters.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <form onSubmit={handleConfirmSendToRecruiter} className="space-y-4 pt-2 text-xs">
+            {/* 1. RECRUITER / COMPANY SELECTOR */}
+            <div className="space-y-1">
+              <label className="font-semibold text-xs">Target Recruiter &amp; Corporate Partner</label>
+              <select
+                value={selectedRecruiterCompany}
+                onChange={(e) => setSelectedRecruiterCompany(e.target.value)}
+                className="w-full h-10 rounded-xl border border-input bg-card px-3 text-xs font-semibold cursor-pointer"
+              >
+                <option value="Google Cloud India (David Miller - david.miller@google.com)">Google Cloud India — David Miller (david.miller@google.com)</option>
+                <option value="Microsoft India (Ananya Sharma - ananya.sharma@microsoft.com)">Microsoft India — Ananya Sharma (ananya.sharma@microsoft.com)</option>
+                <option value="Amazon AWS (Jeff Recruiter - recruitment@amazon.com)">Amazon AWS — Campus Hiring Team (recruitment@amazon.com)</option>
+                <option value="Qualcomm India (Rajesh Kumar - rajesh.k@qualcomm.com)">Qualcomm India — Rajesh Kumar (rajesh.k@qualcomm.com)</option>
+              </select>
+            </div>
+
+            {/* 2. CANDIDATE SCOPE SELECTOR */}
+            <div className="space-y-1.5">
+              <label className="font-semibold text-xs">Candidate Results to Include in Report</label>
+              {singleCandidateSub ? (
+                <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <span className="font-bold text-foreground block">Single Candidate Selected:</span>
+                    <span className="text-xs font-mono text-primary font-bold">{singleCandidateSub.studentName} ({singleCandidateSub.rollNo}) — {singleCandidateSub.totalPercentage}% ({singleCandidateSub.passStatus ? "PASSED" : "FAILED"})</span>
+                  </div>
+                  <Badge className="bg-blue-600 text-white text-[0.62rem]">Single Candidate</Badge>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSendCandidatesOption("PASSED_ONLY")}
+                    className={`p-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all flex items-center gap-2 ${
+                      sendCandidatesOption === "PASSED_ONLY"
+                        ? "bg-emerald-500/15 border-emerald-500 text-emerald-700 dark:text-emerald-300 font-bold"
+                        : "bg-card border-border hover:bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    <CheckCircle2 className="size-4 text-emerald-600" /> Only Passed (4 Candidates)
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSendCandidatesOption("ALL_SUBMISSIONS")}
+                    className={`p-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all flex items-center gap-2 ${
+                      sendCandidatesOption === "ALL_SUBMISSIONS"
+                        ? "bg-blue-500/15 border-blue-500 text-blue-700 dark:text-blue-300 font-bold"
+                        : "bg-card border-border hover:bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    <Users className="size-4 text-blue-600" /> All Submissions (Passed &amp; Failed)
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* 3. LIVE EMAIL REPORT PREVIEW BOX */}
+            <div className="p-3.5 bg-white dark:bg-card border border-border/80 rounded-xl space-y-2 text-[0.72rem] font-mono shadow-2xs">
+              <div className="flex items-center justify-between text-muted-foreground border-b border-border/60 pb-1.5 font-sans">
+                <span className="font-bold text-foreground">✉ Live Email &amp; Report Preview</span>
+                <span className="text-[0.65rem] text-emerald-600 font-mono">Status: Ready to Dispatch</span>
+              </div>
+              <p><strong className="text-muted-foreground">From:</strong> placement.officer@edusuite.edu.in (TPO Official Portal)</p>
+              <p><strong className="text-muted-foreground">To:</strong> {selectedRecruiterCompany.split("(")[1]?.replace(")", "") || selectedRecruiterCompany}</p>
+              <p><strong className="text-muted-foreground">Subject:</strong> Official Campus Assessment Scorecards &amp; Shortlisted Candidates — AY 2026</p>
+              <div className="pt-1.5 text-muted-foreground space-y-1 font-sans text-xs border-t border-border/60">
+                <p>Dear Hiring Manager,</p>
+                <p>Please find attached the official verified assessment results, candidate scorecards, and AI proctoring audit logs for your recruitment drive.</p>
+                <div className="flex flex-wrap gap-2 pt-1 font-mono text-[0.65rem]">
+                  <Badge variant="outline" className="bg-slate-50 dark:bg-muted"><FileSpreadsheet className="size-3 mr-1 text-emerald-600" /> candidate_results_2026.csv</Badge>
+                  <Badge variant="outline" className="bg-slate-50 dark:bg-muted"><Award className="size-3 mr-1 text-blue-600" /> verified_scorecards_bundle.pdf</Badge>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. CUSTOM NOTES TO RECRUITER */}
+            <div className="space-y-1">
+              <label className="font-semibold text-xs">Optional TPO Remarks for Recruiter</label>
+              <textarea
+                value={customRecruiterNote}
+                onChange={(e) => setCustomRecruiterNote(e.target.value)}
+                rows={2}
+                placeholder="Enter any additional instructions or interview schedule notes..."
+                className="w-full rounded-xl border border-input bg-card p-2.5 text-xs font-mono"
+              />
+            </div>
+
+            <DialogFooter className="pt-2 border-t border-border">
+              <Button type="button" variant="outline" onClick={() => setIsSendToRecruiterModalOpen(false)} className="rounded-xl">Cancel</Button>
+              <Button type="submit" className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold rounded-xl cursor-pointer gap-1.5 px-5 shadow-md">
+                <Send className="size-4" /> Confirm &amp; Dispatch Results to Recruiter 🚀
               </Button>
             </DialogFooter>
           </form>
