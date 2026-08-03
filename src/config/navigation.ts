@@ -113,36 +113,6 @@ export const PLACEMENT_OFFICER_NAVIGATION: NavSection[] = [
 
 export const navigation: NavSection[] = [
   {
-    label: "Menu",
-    items: [
-      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-      { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
-      { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
-    ],
-  },
-  {
-    label: "Academics",
-    items: [
-      { title: "Admissions", url: "/admission", icon: GraduationCap, moduleId: "admission" },
-      {
-        title: "Academics",
-        url: "/academics",
-        icon: GraduationCap,
-        moduleId: "academics",
-        children: [
-          { title: "Departments", url: "/academics", moduleId: "academics" },
-          { title: "Courses", url: "/academics", moduleId: "academics" },
-          { title: "Curriculum", url: "/academics", moduleId: "academics" },
-        ],
-      },
-      { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
-      { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
-      { title: "Attendance", url: "/attendance", icon: CalendarCheck, moduleId: "attendance" },
-      { title: "Timetable", url: "/timetable", icon: CalendarRange, moduleId: "academics" },
-      { title: "LMS", url: "/lms", icon: BookOpen, moduleId: "lms" },
-    ],
-  },
-  {
     label: "Examinations",
     items: [
       {
@@ -171,28 +141,17 @@ export const navigation: NavSection[] = [
       { title: "Procurement", url: "/procurement", icon: Package, moduleId: "procurement" },
       { title: "Campus Events", url: "/campus-events", icon: CalendarRange, moduleId: "events" },
       { title: "Grievances", url: "/grievance", icon: ShieldAlert, moduleId: "grievance" },
-      { title: "Alumni Network", url: "/alumni", icon: Globe, moduleId: "alumni" },
-    ],
-  },
-  {
-    label: "Administration",
-    items: [
-      { title: "Employee Management", url: "/employee-management", icon: UserCog, moduleId: "hrms" },
-      { title: "Leave Management", url: "/leave", icon: CalendarCheck, moduleId: "hrms" },
-      { title: "Payroll", url: "/payroll", icon: Wallet, moduleId: "finance" },
-      { title: "Finance", url: "/finance", icon: Wallet, moduleId: "finance" },
-      { title: "HR", url: "/hr", icon: UserCog, moduleId: "hrms" },
-      { title: "Accreditation", url: "/accreditation", icon: Award, moduleId: "accreditation" },
-      { title: "Reports", url: "/reports", icon: BarChart3, moduleId: "student-info", roles: ["super-admin", "staff"] },
       {
-        title: "Communication",
-        url: "/communication",
-        icon: MessageSquare,
-        moduleId: "communication",
-        badge: "6",
+        title: "Alumni Network",
+        url: "/alumni",
+        icon: Globe,
+        moduleId: "alumni",
+        children: [
+          { title: "Dashboard", url: "/alumni?tab=dashboard" },
+          { title: "Directory", url: "/alumni?tab=directory" },
+          { title: "Analytics", url: "/alumni?tab=analytics" },
+        ],
       },
-      { title: "Emergency Alerts", url: "/emergency", icon: Siren, badge: "Instant" },
-      { title: "Settings", url: "/settings", icon: Settings },
     ],
   },
 ];
