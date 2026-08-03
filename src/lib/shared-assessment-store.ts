@@ -225,6 +225,9 @@ export function getStudentExamSubmission(identifier: string): StudentSubmissionR
       );
     }
   } catch (err) {
+    console.error("Error reading submission from localStorage", err);
+  }
+
   return undefined;
 }
 

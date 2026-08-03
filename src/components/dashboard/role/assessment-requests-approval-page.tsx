@@ -1327,6 +1327,8 @@ export function AssessmentRequestsApprovalWorkspace() {
             </DialogFooter>
           </form>
         </DialogContent>
+      </Dialog>
+
       {/* EDIT STUDENT ASSESSMENT RESULT MODAL */}
       <Dialog open={isEditSubModalOpen} onOpenChange={setIsEditSubModalOpen}>
         <DialogContent className="sm:max-w-md rounded-2xl">
