@@ -138,14 +138,14 @@ export function PlacementAssessmentsWorkspace() {
               onClick={() => {
                 toast.success("📢 TPO Broadcast Sent! Created and dispatched TCS Placement Assessment link to 360 eligible students via notifications and Notice Board.");
               }}
-              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-md shadow-amber-500/20"
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-md shadow-purple-500/20"
             >
-              <Sparkles className="size-4" /> Create & Share Assignment to Students
+              <Sparkles className="size-4" /> Create &amp; Share Assignment to Students
             </Button>
 
             <Button
               onClick={() => toast.success("Refreshed live proctoring feeds")}
-              className="bg-brand-gradient shadow-glow font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5"
+              className="bg-white dark:bg-card border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5"
             >
               <Monitor className="size-4" /> Live Proctoring Feed
             </Button>
@@ -153,7 +153,7 @@ export function PlacementAssessmentsWorkspace() {
             <Button
               variant="outline"
               onClick={() => toast.info("Exported Assessment Operations Audit Log")}
-              className="text-xs rounded-xl h-10 px-3 cursor-pointer gap-1.5"
+              className="bg-white dark:bg-card text-xs rounded-xl h-10 px-3 cursor-pointer gap-1.5 border-border"
             >
               <Download className="size-3.5" /> Export Logs
             </Button>
@@ -165,16 +165,16 @@ export function PlacementAssessmentsWorkspace() {
       {/* KPI DASHBOARD */}
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-5">
         {[
-          { label: "Total Tests", val: "24", desc: "Corporate Drives", color: "text-blue-600 bg-blue-500/10" },
-          { label: "Live Proctored", val: "2", desc: "Tests Running Now", color: "text-purple-600 bg-purple-500/10" },
-          { label: "Scheduled Tests", val: "8", desc: "Upcoming Sessions", color: "text-emerald-600 bg-emerald-500/10" },
-          { label: "Total Attempted", val: "1,850", desc: "Test Submissions", color: "text-teal-600 bg-teal-500/10" },
-          { label: "Malpractice Alerts", val: "4", desc: "AI Flagged", color: "text-rose-600 bg-rose-500/10" },
+          { label: "Total Tests", val: "24", desc: "Corporate Drives" },
+          { label: "Live Proctored", val: "2", desc: "Tests Running Now" },
+          { label: "Scheduled Tests", val: "8", desc: "Upcoming Sessions" },
+          { label: "Total Attempted", val: "1,850", desc: "Test Submissions" },
+          { label: "Malpractice Alerts", val: "4", desc: "AI Flagged" },
         ].map((kpi) => (
-          <div key={kpi.label} className="p-4 rounded-2xl border border-border/70 bg-card space-y-1 shadow-xs">
+          <div key={kpi.label} className="p-4 rounded-2xl border border-border/70 bg-white dark:bg-card space-y-1 shadow-xs">
             <span className="text-xs font-semibold text-muted-foreground block truncate">{kpi.label}</span>
             <p className="font-display text-2xl font-extrabold">{kpi.val}</p>
-            <span className={`text-[0.65rem] font-mono px-2 py-0.5 rounded-md ${kpi.color}`}>
+            <span className="text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block text-purple-600 dark:text-purple-400 bg-purple-500/10 border border-purple-500/20 font-semibold">
               {kpi.desc}
             </span>
           </div>

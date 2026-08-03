@@ -508,17 +508,17 @@ export function AssessmentRequestsApprovalWorkspace() {
       {/* 2. TOP KPI CARDS */}
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
         {[
-          { label: "Pending Requests", val: `${requests.filter((r) => r.status === "Submitted" || r.status === "Under Review").length}`, desc: "Awaiting TPO Action", color: "text-amber-600 bg-amber-500/10" },
-          { label: "Approved Today", val: `${requests.filter((r) => r.status === "Approved").length + 10}`, desc: "Ready for Drives", color: "text-emerald-600 bg-emerald-500/10" },
-          { label: "Rejected Requests", val: `${requests.filter((r) => r.status === "Rejected").length + 1}`, desc: "Non-Compliant", color: "text-rose-600 bg-rose-500/10" },
-          { label: "Needs Revision", val: `${requests.filter((r) => r.status === "Changes Requested").length}`, desc: "Sent to Recruiter", color: "text-purple-600 bg-purple-500/10" },
-          { label: "Avg Review Time", val: "1.4 Hours", desc: "Speed Index", color: "text-blue-600 bg-blue-500/10" },
-          { label: "High Priority", val: `${requests.filter((r) => r.priority === "High").length}`, desc: "Urgent Campus Test", color: "text-rose-600 bg-rose-500/10" },
+          { label: "Pending Requests", val: `${requests.filter((r) => r.status === "Submitted" || r.status === "Under Review").length}`, desc: "Awaiting TPO Action" },
+          { label: "Approved Today", val: `${requests.filter((r) => r.status === "Approved").length + 10}`, desc: "Ready for Drives" },
+          { label: "Rejected Requests", val: `${requests.filter((r) => r.status === "Rejected").length + 1}`, desc: "Non-Compliant" },
+          { label: "Needs Revision", val: `${requests.filter((r) => r.status === "Changes Requested").length}`, desc: "Sent to Recruiter" },
+          { label: "Avg Review Time", val: "1.4 Hours", desc: "Speed Index" },
+          { label: "High Priority", val: `${requests.filter((r) => r.priority === "High").length}`, desc: "Urgent Campus Test" },
         ].map((kpi) => (
-          <div key={kpi.label} className="p-3.5 rounded-2xl border border-border/70 bg-card space-y-1 shadow-xs">
+          <div key={kpi.label} className="p-3.5 rounded-2xl border border-border/70 bg-white dark:bg-card space-y-1 shadow-xs">
             <span className="text-xs font-semibold text-muted-foreground block truncate">{kpi.label}</span>
             <p className="font-display text-2xl font-extrabold">{kpi.val}</p>
-            <span className={`text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block ${kpi.color}`}>
+            <span className="text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block text-purple-600 dark:text-purple-400 bg-purple-500/10 border border-purple-500/20 font-semibold">
               {kpi.desc}
             </span>
           </div>
