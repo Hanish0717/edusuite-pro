@@ -506,21 +506,27 @@ export function AssessmentRequestsApprovalWorkspace() {
       </div>
 
       {/* 2. TOP KPI CARDS */}
-      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+      <div className="grid gap-3.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
         {[
-          { label: "Pending Requests", val: `${requests.filter((r) => r.status === "Submitted" || r.status === "Under Review").length}`, desc: "Awaiting TPO Action" },
-          { label: "Approved Today", val: `${requests.filter((r) => r.status === "Approved").length + 10}`, desc: "Ready for Drives" },
-          { label: "Rejected Requests", val: `${requests.filter((r) => r.status === "Rejected").length + 1}`, desc: "Non-Compliant" },
-          { label: "Needs Revision", val: `${requests.filter((r) => r.status === "Changes Requested").length}`, desc: "Sent to Recruiter" },
-          { label: "Avg Review Time", val: "1.4 Hours", desc: "Speed Index" },
-          { label: "High Priority", val: `${requests.filter((r) => r.priority === "High").length}`, desc: "Urgent Campus Test" },
+          { label: "Pending Requests", val: `${requests.filter((r) => r.status === "Submitted" || r.status === "Under Review").length}`, badge: "Awaiting TPO Action", pct: 60, sub: "Recruiter submissions" },
+          { label: "Approved Today", val: `${requests.filter((r) => r.status === "Approved").length + 10}`, badge: "Ready for Drives", pct: 90, sub: "Verified corporate tests" },
+          { label: "Rejected Requests", val: `${requests.filter((r) => r.status === "Rejected").length + 1}`, badge: "Non-Compliant", pct: 20, sub: "Rejected by TPO" },
+          { label: "Needs Revision", val: `${requests.filter((r) => r.status === "Changes Requested").length}`, badge: "Sent to Recruiter", pct: 35, sub: "Awaiting edits" },
+          { label: "Avg Review Time", val: "1.4 Hours", badge: "Speed Index", pct: 85, sub: "TPO response time" },
+          { label: "High Priority", val: `${requests.filter((r) => r.priority === "High").length}`, badge: "Urgent Campus Test", pct: 50, sub: "Priority reviews" },
         ].map((kpi) => (
-          <div key={kpi.label} className="p-3.5 rounded-2xl border border-border/70 bg-white dark:bg-card space-y-1 shadow-xs">
-            <span className="text-xs font-semibold text-muted-foreground block truncate">{kpi.label}</span>
-            <p className="font-display text-2xl font-extrabold">{kpi.val}</p>
-            <span className="text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block text-[#0F1B44] dark:text-slate-200 bg-[#0F1B44]/10 dark:bg-slate-800/80 border border-[#0F1B44]/20 dark:border-slate-700 font-semibold">
-              {kpi.desc}
-            </span>
+          <div key={kpi.label} className="p-4 rounded-2xl border border-slate-200/80 dark:border-border bg-white dark:bg-card space-y-2 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">{kpi.label}</span>
+              <span className="text-[0.65rem] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
+                {kpi.badge}
+              </span>
+            </div>
+            <p className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">{kpi.val}</p>
+            <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-3">
+              <div className="h-full bg-[#2563EB] rounded-full transition-all duration-500" style={{ width: `${kpi.pct}%` }} />
+            </div>
+            <p className="text-[0.68rem] text-slate-400 dark:text-slate-500 font-mono mt-1">{kpi.sub}</p>
           </div>
         ))}
       </div>
