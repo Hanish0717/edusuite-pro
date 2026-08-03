@@ -169,7 +169,7 @@ export const PlacementExamModal: React.FC<PlacementExamModalProps> = ({
     toast.success(`Placement assessment & assignment submitted! Verified Score: ${score}/15`);
   };
 
-  const currentQ = SAMPLE_TPO_QUESTIONS[currentQIndex];
+  const currentQ = SAMPLE_TPO_QUESTIONS[currentQIndex] ?? SAMPLE_TPO_QUESTIONS[0]!;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
