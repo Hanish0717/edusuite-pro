@@ -39,6 +39,58 @@ export interface CurriculumScheme {
   status: "Active" | "Draft" | "Archived";
 }
 
+export interface LiveFacultyStatus {
+  id: string;
+  facultyId: string;
+  name: string;
+  department: string;
+  status: "FREE" | "IN CLASS / WORKING" | "ON LEAVE";
+  currentClass?: string; // e.g. "CSE-3A"
+  subject?: string; // e.g. "Data Structures"
+  roomNo?: string; // e.g. "Block B - 302"
+  timeSlot?: string; // e.g. "10:00 AM - 11:00 AM"
+  leaveReason?: string; // e.g. "Casual Leave"
+  period: number; // 1 to 8
+}
+
+export interface ClassStudentAttendance {
+  id: string;
+  rollNo: string;
+  name: string;
+  avatar?: string;
+  status: "Present" | "Absent" | "Late";
+}
+
+export interface AttendanceSubmission {
+  classId: string;
+  subjectId: string;
+  date: string;
+  period: number;
+  records: { studentId: string; status: "Present" | "Absent" | "Late" }[];
+}
+
+export interface SyllabusUnit {
+  id: string;
+  unitNumber: number;
+  unitTitle: string;
+  completionPct: number; // 0 to 100
+  status: "Completed" | "In Progress" | "Remaining";
+}
+
+export interface SyllabusProgress {
+  id: string;
+  facultyId: string;
+  facultyName: string;
+  courseCode: string;
+  courseName: string;
+  department: string;
+  totalClassesScheduled: number;
+  classesCompleted: number;
+  classesCancelled: number;
+  units: SyllabusUnit[];
+  overallProgressPct: number;
+}
+
 export const INITIAL_COURSES: AcademicCourse[] = [
   {
     id: "CRS-101",
@@ -335,3 +387,236 @@ export async function deleteAcademicCourse(id: string): Promise<boolean> {
   } catch {}
   return true;
 }
+
+// ----------------------------------------------------
+// 1. LIVE FACULTY STATUS MATRIX MOCK & API ENDPOINTS
+// ----------------------------------------------------
+export const INITIAL_FACULTY_STATUS: LiveFacultyStatus[] = [
+  {
+    id: "FS-01",
+    facultyId: "FAC-101",
+    name: "Dr. Rajesh K. Varma",
+    department: "CSE",
+    status: "IN CLASS / WORKING",
+    currentClass: "CSE-3A",
+    subject: "Data Structures & Algorithms",
+    roomNo: "Block B - 302",
+    timeSlot: "10:00 AM - 11:00 AM",
+    period: 2,
+  },
+  {
+    id: "FS-02",
+    facultyId: "FAC-102",
+    name: "Dr. Meera Nambiar",
+    department: "ECE",
+    status: "FREE",
+    period: 2,
+  },
+  {
+    id: "FS-03",
+    facultyId: "FAC-103",
+    name: "Prof. Arvind Swaminathan",
+    department: "AI&DS",
+    status: "IN CLASS / WORKING",
+    currentClass: "AIDS-2B",
+    subject: "Machine Learning Principles",
+    roomNo: "Block A - 105",
+    timeSlot: "10:00 AM - 11:00 AM",
+    period: 2,
+  },
+  {
+    id: "FS-04",
+    facultyId: "FAC-104",
+    name: "Dr. Sankar Narayan",
+    department: "ME",
+    status: "ON LEAVE",
+    leaveReason: "Casual Leave",
+    period: 2,
+  },
+  {
+    id: "FS-05",
+    facultyId: "FAC-105",
+    name: "Ms. Ananya Sharma",
+    department: "CSE",
+    status: "FREE",
+    period: 2,
+  },
+  {
+    id: "FS-06",
+    facultyId: "FAC-106",
+    name: "Dr. K. Sai Teja",
+    department: "CSE",
+    status: "IN CLASS / WORKING",
+    currentClass: "CSE-4A",
+    subject: "Advanced Deep Learning",
+    roomNo: "Block C - Lab 4",
+    timeSlot: "10:00 AM - 11:00 AM",
+    period: 2,
+  },
+];
+
+export async function fetchLiveFacultyStatus(period: number = 2): Promise<LiveFacultyStatus[]> {
+  try {
+    const res = await api.get(`/api/academics/faculty/live-status?period=${period}`);
+    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+  } catch {}
+  return INITIAL_FACULTY_STATUS.map((f) => ({ ...f, period }));
+}
+
+// ----------------------------------------------------
+// 2. FACULTY ATTENDANCE MARKING MOCK & API ENDPOINTS
+// ----------------------------------------------------
+export const INITIAL_CLASS_STUDENTS: ClassStudentAttendance[] = [
+  { id: "STU-01", rollNo: "22CSE001", name: "Aarav Sharma", status: "Present" },
+  { id: "STU-02", rollNo: "22CSE002", name: "Ananya Iyer", status: "Present" },
+  { id: "STU-03", rollNo: "22CSE003", name: "Rohan Varma", status: "Present" },
+  { id: "STU-04", rollNo: "22CSE004", name: "Priya Nair", status: "Absent" },
+  { id: "STU-05", rollNo: "22CSE005", name: "Vikram Aditya", status: "Present" },
+  { id: "STU-06", rollNo: "22CSE006", name: "Kavya Patel", status: "Late" },
+  { id: "STU-07", rollNo: "22CSE007", name: "Siddharth Rao", status: "Present" },
+  { id: "STU-08", rollNo: "22CSE008", name: "Sneha Reddy", status: "Present" },
+];
+
+export async function fetchClassStudents(
+  classId: string = "CSE-3A",
+  subjectId: string = "CS302",
+): Promise<ClassStudentAttendance[]> {
+  try {
+    const res = await api.get(
+      `/api/academics/attendance/class-students?classId=${classId}&subjectId=${subjectId}`,
+    );
+    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+  } catch {}
+  return INITIAL_CLASS_STUDENTS;
+}
+
+export async function submitAttendanceMark(
+  payload: AttendanceSubmission,
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const res = await api.post("/api/attendance/mark", payload);
+    if (res && res.data) return res.data;
+  } catch {}
+  return {
+    success: true,
+    message: `Attendance log successfully submitted for ${payload.records.length} students on ${payload.date} (Period ${payload.period}).`,
+  };
+}
+
+// ----------------------------------------------------
+// 3. FACULTY SYLLABUS TRACKER MOCK & API ENDPOINTS
+// ----------------------------------------------------
+export const INITIAL_SYLLABUS_PROGRESS: SyllabusProgress[] = [
+  {
+    id: "SYLL-101",
+    facultyId: "FAC-101",
+    facultyName: "Dr. Rajesh K. Varma",
+    courseCode: "CS302",
+    courseName: "Data Structures & Algorithms",
+    department: "CSE",
+    totalClassesScheduled: 45,
+    classesCompleted: 32,
+    classesCancelled: 2,
+    overallProgressPct: 71,
+    units: [
+      {
+        id: "U-1",
+        unitNumber: 1,
+        unitTitle: "Unit 1: Introduction to Algorithms & Asymptotic Analysis",
+        completionPct: 100,
+        status: "Completed",
+      },
+      {
+        id: "U-2",
+        unitNumber: 2,
+        unitTitle: "Unit 2: Sorting, Searching & Linear Data Structures",
+        completionPct: 100,
+        status: "Completed",
+      },
+      {
+        id: "U-3",
+        unitNumber: 3,
+        unitTitle: "Unit 3: Dynamic Programming & Greedy Algorithms",
+        completionPct: 60,
+        status: "In Progress",
+      },
+      {
+        id: "U-4",
+        unitNumber: 4,
+        unitTitle: "Unit 4: Graph Algorithms & Network Flow",
+        completionPct: 0,
+        status: "Remaining",
+      },
+    ],
+  },
+  {
+    id: "SYLL-102",
+    facultyId: "FAC-102",
+    facultyName: "Dr. Meera Nambiar",
+    courseCode: "EC304",
+    courseName: "VLSI System Design",
+    department: "ECE",
+    totalClassesScheduled: 40,
+    classesCompleted: 34,
+    classesCancelled: 1,
+    overallProgressPct: 85,
+    units: [
+      {
+        id: "U-201",
+        unitNumber: 1,
+        unitTitle: "Unit 1: CMOS Inverter Physics & Static Timing",
+        completionPct: 100,
+        status: "Completed",
+      },
+      {
+        id: "U-202",
+        unitNumber: 2,
+        unitTitle: "Unit 2: VLSI Layout & Cadence Synthesis",
+        completionPct: 100,
+        status: "Completed",
+      },
+      {
+        id: "U-203",
+        unitNumber: 3,
+        unitTitle: "Unit 3: FPGA Architectures & Verilog HDL",
+        completionPct: 90,
+        status: "In Progress",
+      },
+      {
+        id: "U-204",
+        unitNumber: 4,
+        unitTitle: "Unit 4: Low-Power VLSI & Testing",
+        completionPct: 50,
+        status: "In Progress",
+      },
+    ],
+  },
+];
+
+export async function fetchSyllabusProgress(
+  facultyId: string = "FAC-101",
+): Promise<SyllabusProgress[]> {
+  try {
+    const res = await api.get(`/api/academics/faculty/syllabus-progress?facultyId=${facultyId}`);
+    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+  } catch {}
+  return INITIAL_SYLLABUS_PROGRESS;
+}
+
+export async function updateSyllabusUnitStatus(
+  progressId: string,
+  unitId: string,
+  status: "Completed" | "In Progress" | "Remaining",
+  completionPct: number,
+): Promise<boolean> {
+  try {
+    await api.put("/api/academics/faculty/syllabus-progress", {
+      progressId,
+      unitId,
+      status,
+      completionPct,
+    });
+  } catch {}
+  return true;
+}
+
