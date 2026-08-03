@@ -1,5 +1,4 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-<<<<<<< HEAD
 import { Bell, Download, Filter, Moon, Search, Sun, Settings as SettingsIcon, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -357,10 +356,6 @@ export function Topbar() {
               </div>
             </SheetContent>
           </Sheet>
-              </div>
-            </SheetContent>
-          </Sheet>
-
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -382,7 +377,7 @@ export function Topbar() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to={profile.role === "super-admin" || profile.role === "super_admin" ? "/super-admin/profile" : profile.role === "student" ? "/student/profile" : "/faculty/profile"}>
+                <Link to={role === "super-admin" || role === "super_admin" ? "/super-admin/profile" : role === "student" ? "/student/profile" : "/faculty/profile"}>
                   My Profile
                 </Link>
               </DropdownMenuItem>
