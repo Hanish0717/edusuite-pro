@@ -38,6 +38,8 @@ import {
   MapPin,
   Mail,
   User,
+  Coffee,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -1022,99 +1024,217 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
         </div>
       )}
 
-      {/* MODAL: FACULTY FULL-DAY PERIOD TIMETABLE */}
+      {/* MODAL: FACULTY FULL-DAY PERIOD TIMETABLE (PREMIUM TIMELINE DESIGN MATCHING IMAGE 1) */}
       <Dialog open={isTimetableModalOpen} onOpenChange={setIsTimetableModalOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold flex items-center justify-between gap-2 border-b border-border pb-3">
-              <div className="flex items-center gap-2">
-                <CalendarRange className="size-5 text-primary" />
-                <span>Full-Day Period Schedule: {selectedFacultySchedule?.name}</span>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-6 space-y-5 rounded-3xl">
+          {/* Header */}
+          <div className="flex items-start justify-between border-b border-border/80 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-2xl bg-blue-500/10 text-blue-600 border border-blue-500/20 shrink-0">
+                <CalendarDays className="size-6" />
               </div>
-              <Badge variant="outline" className="font-mono text-xs text-primary">
-                {selectedFacultySchedule?.department} Dept
-              </Badge>
-            </DialogTitle>
-            <DialogDescription className="text-xs pt-1">
-              Detailed period-by-period class assignments, free slots, and room allocations for today.
-            </DialogDescription>
-          </DialogHeader>
+              <div>
+                <h2 className="text-xl font-bold font-display tracking-tight text-foreground">
+                  Full-Day Period Schedule
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Detailed period-by-period class assignments, free slots, and room allocations for today.
+                </p>
+              </div>
+            </div>
+
+            <Badge variant="outline" className="font-mono text-xs font-semibold text-primary border-primary/30 py-1 px-3 rounded-full flex items-center gap-1.5 shrink-0">
+              <Building2 className="size-3.5" /> {selectedFacultySchedule?.department} Department
+            </Badge>
+          </div>
 
           {scheduleLoading || !selectedFacultySchedule ? (
-            <div className="p-8 text-center space-y-2">
-              <RefreshCw className="size-6 animate-spin mx-auto text-primary" />
-              <p className="text-xs text-muted-foreground">Loading faculty timetable schedule...</p>
+            <div className="py-12 text-center space-y-2">
+              <RefreshCw className="size-8 animate-spin mx-auto text-primary" />
+              <p className="text-xs text-muted-foreground font-medium">Loading faculty full-day timetable...</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl bg-muted/40 border border-border/60 text-xs">
-                <div>
-                  <p className="font-bold text-foreground">{selectedFacultySchedule.name} ({selectedFacultySchedule.facultyId})</p>
-                  <p className="text-muted-foreground">{selectedFacultySchedule.designation} • {selectedFacultySchedule.email}</p>
+            <div className="space-y-6">
+              {/* Faculty Profile & KPI Card */}
+              <div className="p-4 rounded-2xl border border-border/80 bg-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
+                <div className="flex items-center gap-3.5">
+                  <div className="size-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-primary text-base shrink-0 overflow-hidden">
+                    <User className="size-6 text-primary" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <h3 className="font-bold text-base text-foreground">
+                      {selectedFacultySchedule.name} <span className="font-mono text-xs font-semibold text-muted-foreground">({selectedFacultySchedule.facultyId})</span>
+                    </h3>
+                    <p className="text-xs font-medium text-muted-foreground">{selectedFacultySchedule.designation}</p>
+                    <p className="text-[0.72rem] font-mono text-primary/80">{selectedFacultySchedule.email}</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 font-mono">
-                  <Badge className="bg-emerald-500/10 text-emerald-600 font-bold">
-                    🟢 Free Slots: {selectedFacultySchedule.periods.filter((p) => p.status === "FREE").length}
-                  </Badge>
-                  <Badge className="bg-blue-500/10 text-blue-600 font-bold">
-                    🔵 Teaching Periods: {selectedFacultySchedule.periods.filter((p) => p.status === "IN CLASS").length}
-                  </Badge>
+
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                  <div className="p-3 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-900/50 flex items-center gap-3 flex-1 md:flex-initial min-w-[130px]">
+                    <div className="p-2 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600">
+                      <CalendarDays className="size-4" />
+                    </div>
+                    <div>
+                      <span className="text-[0.68rem] font-semibold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider block">Free Slots</span>
+                      <p className="text-xl font-bold font-mono text-emerald-700 dark:text-emerald-200 leading-none mt-0.5">
+                        {selectedFacultySchedule.periods.filter((p) => p.status === "FREE").length}
+                      </p>
+                      <span className="text-[0.65rem] text-emerald-600 font-medium">Available</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-900/50 flex items-center gap-3 flex-1 md:flex-initial min-w-[130px]">
+                    <div className="p-2 rounded-xl bg-blue-100 dark:bg-blue-900/60 text-blue-600">
+                      <BookOpen className="size-4" />
+                    </div>
+                    <div>
+                      <span className="text-[0.68rem] font-semibold text-blue-800 dark:text-blue-300 uppercase tracking-wider block">Teaching Periods</span>
+                      <p className="text-xl font-bold font-mono text-blue-700 dark:text-blue-200 leading-none mt-0.5">
+                        {selectedFacultySchedule.periods.filter((p) => p.status === "IN CLASS").length}
+                      </p>
+                      <span className="text-[0.65rem] text-blue-600 font-medium">Assigned</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="overflow-x-auto rounded-xl border border-border/70">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-muted/60 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
-                    <tr>
-                      <th className="py-2.5 px-3">Period</th>
-                      <th className="py-2.5 px-3">Time Slot</th>
-                      <th className="py-2.5 px-3">Scheduled Status</th>
-                      <th className="py-2.5 px-3">Subject / Course</th>
-                      <th className="py-2.5 px-3">Class & Section</th>
-                      <th className="py-2.5 px-3">Room / Lab No.</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/60">
-                    {selectedFacultySchedule.periods.map((slot) => (
-                      <tr key={slot.periodNumber} className="hover:bg-muted/20 transition-colors">
-                        <td className="py-3 px-3 font-mono font-bold text-primary">Period {slot.periodNumber}</td>
-                        <td className="py-3 px-3 font-mono text-muted-foreground">{slot.timeSlot}</td>
-                        <td className="py-3 px-3">
-                          {slot.status === "FREE" && (
-                            <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 font-bold">
-                              🟢 FREE
-                            </Badge>
-                          )}
-                          {slot.status === "IN CLASS" && (
-                            <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-300 font-bold">
+              {/* Subheader */}
+              <div className="flex items-center justify-between border-b border-border/60 pb-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-foreground uppercase tracking-wider">
+                  <Clock className="size-4 text-primary" /> Today's Schedule Timeline
+                </div>
+                <Button variant="outline" size="sm" className="h-8 text-xs font-medium rounded-xl gap-1.5">
+                  <Calendar className="size-3.5" /> View as Calendar
+                </Button>
+              </div>
+
+              {/* TIMELINE LIST OF PERIOD CARDS */}
+              <div className="space-y-3">
+                {selectedFacultySchedule.periods.map((slot) => {
+                  const isInClass = slot.status === "IN CLASS";
+                  const isLab = slot.subject?.toLowerCase().includes("lab");
+                  const isFree = slot.status === "FREE";
+                  const isOnLeave = slot.status === "ON LEAVE";
+
+                  return (
+                    <div key={slot.periodNumber} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                      {/* Period Column */}
+                      <div className={`p-3 rounded-2xl border text-center shrink-0 min-w-[110px] space-y-0.5 ${
+                        isInClass && isLab
+                          ? "bg-amber-50/70 border-amber-200 text-amber-900 dark:bg-amber-950/30 dark:border-amber-900/50"
+                          : isInClass
+                          ? "bg-blue-50/70 border-blue-200 text-blue-900 dark:bg-blue-950/30 dark:border-blue-900/50"
+                          : isFree
+                          ? "bg-emerald-50/70 border-emerald-200 text-emerald-900 dark:bg-emerald-950/30 dark:border-emerald-900/50"
+                          : "bg-rose-50/70 border-rose-200 text-rose-900"
+                      }`}>
+                        <span className="text-xs font-bold font-mono uppercase block">Period {slot.periodNumber}</span>
+                        <span className="text-[0.7rem] font-mono text-muted-foreground font-semibold block">{slot.timeSlot}</span>
+                      </div>
+
+                      {/* Main Schedule Content Card */}
+                      {isInClass && !isLab && (
+                        <div className="p-3.5 rounded-2xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/80 dark:border-blue-900/40 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 shrink-0">
+                              <BookOpen className="size-4" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-xs text-foreground">{slot.subject}</h4>
+                              <p className="text-[0.72rem] font-mono text-muted-foreground font-semibold">{slot.className}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                            <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border-blue-300 font-bold text-[0.68rem] px-2.5 py-0.5">
                               🔵 IN CLASS
                             </Badge>
-                          )}
-                          {slot.status === "ON LEAVE" && (
-                            <Badge className="bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-300 font-bold">
+                            <div className="flex items-center gap-1.5 text-[0.72rem] font-mono text-muted-foreground font-semibold">
+                              <MapPin className="size-3.5 text-primary" /> {slot.roomNo}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {isInClass && isLab && (
+                        <div className="p-3.5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 shrink-0">
+                              <FlaskConical className="size-4" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-xs text-foreground">{slot.subject}</h4>
+                              <p className="text-[0.72rem] font-mono text-muted-foreground font-semibold">{slot.className}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                            <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 font-bold text-[0.68rem] px-2.5 py-0.5">
+                              🟠 IN CLASS (LAB)
+                            </Badge>
+                            <div className="flex items-center gap-1.5 text-[0.72rem] font-mono text-muted-foreground font-semibold">
+                              <FlaskConical className="size-3.5 text-amber-600" /> {slot.roomNo}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {isFree && (
+                        <div className="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 shrink-0">
+                              <Coffee className="size-4" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-xs text-emerald-900 dark:text-emerald-200">FREE PERIOD</h4>
+                              <p className="text-[0.72rem] text-emerald-700 dark:text-emerald-400 font-medium">Available Slot</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                            <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 font-bold text-[0.68rem] px-2.5 py-0.5">
+                              🟢 FREE
+                            </Badge>
+                            <span className="text-[0.72rem] text-muted-foreground font-mono font-semibold">—</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {isOnLeave && (
+                        <div className="p-3.5 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl bg-rose-100 dark:bg-rose-900/50 text-rose-600 shrink-0">
+                              <XCircle className="size-4" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-xs text-rose-900 dark:text-rose-200">ON APPROVED LEAVE</h4>
+                              <p className="text-[0.72rem] text-rose-700 dark:text-rose-400 font-medium">Substitute Assigned by HOD</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                            <Badge className="bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 font-bold text-[0.68rem] px-2.5 py-0.5">
                               🔴 ON LEAVE
                             </Badge>
-                          )}
-                          {slot.status === "BREAK" && (
-                            <Badge variant="outline" className="text-amber-600 border-amber-300 font-bold">
-                              🟡 LUNCH BREAK
-                            </Badge>
-                          )}
-                        </td>
-                        <td className="py-3 px-3 font-bold text-foreground">{slot.subject || "— (Unassigned)"}</td>
-                        <td className="py-3 px-3 font-mono font-semibold">{slot.className || "—"}</td>
-                        <td className="py-3 px-3 font-mono text-muted-foreground">{slot.roomNo || "—"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            <span className="text-[0.72rem] text-muted-foreground font-mono font-semibold">—</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          <DialogFooter className="pt-2 border-t border-border">
-            <Button variant="outline" onClick={() => setIsTimetableModalOpen(false)} className="text-xs rounded-xl">
-              Close Schedule
+          {/* Footer Close Button */}
+          <DialogFooter className="pt-3 border-t border-border flex justify-end">
+            <Button
+              onClick={() => setIsTimetableModalOpen(false)}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl h-10 px-5 gap-1.5 shadow-sm"
+            >
+              Close Schedule <X className="size-3.5" />
             </Button>
           </DialogFooter>
         </DialogContent>
