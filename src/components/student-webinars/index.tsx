@@ -175,9 +175,7 @@ export function StudentWebinarsModule() {
           }}
         />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-          {/* LEFT 3 COLS: WEBINAR CONTENT */}
-          <div className="lg:col-span-3 space-y-8">
+        <div className="space-y-8">
             {/* UPCOMING WEBINARS SECTION */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -276,12 +274,6 @@ export function StudentWebinarsModule() {
                 }}
               />
             </div>
-          </div>
-
-          {/* RIGHT 1 COL: SIDEBAR (WEBINAR HIGHLIGHTS & UPCOMING SCHEDULE) */}
-          <div className="lg:col-span-1">
-            <WebinarHighlights onTabNavigate={(tab) => setActiveTab(tab)} />
-          </div>
         </div>
       )}
 
