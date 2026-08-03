@@ -111,12 +111,12 @@ export function PlacementAssessmentsWorkspace() {
       <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card p-6 shadow-sm sm:p-8 backdrop-blur-xl">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10">
           <div className="flex items-start gap-4">
-            <div className="size-16 rounded-2xl bg-brand-gradient text-white grid place-items-center font-extrabold text-2xl shadow-glow shrink-0">
+            <div className="size-16 rounded-2xl bg-[#0b1437] text-white grid place-items-center font-extrabold text-2xl shadow-md shrink-0">
               <Code2 className="size-8" />
             </div>
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge className="bg-purple-600 text-white font-mono text-[0.7rem] animate-pulse">
+                <Badge className="bg-[#0b1437] text-white font-mono text-[0.7rem] animate-pulse">
                   ● Live Assessment Operations
                 </Badge>
                 <Badge variant="outline" className="font-mono text-[0.7rem]">
@@ -124,7 +124,7 @@ export function PlacementAssessmentsWorkspace() {
                 </Badge>
               </div>
               <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Global Assessment Command & Operations Center
+                Global Assessment Command &amp; Operations Center
               </h1>
               <p className="text-xs text-muted-foreground font-mono">
                 Review, approve, schedule, proctor, and publish recruiter-created placement assessments.
@@ -138,22 +138,22 @@ export function PlacementAssessmentsWorkspace() {
               onClick={() => {
                 toast.success("📢 TPO Broadcast Sent! Created and dispatched TCS Placement Assessment link to 360 eligible students via notifications and Notice Board.");
               }}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-md shadow-purple-500/20"
+              className="bg-[#0b1437] hover:bg-[#172554] text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-md shadow-[#0b1437]/20"
             >
               <Sparkles className="size-4" /> Create &amp; Share Assignment to Students
             </Button>
 
             <Button
               onClick={() => toast.success("Refreshed live proctoring feeds")}
-              className="bg-white dark:bg-card border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5"
+              className="bg-white dark:bg-card border border-border text-foreground hover:bg-muted font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-2xs"
             >
-              <Monitor className="size-4" /> Live Proctoring Feed
+              <Monitor className="size-4 text-[#0b1437] dark:text-white" /> Live Proctoring Feed
             </Button>
 
             <Button
               variant="outline"
               onClick={() => toast.info("Exported Assessment Operations Audit Log")}
-              className="bg-white dark:bg-card text-xs rounded-xl h-10 px-3 cursor-pointer gap-1.5 border-border"
+              className="bg-white dark:bg-card text-xs rounded-xl h-10 px-3 cursor-pointer gap-1.5 border-border shadow-2xs"
             >
               <Download className="size-3.5" /> Export Logs
             </Button>
@@ -174,7 +174,7 @@ export function PlacementAssessmentsWorkspace() {
           <div key={kpi.label} className="p-4 rounded-2xl border border-border/70 bg-white dark:bg-card space-y-1 shadow-xs">
             <span className="text-xs font-semibold text-muted-foreground block truncate">{kpi.label}</span>
             <p className="font-display text-2xl font-extrabold">{kpi.val}</p>
-            <span className="text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block text-purple-600 dark:text-purple-400 bg-purple-500/10 border border-purple-500/20 font-semibold">
+            <span className="text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block text-[#0b1437] dark:text-slate-200 bg-[#0b1437]/10 dark:bg-slate-800/80 border border-[#0b1437]/20 dark:border-slate-700 font-semibold">
               {kpi.desc}
             </span>
           </div>

@@ -518,7 +518,7 @@ export function AssessmentRequestsApprovalWorkspace() {
           <div key={kpi.label} className="p-3.5 rounded-2xl border border-border/70 bg-white dark:bg-card space-y-1 shadow-xs">
             <span className="text-xs font-semibold text-muted-foreground block truncate">{kpi.label}</span>
             <p className="font-display text-2xl font-extrabold">{kpi.val}</p>
-            <span className="text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block text-purple-600 dark:text-purple-400 bg-purple-500/10 border border-purple-500/20 font-semibold">
+            <span className="text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block text-[#0b1437] dark:text-slate-200 bg-[#0b1437]/10 dark:bg-slate-800/80 border border-[#0b1437]/20 dark:border-slate-700 font-semibold">
               {kpi.desc}
             </span>
           </div>
