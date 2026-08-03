@@ -444,16 +444,39 @@ export function AssessmentRequestsApprovalWorkspace() {
     toast.success(`Saved updated result for ${editingSub.studentName}! Status: ${editPassStatus ? "PASSED ✓" : "FAILED ✕"}`);
   };
 
-  const handleSendResultsToRecruiter = () => {
-    const allSubs = getAllStudentSubmissions();
-    const passedCount = allSubs.filter((s) => s.passStatus).length;
-    toast.success(
-      `📢 Sent all ${allSubs.length} candidate scorecards (${passedCount} PASSED) to corporate recruiters via email notification!`
-    );
+  // Send Results to Recruiter Modal State
+  const [isSendToRecruiterModalOpen, setIsSendToRecruiterModalOpen] = useState(false);
+  const [selectedRecruiterCompany, setSelectedRecruiterCompany] = useState("Google Cloud India (David Miller - david.miller@google.com)");
+  const [sendCandidatesOption, setSendCandidatesOption] = useState<"PASSED_ONLY" | "ALL_SUBMISSIONS" | "SINGLE_CANDIDATE">("PASSED_ONLY");
+  const [singleCandidateSub, setSingleCandidateSub] = useState<StudentSubmissionRecord | null>(null);
+  const [customRecruiterNote, setCustomRecruiterNote] = useState("");
+
+  const handleOpenSendResultsModal = (sub?: StudentSubmissionRecord) => {
+    if (sub) {
+      setSingleCandidateSub(sub);
+      setSendCandidatesOption("SINGLE_CANDIDATE");
+    } else {
+      setSingleCandidateSub(null);
+      setSendCandidatesOption("PASSED_ONLY");
+    }
+    setCustomRecruiterNote("");
+    setIsSendToRecruiterModalOpen(true);
   };
 
-  const handleSendSingleResultToRecruiter = (sub: StudentSubmissionRecord) => {
-    toast.success(`📧 Dispatched ${sub.studentName}'s (${sub.rollNo}) verified scorecard directly to the recruiter!`);
+  const handleConfirmSendToRecruiter = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSendToRecruiterModalOpen(false);
+    if (singleCandidateSub) {
+      toast.success(
+        `🚀 Dispatched ${singleCandidateSub.studentName}'s (${singleCandidateSub.rollNo}) verified scorecard to ${selectedRecruiterCompany}!`
+      );
+    } else {
+      const allSubs = getAllStudentSubmissions();
+      const count = sendCandidatesOption === "PASSED_ONLY" ? allSubs.filter((s) => s.passStatus).length : allSubs.length;
+      toast.success(
+        `🚀 Successfully dispatched ${count} candidate scorecards to ${selectedRecruiterCompany}! Email report & PDF scorecards sent.`
+      );
+    }
   };
 
   const handleExportStudentResultsCsv = () => {
@@ -837,7 +860,7 @@ export function AssessmentRequestsApprovalWorkspace() {
         action={
           <div className="flex flex-wrap items-center gap-2">
             <Button
-              onClick={handleSendResultsToRecruiter}
+              onClick={() => handleOpenSendResultsModal()}
               className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs"
             >
               <Send className="size-3.5" /> Send Results to Recruiter
@@ -911,7 +934,7 @@ export function AssessmentRequestsApprovalWorkspace() {
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() => handleSendSingleResultToRecruiter(sub)}
+                          onClick={() => handleOpenSendResultsModal(sub)}
                           className="h-7 text-[0.68rem] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-lg cursor-pointer px-2.5 font-bold gap-1 shadow-xs"
                         >
                           <Send className="size-3" /> Send to Recruiter
@@ -1428,6 +1451,118 @@ export function AssessmentRequestsApprovalWorkspace() {
               </DialogFooter>
             </form>
           )}
+        </DialogContent>
+      {/* DISPATCH RESULTS TO RECRUITER MODAL */}
+      <Dialog open={isSendToRecruiterModalOpen} onOpenChange={setIsSendToRecruiterModalOpen}>
+        <DialogContent className="sm:max-w-lg rounded-2xl">
+          <DialogHeader className="pb-2 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-11 rounded-xl bg-[#2563EB] text-white grid place-items-center shadow-md">
+                <Send className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold text-base">Dispatch Assessment Results &amp; Scorecards to Recruiter</DialogTitle>
+                <DialogDescription className="text-xs font-mono">
+                  Official TPO email dispatch of verified candidate test scores to corporate recruiters.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <form onSubmit={handleConfirmSendToRecruiter} className="space-y-4 pt-2 text-xs">
+            {/* 1. RECRUITER / COMPANY SELECTOR */}
+            <div className="space-y-1">
+              <label className="font-semibold text-xs">Target Recruiter &amp; Corporate Partner</label>
+              <select
+                value={selectedRecruiterCompany}
+                onChange={(e) => setSelectedRecruiterCompany(e.target.value)}
+                className="w-full h-10 rounded-xl border border-input bg-card px-3 text-xs font-semibold cursor-pointer"
+              >
+                <option value="Google Cloud India (David Miller - david.miller@google.com)">Google Cloud India — David Miller (david.miller@google.com)</option>
+                <option value="Microsoft India (Ananya Sharma - ananya.sharma@microsoft.com)">Microsoft India — Ananya Sharma (ananya.sharma@microsoft.com)</option>
+                <option value="Amazon AWS (Jeff Recruiter - recruitment@amazon.com)">Amazon AWS — Campus Hiring Team (recruitment@amazon.com)</option>
+                <option value="Qualcomm India (Rajesh Kumar - rajesh.k@qualcomm.com)">Qualcomm India — Rajesh Kumar (rajesh.k@qualcomm.com)</option>
+              </select>
+            </div>
+
+            {/* 2. CANDIDATE SCOPE SELECTOR */}
+            <div className="space-y-1.5">
+              <label className="font-semibold text-xs">Candidate Results to Include in Report</label>
+              {singleCandidateSub ? (
+                <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <span className="font-bold text-foreground block">Single Candidate Selected:</span>
+                    <span className="text-xs font-mono text-primary font-bold">{singleCandidateSub.studentName} ({singleCandidateSub.rollNo}) — {singleCandidateSub.totalPercentage}% ({singleCandidateSub.passStatus ? "PASSED" : "FAILED"})</span>
+                  </div>
+                  <Badge className="bg-blue-600 text-white text-[0.62rem]">Single Candidate</Badge>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSendCandidatesOption("PASSED_ONLY")}
+                    className={`p-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all flex items-center gap-2 ${
+                      sendCandidatesOption === "PASSED_ONLY"
+                        ? "bg-emerald-500/15 border-emerald-500 text-emerald-700 dark:text-emerald-300 font-bold"
+                        : "bg-card border-border hover:bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    <CheckCircle2 className="size-4 text-emerald-600" /> Only Passed (4 Candidates)
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSendCandidatesOption("ALL_SUBMISSIONS")}
+                    className={`p-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition-all flex items-center gap-2 ${
+                      sendCandidatesOption === "ALL_SUBMISSIONS"
+                        ? "bg-blue-500/15 border-blue-500 text-blue-700 dark:text-blue-300 font-bold"
+                        : "bg-card border-border hover:bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    <Users className="size-4 text-blue-600" /> All Submissions (Passed &amp; Failed)
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* 3. LIVE EMAIL REPORT PREVIEW BOX */}
+            <div className="p-3.5 bg-white dark:bg-card border border-border/80 rounded-xl space-y-2 text-[0.72rem] font-mono shadow-2xs">
+              <div className="flex items-center justify-between text-muted-foreground border-b border-border/60 pb-1.5 font-sans">
+                <span className="font-bold text-foreground">✉ Live Email &amp; Report Preview</span>
+                <span className="text-[0.65rem] text-emerald-600 font-mono">Status: Ready to Dispatch</span>
+              </div>
+              <p><strong className="text-muted-foreground">From:</strong> placement.officer@edusuite.edu.in (TPO Official Portal)</p>
+              <p><strong className="text-muted-foreground">To:</strong> {selectedRecruiterCompany.split("(")[1]?.replace(")", "") || selectedRecruiterCompany}</p>
+              <p><strong className="text-muted-foreground">Subject:</strong> Official Campus Assessment Scorecards &amp; Shortlisted Candidates — AY 2026</p>
+              <div className="pt-1.5 text-muted-foreground space-y-1 font-sans text-xs border-t border-border/60">
+                <p>Dear Hiring Manager,</p>
+                <p>Please find attached the official verified assessment results, candidate scorecards, and AI proctoring audit logs for your recruitment drive.</p>
+                <div className="flex flex-wrap gap-2 pt-1 font-mono text-[0.65rem]">
+                  <Badge variant="outline" className="bg-slate-50 dark:bg-muted"><FileSpreadsheet className="size-3 mr-1 text-emerald-600" /> candidate_results_2026.csv</Badge>
+                  <Badge variant="outline" className="bg-slate-50 dark:bg-muted"><Award className="size-3 mr-1 text-blue-600" /> verified_scorecards_bundle.pdf</Badge>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. CUSTOM NOTES TO RECRUITER */}
+            <div className="space-y-1">
+              <label className="font-semibold text-xs">Optional TPO Remarks for Recruiter</label>
+              <textarea
+                value={customRecruiterNote}
+                onChange={(e) => setCustomRecruiterNote(e.target.value)}
+                rows={2}
+                placeholder="Enter any additional instructions or interview schedule notes..."
+                className="w-full rounded-xl border border-input bg-card p-2.5 text-xs font-mono"
+              />
+            </div>
+
+            <DialogFooter className="pt-2 border-t border-border">
+              <Button type="button" variant="outline" onClick={() => setIsSendToRecruiterModalOpen(false)} className="rounded-xl">Cancel</Button>
+              <Button type="submit" className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold rounded-xl cursor-pointer gap-1.5 px-5 shadow-md">
+                <Send className="size-4" /> Confirm &amp; Dispatch Results to Recruiter 🚀
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
