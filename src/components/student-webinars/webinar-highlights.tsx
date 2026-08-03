@@ -10,13 +10,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { MOCK_HIGHLIGHTS_ITEMS, MOCK_SCHEDULE_TIMELINE } from "./mock-data";
 import { WebinarTab } from "./types";
-import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 
 interface WebinarHighlightsProps {
   onTabNavigate: (tab: WebinarTab) => void;
 }
 
 export function WebinarHighlights({ onTabNavigate }: WebinarHighlightsProps) {
+  const navigate = useNavigate();
   const iconMap: Record<string, React.ElementType> = {
     Video: Video,
     Award: Award,
@@ -54,9 +55,10 @@ export function WebinarHighlights({ onTabNavigate }: WebinarHighlightsProps) {
 
         {/* View Full Calendar Button */}
         <Button
-          onClick={() => toast.info("Opening Full Webinar Calendar...")}
-          className="w-full h-10 rounded-xl bg-[#091024] hover:bg-[#152248] text-white font-bold text-xs shadow-xs mt-2"
+          onClick={() => navigate({ to: "/student/timetable" })}
+          className="w-full h-10 rounded-xl bg-[#091024] hover:bg-[#152248] text-white font-bold text-xs shadow-xs mt-2 cursor-pointer"
         >
+          <Calendar className="size-3.5 mr-1.5" />
           View Full Calendar
         </Button>
       </div>

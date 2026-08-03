@@ -114,12 +114,16 @@ export function StudentWebinarsModule() {
         webinar.category.toLowerCase().includes(query);
 
       const matchesCategory =
-        selectedCategory === "All" || webinar.category === selectedCategory;
+        selectedCategory === "All" ||
+        webinar.category.toLowerCase() === selectedCategory.toLowerCase() ||
+        webinar.title.toLowerCase().includes(selectedCategory.toLowerCase());
 
       let matchesTab = true;
-      if (activeTab === "live") matchesTab = webinar.status === "live";
-      if (activeTab === "registered") matchesTab = webinar.isRegistered;
-      if (activeTab === "completed") matchesTab = webinar.status === "completed";
+      if (selectedCategory === "All") {
+        if (activeTab === "live") matchesTab = webinar.status === "live";
+        if (activeTab === "registered") matchesTab = webinar.isRegistered;
+        if (activeTab === "completed") matchesTab = webinar.status === "completed";
+      }
 
       return matchesSearch && matchesCategory && matchesTab;
     });
@@ -216,24 +220,12 @@ export function StudentWebinarsModule() {
               )}
             </div>
 
-            {/* BOTTOM ROW: FEATURED WEBINAR BANNER (LEFT) & TOP CATEGORIES (RIGHT) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Featured Webinar Banner */}
-              <WebinarHero
-                webinar={featuredWebinar}
-                onRegisterToggle={handleRegisterToggle}
-                onSelectWebinar={handleSelectWebinar}
-              />
-
-              {/* Top Categories Card */}
-              <CategoryChips
-                selectedCategory={selectedCategory}
-                onSelectCategory={(cat) => {
-                  setSelectedCategory(cat);
-                  setActiveTab("upcoming");
-                }}
-              />
-            </div>
+            {/* FEATURED WEBINAR BANNER */}
+            <WebinarHero
+              webinar={featuredWebinar}
+              onRegisterToggle={handleRegisterToggle}
+              onSelectWebinar={handleSelectWebinar}
+            />
 
             {/* RECENT RECORDINGS ROW */}
             <div className="space-y-4 pt-2">

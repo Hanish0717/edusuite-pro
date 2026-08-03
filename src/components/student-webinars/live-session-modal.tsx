@@ -107,15 +107,15 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
         </div>
 
         {/* Content Layout: Left Video Stream (2/3), Right Chat & Polls (1/3) */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
+        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
           {/* Video Stream Container */}
-          <div className="lg:col-span-2 relative bg-slate-950 flex flex-col justify-between p-4 sm:p-6 overflow-hidden">
+          <div className="lg:col-span-2 relative bg-slate-950 flex flex-col justify-between p-4 sm:p-5 h-full min-h-0 overflow-hidden">
             {/* Simulated Live Video Graphic */}
             <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${webinar.bannerImage})` }} />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-slate-950/70" />
 
             {/* Speaker Video Overlay */}
-            <div className="relative z-10 flex items-center justify-between">
+            <div className="relative z-10 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3 bg-slate-900/90 backdrop-blur-md border border-slate-700/60 p-2.5 rounded-2xl">
                 <img
                   src={webinar.speaker.avatar}
@@ -134,7 +134,7 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
             </div>
 
             {/* Bottom Stream Controls & Reactions */}
-            <div className="relative z-10 flex items-center justify-between bg-slate-900/90 backdrop-blur-md border border-slate-800 p-3 rounded-2xl mt-auto">
+            <div className="relative z-10 flex items-center justify-between bg-slate-900/90 backdrop-blur-md border border-slate-800 p-3 rounded-2xl mt-auto shrink-0">
               <div className="flex items-center gap-2 text-xs text-slate-300">
                 <Volume2 className="size-4 text-indigo-400" />
                 <span className="font-semibold">Audio Live HD</span>
@@ -172,9 +172,9 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
           </div>
 
           {/* Right Live Chat & Poll Panel */}
-          <div className="bg-slate-900 border-l border-slate-800 flex flex-col h-full">
+          <div className="bg-slate-900 border-l border-slate-800 flex flex-col h-full min-h-0 overflow-hidden">
             {/* Chat Tabs */}
-            <div className="p-3 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+            <div className="p-3 border-b border-slate-800 bg-slate-950 flex items-center justify-between shrink-0">
               <span className="text-xs font-bold text-white flex items-center gap-2">
                 <MessageSquare className="size-4 text-indigo-400" /> Live Student Chat
               </span>
@@ -184,7 +184,7 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
             </div>
 
             {/* Poll Box */}
-            <div className="p-3 bg-indigo-950/40 border-b border-indigo-900/50 space-y-2">
+            <div className="p-3 bg-indigo-950/40 border-b border-indigo-900/50 space-y-2 shrink-0">
               <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1">
                 <BarChart2 className="size-3 text-indigo-400" /> Active Speaker Poll
               </span>
@@ -212,7 +212,7 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
             </div>
 
             {/* Chat Feed */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3 no-scrollbar text-xs">
+            <div className="flex-1 min-h-0 p-4 overflow-y-auto space-y-3 text-xs">
               {chatLog.map((msg) => (
                 <div key={msg.id} className="space-y-0.5">
                   <div className="flex items-center justify-between text-[10px] text-slate-400">
@@ -227,7 +227,7 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
             </div>
 
             {/* Chat Input */}
-            <form onSubmit={handleSendChat} className="p-3 bg-slate-950 border-t border-slate-800 flex gap-2">
+            <form onSubmit={handleSendChat} className="p-3 bg-slate-950 border-t border-slate-800 flex gap-2 shrink-0">
               <Input
                 type="text"
                 placeholder="Send a live message..."
