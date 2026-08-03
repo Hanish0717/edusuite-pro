@@ -153,12 +153,14 @@ import { Route as SuperAdminProfileRouteImport } from './routes/super-admin.prof
 import { Route as SuperAdminSettingsRouteImport } from './routes/super-admin.settings'
 import { Route as SuperAdminStudentsRouteImport } from './routes/super-admin.students'
 import { Route as SuperAdminSyllabusTrackerRouteImport } from './routes/super-admin.syllabus-tracker'
+import { Route as SuperAdminTimetableRouteImport } from './routes/super-admin.timetable'
 import { Route as TransportIndexRouteImport } from './routes/transport.index'
 import { Route as TransportBusesRouteImport } from './routes/transport.buses'
 import { Route as TransportDashboardRouteImport } from './routes/transport.dashboard'
 import { Route as TransportRoutesRouteImport } from './routes/transport.routes'
 import { Route as DashboardAcademicsFacultyStatusRouteImport } from './routes/dashboard.academics.faculty-status'
 import { Route as DashboardAcademicsSyllabusTrackerRouteImport } from './routes/dashboard.academics.syllabus-tracker'
+import { Route as DashboardAcademicsTimetableRouteImport } from './routes/dashboard.academics.timetable'
 import { Route as PlacementDrivesDriveIdRouteImport } from './routes/placement.drives_.$driveId'
 import { Route as SuperAdminAcademicsFacultyStatusRouteImport } from './routes/super-admin.academics.faculty-status'
 import { Route as SuperAdminAcademicsSyllabusTrackerRouteImport } from './routes/super-admin.academics.syllabus-tracker'
@@ -894,6 +896,11 @@ const SuperAdminSyllabusTrackerRoute =
     path: '/syllabus-tracker',
     getParentRoute: () => SuperAdminRoute,
   } as any)
+const SuperAdminTimetableRoute = SuperAdminTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
+  getParentRoute: () => SuperAdminRoute,
+} as any)
 const TransportIndexRoute = TransportIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -924,6 +931,12 @@ const DashboardAcademicsSyllabusTrackerRoute =
   DashboardAcademicsSyllabusTrackerRouteImport.update({
     id: '/academics/syllabus-tracker',
     path: '/academics/syllabus-tracker',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardAcademicsTimetableRoute =
+  DashboardAcademicsTimetableRouteImport.update({
+    id: '/academics/timetable',
+    path: '/academics/timetable',
     getParentRoute: () => DashboardRoute,
   } as any)
 const PlacementDrivesDriveIdRoute = PlacementDrivesDriveIdRouteImport.update({
@@ -1087,6 +1100,7 @@ export interface FileRoutesByFullPath {
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
   '/super-admin/syllabus-tracker': typeof SuperAdminSyllabusTrackerRoute
+  '/super-admin/timetable': typeof SuperAdminTimetableRoute
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
   '/transport/routes': typeof TransportRoutesRoute
@@ -1107,6 +1121,7 @@ export interface FileRoutesByFullPath {
   '/transport/': typeof TransportIndexRoute
   '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
   '/dashboard/academics/syllabus-tracker': typeof DashboardAcademicsSyllabusTrackerRoute
+  '/dashboard/academics/timetable': typeof DashboardAcademicsTimetableRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
@@ -1229,6 +1244,7 @@ export interface FileRoutesByTo {
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
   '/super-admin/syllabus-tracker': typeof SuperAdminSyllabusTrackerRoute
+  '/super-admin/timetable': typeof SuperAdminTimetableRoute
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
   '/transport/routes': typeof TransportRoutesRoute
@@ -1249,6 +1265,7 @@ export interface FileRoutesByTo {
   '/transport': typeof TransportIndexRoute
   '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
   '/dashboard/academics/syllabus-tracker': typeof DashboardAcademicsSyllabusTrackerRoute
+  '/dashboard/academics/timetable': typeof DashboardAcademicsTimetableRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
@@ -1387,6 +1404,7 @@ export interface FileRoutesById {
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
   '/super-admin/syllabus-tracker': typeof SuperAdminSyllabusTrackerRoute
+  '/super-admin/timetable': typeof SuperAdminTimetableRoute
   '/transport/buses': typeof TransportBusesRoute
   '/transport/dashboard': typeof TransportDashboardRoute
   '/transport/routes': typeof TransportRoutesRoute
@@ -1407,6 +1425,7 @@ export interface FileRoutesById {
   '/transport/': typeof TransportIndexRoute
   '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
   '/dashboard/academics/syllabus-tracker': typeof DashboardAcademicsSyllabusTrackerRoute
+  '/dashboard/academics/timetable': typeof DashboardAcademicsTimetableRoute
   '/placement/drives_/$driveId': typeof PlacementDrivesDriveIdRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
@@ -1546,6 +1565,7 @@ export interface FileRouteTypes {
     | '/super-admin/settings'
     | '/super-admin/students'
     | '/super-admin/syllabus-tracker'
+    | '/super-admin/timetable'
     | '/transport/buses'
     | '/transport/dashboard'
     | '/transport/routes'
@@ -1566,6 +1586,7 @@ export interface FileRouteTypes {
     | '/transport/'
     | '/dashboard/academics/faculty-status'
     | '/dashboard/academics/syllabus-tracker'
+    | '/dashboard/academics/timetable'
     | '/placement/drives/$driveId'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
@@ -1688,6 +1709,7 @@ export interface FileRouteTypes {
     | '/super-admin/settings'
     | '/super-admin/students'
     | '/super-admin/syllabus-tracker'
+    | '/super-admin/timetable'
     | '/transport/buses'
     | '/transport/dashboard'
     | '/transport/routes'
@@ -1708,6 +1730,7 @@ export interface FileRouteTypes {
     | '/transport'
     | '/dashboard/academics/faculty-status'
     | '/dashboard/academics/syllabus-tracker'
+    | '/dashboard/academics/timetable'
     | '/placement/drives/$driveId'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
@@ -1845,6 +1868,7 @@ export interface FileRouteTypes {
     | '/super-admin/settings'
     | '/super-admin/students'
     | '/super-admin/syllabus-tracker'
+    | '/super-admin/timetable'
     | '/transport/buses'
     | '/transport/dashboard'
     | '/transport/routes'
@@ -1865,6 +1889,7 @@ export interface FileRouteTypes {
     | '/transport/'
     | '/dashboard/academics/faculty-status'
     | '/dashboard/academics/syllabus-tracker'
+    | '/dashboard/academics/timetable'
     | '/placement/drives_/$driveId'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
@@ -2934,6 +2959,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperAdminSyllabusTrackerRouteImport
       parentRoute: typeof SuperAdminRoute
     }
+    '/super-admin/timetable': {
+      id: '/super-admin/timetable'
+      path: '/timetable'
+      fullPath: '/super-admin/timetable'
+      preLoaderRoute: typeof SuperAdminTimetableRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
     '/transport/': {
       id: '/transport/'
       path: '/'
@@ -2974,6 +3006,13 @@ declare module '@tanstack/react-router' {
       path: '/academics/syllabus-tracker'
       fullPath: '/dashboard/academics/syllabus-tracker'
       preLoaderRoute: typeof DashboardAcademicsSyllabusTrackerRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/academics/timetable': {
+      id: '/dashboard/academics/timetable'
+      path: '/academics/timetable'
+      fullPath: '/dashboard/academics/timetable'
+      preLoaderRoute: typeof DashboardAcademicsTimetableRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/placement/drives_/$driveId': {
@@ -3045,6 +3084,7 @@ const AiAnalyticsRouteWithChildren = AiAnalyticsRoute._addFileChildren(
 interface DashboardRouteChildren {
   DashboardAcademicsFacultyStatusRoute: typeof DashboardAcademicsFacultyStatusRoute
   DashboardAcademicsSyllabusTrackerRoute: typeof DashboardAcademicsSyllabusTrackerRoute
+  DashboardAcademicsTimetableRoute: typeof DashboardAcademicsTimetableRoute
   DashboardAcademicsAttendanceMarkRoute: typeof DashboardAcademicsAttendanceMarkRoute
 }
 
@@ -3052,6 +3092,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAcademicsFacultyStatusRoute: DashboardAcademicsFacultyStatusRoute,
   DashboardAcademicsSyllabusTrackerRoute:
     DashboardAcademicsSyllabusTrackerRoute,
+  DashboardAcademicsTimetableRoute: DashboardAcademicsTimetableRoute,
   DashboardAcademicsAttendanceMarkRoute: DashboardAcademicsAttendanceMarkRoute,
 }
 
@@ -3344,6 +3385,7 @@ interface SuperAdminRouteChildren {
   SuperAdminSettingsRoute: typeof SuperAdminSettingsRoute
   SuperAdminStudentsRoute: typeof SuperAdminStudentsRoute
   SuperAdminSyllabusTrackerRoute: typeof SuperAdminSyllabusTrackerRoute
+  SuperAdminTimetableRoute: typeof SuperAdminTimetableRoute
   SuperAdminIndexRoute: typeof SuperAdminIndexRoute
 }
 
@@ -3361,6 +3403,7 @@ const SuperAdminRouteChildren: SuperAdminRouteChildren = {
   SuperAdminSettingsRoute: SuperAdminSettingsRoute,
   SuperAdminStudentsRoute: SuperAdminStudentsRoute,
   SuperAdminSyllabusTrackerRoute: SuperAdminSyllabusTrackerRoute,
+  SuperAdminTimetableRoute: SuperAdminTimetableRoute,
   SuperAdminIndexRoute: SuperAdminIndexRoute,
 }
 
