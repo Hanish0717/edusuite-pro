@@ -111,12 +111,12 @@ export function PlacementAssessmentsWorkspace() {
       <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card p-6 shadow-sm sm:p-8 backdrop-blur-xl">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10">
           <div className="flex items-start gap-4">
-            <div className="size-16 rounded-2xl bg-[#0b1437] text-white grid place-items-center font-extrabold text-2xl shadow-md shrink-0">
+            <div className="size-16 rounded-2xl bg-[#0F1B44] text-white grid place-items-center font-extrabold text-2xl shadow-md shrink-0">
               <Code2 className="size-8" />
             </div>
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge className="bg-[#0b1437] text-white font-mono text-[0.7rem] animate-pulse">
+                <Badge className="bg-[#0F1B44] text-white font-mono text-[0.7rem] animate-pulse">
                   ● Live Assessment Operations
                 </Badge>
                 <Badge variant="outline" className="font-mono text-[0.7rem]">
@@ -138,7 +138,7 @@ export function PlacementAssessmentsWorkspace() {
               onClick={() => {
                 toast.success("📢 TPO Broadcast Sent! Created and dispatched TCS Placement Assessment link to 360 eligible students via notifications and Notice Board.");
               }}
-              className="bg-[#0b1437] hover:bg-[#172554] text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-md shadow-[#0b1437]/20"
+              className="bg-[#0F1B44] hover:bg-[#1a2c69] text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-md shadow-[#0F1B44]/20"
             >
               <Sparkles className="size-4" /> Create &amp; Share Assignment to Students
             </Button>
@@ -147,7 +147,7 @@ export function PlacementAssessmentsWorkspace() {
               onClick={() => toast.success("Refreshed live proctoring feeds")}
               className="bg-white dark:bg-card border border-border text-foreground hover:bg-muted font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-2xs"
             >
-              <Monitor className="size-4 text-[#0b1437] dark:text-white" /> Live Proctoring Feed
+              <Monitor className="size-4 text-[#0F1B44] dark:text-white" /> Live Proctoring Feed
             </Button>
 
             <Button
@@ -174,7 +174,7 @@ export function PlacementAssessmentsWorkspace() {
           <div key={kpi.label} className="p-4 rounded-2xl border border-border/70 bg-white dark:bg-card space-y-1 shadow-xs">
             <span className="text-xs font-semibold text-muted-foreground block truncate">{kpi.label}</span>
             <p className="font-display text-2xl font-extrabold">{kpi.val}</p>
-            <span className="text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block text-[#0b1437] dark:text-slate-200 bg-[#0b1437]/10 dark:bg-slate-800/80 border border-[#0b1437]/20 dark:border-slate-700 font-semibold">
+            <span className="text-[0.65rem] font-mono px-2 py-0.5 rounded-md inline-block text-[#0F1B44] dark:text-slate-200 bg-[#0F1B44]/10 dark:bg-slate-800/80 border border-[#0F1B44]/20 dark:border-slate-700 font-semibold">
               {kpi.desc}
             </span>
           </div>
