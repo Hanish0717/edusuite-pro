@@ -63,7 +63,7 @@ export const Route = createFileRoute("/alumni")({
   component: AlumniPage,
 });
 
-function AlumniPage() {
+export function AlumniPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { role, externalPersona } = useRole();
