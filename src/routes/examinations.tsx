@@ -2,10 +2,11 @@ import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useRole } from "@/context/role-context";
 
 export const Route = createFileRoute("/examinations")({
-  component: ExaminationsRedirect,
+  head: () => ({ meta: [{ title: "Examinations & Evaluation — EduSuite Pro" }] }),
+  component: ExaminationsPage,
 });
 
-function ExaminationsRedirect() {
+export function ExaminationsPage() {
   const { role, flags } = useRole();
 
   if (role === "super-admin") {

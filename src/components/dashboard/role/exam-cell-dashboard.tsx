@@ -122,7 +122,7 @@ export function ExamCellDashboard() {
           </div>
         </Card>
         <Card className="p-4 bg-card border border-border/70 shadow-xs rounded-2xl flex items-center gap-4">
-          <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
+          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
             <CheckCircle2 className="size-5" />
           </div>
           <div>
@@ -184,56 +184,47 @@ export function ExamCellDashboard() {
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
               <Percent className="size-4 text-indigo-600" /> Year-Wise Pass Demographics {isOfficer ? "(Global)" : `(${activeDeptCode} Dept)`}
             </h3>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              Comparison statistics based on final grades computed across academic years.
-            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Compares average pass ratios by student gender group and year.</p>
           </div>
           
-          <div className="h-64 w-full">
+          <div className="h-[240px] w-full text-xs font-semibold">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={GENDER_PASS_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="year" stroke="#94a3b8" fontSize={10} fontStyle="bold" />
-                <YAxis stroke="#94a3b8" fontSize={10} domain={[60, 100]} />
-                <Tooltip 
-                  contentStyle={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "11px", fontWeight: "bold" }} 
-                />
-                <Legend wrapperStyle={{ fontSize: "11px", fontWeight: "bold", paddingTop: "10px" }} />
-                <Bar dataKey="Male" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={16} />
-                <Bar dataKey="Female" fill="#ec4899" radius={[4, 4, 0, 0]} barSize={16} />
+              <BarChart data={GENDER_PASS_DATA} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="year" stroke="#64748b" fontSize={10} tickLine={false} />
+                <YAxis stroke="#64748b" fontSize={10} tickLine={false} domain={[0, 100]} />
+                <Tooltip />
+                <Legend iconSize={8} iconType="circle" />
+                <Bar dataKey="Male" fill="#4f46e5" radius={[4, 4, 0, 0]} maxBarSize={30} />
+                <Bar dataKey="Female" fill="#ec4899" radius={[4, 4, 0, 0]} maxBarSize={30} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </Card>
 
-        {/* Notifications list card */}
-        <Card className="p-5 bg-card border border-border/70 shadow-xs rounded-2xl flex flex-col justify-between">
-          <div className="mb-4">
+        {/* Notifications and Alerts Card */}
+        <Card className="p-5 bg-card border border-border/70 shadow-xs rounded-2xl space-y-4">
+          <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-              <Bell className="size-4 text-indigo-600 animate-swing" /> Notifications Workspace
+              <Bell className="size-4 text-indigo-600" /> Exam Cell Bulletins & Notifications
             </h3>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              Bulletins and instructions dispatched by the Exam Officer.
-            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Logs of active schedules, updates and notices.</p>
           </div>
 
-          <div className="space-y-3 flex-1 overflow-y-auto pr-1 max-h-[250px]">
-            {notifications.map((n) => (
+          <div className="space-y-3 max-h-[250px] overflow-y-auto pr-1">
+            {notifications.map((notif) => (
               <div 
-                key={n.id} 
-                className={`p-3 rounded-xl border text-[11px] font-semibold transition ${
-                  n.type === 'urgent' 
-                    ? 'border-red-200 bg-red-50/50 text-red-900' 
-                    : n.type === 'warning' 
-                      ? 'border-amber-200 bg-amber-50/50 text-amber-900'
-                      : 'border-slate-100 bg-slate-50/80 text-slate-850'
-                }`}
+                key={notif.id} 
+                className="p-3 border border-border/60 bg-slate-50/30 rounded-xl space-y-1 hover:border-slate-300 transition"
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-black text-slate-900">{n.title}</span>
-                  <span className="text-[9px] font-normal text-muted-foreground">{n.time}</span>
+                <div className="flex justify-between items-center">
+                  <h4 className="font-extrabold text-slate-800 text-[11px] flex items-center gap-1">
+                    {notif.type === "urgent" && <Volume2 className="size-3 text-red-500 animate-bounce" />}
+                    {notif.title}
+                  </h4>
+                  <span className="text-[9px] text-slate-400 font-bold">{notif.time}</span>
                 </div>
-                <p className="mt-1 text-slate-700 leading-tight font-medium">{n.message}</p>
+                <p className="text-[10px] text-muted-foreground leading-relaxed">{notif.message}</p>
               </div>
             ))}
           </div>
