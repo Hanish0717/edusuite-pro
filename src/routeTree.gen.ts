@@ -25,6 +25,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DeanRouteImport } from './routes/dean'
 import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as EmployeeManagementRouteImport } from './routes/employee-management'
+import { Route as ExamcellRouteImport } from './routes/examcell'
 import { Route as ExaminationRouteImport } from './routes/examination'
 import { Route as ExaminationsRouteImport } from './routes/examinations'
 import { Route as ExternalUserRouteImport } from './routes/external-user'
@@ -71,6 +72,23 @@ import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
 import { Route as DeanSubjectAllocationRouteImport } from './routes/dean.subject-allocation'
 import { Route as ExamTakeRouteImport } from './routes/exam.take'
+import { Route as ExamcellIndexRouteImport } from './routes/examcell/index'
+import { Route as ExamcellAnalyticsRouteImport } from './routes/examcell/analytics'
+import { Route as ExamcellBloomstickRouteImport } from './routes/examcell/bloomstick'
+import { Route as ExamcellCorrectionAnalysisRouteImport } from './routes/examcell/correction-analysis'
+import { Route as ExamcellCorrectionRequestsRouteImport } from './routes/examcell/correction-requests'
+import { Route as ExamcellCorrectionsRouteImport } from './routes/examcell/corrections'
+import { Route as ExamcellCourseEnrollRouteImport } from './routes/examcell/course-enroll'
+import { Route as ExamcellDashboardRouteImport } from './routes/examcell/dashboard'
+import { Route as ExamcellHallTicketsRouteImport } from './routes/examcell/hall-tickets'
+import { Route as ExamcellNotificationsRouteImport } from './routes/examcell/notifications'
+import { Route as ExamcellQuestionsRouteImport } from './routes/examcell/questions'
+import { Route as ExamcellResultsRouteImport } from './routes/examcell/results'
+import { Route as ExamcellScheduleRouteImport } from './routes/examcell/schedule'
+import { Route as ExamcellSettingsRouteImport } from './routes/examcell/settings'
+import { Route as ExamcellSupplementaryRouteImport } from './routes/examcell/supplementary'
+import { Route as ExamcellTimetableRouteImport } from './routes/examcell/timetable'
+import { Route as ExamcellUpdatesRouteImport } from './routes/examcell/updates'
 import { Route as ExaminationIndexRouteImport } from './routes/examination.index'
 import { Route as ExaminationDashboardRouteImport } from './routes/examination.dashboard'
 import { Route as ExternalUserIndexRouteImport } from './routes/external-user.index'
@@ -80,10 +98,13 @@ import { Route as FacultyAssessmentsRouteImport } from './routes/faculty.assessm
 import { Route as FacultyAssignmentsRouteImport } from './routes/faculty.assignments'
 import { Route as FacultyAttendanceRouteImport } from './routes/faculty.attendance'
 import { Route as FacultyDashboardRouteImport } from './routes/faculty.dashboard'
+import { Route as FacultyEvaluationAndMarksRouteImport } from './routes/faculty.evaluation-and-marks'
+import { Route as FacultyEvaluationsRouteImport } from './routes/faculty.evaluations'
 import { Route as FacultyExaminationsRouteImport } from './routes/faculty.examinations'
 import { Route as FacultyLeaveRouteImport } from './routes/faculty.leave'
 import { Route as FacultyLessonPlanRouteImport } from './routes/faculty.lesson-plan'
 import { Route as FacultyLmsRouteImport } from './routes/faculty.lms'
+import { Route as FacultyMarksRouteImport } from './routes/faculty.marks'
 import { Route as FacultyMaterialsRouteImport } from './routes/faculty.materials'
 import { Route as FacultyNotificationsRouteImport } from './routes/faculty.notifications'
 import { Route as FacultyPayrollRouteImport } from './routes/faculty.payroll'
@@ -260,6 +281,11 @@ const EmergencyRoute = EmergencyRouteImport.update({
 const EmployeeManagementRoute = EmployeeManagementRouteImport.update({
   id: '/employee-management',
   path: '/employee-management',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExamcellRoute = ExamcellRouteImport.update({
+  id: '/examcell',
+  path: '/examcell',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExaminationRoute = ExaminationRouteImport.update({
@@ -495,6 +521,93 @@ const ExamTakeRoute = ExamTakeRouteImport.update({
   path: '/exam/take',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExamcellIndexRoute = ExamcellIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellAnalyticsRoute = ExamcellAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellBloomstickRoute = ExamcellBloomstickRouteImport.update({
+  id: '/bloomstick',
+  path: '/bloomstick',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellCorrectionAnalysisRoute =
+  ExamcellCorrectionAnalysisRouteImport.update({
+    id: '/correction-analysis',
+    path: '/correction-analysis',
+    getParentRoute: () => ExamcellRoute,
+  } as any)
+const ExamcellCorrectionRequestsRoute =
+  ExamcellCorrectionRequestsRouteImport.update({
+    id: '/correction-requests',
+    path: '/correction-requests',
+    getParentRoute: () => ExamcellRoute,
+  } as any)
+const ExamcellCorrectionsRoute = ExamcellCorrectionsRouteImport.update({
+  id: '/corrections',
+  path: '/corrections',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellCourseEnrollRoute = ExamcellCourseEnrollRouteImport.update({
+  id: '/course-enroll',
+  path: '/course-enroll',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellDashboardRoute = ExamcellDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellHallTicketsRoute = ExamcellHallTicketsRouteImport.update({
+  id: '/hall-tickets',
+  path: '/hall-tickets',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellNotificationsRoute = ExamcellNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellQuestionsRoute = ExamcellQuestionsRouteImport.update({
+  id: '/questions',
+  path: '/questions',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellResultsRoute = ExamcellResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellScheduleRoute = ExamcellScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellSettingsRoute = ExamcellSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellSupplementaryRoute = ExamcellSupplementaryRouteImport.update({
+  id: '/supplementary',
+  path: '/supplementary',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellTimetableRoute = ExamcellTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
+  getParentRoute: () => ExamcellRoute,
+} as any)
+const ExamcellUpdatesRoute = ExamcellUpdatesRouteImport.update({
+  id: '/updates',
+  path: '/updates',
+  getParentRoute: () => ExamcellRoute,
+} as any)
 const ExaminationIndexRoute = ExaminationIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -540,6 +653,17 @@ const FacultyDashboardRoute = FacultyDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => FacultyRoute,
 } as any)
+const FacultyEvaluationAndMarksRoute =
+  FacultyEvaluationAndMarksRouteImport.update({
+    id: '/evaluation-and-marks',
+    path: '/evaluation-and-marks',
+    getParentRoute: () => FacultyRoute,
+  } as any)
+const FacultyEvaluationsRoute = FacultyEvaluationsRouteImport.update({
+  id: '/evaluations',
+  path: '/evaluations',
+  getParentRoute: () => FacultyRoute,
+} as any)
 const FacultyExaminationsRoute = FacultyExaminationsRouteImport.update({
   id: '/examinations',
   path: '/examinations',
@@ -558,6 +682,11 @@ const FacultyLessonPlanRoute = FacultyLessonPlanRouteImport.update({
 const FacultyLmsRoute = FacultyLmsRouteImport.update({
   id: '/lms',
   path: '/lms',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyMarksRoute = FacultyMarksRouteImport.update({
+  id: '/marks',
+  path: '/marks',
   getParentRoute: () => FacultyRoute,
 } as any)
 const FacultyMaterialsRoute = FacultyMaterialsRouteImport.update({
@@ -1076,6 +1205,7 @@ export interface FileRoutesByFullPath {
   '/dean': typeof DeanRouteWithChildren
   '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
+  '/examcell': typeof ExamcellRouteWithChildren
   '/examination': typeof ExaminationRouteWithChildren
   '/examinations': typeof ExaminationsRoute
   '/external-user': typeof ExternalUserRouteWithChildren
@@ -1120,16 +1250,35 @@ export interface FileRoutesByFullPath {
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
+  '/examcell/analytics': typeof ExamcellAnalyticsRoute
+  '/examcell/bloomstick': typeof ExamcellBloomstickRoute
+  '/examcell/correction-analysis': typeof ExamcellCorrectionAnalysisRoute
+  '/examcell/correction-requests': typeof ExamcellCorrectionRequestsRoute
+  '/examcell/corrections': typeof ExamcellCorrectionsRoute
+  '/examcell/course-enroll': typeof ExamcellCourseEnrollRoute
+  '/examcell/dashboard': typeof ExamcellDashboardRoute
+  '/examcell/hall-tickets': typeof ExamcellHallTicketsRoute
+  '/examcell/notifications': typeof ExamcellNotificationsRoute
+  '/examcell/questions': typeof ExamcellQuestionsRoute
+  '/examcell/results': typeof ExamcellResultsRoute
+  '/examcell/schedule': typeof ExamcellScheduleRoute
+  '/examcell/settings': typeof ExamcellSettingsRoute
+  '/examcell/supplementary': typeof ExamcellSupplementaryRoute
+  '/examcell/timetable': typeof ExamcellTimetableRoute
+  '/examcell/updates': typeof ExamcellUpdatesRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/assessments': typeof FacultyAssessmentsRoute
   '/faculty/assignments': typeof FacultyAssignmentsRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
   '/faculty/dashboard': typeof FacultyDashboardRoute
+  '/faculty/evaluation-and-marks': typeof FacultyEvaluationAndMarksRoute
+  '/faculty/evaluations': typeof FacultyEvaluationsRoute
   '/faculty/examinations': typeof FacultyExaminationsRoute
   '/faculty/leave': typeof FacultyLeaveRoute
   '/faculty/lesson-plan': typeof FacultyLessonPlanRoute
   '/faculty/lms': typeof FacultyLmsRoute
+  '/faculty/marks': typeof FacultyMarksRoute
   '/faculty/materials': typeof FacultyMaterialsRoute
   '/faculty/notifications': typeof FacultyNotificationsRoute
   '/faculty/payroll': typeof FacultyPayrollRoute
@@ -1211,6 +1360,7 @@ export interface FileRoutesByFullPath {
   '/transport/routes': typeof TransportRoutesRoute
   '/ai-analytics/': typeof AiAnalyticsIndexRoute
   '/dean/': typeof DeanIndexRoute
+  '/examcell/': typeof ExamcellIndexRoute
   '/examination/': typeof ExaminationIndexRoute
   '/external-user/': typeof ExternalUserIndexRoute
   '/faculty/': typeof FacultyIndexRoute
@@ -1279,16 +1429,35 @@ export interface FileRoutesByTo {
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
+  '/examcell/analytics': typeof ExamcellAnalyticsRoute
+  '/examcell/bloomstick': typeof ExamcellBloomstickRoute
+  '/examcell/correction-analysis': typeof ExamcellCorrectionAnalysisRoute
+  '/examcell/correction-requests': typeof ExamcellCorrectionRequestsRoute
+  '/examcell/corrections': typeof ExamcellCorrectionsRoute
+  '/examcell/course-enroll': typeof ExamcellCourseEnrollRoute
+  '/examcell/dashboard': typeof ExamcellDashboardRoute
+  '/examcell/hall-tickets': typeof ExamcellHallTicketsRoute
+  '/examcell/notifications': typeof ExamcellNotificationsRoute
+  '/examcell/questions': typeof ExamcellQuestionsRoute
+  '/examcell/results': typeof ExamcellResultsRoute
+  '/examcell/schedule': typeof ExamcellScheduleRoute
+  '/examcell/settings': typeof ExamcellSettingsRoute
+  '/examcell/supplementary': typeof ExamcellSupplementaryRoute
+  '/examcell/timetable': typeof ExamcellTimetableRoute
+  '/examcell/updates': typeof ExamcellUpdatesRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/assessments': typeof FacultyAssessmentsRoute
   '/faculty/assignments': typeof FacultyAssignmentsRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
   '/faculty/dashboard': typeof FacultyDashboardRoute
+  '/faculty/evaluation-and-marks': typeof FacultyEvaluationAndMarksRoute
+  '/faculty/evaluations': typeof FacultyEvaluationsRoute
   '/faculty/examinations': typeof FacultyExaminationsRoute
   '/faculty/leave': typeof FacultyLeaveRoute
   '/faculty/lesson-plan': typeof FacultyLessonPlanRoute
   '/faculty/lms': typeof FacultyLmsRoute
+  '/faculty/marks': typeof FacultyMarksRoute
   '/faculty/materials': typeof FacultyMaterialsRoute
   '/faculty/notifications': typeof FacultyNotificationsRoute
   '/faculty/payroll': typeof FacultyPayrollRoute
@@ -1370,6 +1539,7 @@ export interface FileRoutesByTo {
   '/transport/routes': typeof TransportRoutesRoute
   '/ai-analytics': typeof AiAnalyticsIndexRoute
   '/dean': typeof DeanIndexRoute
+  '/examcell': typeof ExamcellIndexRoute
   '/examination': typeof ExaminationIndexRoute
   '/external-user': typeof ExternalUserIndexRoute
   '/faculty': typeof FacultyIndexRoute
@@ -1410,6 +1580,7 @@ export interface FileRoutesById {
   '/dean': typeof DeanRouteWithChildren
   '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
+  '/examcell': typeof ExamcellRouteWithChildren
   '/examination': typeof ExaminationRouteWithChildren
   '/examinations': typeof ExaminationsRoute
   '/external-user': typeof ExternalUserRouteWithChildren
@@ -1454,16 +1625,35 @@ export interface FileRoutesById {
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
+  '/examcell/analytics': typeof ExamcellAnalyticsRoute
+  '/examcell/bloomstick': typeof ExamcellBloomstickRoute
+  '/examcell/correction-analysis': typeof ExamcellCorrectionAnalysisRoute
+  '/examcell/correction-requests': typeof ExamcellCorrectionRequestsRoute
+  '/examcell/corrections': typeof ExamcellCorrectionsRoute
+  '/examcell/course-enroll': typeof ExamcellCourseEnrollRoute
+  '/examcell/dashboard': typeof ExamcellDashboardRoute
+  '/examcell/hall-tickets': typeof ExamcellHallTicketsRoute
+  '/examcell/notifications': typeof ExamcellNotificationsRoute
+  '/examcell/questions': typeof ExamcellQuestionsRoute
+  '/examcell/results': typeof ExamcellResultsRoute
+  '/examcell/schedule': typeof ExamcellScheduleRoute
+  '/examcell/settings': typeof ExamcellSettingsRoute
+  '/examcell/supplementary': typeof ExamcellSupplementaryRoute
+  '/examcell/timetable': typeof ExamcellTimetableRoute
+  '/examcell/updates': typeof ExamcellUpdatesRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/assessments': typeof FacultyAssessmentsRoute
   '/faculty/assignments': typeof FacultyAssignmentsRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
   '/faculty/dashboard': typeof FacultyDashboardRoute
+  '/faculty/evaluation-and-marks': typeof FacultyEvaluationAndMarksRoute
+  '/faculty/evaluations': typeof FacultyEvaluationsRoute
   '/faculty/examinations': typeof FacultyExaminationsRoute
   '/faculty/leave': typeof FacultyLeaveRoute
   '/faculty/lesson-plan': typeof FacultyLessonPlanRoute
   '/faculty/lms': typeof FacultyLmsRoute
+  '/faculty/marks': typeof FacultyMarksRoute
   '/faculty/materials': typeof FacultyMaterialsRoute
   '/faculty/notifications': typeof FacultyNotificationsRoute
   '/faculty/payroll': typeof FacultyPayrollRoute
@@ -1545,6 +1735,7 @@ export interface FileRoutesById {
   '/transport/routes': typeof TransportRoutesRoute
   '/ai-analytics/': typeof AiAnalyticsIndexRoute
   '/dean/': typeof DeanIndexRoute
+  '/examcell/': typeof ExamcellIndexRoute
   '/examination/': typeof ExaminationIndexRoute
   '/external-user/': typeof ExternalUserIndexRoute
   '/faculty/': typeof FacultyIndexRoute
@@ -1586,6 +1777,7 @@ export interface FileRouteTypes {
     | '/dean'
     | '/emergency'
     | '/employee-management'
+    | '/examcell'
     | '/examination'
     | '/examinations'
     | '/external-user'
@@ -1630,16 +1822,35 @@ export interface FileRouteTypes {
     | '/dean/dashboard'
     | '/dean/subject-allocation'
     | '/exam/take'
+    | '/examcell/analytics'
+    | '/examcell/bloomstick'
+    | '/examcell/correction-analysis'
+    | '/examcell/correction-requests'
+    | '/examcell/corrections'
+    | '/examcell/course-enroll'
+    | '/examcell/dashboard'
+    | '/examcell/hall-tickets'
+    | '/examcell/notifications'
+    | '/examcell/questions'
+    | '/examcell/results'
+    | '/examcell/schedule'
+    | '/examcell/settings'
+    | '/examcell/supplementary'
+    | '/examcell/timetable'
+    | '/examcell/updates'
     | '/examination/dashboard'
     | '/external-user/dashboard'
     | '/faculty/assessments'
     | '/faculty/assignments'
     | '/faculty/attendance'
     | '/faculty/dashboard'
+    | '/faculty/evaluation-and-marks'
+    | '/faculty/evaluations'
     | '/faculty/examinations'
     | '/faculty/leave'
     | '/faculty/lesson-plan'
     | '/faculty/lms'
+    | '/faculty/marks'
     | '/faculty/materials'
     | '/faculty/notifications'
     | '/faculty/payroll'
@@ -1721,6 +1932,7 @@ export interface FileRouteTypes {
     | '/transport/routes'
     | '/ai-analytics/'
     | '/dean/'
+    | '/examcell/'
     | '/examination/'
     | '/external-user/'
     | '/faculty/'
@@ -1789,16 +2001,35 @@ export interface FileRouteTypes {
     | '/dean/dashboard'
     | '/dean/subject-allocation'
     | '/exam/take'
+    | '/examcell/analytics'
+    | '/examcell/bloomstick'
+    | '/examcell/correction-analysis'
+    | '/examcell/correction-requests'
+    | '/examcell/corrections'
+    | '/examcell/course-enroll'
+    | '/examcell/dashboard'
+    | '/examcell/hall-tickets'
+    | '/examcell/notifications'
+    | '/examcell/questions'
+    | '/examcell/results'
+    | '/examcell/schedule'
+    | '/examcell/settings'
+    | '/examcell/supplementary'
+    | '/examcell/timetable'
+    | '/examcell/updates'
     | '/examination/dashboard'
     | '/external-user/dashboard'
     | '/faculty/assessments'
     | '/faculty/assignments'
     | '/faculty/attendance'
     | '/faculty/dashboard'
+    | '/faculty/evaluation-and-marks'
+    | '/faculty/evaluations'
     | '/faculty/examinations'
     | '/faculty/leave'
     | '/faculty/lesson-plan'
     | '/faculty/lms'
+    | '/faculty/marks'
     | '/faculty/materials'
     | '/faculty/notifications'
     | '/faculty/payroll'
@@ -1880,6 +2111,7 @@ export interface FileRouteTypes {
     | '/transport/routes'
     | '/ai-analytics'
     | '/dean'
+    | '/examcell'
     | '/examination'
     | '/external-user'
     | '/faculty'
@@ -1919,6 +2151,7 @@ export interface FileRouteTypes {
     | '/dean'
     | '/emergency'
     | '/employee-management'
+    | '/examcell'
     | '/examination'
     | '/examinations'
     | '/external-user'
@@ -1963,16 +2196,35 @@ export interface FileRouteTypes {
     | '/dean/dashboard'
     | '/dean/subject-allocation'
     | '/exam/take'
+    | '/examcell/analytics'
+    | '/examcell/bloomstick'
+    | '/examcell/correction-analysis'
+    | '/examcell/correction-requests'
+    | '/examcell/corrections'
+    | '/examcell/course-enroll'
+    | '/examcell/dashboard'
+    | '/examcell/hall-tickets'
+    | '/examcell/notifications'
+    | '/examcell/questions'
+    | '/examcell/results'
+    | '/examcell/schedule'
+    | '/examcell/settings'
+    | '/examcell/supplementary'
+    | '/examcell/timetable'
+    | '/examcell/updates'
     | '/examination/dashboard'
     | '/external-user/dashboard'
     | '/faculty/assessments'
     | '/faculty/assignments'
     | '/faculty/attendance'
     | '/faculty/dashboard'
+    | '/faculty/evaluation-and-marks'
+    | '/faculty/evaluations'
     | '/faculty/examinations'
     | '/faculty/leave'
     | '/faculty/lesson-plan'
     | '/faculty/lms'
+    | '/faculty/marks'
     | '/faculty/materials'
     | '/faculty/notifications'
     | '/faculty/payroll'
@@ -2054,6 +2306,7 @@ export interface FileRouteTypes {
     | '/transport/routes'
     | '/ai-analytics/'
     | '/dean/'
+    | '/examcell/'
     | '/examination/'
     | '/external-user/'
     | '/faculty/'
@@ -2094,6 +2347,7 @@ export interface RootRouteChildren {
   DeanRoute: typeof DeanRouteWithChildren
   EmergencyRoute: typeof EmergencyRoute
   EmployeeManagementRoute: typeof EmployeeManagementRoute
+  ExamcellRoute: typeof ExamcellRouteWithChildren
   ExaminationRoute: typeof ExaminationRouteWithChildren
   ExaminationsRoute: typeof ExaminationsRoute
   ExternalUserRoute: typeof ExternalUserRouteWithChildren
@@ -2242,6 +2496,13 @@ declare module '@tanstack/react-router' {
       path: '/employee-management'
       fullPath: '/employee-management'
       preLoaderRoute: typeof EmployeeManagementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/examcell': {
+      id: '/examcell'
+      path: '/examcell'
+      fullPath: '/examcell'
+      preLoaderRoute: typeof ExamcellRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/examination': {
@@ -2566,6 +2827,125 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExamTakeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/examcell/': {
+      id: '/examcell/'
+      path: '/'
+      fullPath: '/examcell/'
+      preLoaderRoute: typeof ExamcellIndexRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/analytics': {
+      id: '/examcell/analytics'
+      path: '/analytics'
+      fullPath: '/examcell/analytics'
+      preLoaderRoute: typeof ExamcellAnalyticsRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/bloomstick': {
+      id: '/examcell/bloomstick'
+      path: '/bloomstick'
+      fullPath: '/examcell/bloomstick'
+      preLoaderRoute: typeof ExamcellBloomstickRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/correction-analysis': {
+      id: '/examcell/correction-analysis'
+      path: '/correction-analysis'
+      fullPath: '/examcell/correction-analysis'
+      preLoaderRoute: typeof ExamcellCorrectionAnalysisRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/correction-requests': {
+      id: '/examcell/correction-requests'
+      path: '/correction-requests'
+      fullPath: '/examcell/correction-requests'
+      preLoaderRoute: typeof ExamcellCorrectionRequestsRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/corrections': {
+      id: '/examcell/corrections'
+      path: '/corrections'
+      fullPath: '/examcell/corrections'
+      preLoaderRoute: typeof ExamcellCorrectionsRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/course-enroll': {
+      id: '/examcell/course-enroll'
+      path: '/course-enroll'
+      fullPath: '/examcell/course-enroll'
+      preLoaderRoute: typeof ExamcellCourseEnrollRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/dashboard': {
+      id: '/examcell/dashboard'
+      path: '/dashboard'
+      fullPath: '/examcell/dashboard'
+      preLoaderRoute: typeof ExamcellDashboardRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/hall-tickets': {
+      id: '/examcell/hall-tickets'
+      path: '/hall-tickets'
+      fullPath: '/examcell/hall-tickets'
+      preLoaderRoute: typeof ExamcellHallTicketsRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/notifications': {
+      id: '/examcell/notifications'
+      path: '/notifications'
+      fullPath: '/examcell/notifications'
+      preLoaderRoute: typeof ExamcellNotificationsRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/questions': {
+      id: '/examcell/questions'
+      path: '/questions'
+      fullPath: '/examcell/questions'
+      preLoaderRoute: typeof ExamcellQuestionsRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/results': {
+      id: '/examcell/results'
+      path: '/results'
+      fullPath: '/examcell/results'
+      preLoaderRoute: typeof ExamcellResultsRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/schedule': {
+      id: '/examcell/schedule'
+      path: '/schedule'
+      fullPath: '/examcell/schedule'
+      preLoaderRoute: typeof ExamcellScheduleRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/settings': {
+      id: '/examcell/settings'
+      path: '/settings'
+      fullPath: '/examcell/settings'
+      preLoaderRoute: typeof ExamcellSettingsRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/supplementary': {
+      id: '/examcell/supplementary'
+      path: '/supplementary'
+      fullPath: '/examcell/supplementary'
+      preLoaderRoute: typeof ExamcellSupplementaryRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/timetable': {
+      id: '/examcell/timetable'
+      path: '/timetable'
+      fullPath: '/examcell/timetable'
+      preLoaderRoute: typeof ExamcellTimetableRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
+    '/examcell/updates': {
+      id: '/examcell/updates'
+      path: '/updates'
+      fullPath: '/examcell/updates'
+      preLoaderRoute: typeof ExamcellUpdatesRouteImport
+      parentRoute: typeof ExamcellRoute
+    }
     '/examination/': {
       id: '/examination/'
       path: '/'
@@ -2629,6 +3009,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacultyDashboardRouteImport
       parentRoute: typeof FacultyRoute
     }
+    '/faculty/evaluation-and-marks': {
+      id: '/faculty/evaluation-and-marks'
+      path: '/evaluation-and-marks'
+      fullPath: '/faculty/evaluation-and-marks'
+      preLoaderRoute: typeof FacultyEvaluationAndMarksRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/evaluations': {
+      id: '/faculty/evaluations'
+      path: '/evaluations'
+      fullPath: '/faculty/evaluations'
+      preLoaderRoute: typeof FacultyEvaluationsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
     '/faculty/examinations': {
       id: '/faculty/examinations'
       path: '/examinations'
@@ -2655,6 +3049,13 @@ declare module '@tanstack/react-router' {
       path: '/lms'
       fullPath: '/faculty/lms'
       preLoaderRoute: typeof FacultyLmsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/marks': {
+      id: '/faculty/marks'
+      path: '/marks'
+      fullPath: '/faculty/marks'
+      preLoaderRoute: typeof FacultyMarksRouteImport
       parentRoute: typeof FacultyRoute
     }
     '/faculty/materials': {
@@ -3400,6 +3801,50 @@ const DeanRouteChildren: DeanRouteChildren = {
 
 const DeanRouteWithChildren = DeanRoute._addFileChildren(DeanRouteChildren)
 
+interface ExamcellRouteChildren {
+  ExamcellAnalyticsRoute: typeof ExamcellAnalyticsRoute
+  ExamcellBloomstickRoute: typeof ExamcellBloomstickRoute
+  ExamcellCorrectionAnalysisRoute: typeof ExamcellCorrectionAnalysisRoute
+  ExamcellCorrectionRequestsRoute: typeof ExamcellCorrectionRequestsRoute
+  ExamcellCorrectionsRoute: typeof ExamcellCorrectionsRoute
+  ExamcellCourseEnrollRoute: typeof ExamcellCourseEnrollRoute
+  ExamcellDashboardRoute: typeof ExamcellDashboardRoute
+  ExamcellHallTicketsRoute: typeof ExamcellHallTicketsRoute
+  ExamcellNotificationsRoute: typeof ExamcellNotificationsRoute
+  ExamcellQuestionsRoute: typeof ExamcellQuestionsRoute
+  ExamcellResultsRoute: typeof ExamcellResultsRoute
+  ExamcellScheduleRoute: typeof ExamcellScheduleRoute
+  ExamcellSettingsRoute: typeof ExamcellSettingsRoute
+  ExamcellSupplementaryRoute: typeof ExamcellSupplementaryRoute
+  ExamcellTimetableRoute: typeof ExamcellTimetableRoute
+  ExamcellUpdatesRoute: typeof ExamcellUpdatesRoute
+  ExamcellIndexRoute: typeof ExamcellIndexRoute
+}
+
+const ExamcellRouteChildren: ExamcellRouteChildren = {
+  ExamcellAnalyticsRoute: ExamcellAnalyticsRoute,
+  ExamcellBloomstickRoute: ExamcellBloomstickRoute,
+  ExamcellCorrectionAnalysisRoute: ExamcellCorrectionAnalysisRoute,
+  ExamcellCorrectionRequestsRoute: ExamcellCorrectionRequestsRoute,
+  ExamcellCorrectionsRoute: ExamcellCorrectionsRoute,
+  ExamcellCourseEnrollRoute: ExamcellCourseEnrollRoute,
+  ExamcellDashboardRoute: ExamcellDashboardRoute,
+  ExamcellHallTicketsRoute: ExamcellHallTicketsRoute,
+  ExamcellNotificationsRoute: ExamcellNotificationsRoute,
+  ExamcellQuestionsRoute: ExamcellQuestionsRoute,
+  ExamcellResultsRoute: ExamcellResultsRoute,
+  ExamcellScheduleRoute: ExamcellScheduleRoute,
+  ExamcellSettingsRoute: ExamcellSettingsRoute,
+  ExamcellSupplementaryRoute: ExamcellSupplementaryRoute,
+  ExamcellTimetableRoute: ExamcellTimetableRoute,
+  ExamcellUpdatesRoute: ExamcellUpdatesRoute,
+  ExamcellIndexRoute: ExamcellIndexRoute,
+}
+
+const ExamcellRouteWithChildren = ExamcellRoute._addFileChildren(
+  ExamcellRouteChildren,
+)
+
 interface ExaminationRouteChildren {
   ExaminationDashboardRoute: typeof ExaminationDashboardRoute
   ExaminationIndexRoute: typeof ExaminationIndexRoute
@@ -3433,10 +3878,13 @@ interface FacultyRouteChildren {
   FacultyAssignmentsRoute: typeof FacultyAssignmentsRoute
   FacultyAttendanceRoute: typeof FacultyAttendanceRoute
   FacultyDashboardRoute: typeof FacultyDashboardRoute
+  FacultyEvaluationAndMarksRoute: typeof FacultyEvaluationAndMarksRoute
+  FacultyEvaluationsRoute: typeof FacultyEvaluationsRoute
   FacultyExaminationsRoute: typeof FacultyExaminationsRoute
   FacultyLeaveRoute: typeof FacultyLeaveRoute
   FacultyLessonPlanRoute: typeof FacultyLessonPlanRoute
   FacultyLmsRoute: typeof FacultyLmsRoute
+  FacultyMarksRoute: typeof FacultyMarksRoute
   FacultyMaterialsRoute: typeof FacultyMaterialsRoute
   FacultyNotificationsRoute: typeof FacultyNotificationsRoute
   FacultyPayrollRoute: typeof FacultyPayrollRoute
@@ -3456,10 +3904,13 @@ const FacultyRouteChildren: FacultyRouteChildren = {
   FacultyAssignmentsRoute: FacultyAssignmentsRoute,
   FacultyAttendanceRoute: FacultyAttendanceRoute,
   FacultyDashboardRoute: FacultyDashboardRoute,
+  FacultyEvaluationAndMarksRoute: FacultyEvaluationAndMarksRoute,
+  FacultyEvaluationsRoute: FacultyEvaluationsRoute,
   FacultyExaminationsRoute: FacultyExaminationsRoute,
   FacultyLeaveRoute: FacultyLeaveRoute,
   FacultyLessonPlanRoute: FacultyLessonPlanRoute,
   FacultyLmsRoute: FacultyLmsRoute,
+  FacultyMarksRoute: FacultyMarksRoute,
   FacultyMaterialsRoute: FacultyMaterialsRoute,
   FacultyNotificationsRoute: FacultyNotificationsRoute,
   FacultyPayrollRoute: FacultyPayrollRoute,
@@ -3760,6 +4211,7 @@ const rootRouteChildren: RootRouteChildren = {
   DeanRoute: DeanRouteWithChildren,
   EmergencyRoute: EmergencyRoute,
   EmployeeManagementRoute: EmployeeManagementRoute,
+  ExamcellRoute: ExamcellRouteWithChildren,
   ExaminationRoute: ExaminationRouteWithChildren,
   ExaminationsRoute: ExaminationsRoute,
   ExternalUserRoute: ExternalUserRouteWithChildren,
