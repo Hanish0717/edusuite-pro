@@ -1046,19 +1046,20 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
               </div>
 
               <div className="space-y-2.5">
-                {selectedFacultySchedule.fullDaySchedule.map((slot) => {
+                {(selectedFacultySchedule?.periods || (selectedFacultySchedule as any)?.fullDaySchedule || []).map((slot: any, idx: number) => {
+                  const periodNum = slot.periodNumber || slot.period || (idx + 1);
                   const isInClass = slot.status === "IN CLASS";
                   const isFree = slot.status === "FREE";
                   const isOnLeave = slot.status === "ON LEAVE";
-                  const isLab = slot.isLab;
+                  const isLab = slot.isLab || (slot.subject && slot.subject.toLowerCase().includes("lab"));
 
                   return (
                     <div
-                      key={slot.period}
+                      key={periodNum}
                       className="flex items-center gap-3 p-2 rounded-2xl transition-all"
                     >
                       <div className="w-20 shrink-0 text-center py-2 px-2.5 rounded-xl bg-muted/60 border border-border/60">
-                        <span className="block font-bold text-xs text-foreground font-mono">P{slot.period}</span>
+                        <span className="block font-bold text-xs text-foreground font-mono">P{periodNum}</span>
                         <span className="block text-[0.65rem] text-muted-foreground font-mono">{slot.timeSlot}</span>
                       </div>
 
