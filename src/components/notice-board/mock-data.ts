@@ -43,25 +43,43 @@ export const SAMPLE_INITIAL_NOTICES: NoticeItem[] = [
   },
   {
     id: "not-003",
-    title: "TCS Campus Recruitment Registration Open",
-    shortDescription: "Tata Consultancy Services (TCS) is hiring final year B.Tech and MCA students for Ninja & Digital profiles. Register before deadline.",
-    fullNotice: "Training & Placement Cell invites applications for TCS Campus Recruitment Drive 2026. Eligible branches: CSE, IT, ECE, EEE, ME, CE with CGPA 6.0 and above with no active backlogs. Online registration must be completed on the T&P portal as well as the TCS NextStep portal. Shortlisted candidates will undergo online test followed by technical & HR interviews.",
+    title: "TCS & Google Cloud Placement Drive 2026 — Online Assessment Live!",
+    shortDescription: "Official campus recruitment online assessment for final year B.Tech students. Read all instructions carefully before starting the exam.",
+    fullNotice: `OFFICIAL TPO ANNOUNCEMENT & EXAMINATION BRIEFING:
+
+📌 WHAT IS THIS EXAM?
+This is the official proctored online screening assessment for the TCS Ninja/Digital & Google Cloud Campus Recruitment Drive 2026, authorized by the Training & Placement Cell (TPO).
+
+🎯 WHY IS IT CONDUCTED?
+This placement assessment evaluates eligible candidates for Software Development Engineer (SDE-1), Cloud Systems Engineer, and Digital profiles across participating corporate recruiters.
+
+📚 WHAT DOES THE EXAM COVER?
+- Section 1: Technical & Aptitude MCQs (20 Questions - 20 Marks)
+- Section 2: Live Coding & System Challenges (2 Problems - 50 Marks)
+
+⚠️ IMPORTANT EXAM INSTRUCTIONS & RULES TO FOLLOW:
+1. Duration: 90 Minutes continuous timed session once started.
+2. Verification: Authenticate using your official college email ID (e.g. 23341a4229@college.edu.in) and Roll/Hall Ticket number.
+3. Proctoring: AI WebCam & Tab-switch monitoring is active throughout the exam.
+4. Malpractice Policy: Switching tabs or leaving full-screen mode more than 3 times will trigger auto-flagging to the TPO.
+5. Submission: Click 'Submit Exam' upon completing all sections to log your verified score to the TPO HR portal.`,
     category: "Placements",
     priority: "Urgent",
     department: "Training & Placement Cell",
-    issuedBy: "Mr. Suresh Kumar (Placement Officer)",
-    publishedDate: "2 days ago",
+    issuedBy: "Mr. Suresh Kumar (Chief Placement Officer - TPO)",
+    publishedDate: "Today",
     expiryDate: "2026-08-10",
-    read: true,
+    read: false,
     bookmarked: true,
     pinned: true,
     attachments: [
-      { id: "att-4", name: "TCS_Eligibility_Criteria_2026.pdf", type: "pdf", size: "1.1 MB", url: "#" }
+      { id: "att-4", name: "TPO_Placement_Exam_Guidelines_2026.pdf", type: "pdf", size: "1.1 MB", url: "#" }
     ],
     relatedLinks: [
-      { title: "TCS NextStep Registration Link", url: "#" }
+      { title: "Direct Placement Exam Link (/exam/take)", url: "/exam/take?id=AST-GGL-01" }
     ]
   },
+
   {
     id: "not-004",
     title: "State Merit Scholarship Renewal Notification",

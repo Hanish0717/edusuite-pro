@@ -22,10 +22,14 @@ import {
   GitBranch,
   Package,
   ShieldAlert,
+  Siren,
   Globe,
+  ClipboardList,
+  FileText,
+  TrendingUp,
+  Bell,
   Building2,
   UserCheck,
-  ClipboardList,
   FileCheck2,
   Video,
   Database,
@@ -34,13 +38,11 @@ import {
   ShieldCheck,
   FileCheck,
   Sparkles,
-  Bell,
   Clock,
   Ticket,
   CreditCard,
   MessageCircle,
   LogOut,
-  FileText,
   type LucideIcon,
 } from "lucide-react";
 
@@ -123,17 +125,7 @@ export const navigation: NavSection[] = [
     label: "Academics",
     items: [
       { title: "Admissions", url: "/admission", icon: GraduationCap, moduleId: "admission" },
-      {
-        title: "Academics",
-        url: "/academics",
-        icon: GraduationCap,
-        moduleId: "academics",
-        children: [
-          { title: "Departments", url: "/academics", moduleId: "academics" },
-          { title: "Courses", url: "/academics", moduleId: "academics" },
-          { title: "Curriculum", url: "/academics", moduleId: "academics" },
-        ],
-      },
+      { title: "Academics", url: "/academics", icon: GraduationCap, moduleId: "academics" },
       { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
       { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
       { title: "Attendance", url: "/attendance", icon: CalendarCheck, moduleId: "attendance" },
@@ -170,27 +162,17 @@ export const navigation: NavSection[] = [
       { title: "Procurement", url: "/procurement", icon: Package, moduleId: "procurement" },
       { title: "Campus Events", url: "/campus-events", icon: CalendarRange, moduleId: "events" },
       { title: "Grievances", url: "/grievance", icon: ShieldAlert, moduleId: "grievance" },
-      { title: "Alumni Network", url: "/alumni", icon: Globe, moduleId: "alumni" },
-    ],
-  },
-  {
-    label: "Administration",
-    items: [
-      { title: "Employee Management", url: "/employee-management", icon: UserCog, moduleId: "hrms" },
-      { title: "Leave Management", url: "/leave", icon: CalendarCheck, moduleId: "hrms" },
-      { title: "Payroll", url: "/payroll", icon: Wallet, moduleId: "finance" },
-      { title: "Finance", url: "/finance", icon: Wallet, moduleId: "finance" },
-      { title: "HR", url: "/hr", icon: UserCog, moduleId: "hrms" },
-      { title: "Accreditation", url: "/accreditation", icon: Award, moduleId: "accreditation" },
-      { title: "Reports", url: "/reports", icon: BarChart3, moduleId: "student-info", roles: ["super-admin", "staff"] },
       {
-        title: "Communication",
-        url: "/communication",
-        icon: MessageSquare,
-        moduleId: "communication",
-        badge: "6",
+        title: "Alumni Network",
+        url: "/alumni",
+        icon: Globe,
+        moduleId: "alumni",
+        children: [
+          { title: "Dashboard", url: "/alumni?tab=dashboard" },
+          { title: "Directory", url: "/alumni?tab=directory" },
+          { title: "Analytics", url: "/alumni?tab=analytics" },
+        ],
       },
-      { title: "Settings", url: "/settings", icon: Settings },
     ],
   },
 ];
@@ -352,6 +334,39 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
   // Corporate Recruiter ATS Navigation
   if (user.role === "external-user" && (user.externalPersona === "recruiter" || !user.externalPersona)) {
     return RECRUITER_NAVIGATION;
+  }
+
+  // Check if staff has administrative flags
+  const isAdminStaff = user.flags.some(flag => 
+    ["isHod", "isDean", "isExamController", "isPlacementOfficer", "isLibraryAdmin", 
+     "isTransportOfficer", "isHostelWarden", "isHRManager", "isFinanceOfficer"].includes(flag)
+  );
+
+  if (user.role === "staff" && !isAdminStaff) {
+    return [
+      {
+        label: "Faculty Workspace",
+        items: [
+          { title: "Dashboard", url: "/faculty/dashboard", icon: LayoutDashboard },
+          { title: "My Profile", url: "/faculty/profile", icon: User },
+          { title: "Timetable", url: "/faculty/timetable", icon: CalendarRange },
+          { title: "Subjects", url: "/faculty/subjects", icon: BookOpen },
+          { title: "Lesson Plans", url: "/faculty/lesson-plan", icon: ClipboardList },
+          { title: "Attendance", url: "/faculty/attendance", icon: CalendarCheck },
+          { title: "Students", url: "/faculty/students", icon: Users },
+          { title: "Assignments", url: "/faculty/assignments", icon: ClipboardList },
+          { title: "Study Materials", url: "/faculty/materials", icon: FileText },
+          { title: "Assessments", url: "/faculty/assessments", icon: GraduationCap },
+          { title: "Examinations", url: "/faculty/examinations", icon: FileSpreadsheet },
+          { title: "Research", url: "/faculty/research", icon: TrendingUp },
+          { title: "Leave", url: "/faculty/leave", icon: CalendarRange },
+          { title: "Payroll", url: "/faculty/payroll", icon: Wallet },
+          { title: "Reports", url: "/faculty/reports", icon: BarChart3 },
+          { title: "Notifications", url: "/faculty/notifications", icon: Bell, badge: "3" },
+          { title: "Settings", url: "/faculty/settings", icon: Settings },
+        ],
+      }
+    ];
   }
 
   return navigation
