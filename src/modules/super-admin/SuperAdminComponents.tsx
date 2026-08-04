@@ -86,6 +86,7 @@ export function SuperAdminModuleView() {
     departments,
     auditLogs,
     rolePermissions,
+    delegationRules,
     search,
     setSearch,
     selectedRole,
@@ -301,6 +302,16 @@ export function SuperAdminModuleView() {
           }`}
         >
           Role & Permission Matrix
+        </button>
+        <button
+          onClick={() => setActiveTab("delegation")}
+          className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
+            activeTab === "delegation"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-muted"
+          }`}
+        >
+          Operational Delegation Matrix ({delegationRules.length})
         </button>
         <button
           onClick={() => setActiveTab("audit")}
@@ -1033,6 +1044,59 @@ export function SuperAdminModuleView() {
                   IP 192.168.1.145 blocked after 15 failed password attempts on staff account.
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: OPERATIONAL DELEGATION MATRIX */}
+      {activeTab === "delegation" && (
+        <div className="space-y-6">
+          <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-3 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
+              <div>
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <UserCog className="size-5 text-primary" /> Institutional Operational Delegation Governance
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Super Admin configures system rules, controls access, monitors health, and delegates operational execution to Principals, Deans, HODs, Faculty, Finance, and HR.
+                </p>
+              </div>
+              <Badge className="bg-primary/10 text-primary border-primary/20 font-mono text-xs">
+                {delegationRules.length} Active Delegated Domains
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              {delegationRules.map((rule) => (
+                <div key={rule.id} className="p-4 rounded-2xl border border-border/70 bg-muted/20 space-y-3 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="font-mono text-xs text-primary">{rule.id}</Badge>
+                    <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
+                      ✅ {rule.status}
+                    </Badge>
+                  </div>
+
+                  <div>
+                    <h4 className="font-bold text-sm text-foreground">{rule.moduleName}</h4>
+                    <p className="text-xs text-primary font-semibold mt-0.5">Delegated Role: {rule.delegatedRole}</p>
+                    <p className="text-xs text-muted-foreground font-mono">{rule.assignedPerson}</p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-card border border-border/60 text-xs space-y-1">
+                    <span className="font-bold text-muted-foreground uppercase text-[0.65rem] block">Delegated Scope & Authority</span>
+                    <p className="text-foreground font-medium">{rule.scope}</p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {rule.permissions.map((perm) => (
+                      <Badge key={perm} variant="secondary" className="text-[0.68rem] font-mono">
+                        🔒 {perm}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
