@@ -168,7 +168,6 @@ export const navigation: NavSection[] = [
         icon: Globe,
         moduleId: "alumni",
         children: [
-          { title: "Dashboard", url: "/alumni?tab=dashboard" },
           { title: "Alumni Directory", url: "/alumni?tab=directory" },
           { title: "Placement Portal", url: "/alumni?tab=placement-collaboration" },
           { title: "Career Services", url: "/alumni?tab=career" },
