@@ -123,6 +123,7 @@ export type AcademicsSubpart =
   | "all-classes-attendance";
 
 export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubpart }) {
+  const { selectedDepartment, setSelectedDepartment } = useAcademic();
   const [courses, setCourses] = useState<AcademicCourse[]>(INITIAL_COURSES);
   const [departments, setDepartments] = useState<AcademicDepartment[]>(INITIAL_DEPARTMENTS);
   const [curriculumSchemes, setCurriculumSchemes] = useState<CurriculumScheme[]>(INITIAL_CURRICULUM_SCHEMES);
@@ -168,17 +169,17 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
     return list;
   }, [selectedDepartment]);
 
-  // Synchronize local filter selectedDept with global context selection
+  // Synchronize local filter selectedDeptFilter with global context selection
   useEffect(() => {
-    setSelectedDept(selectedDepartment);
+    setSelectedDeptFilter(selectedDepartment);
   }, [selectedDepartment]);
 
   // Reset selected semester if it falls outside the mapped semesters list of the department
   useEffect(() => {
-    if (!semestersList.includes(selectedSem)) {
-      setSelectedSem("All Semesters");
+    if (!semestersList.includes(selectedSemFilter)) {
+      setSelectedSemFilter("All Semesters");
     }
-  }, [semestersList, selectedSem]);
+  }, [semestersList, selectedSemFilter]);
 
   // Fetch filtered courses and curriculum schemes
   useEffect(() => {
@@ -189,8 +190,8 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
         const [crs, cur] = await Promise.all([
           getSubjects({
             department: selectedDepartment,
-            semester: selectedSem !== "All Semesters" ? selectedSem : undefined,
-            search: search || undefined,
+            semester: selectedSemFilter !== "All Semesters" ? selectedSemFilter : undefined,
+            search: searchQuery || undefined,
           }),
           getCurriculum(selectedDepartment),
         ]);
@@ -210,7 +211,7 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
     return () => {
       active = false;
     };
-  }, [selectedDepartment, selectedSem, search]);
+  }, [selectedDepartment, selectedSemFilter, searchQuery]);
 
   // Fetch static departments list once
   useEffect(() => {
