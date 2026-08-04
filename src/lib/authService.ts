@@ -190,7 +190,6 @@ export const DESIGNATION_OPTIONS_MAP: Record<CoreRoleKey, DesignationOption[]> =
     { id: "dean", label: "Academic Dean" },
     { id: "faculty", label: "Faculty / Teacher (Default)" },
     { id: "exam_controller", label: "Exam Controller" },
-    { id: "exam_assistant", label: "Exam Assistant" },
     { id: "placement_officer", label: "Placement Officer" },
     { id: "transport_officer", label: "Transport Officer" },
     { id: "hostel_warden", label: "Hostel Warden" },
@@ -346,7 +345,6 @@ export function resolveRoleContextFromSelection(
     if (designation === "hod") flag = "isHod";
     else if (designation === "dean") flag = "isDean";
     else if (designation === "exam_controller") flag = "isExamController";
-    else if (designation === "exam_assistant") flag = "isExamAssistant";
     else if (designation === "placement_officer") flag = "isPlacementOfficer";
     else if (designation === "transport_officer") flag = "isTransportOfficer";
     else if (designation === "hostel_warden") flag = "isHostelWarden";

@@ -21,13 +21,6 @@ import {
   PlusCircle,
   Barcode,
   Calendar,
-  BarChart3,
-  Settings2,
-  Truck,
-  ClipboardCheck,
-  ShieldCheck,
-  ArrowRight,
-  Siren,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -71,156 +64,12 @@ const CATEGORIES = [
 
 const STATUS_OPTIONS = ["All Statuses", "In Stock", "Low Stock", "Out of Stock"];
 
-type InventoryDashboardSectionId =
-  "settings" | "analytics" | "procurement" | "vendors" | "monitoring" | "audit" | "approvals";
-
-const INVENTORY_DASHBOARD_SECTIONS: Array<{
-  id: InventoryDashboardSectionId;
-  title: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  accentClassName: string;
-  summary: string;
-}> = [
-  {
-    id: "settings",
-    title: "Inventory Settings",
-    description: "Tune thresholds, storage rules, and campus-wide inventory defaults.",
-    icon: Settings2,
-    accentClassName: "bg-slate-500/10 text-slate-600 border-slate-500/20",
-    summary: "Core control plane",
-  },
-  {
-    id: "analytics",
-    title: "Inventory Analytics",
-    description: "Track valuation, category mix, and stock health across the campus.",
-    icon: BarChart3,
-    accentClassName: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-    summary: "Live KPI intelligence",
-  },
-  {
-    id: "procurement",
-    title: "Procurement Policies",
-    description: "Standardize reorder approval, preferred sourcing, and purchase rules.",
-    icon: ClipboardCheck,
-    accentClassName: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-    summary: "Policy guardrails",
-  },
-  {
-    id: "vendors",
-    title: "Vendor Management",
-    description: "Coordinate approved suppliers, SLA status, and fulfilment performance.",
-    icon: Truck,
-    accentClassName: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-    summary: "Supplier operations",
-  },
-  {
-    id: "monitoring",
-    title: "Asset Monitoring",
-    description: "Watch low-stock assets, locations, and restock urgency in real time.",
-    icon: Package,
-    accentClassName: "bg-violet-500/10 text-violet-600 border-violet-500/20",
-    summary: "Health and movement",
-  },
-  {
-    id: "audit",
-    title: "Audit & Compliance",
-    description: "Keep a traceable inventory history for inspections and reviews.",
-    icon: ShieldCheck,
-    accentClassName: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20",
-    summary: "Governance trail",
-  },
-  {
-    id: "approvals",
-    title: "Emergency Approvals",
-    description: "Fast-track critical purchases and urgent stock release decisions.",
-    icon: Siren,
-    accentClassName: "bg-rose-500/10 text-rose-600 border-rose-500/20",
-    summary: "Critical response lane",
-  },
-];
-
-const PROCUREMENT_METRICS = [
-  {
-    label: "Total Purchase Requests",
-    value: "128",
-    note: "18 raised this week",
-    icon: ClipboardCheck,
-    accentClassName: "text-slate-600",
-  },
-  {
-    label: "Pending Approvals",
-    value: "24",
-    note: "Awaiting authority sign-off",
-    icon: AlertTriangle,
-    accentClassName: "text-amber-600",
-  },
-  {
-    label: "Active Purchase Orders",
-    value: "42",
-    note: "Vendor execution in progress",
-    icon: Truck,
-    accentClassName: "text-blue-600",
-  },
-  {
-    label: "Pending Deliveries",
-    value: "15",
-    note: "Due within 7 days",
-    icon: Package,
-    accentClassName: "text-violet-600",
-  },
-  {
-    label: "Pending Payments",
-    value: "₹3.8L",
-    note: "Invoices awaiting release",
-    icon: DollarSign,
-    accentClassName: "text-emerald-600",
-  },
-  {
-    label: "Monthly/Yearly Spending",
-    value: "₹9.4L / ₹1.12Cr",
-    note: "Month / fiscal year",
-    icon: Calendar,
-    accentClassName: "text-rose-600",
-  },
-  {
-    label: "Budget Utilization",
-    value: "68%",
-    note: "Within approved range",
-    icon: BarChart3,
-    accentClassName: "text-indigo-600",
-  },
-  {
-    label: "Vendor Performance",
-    value: "94.2%",
-    note: "On-time fulfilment average",
-    icon: Truck,
-    accentClassName: "text-amber-700",
-  },
-  {
-    label: "Procurement Analytics",
-    value: "Live",
-    note: "Trend + delay visibility",
-    icon: TrendingDown,
-    accentClassName: "text-teal-600",
-  },
-];
-
-const PROCUREMENT_QUICK_ACTIONS = [
-  "Create purchase request",
-  "Review pending approvals",
-  "Raise emergency procurement",
-  "Export procurement report",
-];
-
 export function InventoryModuleView() {
   const [items, setItems] = useState<InventoryItem[]>(INITIAL_INVENTORY_ITEMS);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedStatus, setSelectedStatus] = useState("All Statuses");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
-  const [activeDashboardSection, setActiveDashboardSection] =
-    useState<InventoryDashboardSectionId>("settings");
   const [loading, setLoading] = useState(false);
 
   // Dialog States
@@ -267,7 +116,8 @@ export function InventoryModuleView() {
     const matchesCategory =
       selectedCategory === "All Categories" || item.category === selectedCategory;
 
-    const matchesStatus = selectedStatus === "All Statuses" || item.status === selectedStatus;
+    const matchesStatus =
+      selectedStatus === "All Statuses" || item.status === selectedStatus;
 
     return matchesSearch && matchesCategory && matchesStatus;
   });
@@ -277,17 +127,6 @@ export function InventoryModuleView() {
   const totalValuation = items.reduce((sum, i) => sum + i.quantity * i.unitCost, 0);
   const lowStockCount = items.filter((i) => i.status !== "In Stock").length;
   const inStockCount = items.filter((i) => i.status === "In Stock").length;
-  const categoryTotals = items.reduce<Record<string, number>>((acc, item) => {
-    acc[item.category] = (acc[item.category] || 0) + item.quantity;
-    return acc;
-  }, {});
-  const topCategoryEntry = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
-  const topCategoryName = topCategoryEntry?.[0] || "N/A";
-  const topCategoryUnits = topCategoryEntry?.[1] || 0;
-  const monitoredItems = items.filter((item) => item.status !== "In Stock");
-  const activeSection =
-    INVENTORY_DASHBOARD_SECTIONS.find((section) => section.id === activeDashboardSection) ||
-    INVENTORY_DASHBOARD_SECTIONS[0];
 
   // Handlers
   const handleOpenAdd = () => {
@@ -381,362 +220,6 @@ export function InventoryModuleView() {
       await deleteInventoryItem(item.id);
       setItems((prev) => prev.filter((i) => i.id !== item.id));
       toast.success(`Asset ${item.name} deleted from inventory.`);
-    }
-  };
-
-  const handleSectionAction = () => {
-    if (activeDashboardSection === "settings") {
-      handleOpenAdd();
-      return;
-    }
-
-    if (activeDashboardSection === "monitoring") {
-      const nextItem = monitoredItems[0];
-      if (nextItem) {
-        handleOpenRestock(nextItem);
-        return;
-      }
-    }
-
-    if (activeDashboardSection === "approvals") {
-      toast.success("Emergency approval queue opened for high-priority inventory actions.");
-      return;
-    }
-
-    if (activeDashboardSection === "audit") {
-      handleExportCSV();
-      return;
-    }
-
-    toast.info(`${activeSection.title} is configured inside the inventory dashboard.`);
-  };
-
-  const renderSectionPanel = () => {
-    switch (activeDashboardSection) {
-      case "settings":
-        return (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-1.5">
-              <p className="text-xs font-semibold text-muted-foreground uppercase">Default Store</p>
-              <p className="text-sm font-bold text-foreground">Central Stores Basement</p>
-              <p className="text-[0.68rem] text-muted-foreground">
-                Centralized catalog source for all inventory items.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-1.5">
-              <p className="text-xs font-semibold text-muted-foreground uppercase">
-                Auto Reorder Trigger
-              </p>
-              <p className="text-sm font-bold text-foreground">At or below minimum threshold</p>
-              <p className="text-[0.68rem] text-muted-foreground">
-                Promotes stock control and proactive replenishment.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-1.5">
-              <p className="text-xs font-semibold text-muted-foreground uppercase">Asset Tagging</p>
-              <p className="text-sm font-bold text-foreground">Serial + campus location tracking</p>
-              <p className="text-[0.68rem] text-muted-foreground">
-                Supports accountability for high-value assets.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-1.5">
-              <p className="text-xs font-semibold text-muted-foreground uppercase">
-                Primary Action
-              </p>
-              <p className="text-sm font-bold text-foreground">Register new asset items</p>
-              <p className="text-[0.68rem] text-muted-foreground">
-                Use this panel to onboard new inventory records quickly.
-              </p>
-            </div>
-          </div>
-        );
-      case "analytics":
-        return (
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="rounded-2xl border border-border/70 bg-muted/30 p-4">
-                <p className="text-[0.68rem] uppercase text-muted-foreground font-semibold">
-                  Inventory valuation
-                </p>
-                <p className="text-lg font-bold text-emerald-600">
-                  ₹{totalValuation.toLocaleString("en-IN")}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border/70 bg-muted/30 p-4">
-                <p className="text-[0.68rem] uppercase text-muted-foreground font-semibold">
-                  Healthy stock ratio
-                </p>
-                <p className="text-lg font-bold text-blue-600">
-                  {Math.round((inStockCount / Math.max(totalItems, 1)) * 100)}%
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border/70 bg-muted/30 p-4">
-                <p className="text-[0.68rem] uppercase text-muted-foreground font-semibold">
-                  Top category
-                </p>
-                <p className="text-lg font-bold text-foreground">{topCategoryName}</p>
-                <p className="text-[0.68rem] text-muted-foreground">
-                  {topCategoryUnits} units tracked
-                </p>
-              </div>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-foreground">Operational insight</p>
-                <Badge variant="outline" className="text-[0.68rem]">
-                  Real-time dashboard
-                </Badge>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Low stock alerts, category mix, and valuation trends are surfaced from the live item
-                catalog.
-              </p>
-            </div>
-          </div>
-        );
-      case "procurement":
-        return (
-          <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {PROCUREMENT_METRICS.map((metric) => {
-                const Icon = metric.icon;
-
-                return (
-                  <div
-                    key={metric.label}
-                    className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="text-[0.68rem] font-semibold uppercase tracking-wide text-muted-foreground">
-                        {metric.label}
-                      </p>
-                      <Icon className={`size-4 ${metric.accentClassName}`} />
-                    </div>
-                    <p className={`text-lg font-bold ${metric.accentClassName}`}>{metric.value}</p>
-                    <p className="text-[0.68rem] text-muted-foreground">{metric.note}</p>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="grid gap-3 xl:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Procurement analytics</p>
-                    <p className="text-xs text-muted-foreground">
-                      Budget, cycle time, vendor health, and approval bottlenecks in one view.
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="text-[0.68rem]">
-                    Live snapshot
-                  </Badge>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Budget utilization</span>
-                    <span className="font-semibold text-foreground">68%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-border/70 overflow-hidden">
-                    <div className="h-full w-[68%] rounded-full bg-gradient-to-r from-primary to-emerald-500" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <div className="rounded-xl border border-border/60 bg-card p-3">
-                    <p className="text-[0.68rem] text-muted-foreground uppercase font-semibold">
-                      Avg. approval time
-                    </p>
-                    <p className="text-sm font-bold text-foreground">2.4 days</p>
-                  </div>
-                  <div className="rounded-xl border border-border/60 bg-card p-3">
-                    <p className="text-[0.68rem] text-muted-foreground uppercase font-semibold">
-                      Delayed POs
-                    </p>
-                    <p className="text-sm font-bold text-amber-600">6 orders</p>
-                  </div>
-                  <div className="rounded-xl border border-border/60 bg-card p-3">
-                    <p className="text-[0.68rem] text-muted-foreground uppercase font-semibold">
-                      Vendor SLA
-                    </p>
-                    <p className="text-sm font-bold text-emerald-600">94.2%</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Quick actions</p>
-                    <p className="text-xs text-muted-foreground">
-                      Fast access to high-frequency procurement operations.
-                    </p>
-                  </div>
-                  <PlusCircle className="size-4 text-primary" />
-                </div>
-
-                <div className="space-y-2.5">
-                  {PROCUREMENT_QUICK_ACTIONS.map((action) => (
-                    <Button
-                      key={action}
-                      variant="outline"
-                      className="w-full justify-between h-10 text-xs font-semibold border-border hover:bg-accent"
-                      onClick={() => toast.info(`${action} opened from procurement dashboard.`)}
-                    >
-                      <span>{action}</span>
-                      <ArrowRight className="size-3.5" />
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-                <p className="text-sm font-semibold text-foreground">Procurement policy</p>
-                <p className="text-xs text-muted-foreground">
-                  Requests above threshold should move through approval before vendor release.
-                </p>
-                <Badge variant="outline" className="w-fit text-[0.68rem]">
-                  Principal + Admin review
-                </Badge>
-              </div>
-              <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-                <p className="text-sm font-semibold text-foreground">Budget guardrails</p>
-                <p className="text-xs text-muted-foreground">
-                  Keep monthly spending within plan and flag emergency purchases for fast-track
-                  review.
-                </p>
-                <Badge variant="outline" className="w-fit text-[0.68rem]">
-                  Finance pre-clearance
-                </Badge>
-              </div>
-            </div>
-          </div>
-        );
-      case "vendors":
-        return (
-          <div className="space-y-3">
-            {[
-              ["Campus Tech Supply Co.", "Active SLA", "98% on-time fulfilment"],
-              ["Lab Instruments India", "Pending renewal", "High-value equipment vendor"],
-              ["Stationery & Print Hub", "Preferred", "Fast turnaround for consumables"],
-            ].map(([name, status, note]) => (
-              <div
-                key={name}
-                className="rounded-2xl border border-border/70 bg-muted/30 p-4 flex items-center justify-between gap-3"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{name}</p>
-                  <p className="text-xs text-muted-foreground">{note}</p>
-                </div>
-                <Badge variant="outline" className="text-[0.68rem]">
-                  {status}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        );
-      case "monitoring":
-        return (
-          <div className="space-y-3">
-            {monitoredItems.length > 0 ? (
-              monitoredItems.slice(0, 3).map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-2xl border border-border/70 bg-muted/30 p-4 flex items-center justify-between gap-3"
-                >
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{item.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.location} • Qty {item.quantity} / Min {item.minThreshold}
-                    </p>
-                  </div>
-                  <Badge
-                    className={
-                      item.status === "Low Stock"
-                        ? "bg-amber-500/10 text-amber-600 border-amber-500/20 text-[0.68rem]"
-                        : "bg-red-500/10 text-red-600 border-red-500/20 text-[0.68rem]"
-                    }
-                  >
-                    {item.status}
-                  </Badge>
-                </div>
-              ))
-            ) : (
-              <div className="rounded-2xl border border-border/70 bg-muted/30 p-4">
-                <p className="text-sm font-semibold text-foreground">
-                  All monitored items are healthy
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  No low-stock or out-of-stock items are currently flagged.
-                </p>
-              </div>
-            )}
-          </div>
-        );
-      case "audit":
-        return (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">Change logging</p>
-              <p className="text-xs text-muted-foreground">
-                Every asset update, restock, and delete action should remain traceable.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">Inspection readiness</p>
-              <p className="text-xs text-muted-foreground">
-                Exportable catalog records support internal and external audits.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">Compliance checks</p>
-              <p className="text-xs text-muted-foreground">
-                Review serial numbers, location history, and restock dates regularly.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">Export ready</p>
-              <p className="text-xs text-muted-foreground">
-                Use the export action to generate a CSV audit snapshot.
-              </p>
-            </div>
-          </div>
-        );
-      case "approvals":
-        return (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">Emergency request lane</p>
-              <p className="text-xs text-muted-foreground">
-                Escalate urgent restocks or replacement needs without waiting for the standard
-                queue.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">Critical response window</p>
-              <p className="text-xs text-muted-foreground">
-                Use for outage recovery, lab continuity, and safety-related replenishment.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">Approval visibility</p>
-              <p className="text-xs text-muted-foreground">
-                Super admin can fast-track the request and push it to purchasing immediately.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border/70 bg-muted/30 p-4 space-y-2">
-              <p className="text-sm font-semibold text-foreground">Fallback action</p>
-              <p className="text-xs text-muted-foreground">
-                If no urgent item exists, the queue stays ready for the next critical event.
-              </p>
-            </div>
-          </div>
-        );
-      default:
-        return null;
     }
   };
 
@@ -881,107 +364,6 @@ export function InventoryModuleView() {
         </div>
       </div>
 
-      {/* Inventory Dashboard Control Center */}
-      <div className="grid gap-4 xl:grid-cols-[1.05fr_1.35fr]">
-        <div className="p-5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <Box className="size-5 text-primary" /> Inventory Control Center
-              </h3>
-              <p className="text-xs text-muted-foreground mt-1">
-                Jump between inventory settings, analytics, procurement, vendors, monitoring, audit,
-                and approvals.
-              </p>
-            </div>
-            <Badge variant="outline" className="text-[0.68rem] text-primary border-primary/30">
-              Super Admin Ready
-            </Badge>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {INVENTORY_DASHBOARD_SECTIONS.map((section) => {
-              const Icon = section.icon;
-              const isActive = section.id === activeDashboardSection;
-
-              return (
-                <button
-                  key={section.id}
-                  type="button"
-                  onClick={() => setActiveDashboardSection(section.id)}
-                  className={`text-left rounded-2xl border p-4 transition-all space-y-3 shadow-sm hover:-translate-y-0.5 hover:border-primary/50 ${
-                    isActive ? "border-primary/40 bg-primary/5" : "border-border/70 bg-muted/20"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className={`p-2.5 rounded-xl border ${section.accentClassName}`}>
-                      <Icon className="size-5" />
-                    </div>
-                    {isActive && (
-                      <Badge className="bg-primary text-primary-foreground text-[0.68rem]">
-                        Active
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="font-semibold text-sm text-foreground">{section.title}</h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {section.description}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between text-[0.68rem] text-muted-foreground font-medium uppercase tracking-wide">
-                    <span>{section.summary}</span>
-                    <ArrowRight className="size-3.5" />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="font-bold text-base text-foreground">{activeSection.title}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{activeSection.description}</p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSectionAction}
-              className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent"
-            >
-              {activeDashboardSection === "settings"
-                ? "Open Asset Registration"
-                : activeDashboardSection === "analytics"
-                  ? "Refresh Analytics"
-                  : activeDashboardSection === "procurement"
-                    ? "Review Policies"
-                    : activeDashboardSection === "vendors"
-                      ? "Open Vendor Queue"
-                      : activeDashboardSection === "monitoring"
-                        ? "Restock Highlighted Item"
-                        : activeDashboardSection === "audit"
-                          ? "Export Audit Snapshot"
-                          : "Trigger Emergency Approval"}
-            </Button>
-          </div>
-
-          {renderSectionPanel()}
-
-          <div className="rounded-2xl border border-dashed border-border/70 bg-muted/20 p-4 flex items-start gap-3">
-            <Calendar className="size-4 text-primary mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-xs font-semibold text-foreground">Operational note</p>
-              <p className="text-[0.68rem] text-muted-foreground">
-                The tile content is wired to the live inventory catalog, so low-stock status,
-                valuation, and export actions stay in sync with the asset list below.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Control Bar & Filters */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-card border border-border/80 shadow-sm">
         <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
@@ -1061,8 +443,7 @@ export function InventoryModuleView() {
           <Package className="size-8 text-muted-foreground mx-auto" />
           <h3 className="text-sm font-semibold text-foreground">No assets found</h3>
           <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-            No inventory items matched your search filters. Try adjusting your search query or
-            status filters.
+            No inventory items matched your search filters. Try adjusting your search query or status filters.
           </p>
           <Button
             variant="outline"
@@ -1096,8 +477,8 @@ export function InventoryModuleView() {
                       item.status === "In Stock"
                         ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[0.68rem]"
                         : item.status === "Low Stock"
-                          ? "bg-amber-500/10 text-amber-600 border-amber-500/20 text-[0.68rem]"
-                          : "bg-red-500/10 text-red-600 border-red-500/20 text-[0.68rem]"
+                        ? "bg-amber-500/10 text-amber-600 border-amber-500/20 text-[0.68rem]"
+                        : "bg-red-500/10 text-red-600 border-red-500/20 text-[0.68rem]"
                     }
                   >
                     {item.status !== "In Stock" && <AlertTriangle className="size-3 mr-1 inline" />}
@@ -1215,7 +596,9 @@ export function InventoryModuleView() {
               <tbody className="divide-y divide-border/60">
                 {filtered.map((item) => (
                   <tr key={item.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="p-3.5 pl-4 font-mono font-bold text-foreground">{item.id}</td>
+                    <td className="p-3.5 pl-4 font-mono font-bold text-foreground">
+                      {item.id}
+                    </td>
                     <td className="p-3.5 font-semibold text-foreground">{item.name}</td>
                     <td className="p-3.5">
                       <Badge variant="outline" className="font-mono text-[0.68rem]">
@@ -1224,10 +607,7 @@ export function InventoryModuleView() {
                     </td>
                     <td className="p-3.5 text-muted-foreground">{item.location}</td>
                     <td className="p-3.5 font-mono font-bold text-foreground">
-                      {item.quantity}{" "}
-                      <span className="text-[0.65rem] font-normal text-muted-foreground">
-                        ({item.minThreshold})
-                      </span>
+                      {item.quantity} <span className="text-[0.65rem] font-normal text-muted-foreground">({item.minThreshold})</span>
                     </td>
                     <td className="p-3.5 font-mono text-muted-foreground">
                       ₹{item.unitCost.toLocaleString("en-IN")}
@@ -1241,8 +621,8 @@ export function InventoryModuleView() {
                           item.status === "In Stock"
                             ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[0.68rem]"
                             : item.status === "Low Stock"
-                              ? "bg-amber-500/10 text-amber-600 border-amber-500/20 text-[0.68rem]"
-                              : "bg-red-500/10 text-red-600 border-red-500/20 text-[0.68rem]"
+                            ? "bg-amber-500/10 text-amber-600 border-amber-500/20 text-[0.68rem]"
+                            : "bg-red-500/10 text-red-600 border-red-500/20 text-[0.68rem]"
                         }
                       >
                         {item.status}
@@ -1324,9 +704,7 @@ export function InventoryModuleView() {
                 <Label className="text-xs font-semibold">Category</Label>
                 <Select
                   value={formData.category}
-                  onValueChange={(val) =>
-                    setFormData({ ...formData, category: val as InventoryItem["category"] })
-                  }
+                  onValueChange={(val: any) => setFormData({ ...formData, category: val })}
                 >
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue placeholder="Select Category" />
@@ -1347,7 +725,9 @@ export function InventoryModuleView() {
                   type="number"
                   required
                   value={formData.quantity || ""}
-                  onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, quantity: Number(e.target.value) })
+                  }
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -1371,7 +751,9 @@ export function InventoryModuleView() {
                   type="number"
                   required
                   value={formData.unitCost || ""}
-                  onChange={(e) => setFormData({ ...formData, unitCost: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, unitCost: Number(e.target.value) })
+                  }
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -1442,9 +824,7 @@ export function InventoryModuleView() {
                 <Label className="text-xs font-semibold">Category</Label>
                 <Select
                   value={formData.category}
-                  onValueChange={(val) =>
-                    setFormData({ ...formData, category: val as InventoryItem["category"] })
-                  }
+                  onValueChange={(val: any) => setFormData({ ...formData, category: val })}
                 >
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue placeholder="Select Category" />
@@ -1465,7 +845,9 @@ export function InventoryModuleView() {
                   type="number"
                   required
                   value={formData.quantity ?? ""}
-                  onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, quantity: Number(e.target.value) })
+                  }
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -1489,7 +871,9 @@ export function InventoryModuleView() {
                   type="number"
                   required
                   value={formData.unitCost ?? ""}
-                  onChange={(e) => setFormData({ ...formData, unitCost: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, unitCost: Number(e.target.value) })
+                  }
                   className="h-9 text-xs font-mono"
                 />
               </div>
@@ -1535,8 +919,7 @@ export function InventoryModuleView() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <PlusCircle className="size-5 text-emerald-600" /> Restock Asset ({selectedItem?.name}
-              )
+              <PlusCircle className="size-5 text-emerald-600" /> Restock Asset ({selectedItem?.name})
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
               Add new stock units received from purchase order delivery.
