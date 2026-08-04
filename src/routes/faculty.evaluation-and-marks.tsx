@@ -304,11 +304,12 @@ function FacultyEvaluationAndMarksPage() {
     }
   };
 
-    const hasMarksErrors = cohortStudents.some(s => 
-      validateMid(midScores[s.roll_number] || "") || 
-      validateAssign(assignmentScores[s.roll_number] || "")
-    );
+  const hasMarksErrors = cohortStudents.some(s => 
+    validateMid(midScores[s.roll_number] || "") || 
+    validateAssign(assignmentScores[s.roll_number] || "")
+  );
 
+  const handleSaveMarks = () => {
     if (!activeSection) return;
     if (hasMarksErrors) {
       toast.error("Please fix all red out-of-range errors before saving marks.");
