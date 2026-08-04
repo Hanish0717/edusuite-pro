@@ -134,9 +134,9 @@ const EXPERIENCES = [
 
 const STATUS_LIST = ["All Status", "Active", "On Leave", "Sabbatical"] as const;
 
-export function FacultyModuleView({ initialTab }: { initialTab?: FacultySubpart }) {
+export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTab?: FacultySubpart }) {
   const { selectedDepartment } = useAcademic();
-  const [activeSubpart, setActiveSubpart] = useState<FacultySubpart>(initialTab || "roster");
+  const [activeSubpart, setActiveSubpart] = useState<FacultySubpart>(initialTab);
 
   useEffect(() => {
     if (initialTab) {
@@ -511,17 +511,8 @@ export function FacultyModuleView({ initialTab }: { initialTab?: FacultySubpart 
         </div>
       </div>
 
-      {/* FIVE SUBPARTS NAVIGATION TAB BAR */}
+      {/* SUBPARTS NAVIGATION TAB BAR */}
       <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
-        <button
-          onClick={() => setActiveSubpart("roster")}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
-            activeSubpart === "roster" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <UserCog className="size-3.5" /> 👨‍🏫 Faculty Roster & Workload Control
-        </button>
-
         <button
           onClick={() => setActiveSubpart("faculty-status")}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
@@ -538,6 +529,15 @@ export function FacultyModuleView({ initialTab }: { initialTab?: FacultySubpart 
           }`}
         >
           <BarChart2 className="size-3.5" /> 📊 Syllabus Tracker
+        </button>
+
+        <button
+          onClick={() => setActiveSubpart("roster")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "roster" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <UserCog className="size-3.5" /> 👨‍🏫 Faculty Roster & Workload Control
         </button>
       </div>
 
