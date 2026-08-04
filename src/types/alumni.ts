@@ -193,7 +193,32 @@ export interface AlumniRegistrationFormData {
   password?: string;
 }
 
-// PHASE 2 ENHANCEMENT TYPES
+export interface InterviewRound {
+  roundNumber: number;
+  roundName: string;
+  type: "Aptitude Test" | "Coding Test" | "Technical Interview" | "HR Interview";
+  date: string;
+  time: string;
+  venueOrLink: string;
+  status: "Scheduled" | "In Progress" | "Completed";
+}
+
+export interface PlacementCandidateApplication {
+  id: string;
+  studentName: string;
+  studentRoll: string;
+  studentBranch: string;
+  cgpa: number;
+  backlogsCount: number;
+  graduationYear: string;
+  pipelineStatus: "Applied" | "Eligible" | "Shortlisted" | "Interviewing" | "Selected" | "Rejected";
+  currentRound?: string | undefined;
+  appliedDate: string;
+  offerPackage?: string | undefined;
+  isOfferAccepted?: boolean | undefined;
+  offerLetterId?: string | undefined;
+}
+
 export interface PlacementDriveRequest {
   id: string;
   company: string;
@@ -203,6 +228,8 @@ export interface PlacementDriveRequest {
   ctcPackage: string;
   eligibleBranches: string[];
   minCgpa: number;
+  maxBacklogsAllowed: number;
+  graduationYearRequired: string;
   driveDate: string;
   postedByAlumni: string;
   alumniRole: string;
@@ -212,6 +239,8 @@ export interface PlacementDriveRequest {
   applicationDeadline?: string | undefined;
   hasApplied?: boolean | undefined;
   officerReviewNotes?: string | undefined;
+  interviewRounds?: InterviewRound[] | undefined;
+  studentApplications?: PlacementCandidateApplication[] | undefined;
 }
 
 export interface GuestLectureSession {
