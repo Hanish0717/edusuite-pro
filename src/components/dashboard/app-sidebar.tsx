@@ -101,7 +101,7 @@ export function AppSidebar() {
                     return (
                       <Collapsible
                         key={item.title}
-                        defaultOpen={isItemActive}
+                        defaultOpen={true}
                         className="group/collapsible"
                       >
                         <SidebarMenuItem>
@@ -113,7 +113,6 @@ export function AppSidebar() {
                             >
                               <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
                               <span className="truncate">{item.title}</span>
-                              <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90 text-[#7F8DB5]" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent className="transition-all duration-200 ease-in-out data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
