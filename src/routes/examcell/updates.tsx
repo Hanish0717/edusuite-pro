@@ -110,7 +110,7 @@ function ExamCellUpdatesPage() {
     }
 
     const updatedExams: MockExamSchedule[] = exams.map(e => 
-      e.id === examId ? { ...e, status: 'Upcoming' as const, enrollmentDeadline: new Date().toISOString().split('T')[0] } : e
+      e.id === examId ? { ...e, status: 'Upcoming' as const, enrollmentDeadline: new Date().toISOString().split('T')[0] || "" } : e
     );
     
     setExams(updatedExams);

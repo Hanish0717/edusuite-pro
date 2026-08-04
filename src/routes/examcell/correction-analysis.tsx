@@ -115,7 +115,7 @@ function CorrectionAnalysisPage() {
 
       {/* KPI Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Allocated booklets" value={String(totalAllocated)} icon={FileText} tone="default" />
+        <KpiCard label="Allocated booklets" value={String(totalAllocated)} icon={FileText} tone="primary" />
         <KpiCard label="Papers Corrected" value={String(totalCorrected)} icon={CheckCircle2} tone="success" />
         <KpiCard label="Pending Correction" value={String(totalPending)} icon={Clock} tone="warning" />
         <KpiCard label="Valuation Rate" value={`${overallCompletionRate}%`} icon={Percent} tone="info" />
