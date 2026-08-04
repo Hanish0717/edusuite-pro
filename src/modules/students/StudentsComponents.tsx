@@ -1,775 +1,857 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useAcademic } from "@/context/academic-context";
 import {
   Users,
-  Search,
-  Filter,
-  CheckCircle2,
-  Mail,
-  Phone,
-  Eye,
-  Edit2,
-  Trash2,
   Plus,
-  User,
-  X,
-  ChevronLeft,
-  ChevronRight,
+  Search,
+  RefreshCw,
+  Download,
+  Filter,
+  Eye,
+  Edit,
+  Trash2,
+  GraduationCap,
+  Award,
+  AlertTriangle,
+  CheckCircle2,
+  Building2,
+  Phone,
+  Mail,
+  UserCheck,
+  CreditCard,
+  Calendar,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
-export interface StudentProfileItem {
-  id: string;
-  code: string;
-  name: string;
-  initials: string;
-  branch: string;
-  year: number | string;
-  attendancePct: number;
-  cgpa: number;
-  status: "Active" | "Warning" | "Inactive";
-  email: string;
-  phone: string;
-}
+import {
+  fetchStudentRecords,
+  createStudentRecord,
+  updateStudentRecord,
+  deleteStudentRecord,
+  getStudents,
+  INITIAL_STUDENTS,
+  type StudentRecord,
+} from "./StudentsService";
 
-const DEFAULT_STUDENTS_LIST: StudentProfileItem[] = [
-  {
-    id: "stu-1",
-    code: "CS100001",
-    name: "Student Demo",
-    initials: "SD",
-    branch: "Computer Science & Engineering",
-    year: 3,
-    attendancePct: 92.5,
-    cgpa: 8.50,
-    status: "Active",
-    email: "student.demo@college.edu",
-    phone: "+91 9876543210",
-  },
+const DEPARTMENTS = [
+  "All Departments",
+  "CSE",
+  "ECE",
+  "ME",
+  "AI&DS",
+  "Biotech",
 ];
 
-interface StudentsModuleViewProps {
-  title?: string;
-  description?: string;
-}
+const YEARS = [
+  "All Years",
+  "Year 1",
+  "Year 2",
+  "Year 3",
+  "Year 4",
+];
 
-export function StudentsModuleView({
-  title = "Students",
-  description = "Manage student profiles, attendance and academic records.",
-}: StudentsModuleViewProps) {
-  const [students, setStudents] = useState<StudentProfileItem[]>(DEFAULT_STUDENTS_LIST);
-  const [selectedStudentId, setSelectedStudentId] = useState<string>("stu-1");
-  const [searchQuery, setSearchQuery] = useState("");
+const FEE_STATUSES = ["All Fee Status", "Paid", "Pending", "Partial"] as const;
+
+export function StudentsModuleView() {
+  const { selectedDepartment, setSelectedDepartment } = useAcademic();
+  const [students, setStudents] = useState<StudentRecord[]>(INITIAL_STUDENTS);
+  const [search, setSearch] = useState("");
+  const [selectedDept, setSelectedDept] = useState(selectedDepartment);
+  const [selectedYear, setSelectedYear] = useState("All Years");
+  const [selectedFee, setSelectedFee] = useState<string>("All Fee Status");
+  const [loading, setLoading] = useState(false);
 
   // Dialog States
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState<StudentProfileItem | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<StudentRecord | null>(null);
 
-  // Form State for Add / Edit
-  const [formData, setFormData] = useState({
-    code: "",
-    name: "",
-    branch: "Computer Science & Engineering",
-    year: 3,
-    attendancePct: 92.5,
-    cgpa: 8.50,
-    status: "Active" as StudentProfileItem["status"],
+  // Form State
+  const [formData, setFormData] = useState<Partial<StudentRecord>>({
+    rollNo: "",
+    fullName: "",
     email: "",
     phone: "",
+    department: "CSE",
+    academicYear: "Year 3 (Sem 6)",
+    batchCode: "2023-2027",
+    cgpa: 8.8,
+    attendancePct: 92.0,
+    feeStatus: "Paid",
+    guardianName: "",
+    guardianPhone: "",
   });
 
-  const featuredStudent =
-    (students.find((s) => s.id === selectedStudentId) || students[0] || DEFAULT_STUDENTS_LIST[0])!;
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const response = await getStudents({
+        department: selectedDepartment,
+        search: search,
+        filters: {
+          feeStatus: selectedFee,
+          academicYear: selectedYear,
+        }
+      });
+      setStudents(response.students);
+    } catch (err) {
+      toast.error("Failed to load department student roster.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const filteredStudents = students.filter(
-    (s) =>
-      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.branch.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    loadData();
+  }, [selectedDepartment, search, selectedYear, selectedFee]);
 
-  const activeCount = students.filter((s) => s.status === "Active").length;
-  const warningCount = students.filter((s) => s.status === "Warning").length;
-  const inactiveCount = students.filter((s) => s.status === "Inactive").length;
+  useEffect(() => {
+    setSelectedDept(selectedDepartment);
+  }, [selectedDepartment]);
 
-  const avgAttendance =
-    students.length > 0
-      ? Math.round(students.reduce((acc, s) => acc + s.attendancePct, 0) / students.length) + "%"
-      : "93%";
+  // Filtered Students Roster (handled by service layer, mapped directly)
+  const filtered = students;
 
-  const avgCgpa =
-    students.length > 0
-      ? (students.reduce((acc, s) => acc + s.cgpa, 0) / students.length).toFixed(2)
-      : "8.50";
+  // KPI Metrics
+  const totalStudents = students.length;
+  const highAchievers = students.filter((s) => s.cgpa >= 8.5).length;
+  const attendanceRisk = students.filter((s) => s.attendancePct < 75).length;
+  const pendingFees = students.filter((s) => s.feeStatus !== "Paid").length;
 
   // Handlers
-  const handleCreateSubmit = (e: React.FormEvent) => {
+  const handleOpenAdd = () => {
+    setFormData({
+      rollNo: "23CSE088",
+      fullName: "Siddharth Nambiar",
+      email: "sid.n@college.edu",
+      phone: "+91 9811223344",
+      department: "CSE",
+      academicYear: "Year 2 (Sem 4)",
+      batchCode: "2024-2028",
+      cgpa: 9.05,
+      attendancePct: 91.5,
+      feeStatus: "Paid",
+      guardianName: "Ramesh Nambiar",
+      guardianPhone: "+91 9811200001",
+    });
+    setIsAddOpen(true);
+  };
+
+  const handleOpenEdit = (s: StudentRecord) => {
+    setSelectedStudent(s);
+    setFormData({ ...s });
+    setIsEditOpen(true);
+  };
+
+  const handleOpenView = (s: StudentRecord) => {
+    setSelectedStudent(s);
+    setIsViewOpen(true);
+  };
+
+  const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim()) {
-      toast.error("Please enter student name");
+    if (!formData.rollNo || !formData.fullName) {
+      toast.error("Please enter roll number and full name.");
       return;
     }
-    const initials = formData.name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
 
-    const newStudent: StudentProfileItem = {
-      id: `stu-${Date.now()}`,
-      code: formData.code || `CS10000${students.length + 1}`,
-      name: formData.name,
-      initials: initials || "ST",
-      branch: formData.branch,
-      year: formData.year,
-      attendancePct: Number(formData.attendancePct) || 90.0,
-      cgpa: Number(formData.cgpa) || 8.0,
-      status: formData.status,
-      email: formData.email || `${formData.name.toLowerCase().replace(/\s+/g, ".")}@college.edu`,
-      phone: formData.phone || "+91 9876543210",
-    };
-
-    setStudents([newStudent, ...students]);
-    setSelectedStudentId(newStudent.id);
+    const created = await createStudentRecord(formData);
+    setStudents((prev) => [created, ...prev]);
     setIsAddOpen(false);
-    setFormData({
-      code: "",
-      name: "",
-      branch: "Computer Science & Engineering",
-      year: 3,
-      attendancePct: 92.5,
-      cgpa: 8.50,
-      status: "Active",
-      email: "",
-      phone: "",
-    });
-    toast.success(`Successfully added student record for "${newStudent.name}"`);
+    toast.success(`Student ${created.fullName} (${created.rollNo}) registered successfully!`);
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!activeItem) return;
+    if (!selectedStudent) return;
 
+    await updateStudentRecord(selectedStudent.id, formData);
     setStudents((prev) =>
-      prev.map((s) =>
-        s.id === activeItem.id
-          ? {
-              ...s,
-              ...formData,
-              attendancePct: Number(formData.attendancePct),
-              cgpa: Number(formData.cgpa),
-            }
-          : s
-      )
+      prev.map((s) => (s.id === selectedStudent.id ? ({ ...s, ...formData } as StudentRecord) : s)),
     );
     setIsEditOpen(false);
-    toast.success(`Updated student details for "${formData.name}"`);
+    toast.success(`Student record for ${formData.fullName} (${formData.rollNo}) updated!`);
   };
 
-  const handleDeleteStudent = (id: string, name: string) => {
-    setStudents((prev) => prev.filter((s) => s.id !== id));
-    if (selectedStudentId === id) {
-      setSelectedStudentId(students.find((s) => s.id !== id)?.id || "");
+  const handleDelete = async (id: string, rollNo: string, name: string) => {
+    if (confirm(`Are you sure you want to delete student record for ${name} (${rollNo})?`)) {
+      await deleteStudentRecord(id);
+      setStudents((prev) => prev.filter((s) => s.id !== id));
+      toast.success(`Student record ${rollNo} deleted.`);
     }
-    toast.success(`Deleted student record for "${name}"`);
+  };
+
+  const handleExportCSV = () => {
+    const headers = [
+      "Student ID",
+      "Roll No",
+      "Full Name",
+      "Email Address",
+      "Phone",
+      "Department",
+      "Academic Year",
+      "Batch Code",
+      "CGPA",
+      "Attendance %",
+      "Fee Status",
+      "Guardian Name",
+      "Guardian Phone",
+    ];
+
+    const rows = filtered.map((s) => [
+      s.id,
+      s.rollNo,
+      `"${s.fullName}"`,
+      s.email,
+      `"${s.phone}"`,
+      s.department,
+      `"${s.academicYear}"`,
+      s.batchCode,
+      s.cgpa,
+      `${s.attendancePct}%`,
+      s.feeStatus,
+      `"${s.guardianName}"`,
+      `"${s.guardianPhone}"`,
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute(
+      "download",
+      `Student_Registry_Roster_${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success(`Exported ${filtered.length} student records to CSV!`);
   };
 
   return (
-    <div className="space-y-6 animate-fade-in-soft max-w-[1400px] mx-auto p-4 md:p-6 pb-20">
-      {/* 1. HEADER SECTION MATCHING USER SCREENSHOT */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            {title}
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 font-medium mt-0.5">
-            {description}
-          </p>
+    <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0">
+            <Users className="size-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-2xl font-bold font-display tracking-tight text-foreground">
+                Students & Student Lifecycle Management
+              </h1>
+              <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">
+                Super Admin Central Registry
+              </Badge>
+            </div>
+            <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
+              Comprehensive student roster, academic GPA tracking, attendance alerts, and fee ledgers.
+            </p>
+          </div>
         </div>
 
-        {/* TOP RIGHT BUTTONS MATCHING USER SCREENSHOT */}
+        {/* Action Buttons - Top Right Corner */}
         <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
           <Button
             variant="outline"
-            onClick={() => setIsFilterOpen(true)}
-            className="bg-white border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-full h-9 px-4 shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            size="sm"
+            onClick={loadData}
+            disabled={loading}
+            className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent"
           >
-            <Filter className="size-3.5" /> Filter
+            <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} />
+            Refresh
           </Button>
 
           <Button
-            onClick={() => {
-              toast.success(`Verified student credentials for ${featuredStudent.name} (${featuredStudent.code})`);
-            }}
-            className="bg-[#4f46e5] hover:bg-indigo-700 text-white font-extrabold text-xs rounded-full h-9 px-5 shadow-md flex items-center gap-1.5 cursor-pointer transition-all"
+            variant="outline"
+            size="sm"
+            onClick={handleExportCSV}
+            className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent"
           >
-            <CheckCircle2 className="size-4" /> Verify Student
+            <Download className="size-3.5" /> Export Roster
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={handleOpenAdd}
+            className="h-9 bg-brand-gradient text-white gap-2 font-semibold text-xs shadow-glow hover:opacity-95"
+          >
+            <Plus className="size-4" /> Add New Student
           </Button>
         </div>
       </div>
 
-      {/* 2. ROW 1: FEATURED STUDENT CARD (TOP LEFT ONLY) MATCHING USER SCREENSHOT */}
-      <div className="flex items-start">
-        <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-2xs space-y-3 flex flex-col items-center text-center w-full max-w-[280px]">
-          {/* Avatar Circle */}
-          <div className="size-16 rounded-2xl bg-gradient-to-tr from-[#6366f1] via-[#4f46e5] to-[#7c3aed] text-white text-xl font-black grid place-items-center shadow-md shadow-indigo-500/20">
-            {featuredStudent.initials}
+      {/* KPI Metrics */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Enrolled Students</span>
+            <Users className="size-4 text-primary" />
           </div>
+          <p className="text-2xl font-bold font-mono text-primary">{totalStudents} Students</p>
+          <p className="text-[0.68rem] text-muted-foreground">Across 4 Academic Batches</p>
+        </div>
 
-          <div>
-            <h3 className="text-sm font-extrabold text-slate-900 leading-snug">
-              {featuredStudent.name}
-            </h3>
-            <p className="text-[11px] text-slate-400 font-medium mt-0.5">
-              {featuredStudent.branch} · Year {featuredStudent.year}
-            </p>
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>High Achievers</span>
+            <Award className="size-4 text-emerald-500" />
           </div>
+          <p className="text-2xl font-bold font-mono text-emerald-600">{highAchievers} Honor Roll</p>
+          <p className="text-[0.68rem] text-emerald-600 font-medium">CGPA ≥ 8.5 Honor Students</p>
+        </div>
 
-          {/* Stats Grid */}
-          <div className="w-full bg-[#f8fafc] rounded-2xl p-2.5 grid grid-cols-2 gap-2 border border-slate-100/80 text-center">
-            <div className="space-y-0.5">
-              <div className="text-xs font-black text-slate-900">
-                {featuredStudent.attendancePct}%
-              </div>
-              <div className="text-[0.62rem] font-semibold text-slate-400">
-                Attendance
-              </div>
-            </div>
-
-            <div className="space-y-0.5 border-l border-slate-200/60 pl-2">
-              <div className="text-xs font-black text-slate-900">
-                {featuredStudent.cgpa.toFixed(2)}
-              </div>
-              <div className="text-[0.62rem] font-semibold text-slate-400">
-                CGPA
-              </div>
-            </div>
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Attendance Risk</span>
+            <AlertTriangle className="size-4 text-amber-500" />
           </div>
+          <p className="text-2xl font-bold font-mono text-amber-600">{attendanceRisk} Low Attendance</p>
+          <p className="text-[0.68rem] text-muted-foreground">Attendance &lt; 75% Alert</p>
+        </div>
 
-          {/* Quick Icons */}
-          <div className="flex items-center justify-center gap-2 pt-0.5">
-            <button
-              type="button"
-              onClick={() => toast.info(`Emailing ${featuredStudent.email}`)}
-              className="size-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 grid place-items-center transition-all cursor-pointer"
-              title="Email Student"
-            >
-              <Mail className="size-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => toast.info(`Calling ${featuredStudent.phone}`)}
-              className="size-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 grid place-items-center transition-all cursor-pointer"
-              title="Call Student"
-            >
-              <Phone className="size-3.5" />
-            </button>
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Fee Dues Pending</span>
+            <CreditCard className="size-4 text-purple-500" />
           </div>
+          <p className="text-2xl font-bold font-mono text-purple-600">{pendingFees} Dues Pending</p>
+          <p className="text-[0.68rem] text-purple-600 font-medium">Accounts follow-up needed</p>
         </div>
       </div>
 
-      {/* 3. ROW 2: FULL WIDTH "ALL STUDENTS" TABLE CARD MATCHING USER SCREENSHOT */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-2xs space-y-4 w-full">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h3 className="text-sm font-bold text-slate-900">
-            All Students
-          </h3>
-
-          {/* Search Input Box */}
-          <div className="relative w-full sm:w-56">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+      {/* Control Bar & Filters */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-card border border-border/80 shadow-sm">
+        <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="pl-8 h-9 rounded-full bg-slate-50/80 border-slate-200/80 text-xs text-slate-700 focus-visible:ring-indigo-500"
+              placeholder="Search roll no, name, email, department, guardian..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 h-9 text-xs"
             />
           </div>
-        </div>
 
-        {/* TABLE CONTAINER MATCHING USER SCREENSHOT */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead className="bg-white text-slate-400 font-bold uppercase text-[0.65rem] border-b border-slate-100">
-              <tr>
-                <th className="py-3 px-3">ID</th>
-                <th className="py-3 px-3">NAME</th>
-                <th className="py-3 px-3">BRANCH</th>
-                <th className="py-3 px-3">YEAR</th>
-                <th className="py-3 px-3">ATTENDANCE</th>
-                <th className="py-3 px-3">STATUS</th>
-                <th className="py-3 px-3 text-right">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredStudents.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-400 font-semibold">
-                    No student records found.
-                  </td>
-                </tr>
-              ) : (
-                filteredStudents.map((stu) => {
-                  const isSelected = stu.id === selectedStudentId;
-                  return (
-                    <tr
-                      key={stu.id}
-                      onClick={() => setSelectedStudentId(stu.id)}
-                      className={`hover:bg-slate-50/80 transition-all cursor-pointer ${
-                        isSelected ? "bg-indigo-50/20" : ""
-                      }`}
-                    >
-                      <td className="py-3.5 px-3 font-mono font-medium text-slate-500">
-                        {stu.code}
-                      </td>
-
-                      <td className="py-3.5 px-3">
-                        <div className="flex items-center gap-2">
-                          <span className="size-6 rounded-full bg-[#4f46e5] text-white font-extrabold text-[0.65rem] grid place-items-center shrink-0">
-                            {stu.initials}
-                          </span>
-                          <span className="font-bold text-slate-900">
-                            {stu.name}
-                          </span>
-                        </div>
-                      </td>
-
-                      <td className="py-3.5 px-3 text-slate-600 font-medium">
-                        {stu.branch}
-                      </td>
-
-                      <td className="py-3.5 px-3 font-bold text-slate-900">
-                        {stu.year}
-                      </td>
-
-                      <td className="py-3.5 px-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                            <div
-                              style={{ width: `${Math.min(100, stu.attendancePct)}%` }}
-                              className="h-full bg-[#4f46e5] rounded-full"
-                            />
-                          </div>
-                          <span className="font-bold text-slate-800 text-[0.7rem]">
-                            {stu.attendancePct}%
-                          </span>
-                        </div>
-                      </td>
-
-                      <td className="py-3.5 px-3">
-                        <Badge className="bg-[#eff6ff] text-[#3b82f6] border border-[#dbeafe] font-bold text-[0.68rem] px-3 py-0.5 rounded-full">
-                          {stu.status}
-                        </Badge>
-                      </td>
-
-                      <td className="py-3.5 px-3 text-right">
-                        <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveItem(stu);
-                              setIsViewOpen(true);
-                            }}
-                            className="text-[#3b82f6] hover:underline font-bold text-xs cursor-pointer"
-                          >
-                            View
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActiveItem(stu);
-                              setFormData({
-                                code: stu.code,
-                                name: stu.name,
-                                branch: stu.branch,
-                                year: Number(stu.year) || 3,
-                                attendancePct: stu.attendancePct,
-                                cgpa: stu.cgpa,
-                                status: stu.status,
-                                email: stu.email,
-                                phone: stu.phone,
-                              });
-                              setIsEditOpen(true);
-                            }}
-                            className="text-slate-400 hover:text-indigo-600 p-1 transition-colors cursor-pointer"
-                            title="Edit Record"
-                          >
-                            <Edit2 className="size-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteStudent(stu.id, stu.name)}
-                            className="text-slate-400 hover:text-rose-600 p-1 transition-colors cursor-pointer"
-                            title="Delete Record"
-                          >
-                            <Trash2 className="size-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* PAGINATION ROW MATCHING USER SCREENSHOT */}
-        <div className="flex items-center justify-between pt-2 text-xs text-slate-400 font-medium">
-          <span>Showing 1–{filteredStudents.length} of {filteredStudents.length}</span>
-
-          <div className="flex items-center gap-2">
-            <button
-              disabled
-              className="text-slate-300 font-semibold cursor-not-allowed text-xs px-2 py-1"
-            >
-              Prev
-            </button>
-            <span className="size-7 rounded-full bg-[#4f46e5] text-white font-bold text-xs grid place-items-center shadow-2xs">
-              1
-            </span>
-            <button
-              disabled
-              className="text-slate-300 font-semibold cursor-not-allowed text-xs px-2 py-1"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. ROW 3: STUDENT OVERVIEW (LEFT) + REALTIME REGISTRY (RIGHT) MATCHING USER SCREENSHOT */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* BOTTOM LEFT: STUDENT OVERVIEW CARD MATCHING USER SCREENSHOT */}
-        <div className="lg:col-span-5 bg-white rounded-3xl p-6 border border-slate-100 shadow-2xs space-y-4 flex flex-col justify-between">
-          <div>
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Users className="size-4 text-indigo-600" /> Student Overview
-            </h3>
-          </div>
-
-          {/* LIGHT BLUE TINTED STAT ROWS MATCHING USER SCREENSHOT */}
-          <div className="space-y-2">
-            <div className="bg-[#e6f7ff] rounded-2xl p-3 px-4 flex justify-between items-center text-xs font-semibold text-slate-600 border border-[#bae6fd]/50">
-              <span>Total Students</span>
-              <span className="font-extrabold text-slate-900 text-sm">{students.length}</span>
-            </div>
-
-            <div className="bg-[#e6f7ff] rounded-2xl p-3 px-4 flex justify-between items-center text-xs font-semibold text-slate-600 border border-[#bae6fd]/50">
-              <span>Active</span>
-              <span className="font-extrabold text-slate-900 text-sm">{activeCount}</span>
-            </div>
-
-            <div className="bg-[#e6f7ff] rounded-2xl p-3 px-4 flex justify-between items-center text-xs font-semibold text-slate-600 border border-[#bae6fd]/50">
-              <span>Warning</span>
-              <span className="font-extrabold text-slate-900 text-sm">{warningCount}</span>
-            </div>
-
-            <div className="bg-[#e6f7ff] rounded-2xl p-3 px-4 flex justify-between items-center text-xs font-semibold text-slate-600 border border-[#bae6fd]/50">
-              <span>Inactive</span>
-              <span className="font-extrabold text-slate-900 text-sm">{inactiveCount}</span>
-            </div>
-
-            <div className="bg-[#e6f7ff] rounded-2xl p-3 px-4 flex justify-between items-center text-xs font-semibold text-slate-600 border border-[#bae6fd]/50">
-              <span>Average Attendance</span>
-              <span className="font-extrabold text-slate-900 text-sm">{avgAttendance}</span>
-            </div>
-
-            <div className="bg-[#e6f7ff] rounded-2xl p-3 px-4 flex justify-between items-center text-xs font-semibold text-slate-600 border border-[#bae6fd]/50">
-              <span>Average CGPA</span>
-              <span className="font-extrabold text-slate-900 text-sm">{avgCgpa}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* BOTTOM RIGHT: REALTIME STUDENT REGISTRY CARD MATCHING USER SCREENSHOT */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-8 border border-slate-100 shadow-2xs text-center flex flex-col items-center justify-center space-y-4 min-h-[340px]">
-          <div className="size-16 rounded-full bg-[#e0e7ff] text-[#4f46e5] grid place-items-center shadow-2xs">
-            <User className="size-7" />
-          </div>
-
-          <div className="space-y-1.5 max-w-md">
-            <h3 className="text-xl font-black text-[#4f46e5] tracking-tight">
-              Realtime Student Registry
-            </h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Manage student records from Supabase with instant create, update, delete, search, filters, profile navigation, and pagination.
-            </p>
-          </div>
-
-          <Button
-            onClick={() => setIsAddOpen(true)}
-            className="bg-[#4f46e5] hover:bg-indigo-700 text-white font-extrabold text-xs rounded-full h-10 px-6 cursor-pointer shadow-md transition-all"
+          {/* Department Filter */}
+          <Select
+            value={selectedDept}
+            onValueChange={(val) => {
+              setSelectedDept(val);
+              if (val !== "All Departments") {
+                setSelectedDepartment(val);
+              }
+            }}
           >
-            Launch Add Dialog
-          </Button>
+            <SelectTrigger className="h-9 w-full sm:w-[150px] text-xs">
+              <Building2 className="size-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder="Department" />
+            </SelectTrigger>
+            <SelectContent>
+              {DEPARTMENTS.map((d) => (
+                <SelectItem key={d} value={d} className="text-xs">
+                  {d}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Academic Year Filter */}
+          <Select value={selectedYear} onValueChange={setSelectedYear}>
+            <SelectTrigger className="h-9 w-full sm:w-[130px] text-xs">
+              <Filter className="size-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder="Year" />
+            </SelectTrigger>
+            <SelectContent>
+              {YEARS.map((y) => (
+                <SelectItem key={y} value={y} className="text-xs">
+                  {y}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Fee Status Filter */}
+          <Select value={selectedFee} onValueChange={setSelectedFee}>
+            <SelectTrigger className="h-9 w-full sm:w-[140px] text-xs">
+              <CreditCard className="size-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder="Fee Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {FEE_STATUSES.map((f) => (
+                <SelectItem key={f} value={f} className="text-xs">
+                  {f}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      {/* CREATE STUDENT DIALOG MODAL */}
+      {/* Students Roster Table */}
+      <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+            <Users className="size-4 text-primary" /> Central Student Roster
+            <Badge variant="secondary" className="font-mono text-xs">
+              {filtered.length} Students
+            </Badge>
+          </h3>
+        </div>
+
+        {loading ? (
+          <div className="p-8 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
+            <RefreshCw className="size-5 animate-spin text-primary" />
+            Loading student records...
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="p-8 text-center border border-dashed border-border rounded-xl space-y-2">
+            <Users className="size-7 text-muted-foreground mx-auto" />
+            <p className="text-xs text-muted-foreground font-medium">No student records found.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                <tr>
+                  <th className="py-3 px-3">Roll No</th>
+                  <th className="py-3 px-3">Student Name</th>
+                  <th className="py-3 px-3">Dept & Year</th>
+                  <th className="py-3 px-3">CGPA</th>
+                  <th className="py-3 px-3">Attendance %</th>
+                  <th className="py-3 px-3">Fee Status</th>
+                  <th className="py-3 px-3">Guardian Contact</th>
+                  <th className="py-3 px-3 text-right pr-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {filtered.map((s) => (
+                  <tr key={s.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="py-3 px-3 font-mono font-bold text-foreground">{s.rollNo}</td>
+                    <td className="py-3 px-3">
+                      <div className="font-semibold text-foreground">{s.fullName}</div>
+                      <div className="text-[0.68rem] text-muted-foreground font-mono">{s.email}</div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="font-bold text-foreground">{s.department}</div>
+                      <div className="text-[0.68rem] text-muted-foreground">{s.academicYear}</div>
+                    </td>
+                    <td className="py-3 px-3 font-mono font-bold text-primary text-sm">{s.cgpa}</td>
+                    <td className="py-3 px-3 font-mono font-bold">
+                      <span className={s.attendancePct < 75 ? "text-amber-600 font-bold" : "text-emerald-600"}>
+                        {s.attendancePct}%
+                      </span>
+                    </td>
+                    <td className="py-3 px-3">
+                      <Badge
+                        className={
+                          s.feeStatus === "Paid"
+                            ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[0.68rem]"
+                            : s.feeStatus === "Partial"
+                            ? "bg-blue-500/10 text-blue-600 border-blue-500/20 text-[0.68rem]"
+                            : "bg-amber-500/10 text-amber-600 border-amber-500/20 text-[0.68rem]"
+                        }
+                      >
+                        {s.feeStatus}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="font-medium text-foreground">{s.guardianName}</div>
+                      <div className="text-[0.68rem] text-muted-foreground font-mono">{s.guardianPhone}</div>
+                    </td>
+                    <td className="py-3 px-3 text-right pr-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOpenView(s)}
+                          className="h-7 text-xs font-medium gap-1 text-muted-foreground hover:text-foreground"
+                          title="View Dossier"
+                        >
+                          <Eye className="size-3.5" /> Details
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleOpenEdit(s)}
+                          className="size-7 text-muted-foreground hover:text-primary"
+                          title="Edit Record"
+                        >
+                          <Edit className="size-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(s.id, s.rollNo, s.fullName)}
+                          className="size-7 text-muted-foreground hover:text-red-600"
+                          title="Delete Student"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* DIALOG 1: ADD NEW STUDENT MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent className="sm:max-w-md rounded-3xl">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-              <User className="size-5 text-indigo-600" /> Register New Student
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Plus className="size-5 text-primary" /> Register New Student
             </DialogTitle>
-            <DialogDescription className="text-xs text-slate-500">
-              Add student profile details to the central institutional registry.
+            <DialogDescription className="text-xs text-muted-foreground">
+              Enter student roll number, full name, department, academic standing, and guardian contact.
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleCreateSubmit} className="space-y-4 pt-2">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Full Name</label>
-              <Input
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g. Student Demo"
-                className="h-10 text-xs rounded-xl"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
+          <form onSubmit={handleAddSubmit} className="space-y-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Student Roll / Code</label>
+                <Label className="text-xs font-semibold">Roll Number *</Label>
                 <Input
-                  value={formData.code}
-                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                  placeholder="e.g. CS100001"
-                  className="h-10 text-xs rounded-xl font-mono"
+                  required
+                  placeholder="e.g. 23CSE088"
+                  value={formData.rollNo || ""}
+                  onChange={(e) => setFormData({ ...formData, rollNo: e.target.value })}
+                  className="h-9 text-xs font-mono uppercase"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Academic Year</label>
+                <Label className="text-xs font-semibold">Full Name *</Label>
                 <Input
-                  type="number"
-                  min={1}
-                  max={4}
-                  value={formData.year}
-                  onChange={(e) => setFormData({ ...formData, year: Number(e.target.value) })}
-                  className="h-10 text-xs rounded-xl"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Branch / Department</label>
-              <Input
-                value={formData.branch}
-                onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
-                placeholder="e.g. Computer Science & Engineering"
-                className="h-10 text-xs rounded-xl"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Attendance %</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={formData.attendancePct}
-                  onChange={(e) => setFormData({ ...formData, attendancePct: Number(e.target.value) })}
-                  className="h-10 text-xs rounded-xl"
+                  required
+                  placeholder="e.g. Siddharth Nambiar"
+                  value={formData.fullName || ""}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  className="h-9 text-xs"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">CGPA</label>
+                <Label className="text-xs font-semibold">Email Address</Label>
+                <Input
+                  type="email"
+                  placeholder="e.g. sid.n@college.edu"
+                  value={formData.email || ""}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="h-9 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Phone Number</Label>
+                <Input
+                  placeholder="e.g. +91 9811223344"
+                  value={formData.phone || ""}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="h-9 text-xs font-mono"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Department</Label>
+                <Select
+                  value={formData.department || "CSE"}
+                  onValueChange={(val) => setFormData({ ...formData, department: val })}
+                >
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue placeholder="Department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEPARTMENTS.filter((d) => d !== "All Departments").map((d) => (
+                      <SelectItem key={d} value={d} className="text-xs">
+                        {d}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Academic Year</Label>
+                <Input
+                  placeholder="e.g. Year 2 (Sem 4)"
+                  value={formData.academicYear || ""}
+                  onChange={(e) => setFormData({ ...formData, academicYear: e.target.value })}
+                  className="h-9 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">CGPA</Label>
                 <Input
                   type="number"
                   step="0.01"
-                  value={formData.cgpa}
+                  min="0"
+                  max="10"
+                  value={formData.cgpa ?? 8.5}
                   onChange={(e) => setFormData({ ...formData, cgpa: Number(e.target.value) })}
-                  className="h-10 text-xs rounded-xl"
+                  className="h-9 text-xs font-mono"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Attendance %</Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="100"
+                  value={formData.attendancePct ?? 90.0}
+                  onChange={(e) =>
+                    setFormData({ ...formData, attendancePct: Number(e.target.value) })
+                  }
+                  className="h-9 text-xs font-mono"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Fee Status</Label>
+                <Select
+                  value={formData.feeStatus || "Paid"}
+                  onValueChange={(val: any) => setFormData({ ...formData, feeStatus: val })}
+                >
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue placeholder="Fee Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Paid" className="text-xs">
+                      Paid
+                    </SelectItem>
+                    <SelectItem value="Pending" className="text-xs">
+                      Pending
+                    </SelectItem>
+                    <SelectItem value="Partial" className="text-xs">
+                      Partial
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Guardian Name</Label>
+                <Input
+                  placeholder="e.g. Ramesh Nambiar"
+                  value={formData.guardianName || ""}
+                  onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
+                  className="h-9 text-xs"
                 />
               </div>
             </div>
 
-            <DialogFooter className="pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Guardian Contact Phone</Label>
+              <Input
+                placeholder="e.g. +91 9811200001"
+                value={formData.guardianPhone || ""}
+                onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
+                className="h-9 text-xs font-mono"
+              />
+            </div>
+
+            <DialogFooter className="pt-3 border-t border-border">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsAddOpen(false)}
-                className="rounded-xl text-xs font-semibold"
+                className="text-xs"
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                className="bg-[#4f46e5] hover:bg-indigo-700 text-white font-extrabold text-xs rounded-xl cursor-pointer"
-              >
-                Save Record
+              <Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold">
+                Register Student
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* VIEW DETAILS MODAL */}
-      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="sm:max-w-md rounded-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-              <Eye className="size-5 text-indigo-600" /> Student Profile Details
-            </DialogTitle>
-          </DialogHeader>
-
-          {activeItem && (
-            <div className="space-y-3 text-xs pt-2">
-              <div className="p-4 bg-slate-50 rounded-2xl space-y-2 border border-slate-100">
-                <p><span className="font-bold text-slate-500">Name:</span> <span className="font-extrabold text-slate-900">{activeItem.name}</span></p>
-                <p><span className="font-bold text-slate-500">ID / Code:</span> <span className="font-mono font-bold text-indigo-600">{activeItem.code}</span></p>
-                <p><span className="font-bold text-slate-500">Branch:</span> {activeItem.branch}</p>
-                <p><span className="font-bold text-slate-500">Academic Year:</span> Year {activeItem.year}</p>
-                <p><span className="font-bold text-slate-500">Attendance:</span> {activeItem.attendancePct}%</p>
-                <p><span className="font-bold text-slate-500">CGPA:</span> {activeItem.cgpa.toFixed(2)}</p>
-                <p><span className="font-bold text-slate-500">Email:</span> {activeItem.email}</p>
-                <p><span className="font-bold text-slate-500">Phone:</span> {activeItem.phone}</p>
-              </div>
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button onClick={() => setIsViewOpen(false)} className="rounded-xl text-xs font-bold cursor-pointer">
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* EDIT STUDENT MODAL */}
+      {/* DIALOG 2: EDIT STUDENT MODAL */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="sm:max-w-md rounded-3xl">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-base font-extrabold text-slate-900">
-              Edit Student Record
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Edit className="size-5 text-primary" /> Edit Student ({selectedStudent?.rollNo})
             </DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleEditSubmit} className="space-y-4 pt-2">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Full Name</label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="h-10 text-xs rounded-xl"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Branch</label>
-              <Input
-                value={formData.branch}
-                onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
-                className="h-10 text-xs rounded-xl"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Attendance %</label>
+                <Label className="text-xs font-semibold">Full Name</Label>
                 <Input
-                  type="number"
-                  step="0.1"
-                  value={formData.attendancePct}
-                  onChange={(e) => setFormData({ ...formData, attendancePct: Number(e.target.value) })}
-                  className="h-10 text-xs rounded-xl"
+                  required
+                  value={formData.fullName || ""}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  className="h-9 text-xs"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">CGPA</label>
+                <Label className="text-xs font-semibold">CGPA</Label>
                 <Input
                   type="number"
                   step="0.01"
-                  value={formData.cgpa}
+                  value={formData.cgpa ?? 8.5}
                   onChange={(e) => setFormData({ ...formData, cgpa: Number(e.target.value) })}
-                  className="h-10 text-xs rounded-xl"
+                  className="h-9 text-xs font-mono"
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Attendance %</Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={formData.attendancePct ?? 90.0}
+                  onChange={(e) =>
+                    setFormData({ ...formData, attendancePct: Number(e.target.value) })
+                  }
+                  className="h-9 text-xs font-mono"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Fee Status</Label>
+                <Select
+                  value={formData.feeStatus || "Paid"}
+                  onValueChange={(val: any) => setFormData({ ...formData, feeStatus: val })}
+                >
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue placeholder="Fee Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Paid" className="text-xs">
+                      Paid
+                    </SelectItem>
+                    <SelectItem value="Pending" className="text-xs">
+                      Pending
+                    </SelectItem>
+                    <SelectItem value="Partial" className="text-xs">
+                      Partial
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            <DialogFooter className="pt-2">
+            <DialogFooter className="pt-3 border-t border-border">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setIsEditOpen(false)}
-                className="rounded-xl text-xs font-semibold"
+                className="text-xs"
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                className="bg-[#4f46e5] hover:bg-indigo-700 text-white font-[#ffffff] font-extrabold text-xs rounded-xl cursor-pointer"
-              >
-                Update Student
+              <Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold">
+                Save Changes
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* FILTER DIALOG MODAL */}
-      <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-        <DialogContent className="sm:max-w-xs rounded-3xl">
+      {/* DIALOG 3: VIEW STUDENT DOSSIER MODAL */}
+      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-base font-extrabold text-slate-900 flex items-center gap-2">
-              <Filter className="size-4 text-indigo-600" /> Filter Student Records
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <GraduationCap className="size-5 text-primary" /> Student Profile Dossier
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-3 pt-2 text-xs">
-            <button
-              type="button"
-              onClick={() => {
-                setSearchQuery("");
-                setIsFilterOpen(false);
-                toast.info("Showing all departments & branches");
-              }}
-              className="w-full bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl font-bold text-left border border-slate-100 transition-colors"
-            >
-              All Branches & Years
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setSearchQuery("Computer Science");
-                setIsFilterOpen(false);
-                toast.info("Filtered by Computer Science & Engineering");
-              }}
-              className="w-full bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl font-bold text-left border border-slate-100 transition-colors"
-            >
-              Computer Science & Engineering
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setSearchQuery("Electronics");
-                setIsFilterOpen(false);
-                toast.info("Filtered by Electronics & Communication");
-              }}
-              className="w-full bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 p-3 rounded-xl font-bold text-left border border-slate-100 transition-colors"
-            >
-              Electronics & Communication
-            </button>
-          </div>
+          {selectedStudent && (
+            <div className="space-y-4 pt-1">
+              <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-2">
+                <div className="flex items-center justify-between">
+                  <Badge variant="secondary" className="font-mono text-xs">
+                    {selectedStudent.rollNo}
+                  </Badge>
+                  <Badge
+                    className={
+                      selectedStudent.feeStatus === "Paid"
+                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                        : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                    }
+                  >
+                    Fee: {selectedStudent.feeStatus}
+                  </Badge>
+                </div>
+                <h2 className="text-base font-bold text-foreground">{selectedStudent.fullName}</h2>
+                <p className="text-xs text-primary font-mono">{selectedStudent.email} &middot; {selectedStudent.phone}</p>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-card border border-border/60">
+                  <span className="text-muted-foreground">Department & Year:</span>
+                  <span className="font-semibold text-foreground">{selectedStudent.department} ({selectedStudent.academicYear})</span>
+                </div>
+
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-card border border-border/60 font-mono">
+                  <span className="text-muted-foreground font-sans">Cumulative GPA:</span>
+                  <span className="font-bold text-base text-primary">{selectedStudent.cgpa} / 10.0</span>
+                </div>
+
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-card border border-border/60 font-mono">
+                  <span className="text-muted-foreground font-sans">Attendance Record:</span>
+                  <span className={`font-bold text-sm ${selectedStudent.attendancePct < 75 ? "text-amber-600" : "text-emerald-600"}`}>
+                    {selectedStudent.attendancePct}%
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-lg bg-card border border-border/60 space-y-1">
+                  <span className="text-muted-foreground font-semibold">Guardian Information:</span>
+                  <p className="text-xs text-foreground font-medium">{selectedStudent.guardianName} &middot; <span className="font-mono text-primary">{selectedStudent.guardianPhone}</span></p>
+                </div>
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsViewOpen(false)}
+                  className="w-full text-xs"
+                >
+                  Close Dossier
+                </Button>
+              </DialogFooter>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

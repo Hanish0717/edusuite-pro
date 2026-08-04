@@ -1,0 +1,17 @@
+export type {
+  ExamType,
+  ExamStatus,
+  QuestionPaperStatus,
+  InvigilationStatus,
+  MarksSubmissionStatus,
+  ExamItem,
+  InvigilationDuty,
+  QuestionPaper,
+  HallAllocation,
+  SeatingArrangementItem,
+  ExamStudentMark,
+  EvaluationProgressInfo,
+  ExamAnalyticsInfo,
+  ExamStats,
+  ExamModuleData,
+} from "@/data/faculty-mock-data";

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AcademicsModuleView } from "@/modules/academics";
+import { FacultyModuleView } from "@/modules/faculty";
 
 export const Route = createFileRoute("/dashboard/academics/syllabus-tracker")({
   head: () => ({
@@ -9,5 +9,5 @@ export const Route = createFileRoute("/dashboard/academics/syllabus-tracker")({
 });
 
 function DashboardSyllabusTrackerPage() {
-  return <AcademicsModuleView initialTab="syllabus-tracker" />;
+  return <FacultyModuleView initialTab="syllabus-tracker" />;
 }

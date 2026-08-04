@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import {
   Search,
@@ -94,6 +94,20 @@ export function ModulePage({
   const [sortOrder, setSortOrder] = useState<"newest" | "name">("newest");
   const [selectedRowIds, setSelectedRowIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const pathname = useRouterState({ select: (r) => r.location.pathname });
+  const segments = pathname.split("/").filter(Boolean);
+
+  const getBreadcrumbLabel = (seg: string, isLast: boolean) => {
+    if (isLast) return title;
+    if (seg.toLowerCase() === "faculty") return "Faculty";
+    if (seg.toLowerCase() === "placement") return "Placement";
+    return seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " ");
+  };
+
+  const getBreadcrumbUrl = (index: number) => {
+    return "/" + segments.slice(0, index + 1).join("/");
+  };
   const itemsPerPage = 4;
 
   // Modal States
@@ -234,13 +248,26 @@ export function ModulePage({
     <div className="space-y-6 animate-fade-up">
       {/* BREADCRUMB NAVIGATION */}
       <nav className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Link to="/placement/dashboard" className="hover:text-primary transition-colors">
-          Dashboard
+        <Link to="/" className="hover:text-primary transition-colors">
+          Home
         </Link>
-        <span>/</span>
-        <span className="text-foreground font-semibold">Placement</span>
-        <span>/</span>
-        <span className="text-primary font-bold">{title}</span>
+        {segments.map((seg, index) => {
+          const isLast = index === segments.length - 1;
+          const label = getBreadcrumbLabel(seg, isLast);
+          const toUrl = getBreadcrumbUrl(index);
+          return (
+            <React.Fragment key={index}>
+              <span>&gt;</span>
+              {isLast ? (
+                <span className="text-primary font-bold">{label}</span>
+              ) : (
+                <Link to={toUrl} className="hover:text-primary transition-colors font-semibold">
+                  {label}
+                </Link>
+              )}
+            </React.Fragment>
+          );
+        })}
       </nav>
 
       {/* HEADER SECTION */}
