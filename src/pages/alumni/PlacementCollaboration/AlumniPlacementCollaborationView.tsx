@@ -70,7 +70,7 @@ export const AlumniPlacementCollaborationView: React.FC<AlumniPlacementCollabora
 
   const [drives, setDrives] = useState<PlacementDriveRequest[]>(drivesList);
   const [activeSubTab, setActiveSubTab] = useState(
-    isStudent ? "approved-jobs" : isPlacementOfficer ? "officer-queue font-bold" : "approved-jobs"
+    isStudent ? "approved-jobs" : isPlacementOfficer ? "officer-queue" : "approved-jobs"
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDriveForDetail, setSelectedDriveForDetail] = useState<PlacementDriveRequest | null>(null);
@@ -835,7 +835,40 @@ export const AlumniPlacementCollaborationView: React.FC<AlumniPlacementCollabora
               <Button type="button" variant="outline" onClick={() => setIsDriveModalOpen(false)} className="rounded-xl cursor-pointer">
                 Cancel
               </Button>
-              <Button type="submit" className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold rounded-xl cursor-pointer">
+              <Button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!driveForm.company.trim() || !driveForm.title.trim()) return;
+                  const newDrive: PlacementDriveRequest = {
+                    id: `DRV-${Date.now()}`,
+                    company: driveForm.company,
+                    title: driveForm.title,
+                    driveType: driveForm.driveType,
+                    ctcPackage: driveForm.ctcPackage,
+                    eligibleBranches: driveForm.eligibleBranches.split(",").map((s) => s.trim()),
+                    minCgpa: parseFloat(driveForm.minCgpa) || 8.0,
+                    maxBacklogsAllowed: parseInt(driveForm.maxBacklogs) || 0,
+                    graduationYearRequired: driveForm.graduationYear,
+                    driveDate: driveForm.driveDate,
+                    postedByAlumni: "Sarah Jenkins (You)",
+                    alumniRole: driveForm.alumniRole,
+                    status: "Pending Review",
+                    registeredStudentsCount: 0,
+                    description: driveForm.description,
+                    applicationDeadline: "2026-09-10",
+                    hasApplied: false,
+                  };
+                  setDrives((prev) => [newDrive, ...prev]);
+                  toast.success(`Campus drive submitted for ${driveForm.company}!`, {
+                    description: "Submitted to Placement Officer for institutional review.",
+                    icon: <CheckCircle2 className="size-4 text-emerald-600" />,
+                  });
+                  setActiveSubTab("officer-queue");
+                  setIsDriveModalOpen(false);
+                }}
+                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold rounded-xl cursor-pointer"
+              >
                 Submit to Placement Officer
               </Button>
             </DialogFooter>
