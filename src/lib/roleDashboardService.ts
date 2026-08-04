@@ -2,7 +2,7 @@ export interface RoleKpi {
   label: string;
   value: string;
   iconName: string;
-  tone?: "default" | "info" | "warning" | "success";
+  tone?: "primary" | "info" | "warning" | "success";
   delta?: string;
 }
 
@@ -11,7 +11,7 @@ export interface StatusListItem {
   title: string;
   meta: string;
   status: string;
-  statusTone?: "success" | "warning" | "info" | "default";
+  statusTone?: "success" | "warning" | "info" | "primary";
 }
 
 // 1. EXAM CELL SERVICE

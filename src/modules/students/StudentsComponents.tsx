@@ -92,7 +92,7 @@ export function StudentsModuleView({
   });
 
   const featuredStudent =
-    students.find((s) => s.id === selectedStudentId) || students[0] || DEFAULT_STUDENTS_LIST[0];
+    (students.find((s) => s.id === selectedStudentId) || students[0] || DEFAULT_STUDENTS_LIST[0])!;
 
   const filteredStudents = students.filter(
     (s) =>

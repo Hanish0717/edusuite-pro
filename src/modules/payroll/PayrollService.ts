@@ -13,8 +13,8 @@ export interface SalarySlip {
   deductions: number;
   netSalary: number;
   status: "Paid" | "Processing" | "Pending Approval";
-  paymentDate?: string;
-  bankAccount?: string;
+  paymentDate?: string | undefined;
+  bankAccount?: string | undefined;
 }
 
 export const INITIAL_SALARY_SLIPS: SalarySlip[] = [

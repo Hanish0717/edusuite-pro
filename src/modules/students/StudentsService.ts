@@ -132,7 +132,7 @@ export async function createStudentRecord(
     feeStatus: data.feeStatus || "Paid",
     guardianName: data.guardianName || "Parent / Guardian",
     guardianPhone: data.guardianPhone || "+91 9000000001",
-    enrollmentDate: new Date().toISOString().split("T")[0],
+    enrollmentDate: new Date().toISOString().split("T")[0] || "",
   };
 
   return newStudent;

@@ -98,45 +98,50 @@ export function generateInitialSchedule(branch: string = "CSE", semester: number
 
   DAYS.forEach((day, dayIdx) => {
     PERIOD_SLOTS.forEach((slot, slotIdx) => {
+      const nonLabSubjects = subjects?.filter((s) => !s.isLab) || [];
       // Create continuous lab block for period 6 & 7 on Tuesday and Thursday
       if ((day === "Tuesday" || day === "Thursday") && (slot.periodNumber === 6 || slot.periodNumber === 7)) {
-        const labSubject = subjects.find((s) => s.isLab) || subjects[0];
-        periods.push({
-          id: `TT-${idCounter++}`,
-          day,
-          periodNumber: slot.periodNumber,
-          startTime: slot.startTime,
-          endTime: slot.endTime,
-          subjectCode: labSubject.code,
-          subjectName: labSubject.name,
-          facultyId: labSubject.facultyId,
-          facultyName: labSubject.faculty,
-          roomNo: labSubject.room,
-          isLab: true,
-          branch,
-          semester,
-          section,
-        });
+        const labSubject = subjects?.find((s) => s.isLab) || subjects?.[0];
+        if (labSubject) {
+          periods.push({
+            id: `TT-${idCounter++}`,
+            day,
+            periodNumber: slot.periodNumber,
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            subjectCode: labSubject.code,
+            subjectName: labSubject.name,
+            facultyId: labSubject.facultyId,
+            facultyName: labSubject.faculty,
+            roomNo: labSubject.room,
+            isLab: true,
+            branch,
+            semester,
+            section,
+          });
+        }
       } else {
-        const subIndex = (dayIdx * 8 + slotIdx) % subjects.filter((s) => !s.isLab).length;
-        const sub = subjects.filter((s) => !s.isLab)[subIndex] || subjects[0];
+        const subIndex = nonLabSubjects.length > 0 ? (dayIdx * 8 + slotIdx) % nonLabSubjects.length : 0;
+        const sub = nonLabSubjects[subIndex] || subjects?.[0];
 
-        periods.push({
-          id: `TT-${idCounter++}`,
-          day,
-          periodNumber: slot.periodNumber,
-          startTime: slot.startTime,
-          endTime: slot.endTime,
-          subjectCode: sub.code,
-          subjectName: sub.name,
-          facultyId: sub.facultyId,
-          facultyName: sub.faculty,
-          roomNo: sub.room,
-          isLab: false,
-          branch,
-          semester,
-          section,
-        });
+        if (sub) {
+          periods.push({
+            id: `TT-${idCounter++}`,
+            day,
+            periodNumber: slot.periodNumber,
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            subjectCode: sub.code,
+            subjectName: sub.name,
+            facultyId: sub.facultyId,
+            facultyName: sub.faculty,
+            roomNo: sub.room,
+            isLab: false,
+            branch,
+            semester,
+            section,
+          });
+        }
       }
     });
   });

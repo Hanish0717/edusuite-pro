@@ -82,7 +82,7 @@ export function AppSidebar() {
     pathname.startsWith("/transport");
 
   const isHostel =
-    role === "hostel" ||
+    (role as string) === "hostel" ||
     (role === "staff" && flags.includes("isHostelWarden")) ||
     pathname.startsWith("/hostel");
 
@@ -105,7 +105,6 @@ export function AppSidebar() {
         { id: "issue", label: "Issue Books", icon: ClipboardCheck, url: "/librarian/issue-books" },
         { id: "return", label: "Return Books", icon: Activity, url: "/librarian/return-books" },
         { id: "circulation", label: "Circulation & Renewals", icon: RefreshCw, url: "/librarian/circulation" },
-        { id: "reservations", label: "Reservations", icon: Bookmark, url: "/librarian/reservations" },
       ],
     },
     {
@@ -118,7 +117,6 @@ export function AppSidebar() {
     {
       label: "FACILITIES & ENTRY",
       items: [
-        { id: "reading-hall", label: "Reading Hall", icon: Armchair, url: "/librarian/reading-hall" },
         { id: "entry", label: "Gate & Entry Log", icon: QrCode, url: "/librarian/entry" },
       ],
     },
@@ -682,7 +680,7 @@ export function AppSidebar() {
                                       isActive={isSubActive}
                                       className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#4D78FF] data-[active=true]:bg-[#1A285D] rounded-[10px] px-3 py-1.5 transition-all duration-200"
                                     >
-                                      <Link to={child.url} search={child.search}>{child.title}</Link>
+                                      <Link to={child.url}>{child.title}</Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
                                 );

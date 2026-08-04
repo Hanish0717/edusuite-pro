@@ -167,7 +167,7 @@ export function PayrollModuleView() {
     setSlips((prev) =>
       prev.map((s) =>
         s.id === slip.id
-          ? { ...s, status: "Paid", paymentDate: new Date().toISOString().split("T")[0] }
+          ? { ...s, status: "Paid", paymentDate: new Date().toISOString().split("T")[0] || "" }
           : s,
       ),
     );
@@ -590,7 +590,7 @@ This is a computer-generated salary slip.
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold">Department</Label>
                 <Select
-                  value={formData.department}
+                  value={formData.department || ""}
                   onValueChange={(val) => setFormData({ ...formData, department: val })}
                 >
                   <SelectTrigger className="h-9 text-xs">

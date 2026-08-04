@@ -65,7 +65,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { useLibraryStore } from "./LibraryStore";
+import { useLibraryStore } from "../store";
 
 /* ========================================================================== */
 /* 1. CATALOG MANAGEMENT VIEW                                                  */
@@ -246,9 +246,9 @@ export function CatalogManagementView() {
           floor: b.location.floor,
           barcode: `${b.barcode}-C${i}`,
           status,
-          borrowerName,
-          borrowerId,
-          dueDate,
+          ...(borrowerName ? { borrowerName } : {}),
+          ...(borrowerId ? { borrowerId } : {}),
+          ...(dueDate ? { dueDate } : {}),
           condition: i % 3 === 0 ? "Slightly Worn" : i % 2 === 0 ? "Good" : "Mint",
           price: b.price || 500,
         });
@@ -449,33 +449,39 @@ export function CatalogManagementView() {
     let count = 0;
     lines.forEach((line) => {
       const parts = line.split(",");
-      if (parts.length >= 6) {
-        const [title, author, isbn, category, rack, totalCopies, price] = parts;
+      if (parts.length >= 6 && parts[0] && parts[1] && parts[2] && parts[3]) {
+        const title = parts[0].trim();
+        const author = parts[1].trim();
+        const isbn = parts[2].trim();
+        const category = parts[3].trim();
+        const rack = parts[4]?.trim() || "CS-Rack-01";
+        const totalCopiesStr = parts[5]?.trim() || "5";
+        const priceStr = parts[6]?.trim();
         dispatch({
           type: "ADD_BOOK",
           payload: {
-            title: title.trim(),
-            authors: [author.trim()],
-            isbn: isbn.trim(),
-            category: category.trim(),
+            title,
+            authors: [author],
+            isbn,
+            category,
             publisher: "University Press",
             publishedYear: 2024,
             edition: "1st",
             language: "English",
-            subject: category.trim(),
-            totalCopies: Number(totalCopies.trim()) || 5,
-            availableCopies: Number(totalCopies.trim()) || 5,
+            subject: category,
+            totalCopies: Number(totalCopiesStr) || 5,
+            availableCopies: Number(totalCopiesStr) || 5,
             issuedCopies: 0,
             reservedCopies: 0,
             lostCopies: 0,
             damagedCopies: 0,
-            location: { building: "Central Library", floor: "Floor 1", rack: rack.trim() || "CS-Rack-01", shelf: "S-01" },
-            callNumber: `${category.trim().slice(0, 3)}/${isbn.trim().slice(-4)}`,
-            price: Number(price?.trim()) || 500,
+            location: { building: "Central Library", floor: "Floor 1", rack: rack || "CS-Rack-01", shelf: "S-01" },
+            callNumber: `${category.slice(0, 3)}/${isbn.slice(-4)}`,
+            price: Number(priceStr) || 500,
             status: "Active",
             source: "Import",
             addedBy: "Librarian",
-            tags: [category.trim().toLowerCase()],
+            tags: [category.toLowerCase()],
           },
         });
         count++;
@@ -1642,18 +1648,23 @@ export function AcquisitionModuleView() {
 
   const handleAddRequest = (e: React.FormEvent) => {
     e.preventDefault();
+    const qtyNum = Number(newReq.qty) || 1;
+    const estCostNum = Number(newReq.estCost) || 1000;
     dispatch({
       type: "ADD_ACQUISITION",
       payload: {
+        poNumber: `PO-${Date.now().toString().slice(-6)}`,
+        vendorName: "Pearson / McGraw Hill",
         title: newReq.title,
-        authors: [newReq.author],
+        author: newReq.author,
         isbn: newReq.isbn,
-        quantity: Number(newReq.qty),
-        estimatedCost: Number(newReq.estCost),
+        quantity: qtyNum,
+        unitPrice: Math.round(estCostNum / qtyNum),
+        totalAmount: estCostNum,
+        orderDate: new Date().toISOString().split("T")[0] || "",
+        expectedDelivery: new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0] || "",
         requestedBy: newReq.requestedBy,
-        requestedByRole: "Faculty",
         department: newReq.dept,
-        justification: newReq.justification,
       },
     });
     setIsAddReqOpen(false);
@@ -1740,30 +1751,30 @@ export function AcquisitionModuleView() {
                   <td className="p-3 text-slate-600">{req.department}</td>
                   <td className="p-3 text-slate-700">{req.requestedBy}</td>
                   <td className="p-3 font-bold text-slate-800">{req.quantity}</td>
-                  <td className="p-3 font-medium text-emerald-600">₹ {req.estimatedCost.toLocaleString()}</td>
+                  <td className="p-3 font-medium text-emerald-600">₹ {(req.totalAmount || (req as any).estimatedCost || 0).toLocaleString()}</td>
                   <td className="p-3">
-                    <Badge className={req.status === "Approved" ? "bg-emerald-100 text-emerald-700" : req.status === "PORaised" ? "bg-blue-100 text-blue-700" : "bg-amber-100 text-amber-700"}>
+                    <Badge className={req.status === "Approved" ? "bg-emerald-100 text-emerald-700" : req.status === "Ordered" ? "bg-blue-100 text-blue-700" : "bg-amber-100 text-amber-700"}>
                       {req.status}
                     </Badge>
                   </td>
                   <td className="p-3 text-right flex gap-1.5 justify-end">
                     {req.status === "Requested" && (
                       <>
-                        <Button size="sm" className="h-7 text-[0.7rem] rounded-lg bg-emerald-600 text-white" onClick={() => handleStatusChange(req.id, "Approved")}>
+                        <Button size="sm" className="h-7 text-[0.7rem] rounded-lg bg-emerald-600 text-white cursor-pointer" onClick={() => handleStatusChange(req.id, "Approved")}>
                           Approve
                         </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-[0.7rem] rounded-lg text-rose-600 border-rose-200" onClick={() => handleStatusChange(req.id, "Rejected")}>
+                        <Button size="sm" variant="outline" className="h-7 text-[0.7rem] rounded-lg text-rose-600 border-rose-200 cursor-pointer" onClick={() => handleStatusChange(req.id, "Cancelled")}>
                           Reject
                         </Button>
                       </>
                     )}
                     {req.status === "Approved" && (
-                      <Button size="sm" className="h-7 text-[0.7rem] rounded-lg bg-blue-600 text-white" onClick={() => handleStatusChange(req.id, "PORaised")}>
+                      <Button size="sm" className="h-7 text-[0.7rem] rounded-lg bg-blue-600 text-white cursor-pointer" onClick={() => handleStatusChange(req.id, "Ordered")}>
                         Generate PO
                       </Button>
                     )}
-                    {req.status === "PORaised" && (
-                      <Button size="sm" className="h-7 text-[0.7rem] rounded-lg bg-indigo-600 text-white" onClick={() => handleStatusChange(req.id, "Supplied")}>
+                    {req.status === "Ordered" && (
+                      <Button size="sm" className="h-7 text-[0.7rem] rounded-lg bg-indigo-600 text-white cursor-pointer" onClick={() => handleStatusChange(req.id, "Delivered")}>
                         Receive Books
                       </Button>
                     )}
@@ -1955,7 +1966,9 @@ export function ReadingHallView() {
       dispatch({ type: "EXIT_SEAT", payload: { seatNo: seat.seatNo, by: "Librarian" } });
     } else {
       const activeMember = state.members.find((m) => m.status === "Active") || state.members[0];
-      dispatch({ type: "ALLOCATE_SEAT", payload: { seatNo: seat.seatNo, memberId: activeMember.id, verifiedBy: "Librarian" } });
+      if (activeMember) {
+        dispatch({ type: "ALLOCATE_SEAT", payload: { seatNo: seat.seatNo, memberId: activeMember.id, verifiedBy: "Librarian" } });
+      }
     }
   };
 
@@ -2049,15 +2062,16 @@ export function LibraryEntryView() {
     const member = state.members.find(
       (m) =>
         m.id === scanMemberId ||
-        m.memberId.toLowerCase() === scanMemberId.toLowerCase() ||
-        m.sourceId.toLowerCase() === scanMemberId.toLowerCase()
+        m.memberId.toLowerCase() === scanMemberId.toLowerCase()
     ) || state.members[0];
 
     try {
-      dispatch({
-        type: "RECORD_ENTRY",
-        payload: { memberId: member.id, method: scanMethod, by: "Gate Scanner" },
-      });
+      if (member) {
+        dispatch({
+          type: "RECORD_ENTRY",
+          payload: { memberId: member.id, method: scanMethod === "Barcode" ? "Manual" : scanMethod },
+        });
+      }
       setScanMemberId("");
     } catch (err: any) {
       toast.error(err.message);
@@ -2081,7 +2095,6 @@ export function LibraryEntryView() {
           </p>
         </div>
       </div>
-
       {/* Live Gate Check-in Form */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
         <h3 className="font-bold text-slate-900 text-sm">Gate Scan Entrance Terminal</h3>
@@ -2127,13 +2140,13 @@ export function LibraryEntryView() {
             {state.entryLogs.map((ent) => (
               <tr key={ent.id} className="hover:bg-slate-50">
                 <td className="p-3 font-mono font-semibold text-slate-800">{ent.id}</td>
-                <td className="p-3 font-bold text-blue-600">{ent.memberSourceId}</td>
+                <td className="p-3 font-bold text-blue-600">{ent.memberId}</td>
                 <td className="p-3 font-medium text-slate-900">{ent.memberName}</td>
-                <td className="p-3 text-slate-600">{ent.memberType}</td>
+                <td className="p-3 text-slate-600">{ent.role}</td>
                 <td className="p-3 font-semibold text-emerald-600">{new Date(ent.entryTime).toLocaleTimeString("en-IN")}</td>
                 <td className="p-3 text-slate-500">{ent.exitTime ? new Date(ent.exitTime).toLocaleTimeString("en-IN") : <Badge className="bg-amber-100 text-amber-700">Inside</Badge>}</td>
                 <td className="p-3">
-                  <Badge className="bg-slate-100 text-slate-700">{ent.entryMethod}</Badge>
+                  <Badge className="bg-slate-100 text-slate-700">{ent.purpose}</Badge>
                 </td>
                 <td className="p-3 text-right">
                   {!ent.exitTime && (
@@ -2225,15 +2238,15 @@ export function ReservationManagementView() {
                 <td className="p-3 font-medium text-slate-900">{res.bookTitle}</td>
                 <td className="p-3 text-slate-700">{res.memberName}</td>
                 <td className="p-3 font-bold text-blue-600">#{res.queuePosition}</td>
-                <td className="p-3 text-slate-500">{new Date(res.reservedAt).toLocaleDateString("en-IN")}</td>
-                <td className="p-3 text-rose-600 font-medium">{res.expiryDate}</td>
+                <td className="p-3 text-slate-500">{res.reservationDate}</td>
+                <td className="p-3 text-rose-600 font-medium">{res.expiresAt}</td>
                 <td className="p-3">
-                  <Badge className={res.status === "Ready" ? "bg-emerald-100 text-emerald-700 font-bold" : res.status === "Collected" ? "bg-blue-100 text-blue-700" : "bg-amber-100 text-amber-700"}>
+                  <Badge className={res.status === "Fulfilled" ? "bg-emerald-100 text-emerald-700 font-bold" : res.status === "Cancelled" ? "bg-rose-100 text-rose-700" : "bg-amber-100 text-amber-700"}>
                     {res.status}
                   </Badge>
                 </td>
                 <td className="p-3 text-right flex gap-1.5 justify-end">
-                  {res.status === "Ready" && (
+                  {res.status === "Fulfilled" && (
                     <Button size="sm" className="h-7 text-[0.7rem] rounded-lg bg-emerald-600 text-white" onClick={() => handleCollect(res.id)}>
                       Collect Book
                     </Button>
@@ -2270,7 +2283,7 @@ export function ReservationManagementView() {
               <label className="font-semibold text-slate-700 block mb-1">Select Member *</label>
               <select value={reserveMemberId} onChange={(e) => setReserveMemberId(e.target.value)} className="w-full h-9 rounded-xl border border-slate-200 px-3 text-xs">
                 {state.members.map((m) => (
-                  <option key={m.id} value={m.id}>{m.name} ({m.sourceId} - {m.type})</option>
+                  <option key={m.id} value={m.id}>{m.name} ({m.memberId} - {m.role})</option>
                 ))}
               </select>
             </div>
@@ -2310,7 +2323,7 @@ export function GlobalLibrarySearchView() {
         b.category.toLowerCase().includes(q) ||
         b.publisher.toLowerCase().includes(q) ||
         b.subject.toLowerCase().includes(q) ||
-        b.barcode.toLowerCase().includes(q) ||
+        (b.barcode || "").toLowerCase().includes(q) ||
         `${b.location.rack}-${b.location.shelf}`.toLowerCase().includes(q)
       );
     });
@@ -2478,24 +2491,97 @@ export function CirculationEnhancementsView() {
   const { state, dispatch } = useLibraryStore();
   const [activeTab, setActiveTab] = useState<"renew" | "lost" | "history">("renew");
 
-  const activeIssues = useMemo(() => state.issues.filter((i) => i.status === "Active" || i.status === "Renewed" || i.status === "Overdue"), [state.issues]);
-  const historyIssues = useMemo(() => state.issues.filter((i) => i.status === "Returned"), [state.issues]);
-  const lostIssues = useMemo(() => state.issues.filter((i) => i.status === "Lost"), [state.issues]);
+  // ── Modal state for Return Action ──────────────────────────────────────────
+  const [returnModal, setReturnModal] = useState<{
+    open: boolean;
+    issueId: string;
+    bookTitle: string;
+    memberName: string;
+    dueDate: string;
+  } | null>(null);
+  const [returnCondition, setReturnCondition] = useState<"Good" | "Slightly Worn" | "Damaged" | "Lost">("Good");
+  const [returning, setReturning] = useState(false);
+
+  // ── Modal state for Mark Lost confirmation ─────────────────────────────────
+  const [lostModal, setLostModal] = useState<{
+    open: boolean;
+    issueId: string;
+    bookTitle: string;
+    memberName: string;
+  } | null>(null);
+
+  // ── Renew success flash ────────────────────────────────────────────────────
+  const [renewedId, setRenewedId] = useState<string | null>(null);
+
+  // ── Derived data ───────────────────────────────────────────────────────────
+  const activeIssues = useMemo(
+    () => state.issues.filter((i) => i.status === "Active" || i.status === "Renewed" || i.status === "Overdue"),
+    [state.issues]
+  );
+  const historyIssues = useMemo(
+    () => state.issues.filter((i) => i.status === "Returned"),
+    [state.issues]
+  );
+  const lostIssues = useMemo(
+    () => state.issues.filter((i) => i.status === "Lost"),
+    [state.issues]
+  );
+
+  // ── Fine preview (₹10/day) ─────────────────────────────────────────────────
+  const previewFine = (() => {
+    if (!returnModal) return 0;
+    const today = new Date().toISOString().slice(0, 10);
+    const diff = Math.max(0, Math.floor((new Date(today).getTime() - new Date(returnModal.dueDate).getTime()) / 86400000));
+    const condFine = returnCondition === "Damaged" ? 200 : returnCondition === "Lost" ? 500 : 0;
+    return diff * 10 + condFine;
+  })();
+
+  // ── Handlers ───────────────────────────────────────────────────────────────
+  const openReturnModal = (issue: (typeof activeIssues)[0]) => {
+    setReturnCondition("Good");
+    setReturnModal({ open: true, issueId: issue.id, bookTitle: issue.bookTitle, memberName: issue.memberName, dueDate: issue.dueDate });
+  };
+
+  const confirmReturn = () => {
+    if (!returnModal) return;
+    setReturning(true);
+    setTimeout(() => {
+      dispatch({ type: "RETURN_BOOK", payload: { issueId: returnModal.issueId, condition: returnCondition, receivedBy: "Librarian" } });
+      setReturnModal(null);
+      setReturning(false);
+    }, 600);
+  };
 
   const handleRenew = (issueId: string) => {
     try {
       dispatch({ type: "RENEW_BOOK", payload: { issueId, renewedBy: "Librarian" } });
+      setRenewedId(issueId);
+      setTimeout(() => setRenewedId(null), 2500);
     } catch (err: any) {
       toast.error(err.message);
     }
   };
 
-  const handleReturn = (issueId: string, condition: "Good" | "Damaged" | "Lost") => {
-    dispatch({ type: "RETURN_BOOK", payload: { issueId, condition, receivedBy: "Librarian" } });
+  const openLostModal = (issue: (typeof activeIssues)[0]) => {
+    setLostModal({ open: true, issueId: issue.id, bookTitle: issue.bookTitle, memberName: issue.memberName });
   };
+
+  const confirmLost = () => {
+    if (!lostModal) return;
+    dispatch({ type: "RETURN_BOOK", payload: { issueId: lostModal.issueId, condition: "Lost", receivedBy: "Librarian" } });
+    setLostModal(null);
+  };
+
+  const conditionOptions: Array<{ value: "Good" | "Slightly Worn" | "Damaged" | "Lost"; label: string; color: string; fine: string }> = [
+    { value: "Good", label: "Good", color: "border-emerald-400 bg-emerald-50 text-emerald-700", fine: "No extra fine" },
+    { value: "Slightly Worn", label: "Slightly Worn", color: "border-amber-300 bg-amber-50 text-amber-700", fine: "No extra fine" },
+    { value: "Damaged", label: "Damaged", color: "border-orange-400 bg-orange-50 text-orange-700", fine: "+ ₹200 damage charge" },
+    { value: "Lost", label: "Lost / Not Returned", color: "border-rose-400 bg-rose-50 text-rose-700", fine: "+ ₹500 replacement fine" },
+  ];
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-violet-900 via-purple-900 to-indigo-950 p-6 rounded-2xl text-white shadow-xl">
         <div>
           <Badge className="bg-violet-500/30 text-violet-200 border-violet-400/30 text-[0.68rem] px-2 py-0.5 mb-1">
@@ -2506,13 +2592,28 @@ export function CirculationEnhancementsView() {
             Manage book renewals, reservations, waiting queues, lost book tracking, damage assessment, and complete borrow history logs.
           </p>
         </div>
+        <div className="flex gap-3 text-center">
+          <div className="bg-white/10 rounded-xl px-4 py-2">
+            <div className="text-lg font-bold">{activeIssues.length}</div>
+            <div className="text-[0.65rem] text-violet-200">Active Loans</div>
+          </div>
+          <div className="bg-white/10 rounded-xl px-4 py-2">
+            <div className="text-lg font-bold">{lostIssues.length}</div>
+            <div className="text-[0.65rem] text-violet-200">Lost Books</div>
+          </div>
+          <div className="bg-white/10 rounded-xl px-4 py-2">
+            <div className="text-lg font-bold">{historyIssues.length}</div>
+            <div className="text-[0.65rem] text-violet-200">Returned</div>
+          </div>
+        </div>
       </div>
 
+      {/* Tab Bar */}
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
         {[
-          { id: "renew", label: "Renewals & Extensions", icon: RotateCcw },
-          { id: "lost", label: "Lost & Damaged Books", icon: AlertTriangle },
-          { id: "history", label: "Borrow History Log", icon: History },
+          { id: "renew", label: "Renewals & Extensions", icon: RotateCcw, count: activeIssues.length },
+          { id: "lost", label: "Lost & Damaged Books", icon: AlertTriangle, count: lostIssues.length },
+          { id: "history", label: "Borrow History Log", icon: History, count: historyIssues.length },
         ].map((tab) => {
           const Icon = tab.icon;
           const active = activeTab === tab.id;
@@ -2526,125 +2627,340 @@ export function CirculationEnhancementsView() {
             >
               <Icon className="size-3.5" />
               {tab.label}
+              <span className={`text-[0.65rem] px-1.5 py-0.5 rounded-full font-bold ${active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"}`}>{tab.count}</span>
             </button>
           );
         })}
       </div>
 
+      {/* ── TAB 1: Active Loans & Renewals ──────────────────────────────────── */}
       {activeTab === "renew" && (
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm p-4 space-y-3">
-          <h3 className="font-bold text-slate-900 text-sm">Active Borrow Logs & Extensions ({activeIssues.length} Active Issues)</h3>
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="bg-slate-50 text-slate-500 text-left border-b border-slate-200">
-                <th className="p-3">Issue ID</th>
-                <th className="p-3">Book Title</th>
-                <th className="p-3">Borrower</th>
-                <th className="p-3">Current Due Date</th>
-                <th className="p-3">Renewals</th>
-                <th className="p-3">Status</th>
-                <th className="p-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {activeIssues.map((r) => (
-                <tr key={r.id} className="hover:bg-slate-50">
-                  <td className="p-3 font-mono font-semibold text-slate-800">{r.id}</td>
-                  <td className="p-3 font-medium text-slate-900">{r.bookTitle}</td>
-                  <td className="p-3 text-slate-700">{r.memberName} <span className="text-slate-400">({r.memberSourceId})</span></td>
-                  <td className="p-3 text-slate-600">{r.dueDate}</td>
-                  <td className="p-3 text-center font-bold text-slate-800">{r.renewCount} / {r.maxRenewals}</td>
-                  <td className="p-3">
-                    <Badge className={new Date(r.dueDate) < new Date() ? "bg-rose-100 text-rose-700 font-bold" : "bg-blue-100 text-blue-700"}>
-                      {new Date(r.dueDate) < new Date() ? "Overdue" : r.status}
-                    </Badge>
-                  </td>
-                  <td className="p-3 text-right flex gap-1.5 justify-end">
-                    <Button size="sm" className="h-7 text-[0.7rem] rounded-lg bg-emerald-600 text-white" onClick={() => handleReturn(r.id, "Good")}>
-                      Return Book
-                    </Button>
-                    <Button size="sm" variant="outline" className="h-7 text-[0.7rem] rounded-lg" onClick={() => handleRenew(r.id)}>
-                      Renew +14d
-                    </Button>
-                    <Button size="sm" variant="outline" className="h-7 text-[0.7rem] rounded-lg text-rose-600 border-rose-200" onClick={() => handleReturn(r.id, "Lost")}>
-                      Mark Lost
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 className="font-bold text-slate-900 text-sm">Active Borrow Logs & Extensions</h3>
+            <Badge className="bg-violet-100 text-violet-700 text-xs">{activeIssues.length} Active Issues</Badge>
+          </div>
+          {activeIssues.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+              <CheckCircle2 className="size-10 mb-2 text-emerald-400" />
+              <p className="font-semibold">All books have been returned!</p>
+              <p className="text-xs mt-1">No active borrow records at the moment.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-500 text-left border-b border-slate-200">
+                    <th className="p-3">Issue ID</th>
+                    <th className="p-3">Book Title</th>
+                    <th className="p-3">Borrower</th>
+                    <th className="p-3">Due Date</th>
+                    <th className="p-3">Renewals</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {activeIssues.map((r) => {
+                    const isOverdue = new Date(r.dueDate) < new Date();
+                    const isRenewed = renewedId === r.id;
+                    const renewsLeft = (r.maxRenewals ?? 2) - r.renewCount;
+                    return (
+                      <tr key={r.id} className={`transition-colors ${isRenewed ? "bg-emerald-50" : "hover:bg-slate-50"}`}>
+                        <td className="p-3 font-mono font-semibold text-slate-800 text-[0.7rem]">{r.id}</td>
+                        <td className="p-3 font-medium text-slate-900 max-w-[180px]">
+                          <span className="line-clamp-1">{r.bookTitle}</span>
+                          <span className="block text-slate-400 text-[0.65rem] font-mono">{r.accessionNo}</span>
+                        </td>
+                        <td className="p-3 text-slate-700">
+                          {r.memberName}
+                          <span className="block text-slate-400 text-[0.65rem]">{r.memberSourceId || r.memberId}</span>
+                        </td>
+                        <td className={`p-3 font-semibold text-[0.72rem] ${isOverdue ? "text-rose-600" : "text-slate-700"}`}>
+                          {r.dueDate}
+                          {isOverdue && <span className="block text-rose-500 text-[0.62rem] font-normal">Overdue!</span>}
+                          {isRenewed && <span className="block text-emerald-600 text-[0.62rem] font-bold animate-pulse">✓ Renewed</span>}
+                        </td>
+                        <td className="p-3 text-center">
+                          <span className={`font-bold text-[0.72rem] ${renewsLeft === 0 ? "text-rose-500" : "text-slate-800"}`}>
+                            {r.renewCount}/{r.maxRenewals ?? 2}
+                          </span>
+                          {renewsLeft > 0 && <span className="block text-emerald-600 text-[0.62rem]">{renewsLeft} left</span>}
+                        </td>
+                        <td className="p-3">
+                          <Badge className={isOverdue ? "bg-rose-100 text-rose-700 font-bold" : r.status === "Renewed" ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"}>
+                            {isOverdue ? "Overdue" : r.status}
+                          </Badge>
+                        </td>
+                        <td className="p-3 text-right">
+                          <div className="flex gap-1.5 justify-end flex-wrap">
+                            <Button
+                              size="sm"
+                              className="h-7 text-[0.7rem] rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                              onClick={() => openReturnModal(r)}
+                            >
+                              <CornerDownRight className="size-3 mr-1" />Return Book
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className={`h-7 text-[0.7rem] rounded-lg cursor-pointer ${renewsLeft === 0 ? "opacity-40 cursor-not-allowed" : "hover:bg-violet-50 hover:border-violet-300"}`}
+                              onClick={() => renewsLeft > 0 && handleRenew(r.id)}
+                              disabled={renewsLeft === 0}
+                            >
+                              <RotateCcw className="size-3 mr-1" />Renew +14d
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-[0.7rem] rounded-lg text-rose-600 border-rose-200 hover:bg-rose-50 cursor-pointer"
+                              onClick={() => openLostModal(r)}
+                            >
+                              <AlertTriangle className="size-3 mr-1" />Mark Lost
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
+      {/* ── TAB 2: Lost & Damaged ────────────────────────────────────────────── */}
       {activeTab === "lost" && (
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm p-4 space-y-3">
-          <h3 className="font-bold text-slate-900 text-sm">Lost & Damaged Book Register ({lostIssues.length} Records)</h3>
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="bg-slate-50 text-slate-500 text-left border-b border-slate-200">
-                <th className="p-3">Issue ID</th>
-                <th className="p-3">Book Title</th>
-                <th className="p-3">Responsible Member</th>
-                <th className="p-3">Date Returned</th>
-                <th className="p-3">Condition</th>
-                <th className="p-3 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {lostIssues.map((l) => (
-                <tr key={l.id} className="hover:bg-slate-50">
-                  <td className="p-3 font-mono font-semibold text-slate-800">{l.id}</td>
-                  <td className="p-3 font-medium text-slate-900">{l.bookTitle}</td>
-                  <td className="p-3 text-slate-700">{l.memberName} ({l.memberSourceId})</td>
-                  <td className="p-3 text-slate-600">{l.returnedAt ? new Date(l.returnedAt).toLocaleDateString("en-IN") : "--"}</td>
-                  <td className="p-3 font-bold text-rose-600">{l.returnCondition || "Lost"}</td>
-                  <td className="p-3">
-                    <Badge className="bg-rose-100 text-rose-700">Lost</Badge>
-                  </td>
-                  <td className="p-3 text-right">
-                    <Button size="sm" variant="outline" className="h-7 text-[0.7rem] rounded-lg text-rose-600 border-rose-200" onClick={() => toast.info("Replacement fine levied!")}>
-                      View Invoice
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 className="font-bold text-slate-900 text-sm">Lost & Damaged Book Register</h3>
+            <Badge className="bg-rose-100 text-rose-700 text-xs">{lostIssues.length} Records</Badge>
+          </div>
+          {lostIssues.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+              <ShieldCheck className="size-10 mb-2 text-emerald-400" />
+              <p className="font-semibold">No lost or damaged books on record.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-500 text-left border-b border-slate-200">
+                    <th className="p-3">Issue ID</th>
+                    <th className="p-3">Book Title</th>
+                    <th className="p-3">Responsible Member</th>
+                    <th className="p-3">Marked On</th>
+                    <th className="p-3">Condition</th>
+                    <th className="p-3">Fine Levied</th>
+                    <th className="p-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {lostIssues.map((l) => (
+                    <tr key={l.id} className="hover:bg-rose-50/40">
+                      <td className="p-3 font-mono font-semibold text-slate-800">{l.id}</td>
+                      <td className="p-3 font-medium text-slate-900">{l.bookTitle}</td>
+                      <td className="p-3 text-slate-700">
+                        {l.memberName}
+                        <span className="block text-slate-400 text-[0.65rem]">{l.memberSourceId || l.memberId}</span>
+                      </td>
+                      <td className="p-3 text-slate-600">{l.returnDate ? new Date(l.returnDate).toLocaleDateString("en-IN") : l.issueDate}</td>
+                      <td className="p-3 font-bold text-rose-600">{l.returnCondition || "Lost"}</td>
+                      <td className="p-3 font-bold text-slate-800">₹ {l.fineAmount > 0 ? l.fineAmount.toLocaleString() : "500"}</td>
+                      <td className="p-3 text-right">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-[0.7rem] rounded-lg text-rose-600 border-rose-200 hover:bg-rose-50 cursor-pointer"
+                          onClick={() => toast.info(`Invoice for ₹${l.fineAmount || 500} sent to ${l.memberName}!`)}
+                        >
+                          <FileText className="size-3 mr-1" />View Invoice
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
+      {/* ── TAB 3: Borrow History ────────────────────────────────────────────── */}
       {activeTab === "history" && (
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm p-4 space-y-3">
-          <h3 className="font-bold text-slate-900 text-sm">Complete Borrow Transaction History</h3>
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="bg-slate-50 text-slate-500 text-left border-b border-slate-200">
-                <th className="p-3">History ID</th>
-                <th className="p-3">Book Title</th>
-                <th className="p-3">Member</th>
-                <th className="p-3">Issue Date</th>
-                <th className="p-3">Return Date</th>
-                <th className="p-3">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {borrowHistory.map((h) => (
-                <tr key={h.id} className="hover:bg-slate-50">
-                  <td className="p-3 font-mono font-semibold text-slate-800">{h.id}</td>
-                  <td className="p-3 font-medium text-slate-900">{h.book}</td>
-                  <td className="p-3 text-slate-700">{h.borrower} <span className="text-slate-400">({h.rollNo})</span></td>
-                  <td className="p-3 text-slate-600">{h.issued}</td>
-                  <td className="p-3 text-slate-600">{h.returned}</td>
-                  <td className="p-3">
-                    <Badge className="bg-emerald-100 text-emerald-700">{h.status}</Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 className="font-bold text-slate-900 text-sm">Complete Borrow Transaction History</h3>
+            <Badge className="bg-emerald-100 text-emerald-700 text-xs">{historyIssues.length} Completed Returns</Badge>
+          </div>
+          {historyIssues.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-slate-400">
+              <History className="size-10 mb-2 text-slate-300" />
+              <p className="font-semibold">No return history yet.</p>
+              <p className="text-xs mt-1">Returned books will appear here.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-slate-50 text-slate-500 text-left border-b border-slate-200">
+                    <th className="p-3">Issue ID</th>
+                    <th className="p-3">Book Title</th>
+                    <th className="p-3">Member</th>
+                    <th className="p-3">Issue Date</th>
+                    <th className="p-3">Return Date</th>
+                    <th className="p-3">Condition</th>
+                    <th className="p-3">Fine</th>
+                    <th className="p-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {historyIssues.map((h) => (
+                    <tr key={h.id} className="hover:bg-slate-50">
+                      <td className="p-3 font-mono font-semibold text-slate-800 text-[0.7rem]">{h.id}</td>
+                      <td className="p-3 font-medium text-slate-900 max-w-[160px]">
+                        <span className="line-clamp-1">{h.bookTitle}</span>
+                      </td>
+                      <td className="p-3 text-slate-700">
+                        {h.memberName}
+                        <span className="block text-slate-400 text-[0.65rem]">{h.memberSourceId || h.memberId}</span>
+                      </td>
+                      <td className="p-3 text-slate-600">{h.issueDate}</td>
+                      <td className="p-3 text-slate-600">{h.returnDate ?? "--"}</td>
+                      <td className="p-3">
+                        <Badge className={
+                          h.returnCondition === "Damaged" ? "bg-orange-100 text-orange-700" :
+                          h.returnCondition === "Lost" ? "bg-rose-100 text-rose-700" :
+                          "bg-slate-100 text-slate-600"
+                        }>
+                          {h.returnCondition ?? "Good"}
+                        </Badge>
+                      </td>
+                      <td className="p-3 font-semibold text-slate-800">
+                        {h.fineAmount > 0 ? `₹ ${h.fineAmount}` : <span className="text-emerald-600">—</span>}
+                      </td>
+                      <td className="p-3">
+                        <Badge className="bg-emerald-100 text-emerald-700">Returned</Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
+
+      {/* ── RETURN BOOK MODAL ───────────────────────────────────────────────── */}
+      <Dialog open={!!returnModal?.open} onOpenChange={() => setReturnModal(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-slate-900">
+              <CornerDownRight className="size-4 text-emerald-600" />
+              Return Book
+            </DialogTitle>
+            <DialogDescription className="text-slate-500 text-xs">
+              Confirm the condition of the returned book and submit the return.
+            </DialogDescription>
+          </DialogHeader>
+
+          {returnModal && (
+            <div className="space-y-4">
+              {/* Book info */}
+              <div className="bg-slate-50 rounded-xl p-3 text-xs space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Book</span>
+                  <span className="font-semibold text-slate-800 text-right max-w-[200px] line-clamp-1">{returnModal.bookTitle}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Borrower</span>
+                  <span className="font-semibold text-slate-800">{returnModal.memberName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Due Date</span>
+                  <span className={`font-semibold ${new Date(returnModal.dueDate) < new Date() ? "text-rose-600" : "text-slate-800"}`}>{returnModal.dueDate}</span>
+                </div>
+              </div>
+
+              {/* Condition selector */}
+              <div>
+                <p className="text-xs font-semibold text-slate-700 mb-2">Book Condition</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {conditionOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setReturnCondition(opt.value)}
+                      className={`border-2 rounded-xl p-2.5 text-left cursor-pointer transition-all ${
+                        returnCondition === opt.value ? opt.color + " border-current" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                      }`}
+                    >
+                      <div className="font-semibold text-xs">{opt.label}</div>
+                      <div className="text-[0.65rem] opacity-75 mt-0.5">{opt.fine}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Fine preview */}
+              <div className={`rounded-xl p-3 flex items-center justify-between text-xs font-semibold ${previewFine > 0 ? "bg-rose-50 text-rose-700" : "bg-emerald-50 text-emerald-700"}`}>
+                <span>Total Fine to be Applied</span>
+                <span className="text-base font-extrabold">{previewFine > 0 ? `₹ ${previewFine}` : "No Fine"}</span>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setReturnModal(null)} className="text-xs cursor-pointer">Cancel</Button>
+            <Button
+              onClick={confirmReturn}
+              disabled={returning}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs cursor-pointer"
+            >
+              {returning ? "Processing..." : `Confirm Return${previewFine > 0 ? ` (₹${previewFine} fine)` : ""}`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── MARK LOST CONFIRMATION MODAL ────────────────────────────────────── */}
+      <Dialog open={!!lostModal?.open} onOpenChange={() => setLostModal(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-rose-700">
+              <AlertTriangle className="size-4" />
+              Mark Book as Lost
+            </DialogTitle>
+            <DialogDescription className="text-slate-500 text-xs">
+              This action will mark the book as lost, apply a ₹500 replacement fine, and update inventory.
+            </DialogDescription>
+          </DialogHeader>
+
+          {lostModal && (
+            <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-xs space-y-1.5">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Book</span>
+                <span className="font-semibold text-slate-800 max-w-[180px] text-right line-clamp-1">{lostModal.bookTitle}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Member</span>
+                <span className="font-semibold text-slate-800">{lostModal.memberName}</span>
+              </div>
+              <div className="flex justify-between mt-1 pt-1.5 border-t border-rose-200">
+                <span className="text-rose-600 font-bold">Replacement Fine</span>
+                <span className="text-rose-700 font-extrabold text-sm">₹ 500</span>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setLostModal(null)} className="text-xs cursor-pointer">Cancel</Button>
+            <Button onClick={confirmLost} className="bg-rose-600 hover:bg-rose-700 text-white text-xs cursor-pointer">
+              <AlertTriangle className="size-3 mr-1" />Confirm Lost
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -2687,9 +3003,9 @@ export function EnhancedFineManagementView() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard label="Total Outstanding Fines" value={`₹ ${stats.pendingFines.toLocaleString()}`} delta={`${state.fines.filter((f) => f.status === "Pending").length} pending`} tone="destructive" icon={Wallet} />
+        <KpiCard label="Total Outstanding Fines" value={`₹ ${stats.pendingFines.toLocaleString()}`} delta={`${state.fines.filter((f) => f.status === "Unpaid").length} unpaid`} tone="destructive" icon={Wallet} />
         <KpiCard label="Total Collected Fines" value={`₹ ${stats.totalFineCollected.toLocaleString()}`} delta="Receipts issued" tone="success" icon={CheckCircle2} />
-        <KpiCard label="Lost Book Penalties" value={`₹ ${state.fines.filter((f) => f.type === "Lost").reduce((a, f) => a + f.amount, 0).toLocaleString()}`} delta="Active cases" tone="warning" icon={AlertTriangle} />
+        <KpiCard label="Lost Book Penalties" value={`₹ ${state.fines.filter((f) => f.reason === "Book Lost").reduce((a, f) => a + f.amount, 0).toLocaleString()}`} delta="Active cases" tone="warning" icon={AlertTriangle} />
         <KpiCard label="Fines Waived" value={`₹ ${state.fines.filter((f) => f.status === "Waived").reduce((a, f) => a + f.amount, 0).toLocaleString()}`} delta="Approved waivers" icon={ShieldCheck} />
       </div>
 
@@ -2701,8 +3017,7 @@ export function EnhancedFineManagementView() {
               <th className="p-3">Fine ID</th>
               <th className="p-3">Member</th>
               <th className="p-3">Book Title</th>
-              <th className="p-3">Type</th>
-              <th className="p-3">Days / Reason</th>
+              <th className="p-3">Reason</th>
               <th className="p-3">Amount</th>
               <th className="p-3">Status</th>
               <th className="p-3 text-right">Actions</th>
@@ -2712,14 +3027,13 @@ export function EnhancedFineManagementView() {
             {state.fines.map((f) => (
               <tr key={f.id} className="hover:bg-slate-50">
                 <td className="p-3 font-mono font-semibold text-slate-800">{f.id}</td>
-                <td className="p-3 font-medium text-slate-900">{f.memberName} <span className="text-slate-400">({f.memberSourceId})</span></td>
+                <td className="p-3 font-medium text-slate-900">{f.memberName} <span className="text-slate-400">({f.memberId})</span></td>
                 <td className="p-3 text-slate-600">{f.bookTitle || "--"}</td>
                 <td className="p-3">
-                  <Badge className={f.type === "Lost" ? "bg-rose-100 text-rose-700 font-bold" : "bg-amber-100 text-amber-700"}>
-                    {f.type}
+                  <Badge className={f.reason === "Book Lost" ? "bg-rose-100 text-rose-700 font-bold" : "bg-amber-100 text-amber-700"}>
+                    {f.reason}
                   </Badge>
                 </td>
-                <td className="p-3 text-slate-600">{f.daysOverdue ? `${f.daysOverdue} days overdue` : f.type}</td>
                 <td className="p-3 font-bold text-rose-600">₹ {f.amount.toLocaleString()}</td>
                 <td className="p-3">
                   <Badge className={f.status === "Paid" ? "bg-emerald-100 text-emerald-700 font-bold" : f.status === "Waived" ? "bg-slate-100 text-slate-700" : "bg-red-100 text-red-700 font-bold"}>
@@ -2727,20 +3041,15 @@ export function EnhancedFineManagementView() {
                   </Badge>
                 </td>
                 <td className="p-3 text-right flex gap-1.5 justify-end">
-                  {f.status === "Pending" && (
+                  {f.status === "Unpaid" && (
                     <>
                       <Button size="sm" className="h-7 text-[0.7rem] rounded-lg bg-emerald-600 text-white cursor-pointer" onClick={() => handleCollect(f.id, f.amount)}>
-                        Collect Fine
+                        Collect
                       </Button>
-                      <Button size="sm" variant="outline" className="h-7 text-[0.7rem] rounded-lg text-rose-600 border-rose-200 cursor-pointer" onClick={() => { setSelectedFine(f); setWaiverOpen(true); }}>
-                        Waive Fine
+                      <Button size="sm" variant="outline" className="h-7 text-[0.7rem] rounded-lg text-amber-600 border-amber-200 cursor-pointer" onClick={() => { setSelectedFine(f); setWaiverOpen(true); }}>
+                        Waive
                       </Button>
                     </>
-                  )}
-                  {f.status === "Paid" && (
-                    <Button size="sm" variant="ghost" className="h-7 text-[0.7rem] text-slate-600 cursor-pointer" onClick={() => toast.info(`Receipt ${f.receiptNo || "RCP-AUTO"} printed!`)}>
-                      Receipt
-                    </Button>
                   )}
                 </td>
               </tr>
@@ -3087,11 +3396,11 @@ export function EnhancedSettingsView() {
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Student Loan (Days)</label>
-              <Input type="number" value={settingsForm.borrowPeriodDaysStudent} onChange={(e) => setSettingsForm({ ...settingsForm, borrowPeriodDaysStudent: Number(e.target.value) })} className="h-9" />
+              <Input type="number" value={settingsForm.loanDaysStudent} onChange={(e) => setSettingsForm({ ...settingsForm, loanDaysStudent: Number(e.target.value) })} className="h-9" />
             </div>
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Faculty Loan (Days)</label>
-              <Input type="number" value={settingsForm.borrowPeriodDaysFaculty} onChange={(e) => setSettingsForm({ ...settingsForm, borrowPeriodDaysFaculty: Number(e.target.value) })} className="h-9" />
+              <Input type="number" value={settingsForm.loanDaysFaculty} onChange={(e) => setSettingsForm({ ...settingsForm, loanDaysFaculty: Number(e.target.value) })} className="h-9" />
             </div>
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Max Books — Student</label>
@@ -3116,11 +3425,11 @@ export function EnhancedSettingsView() {
             </div>
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Maximum Fine (₹)</label>
-              <Input type="number" value={settingsForm.maxFineLimit} onChange={(e) => setSettingsForm({ ...settingsForm, maxFineLimit: Number(e.target.value) })} className="h-9" />
+              <Input type="number" value={(settingsForm as any).maxFine || 500} onChange={(e) => setSettingsForm({ ...settingsForm, maxFine: Number(e.target.value) } as any)} className="h-9" />
             </div>
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Grace Period (Days)</label>
-              <Input type="number" value={settingsForm.gracePeriodDays} onChange={(e) => setSettingsForm({ ...settingsForm, gracePeriodDays: Number(e.target.value) })} className="h-9" />
+              <Input type="number" value={(settingsForm as any).gracePeriod || 2} onChange={(e) => setSettingsForm({ ...settingsForm, gracePeriod: Number(e.target.value) } as any)} className="h-9" />
             </div>
           </div>
         </div>
@@ -3141,16 +3450,30 @@ export function EnhancedIDCardManagementView() {
 
   const handleIssueCard = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch({
-      type: "ISSUE_ID_CARD",
-      payload: { memberId: issueCardMemberId, cardType, rfidTag, issuedBy: "Librarian" },
-    });
+    const mem = state.members.find((m) => m.id === issueCardMemberId) || state.members[0];
+    if (mem) {
+      dispatch({
+        type: "ISSUE_ID_CARD",
+        payload: {
+          memberId: mem.id,
+          memberName: mem.name,
+          memberType: (mem.role as any) || "Student",
+          memberSourceId: mem.memberId || mem.id,
+          cardType: cardType === "RFID" ? "RFID" : cardType === "QR" ? "DigitalQR" : "Barcoded",
+          rfidTag,
+          barcode: mem.barcodeNo || mem.memberId || mem.id,
+          issuedBy: "Librarian",
+          expiryDate: mem.expiryDate || "2027-05-31",
+          issuanceType: "Original",
+        },
+      });
+    }
     setCardSubTab("history");
   };
 
   const handleToggleCardStatus = (cardId: string, currentStatus: string) => {
-    const nextStatus = currentStatus === "Active" ? "Suspended" : "Active";
-    dispatch({ type: "UPDATE_CARD_STATUS", payload: { cardId, status: nextStatus, updatedBy: "Librarian" } });
+    const nextStatus = currentStatus === "Active" ? "Blocked" : "Active";
+    dispatch({ type: "UPDATE_CARD_STATUS", payload: { id: cardId, status: nextStatus, by: "Librarian" } });
   };
 
   return (
@@ -3200,8 +3523,8 @@ export function EnhancedIDCardManagementView() {
               </div>
               <div className="space-y-0.5">
                 <p className="font-bold text-base">{state.members[0]?.name || "B VISHNU VARDHAN"}</p>
-                <p className="text-[0.7rem] text-blue-200">ID: {state.members[0]?.sourceId || "23341A4219"}</p>
-                <p className="text-[0.7rem] text-blue-200">{state.members[0]?.department} • {state.members[0]?.type}</p>
+                <p className="text-[0.7rem] text-blue-200">ID: {state.members[0]?.memberId || "23341A4219"}</p>
+                <p className="text-[0.7rem] text-blue-200">{state.members[0]?.department} • {state.members[0]?.role}</p>
               </div>
               <div className="mt-3 flex justify-between items-end">
                 <p className="text-[0.65rem] text-blue-200">Valid: 2023–2027</p>
@@ -3236,7 +3559,7 @@ export function EnhancedIDCardManagementView() {
               <label className="font-semibold text-slate-700 block mb-1">Select Member *</label>
               <select value={issueCardMemberId} onChange={(e) => setIssueCardMemberId(e.target.value)} className="w-full h-9 rounded-xl border border-slate-200 px-3 text-xs">
                 {state.members.map((m) => (
-                  <option key={m.id} value={m.id}>{m.name} ({m.sourceId} - {m.type})</option>
+                  <option key={m.id} value={m.id}>{m.name} ({m.memberId} - {m.role})</option>
                 ))}
               </select>
             </div>

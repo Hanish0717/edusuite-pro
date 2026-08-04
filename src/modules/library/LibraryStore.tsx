@@ -20,6 +20,12 @@ import type {
   LibraryNotification,
   LibraryModule,
   RecentActivity,
+  AcquisitionRequest,
+  DigitalResource,
+  ReadingHallSeat,
+  SeatBookingRecord,
+  LibraryEntryLog,
+  LibraryIDCard,
 } from "./LibraryTypes";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -211,6 +217,50 @@ const SEED_BOOKS: Book[] = [
     barcode: "BAR0005", qrCode: "QR0005", callNumber: "ME/TD/005", price: 3100,
     status: "Active", source: "Acquisition", addedBy: "Librarian", tags: ["thermodynamics", "heat transfer"],
     addedAt: "2024-02-15", updatedAt: "2024-02-15",
+  },
+  {
+    id: "BK-006", accessionNo: "GMRIT/2024/0006", isbn: "978-0-19-933377-6",
+    title: "Microelectronic Circuits", authors: ["Sedra A.S.", "Smith K.C."],
+    publisher: "Oxford University Press", publishedYear: 2020, edition: "8th", language: "English",
+    category: "Electronics", subject: "Semiconductors & Circuits", totalCopies: 6,
+    availableCopies: 4, issuedCopies: 2, reservedCopies: 0, lostCopies: 0, damagedCopies: 0,
+    location: { building: "B", floor: "1", rack: "EC-02", shelf: "S-02" },
+    barcode: "BAR0006", qrCode: "QR0006", callNumber: "ECE/MC/006", price: 3400,
+    status: "Active", source: "Acquisition", addedBy: "Librarian", tags: ["microelectronics", "VLSI"],
+    addedAt: "2024-02-18", updatedAt: "2024-02-18",
+  },
+  {
+    id: "BK-007", accessionNo: "GMRIT/2024/0007", isbn: "978-0-12-800056-4",
+    title: "Digital Design & Computer Architecture", authors: ["Harris S.L.", "Harris D."],
+    publisher: "Morgan Kaufmann", publishedYear: 2021, edition: "2nd", language: "English",
+    category: "Electronics", subject: "Digital Logic", totalCopies: 4,
+    availableCopies: 3, issuedCopies: 1, reservedCopies: 0, lostCopies: 0, damagedCopies: 0,
+    location: { building: "B", floor: "1", rack: "EC-03", shelf: "S-01" },
+    barcode: "BAR0007", qrCode: "QR0007", callNumber: "ECE/DD/007", price: 2900,
+    status: "Active", source: "Acquisition", addedBy: "Librarian", tags: ["digital design", "Verilog"],
+    addedAt: "2024-02-20", updatedAt: "2024-02-20",
+  },
+  {
+    id: "BK-008", accessionNo: "GMRIT/2024/0008", isbn: "978-0-07-338837-9",
+    title: "Fluid Mechanics: Fundamentals & Applications", authors: ["Cengel Y.A.", "Cimbala J.M."],
+    publisher: "McGraw-Hill", publishedYear: 2018, edition: "4th", language: "English",
+    category: "Mechanical", subject: "Fluid Dynamics", totalCopies: 5,
+    availableCopies: 3, issuedCopies: 2, reservedCopies: 0, lostCopies: 0, damagedCopies: 0,
+    location: { building: "C", floor: "1", rack: "ME-02", shelf: "S-02" },
+    barcode: "BAR0008", qrCode: "QR0008", callNumber: "ME/FM/008", price: 2850,
+    status: "Active", source: "Acquisition", addedBy: "Librarian", tags: ["fluid mechanics", "hydraulics"],
+    addedAt: "2024-02-22", updatedAt: "2024-02-22",
+  },
+  {
+    id: "BK-009", accessionNo: "GMRIT/2024/0009", isbn: "978-0-13-461067-2",
+    title: "Structural Analysis", authors: ["Hibbeler R.C."],
+    publisher: "Pearson", publishedYear: 2017, edition: "10th", language: "English",
+    category: "Civil Engineering", subject: "Structures", totalCopies: 7,
+    availableCopies: 5, issuedCopies: 2, reservedCopies: 0, lostCopies: 0, damagedCopies: 0,
+    location: { building: "D", floor: "2", rack: "CIV-01", shelf: "S-01" },
+    barcode: "BAR0009", qrCode: "QR0009", callNumber: "CIV/SA/009", price: 2700,
+    status: "Active", source: "Acquisition", addedBy: "Librarian", tags: ["civil", "structures"],
+    addedAt: "2024-02-25", updatedAt: "2024-02-25",
   },
 ];
 
@@ -930,7 +980,7 @@ function libraryReducer(state: LibraryState, action: LibraryAction): LibraryStat
       const updatedSeats = state.seats.map(s => s.seatNo === seatNo
         ? { ...s, status: "Occupied" as const, memberId, memberName: member.name, entryTime: new Date().toLocaleTimeString("en-IN") } : s);
       const booking: SeatBookingRecord = {
-        id: genId("SB"), seatNo, zone: seatNo[0],
+        id: genId("SB"), seatNo, zone: seat?.zone || seatNo[0] || "A",
         memberId, memberName: member.name, memberType: member.type,
         memberSourceId: member.sourceId, entryTime: now(), date: today(), verifiedBy,
       };
@@ -1068,7 +1118,7 @@ function computeStats(state: LibraryState): LibraryDashboardStats {
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const monthlyIssuesData = monthNames.slice(0, 8).map((month, i) => ({
     month,
-    count: [45, 62, 58, 74, 80, 95, 88, state.issues.length][i],
+    count: [45, 62, 58, 74, 80, 95, 88, state.issues.length][i] ?? 0,
   }));
 
   const catMap: Record<string, number> = {};
@@ -1078,7 +1128,7 @@ function computeStats(state: LibraryState): LibraryDashboardStats {
   const topBorrowedBooks = state.books
     .sort((a, b) => b.issuedCopies - a.issuedCopies)
     .slice(0, 5)
-    .map(b => ({ title: b.title, count: b.issuedCopies + b.totalBorrowed }));
+    .map(b => ({ title: b.title, count: b.issuedCopies + (b.totalBorrowed || 0) }));
 
   return {
     totalBooks: state.books.reduce((a, b) => a + b.totalCopies, 0),

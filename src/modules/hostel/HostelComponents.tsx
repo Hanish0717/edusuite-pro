@@ -124,7 +124,10 @@ export function HostelModuleView() {
 
   const handleAddRoomSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!roomForm.roomNo) return toast.error("Enter room number");
+    if (!roomForm.roomNo) {
+      toast.error("Enter room number");
+      return;
+    }
     const created = await createHostelRoom(roomForm);
     setRooms((prev) => [created, ...prev]);
     setIsAddRoomOpen(false);
@@ -636,7 +639,10 @@ export function HostelVisitorsView() {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.visitorName || !form.studentName) return toast.error("Please fill visitor & student name");
+    if (!form.visitorName || !form.studentName) {
+      toast.error("Please fill visitor & student name");
+      return;
+    }
     const newVis = {
       id: `VIS-${Math.floor(100 + Math.random() * 900)}`,
       visitorName: form.visitorName,
@@ -781,7 +787,10 @@ export function HostelComplaintsView() {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.description) return toast.error("Please enter complaint description");
+    if (!form.description) {
+      toast.error("Please enter complaint description");
+      return;
+    }
     const tkt = {
       id: `TKT-${Math.floor(400 + Math.random() * 500)}`,
       studentName: form.studentName || "Inmate Scholar",
@@ -790,7 +799,7 @@ export function HostelComplaintsView() {
       category: form.category,
       description: form.description,
       priority: form.priority,
-      date: new Date().toISOString().split("T")[0],
+      date: new Date().toISOString().split("T")[0] || "",
       status: "Open",
     };
     setComplaints([tkt, ...complaints]);
@@ -929,7 +938,7 @@ export function HostelMessMenusView() {
     Sunday: { breakfast: "Masala Utappam, Sambar, Coconut & Tomato Chutney", lunch: "Special Dum Biryani (Veg/Non-Veg), Raitha, Salan, Ice Cream", snacks: "Cake Slice, Hot Chocolate / Milk", dinner: "Phulka, Mushroom Masala, Curd Rice, Fruit Salad" },
   };
 
-  const menu = weeklyMenus[selectedDay] || weeklyMenus["Monday"];
+  const menu = (weeklyMenus[selectedDay] || weeklyMenus["Monday"])!;
 
   return (
     <div className="p-4 md:p-6 space-y-5 max-w-7xl mx-auto">
@@ -1337,12 +1346,15 @@ export function HostelNotificationsView() {
 
   const handlePost = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title || !form.content) return toast.error("Please enter notice title & content");
+    if (!form.title || !form.content) {
+      toast.error("Please enter notice title & content");
+      return;
+    }
     const cir = {
       id: `CIR-${Math.floor(100 + Math.random() * 900)}`,
       title: form.title,
       audience: form.audience,
-      date: new Date().toISOString().split("T")[0],
+      date: new Date().toISOString().split("T")[0] || "",
       priority: "Normal",
       content: form.content,
     };

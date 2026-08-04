@@ -84,14 +84,15 @@ export interface Book {
   price: number;
   status: BookStatus;
   source: BookSource;
-  acquisitionId?: string;
+  acquisitionId?: string | undefined;
   addedBy: string;
   addedAt: string;
   updatedAt: string;
-  description?: string;
-  coverImage?: string;
+  description?: string | undefined;
+  coverImage?: string | undefined;
   tags: string[];
-  deweyDecimal?: string;
+  deweyDecimal?: string | undefined;
+  totalBorrowed?: number | undefined;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -108,18 +109,18 @@ export interface Member {
   name: string;
   type: MemberType;
   department: string;
-  course?: string;
-  semester?: number;
-  year?: number;
-  designation?: string;
+  course?: string | undefined;
+  semester?: number | undefined;
+  year?: number | undefined;
+  designation?: string | undefined;
   email: string;
   phone: string;
-  photo?: string;
-  rfidTag?: string;
-  cardId?: string;
-  cardStatus?: "Active" | "Lost" | "Expired" | "Suspended";
+  photo?: string | undefined;
+  rfidTag?: string | undefined;
+  cardId?: string | undefined;
+  cardStatus?: "Active" | "Lost" | "Expired" | "Suspended" | undefined;
   status: MemberStatus;
-  statusReason?: string;
+  statusReason?: string | undefined;
   memberSince: string;
   memberExpiry: string;
   currentBorrowedIds: string[];    // issueRecord IDs
@@ -127,9 +128,9 @@ export interface Member {
   totalBorrowed: number;
   totalReturned: number;
   totalFinesPaid: number;
-  blockedAt?: string;
-  blockedReason?: string;
-  suspendedTill?: string;
+  blockedAt?: string | undefined;
+  blockedReason?: string | undefined;
+  suspendedTill?: string | undefined;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -152,14 +153,15 @@ export interface IssueRecord {
   issuedBy: string;           // librarian name
   issuedAt: string;
   dueDate: string;
-  returnedAt?: string;
-  returnedBy?: string;
+  returnedAt?: string | undefined;
+  returnedBy?: string | undefined;
   status: IssueStatus;
   renewCount: number;
   renewHistory: { renewedAt: string; newDueDate: string; renewedBy: string }[];
-  fineId?: string;
-  returnCondition?: "Good" | "Damaged" | "Lost";
-  receiptNo?: string;
+  fineId?: string | undefined;
+  returnCondition?: "Good" | "Damaged" | "Lost" | undefined;
+  receiptNo?: string | undefined;
+  maxRenewals?: number | undefined;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -180,17 +182,17 @@ export interface FineRecord {
   bookBarcode?: string;
   type: FineType;
   amount: number;
-  paidAmount?: number;
-  daysOverdue?: number;
+  paidAmount?: number | undefined;
+  daysOverdue?: number | undefined;
   status: FineStatus;
   generatedAt: string;
   generatedBy: string;
-  paidAt?: string;
-  receiptNo?: string;
-  waivedBy?: string;
-  waiverReason?: string;
-  waivedAt?: string;
-  notes?: string;
+  paidAt?: string | undefined;
+  receiptNo?: string | undefined;
+  waivedBy?: string | undefined;
+  waiverReason?: string | undefined;
+  waivedAt?: string | undefined;
+  notes?: string | undefined;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -331,9 +333,9 @@ export interface ReadingHallSeat {
   seatNo: string;
   zone: "A" | "B" | "C" | "D";
   status: SeatStatus;
-  memberId?: string;
-  memberName?: string;
-  entryTime?: string;
+  memberId?: string | undefined;
+  memberName?: string | undefined;
+  entryTime?: string | undefined;
 }
 
 export interface SeatBookingRecord {
@@ -464,16 +466,16 @@ export type NotificationStatus = "Sent" | "Pending" | "Failed" | "Read";
 export interface LibraryNotification {
   id: string;
   type: LibraryNotificationType;
-  memberId?: string;
-  memberName?: string;
+  memberId?: string | undefined;
+  memberName?: string | undefined;
   title: string;
   message: string;
   channels: NotificationChannel[];
   status: NotificationStatus;
   createdAt: string;
-  readAt?: string;
-  relatedId?: string;         // issueId, fineId, bookId
-  metadata?: Record<string, string>;
+  readAt?: string | undefined;
+  relatedId?: string | undefined;         // issueId, fineId, bookId
+  metadata?: Record<string, string> | undefined;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

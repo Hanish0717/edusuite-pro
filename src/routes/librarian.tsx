@@ -4,7 +4,7 @@ import { useRole } from "@/context/role-context";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { Button } from "@/components/ui/button";
 
-import { LibraryStoreProvider } from "@/modules/library/LibraryStore";
+import { LibraryStoreProvider, LibrarianTabProvider } from "@/librarian";
 
 export const Route = createFileRoute("/librarian")({
   component: LibrarianLayout,
@@ -36,9 +36,11 @@ function LibrarianLayout() {
 
   return (
     <LibraryStoreProvider>
-      <DashboardLayout>
-        <Outlet />
-      </DashboardLayout>
+      <LibrarianTabProvider>
+        <DashboardLayout>
+          <Outlet />
+        </DashboardLayout>
+      </LibrarianTabProvider>
     </LibraryStoreProvider>
   );
 }

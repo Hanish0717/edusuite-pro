@@ -1,6 +1,2 @@
-export * from "./LibraryService";
-export * from "./LibraryComponents";
-export * from "./EnterpriseLibraryComponents";
-export * from "./LibraryTypes";
-export * from "./LibraryStore";
-
+// Backward Compatibility Re-export Barrel for Library Module
+export * from "@/librarian";

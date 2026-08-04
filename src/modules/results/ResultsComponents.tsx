@@ -86,7 +86,10 @@ export function ResultsModuleView() {
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.rollNo || !form.studentName) return toast.error("Enter roll no and student name");
+    if (!form.rollNo || !form.studentName) {
+      toast.error("Enter roll no and student name");
+      return;
+    }
     const created = await uploadBatchResults(form);
     setResults((prev) => [created, ...prev]);
     setIsAddOpen(false);
