@@ -1,15 +1,18 @@
-import React from "react";
-import { NoDueClearanceItem } from "./types";
+import { useState } from "react";
+import { NoDueClearanceItem, StudentFinanceSummary } from "./types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Clock, ShieldCheck, Download, AlertTriangle, Building, BookOpen, BedDouble, Bus, Wallet } from "lucide-react";
+import { CheckCircle2, Clock, ShieldCheck, Download, Building, BookOpen, BedDouble, Bus, Wallet, Loader2 } from "lucide-react";
+import { downloadNoDueCertificatePdf } from "./finance-pdf-utils";
 import { toast } from "sonner";
 
 interface NoDueProps {
   clearances: NoDueClearanceItem[];
+  summary: StudentFinanceSummary;
 }
 
-export function NoDue({ clearances }: NoDueProps) {
+export function NoDue({ clearances, summary }: NoDueProps) {
+  const [isDownloading, setIsDownloading] = useState(false);
   const approvedCount = clearances.filter((c) => c.clearanceStatus === "Approved").length;
   const isOverallClear = approvedCount === clearances.length;
 
@@ -19,6 +22,19 @@ export function NoDue({ clearances }: NoDueProps) {
     if (dept.includes("Transport")) return Bus;
     if (dept.includes("Finance")) return Wallet;
     return Building;
+  };
+
+  const handleDownload = async () => {
+    if (!isOverallClear) {
+      toast.warning("Clear pending Finance dues (₹45,000) to unlock official No Due Certificate.");
+      return;
+    }
+    setIsDownloading(true);
+    try {
+      await downloadNoDueCertificatePdf(summary, clearances);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -75,17 +91,16 @@ export function NoDue({ clearances }: NoDueProps) {
           </div>
 
           <Button
-            onClick={() => {
-              if (!isOverallClear) {
-                toast.warning("Clear pending Finance dues (₹45,000) to unlock official No Due Certificate.");
-              } else {
-                toast.success("Downloading Official No Due Certificate PDF...");
-              }
-            }}
+            onClick={handleDownload}
+            disabled={isDownloading}
             size="sm"
             className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5 shadow-sm"
           >
-            <Download className="h-3.5 w-3.5" /> Download No Due Certificate
+            {isDownloading ? (
+              <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Generating...</>
+            ) : (
+              <><Download className="h-3.5 w-3.5" /> Download No Due Certificate</>
+            )}
           </Button>
         </div>
 

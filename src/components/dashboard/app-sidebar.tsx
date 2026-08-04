@@ -9,7 +9,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -29,7 +28,7 @@ import { cn } from "@/lib/utils";
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { role, flags, department, externalPersona, featureFlags, profile } = useRole();
+  const { role, flags, department, externalPersona, featureFlags } = useRole();
   const [query, setQuery] = useState("");
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const href = useRouterState({ select: (r) => r.location.href });
@@ -44,19 +43,19 @@ export function AppSidebar() {
     .filter((section) => section.items.length > 0);
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-[#24356B] bg-[#0F1B44] text-[#F5F7FF]">
+    <Sidebar collapsible="icon" className="border-r border-[#1E3A8A] bg-[#172554] text-[#F5F7FF]">
       <SidebarHeader className="gap-3 px-3 pt-4 pb-2">
         <Link to="/dashboard" className="flex min-w-0 items-center">
           <Logo showName={!collapsed} tone="mono" nameClassName="text-[#F5F7FF]" />
         </Link>
         {!collapsed && (
           <div className="relative mt-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#4D78FF]" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#2563EB]" />
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search menu..."
-              className="h-9 w-full border border-[#24356B] bg-[#16234F] pl-9 text-xs text-white placeholder:text-[#8F9CC3] rounded-[12px] focus-visible:ring-1 focus-visible:ring-[#4D78FF] transition-all duration-200"
+              className="h-9 w-full border border-[#1E3A8A] bg-[#1E3A8A]/40 pl-9 text-xs text-white placeholder:text-[#93C5FD]/70 rounded-[12px] focus-visible:ring-1 focus-visible:ring-[#2563EB] transition-all duration-200"
             />
           </div>
         )}
@@ -65,7 +64,7 @@ export function AppSidebar() {
       <SidebarContent className="px-2 py-2">
         {sections.map((section) => (
           <SidebarGroup key={section.label} className="py-1">
-            <SidebarGroupLabel className="text-[0.68rem] font-semibold uppercase tracking-[2px] text-[#7F8DB5] px-2 py-1.5">
+            <SidebarGroupLabel className="text-[0.68rem] font-semibold uppercase tracking-[2px] text-[#93C5FD] px-2 py-1.5">
               {section.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -100,15 +99,20 @@ export function AppSidebar() {
                             <SidebarMenuButton
                               isActive={isItemActive}
                               tooltip={item.title}
-                              className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
+                              className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#1E3A8A] hover:text-white data-[active=true]:bg-[#2563EB] data-[active=true]:text-white data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#2563EB]/40 transition-all duration-200 cursor-pointer relative overflow-hidden"
                             >
-                              <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
+                              {isItemActive && (
+                                <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-md bg-[#DBEAFE]" />
+                              )}
+                              <div className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${isItemActive ? "bg-[#DBEAFE] text-[#2563EB]" : "text-[#60A5FA]"}`}>
+                                <item.icon className="size-4 shrink-0" />
+                              </div>
                               <span className="truncate">{item.title}</span>
                               <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90 text-[#7F8DB5]" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent className="transition-all duration-200 ease-in-out data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                            <SidebarMenuSub className="ml-4 border-l border-[#24356B] pl-3 space-y-1 my-1">
+                            <SidebarMenuSub className="ml-4 border-l border-[#1E3A8A] pl-3 space-y-1 my-1">
                               {item.children.map((child) => {
                                 const childCleanPath = child.url.split("?")[0];
                                 const hasSubParam = child.url.includes("?");
@@ -120,7 +124,7 @@ export function AppSidebar() {
                                     <SidebarMenuSubButton
                                       asChild
                                       isActive={isSubActive}
-                                      className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#4D78FF] data-[active=true]:bg-[#1A285D] rounded-[10px] px-3 py-1.5 transition-all duration-200"
+                                      className="text-xs text-[#F5F7FF] hover:bg-[#1E3A8A] hover:text-white data-[active=true]:font-bold data-[active=true]:text-white data-[active=true]:bg-[#2563EB] rounded-[10px] px-3 py-1.5 transition-all duration-200"
                                     >
                                       <Link to={child.url} search={child.search}>{child.title}</Link>
                                     </SidebarMenuSubButton>
@@ -140,13 +144,18 @@ export function AppSidebar() {
                         asChild
                         isActive={isItemActive}
                         tooltip={item.title}
-                        className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
+                        className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#1E3A8A] hover:text-white data-[active=true]:bg-[#2563EB] data-[active=true]:text-white data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#2563EB]/40 transition-all duration-200 cursor-pointer relative overflow-hidden"
                       >
                         <Link to={item.url} className="flex items-center gap-3">
-                          <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
+                          {isItemActive && (
+                            <div className="absolute left-0 top-2 bottom-2 w-1 rounded-r-md bg-[#DBEAFE]" />
+                          )}
+                          <div className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${isItemActive ? "bg-[#DBEAFE] text-[#2563EB]" : "text-[#60A5FA]"}`}>
+                            <item.icon className="size-4 shrink-0" />
+                          </div>
                           <span className="truncate">{item.title}</span>
                           {item.badge && !collapsed && (
-                            <Badge className="ml-auto h-5 bg-[#4D78FF] px-1.5 text-[0.65rem] text-white font-bold rounded-md">
+                            <Badge className="ml-auto h-5 bg-[#2563EB] px-1.5 text-[0.65rem] text-white font-bold rounded-md">
                               {item.badge}
                             </Badge>
                           )}
@@ -160,30 +169,6 @@ export function AppSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
-
-      <SidebarFooter className="border-t border-[#24356B] bg-[#13204C] p-3">
-        <div className={cn("flex items-center gap-3", collapsed && "justify-center")}>
-          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#4D78FF] text-xs font-bold text-white ring-2 ring-[#4D78FF]/30 shadow-xs">
-            {profile.initials}
-          </span>
-          {!collapsed && (
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-bold text-white">
-                {profile.personaName}
-              </p>
-              <p className="truncate text-[11px] text-[#8F9CC3] font-mono">
-                {role === "student" ? "Roll No: 22CS101" : profile.label}
-              </p>
-              {role === "student" && (
-                <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-emerald-400 font-medium font-mono">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>Online</span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 }

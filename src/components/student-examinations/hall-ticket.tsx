@@ -105,7 +105,7 @@ export function HallTicket({
 ============================================================
 Document: ${title}
 Hall Ticket No: ${htNumber || `HT-2026-SEM${selectedSemester}-0542`}
-Student Name: ${profile.name} (Roll No: ${profile.rollNumber})
+Student Name: ${profile.name} (Adm No: ${profile.rollNumber})
 Degree / Program: ${profile.degree} in ${profile.branch}
 Exam Centre: ${profile.examCenter}
 Session & Time: ${profile.examSession}
@@ -214,7 +214,7 @@ Controller of Examinations Signature`;
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white">{profile.name}</h3>
               <p className="text-xs text-slate-500 font-mono">
-                Roll No: <strong className="text-blue-600">{profile.rollNumber}</strong> &middot; HT No: <strong className="text-slate-800 dark:text-slate-200">HT-2026-SEM{selectedSemester}-0542</strong>
+                Adm No: <strong className="text-blue-600">{profile.rollNumber}</strong> &middot; HT No: <strong className="text-slate-800 dark:text-slate-200">HT-2026-SEM{selectedSemester}-0542</strong>
               </p>
             </div>
           </div>

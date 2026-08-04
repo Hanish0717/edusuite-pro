@@ -268,7 +268,7 @@ export const MOCK_AVAILABLE_COURSES: AvailableCourseItem[] = [
     timings: "Mon, Wed 09:30 - 11:00 AM",
     room: "Block A - 301",
     prerequisite: "CS205",
-    isRegistered: true,
+    isRegistered: false,
     status: "Open",
   },
   {
@@ -284,7 +284,7 @@ export const MOCK_AVAILABLE_COURSES: AvailableCourseItem[] = [
     timings: "Tue, Thu 11:30 - 01:30 PM",
     room: "Block A - 302",
     prerequisite: "CS201",
-    isRegistered: true,
+    isRegistered: false,
     status: "Open",
   },
   {
@@ -300,7 +300,7 @@ export const MOCK_AVAILABLE_COURSES: AvailableCourseItem[] = [
     timings: "Thu 02:00 - 05:00 PM",
     room: "Lab Block - 04",
     prerequisite: "CS203",
-    isRegistered: true,
+    isRegistered: false,
     status: "Open",
   },
   {
@@ -316,8 +316,25 @@ export const MOCK_AVAILABLE_COURSES: AvailableCourseItem[] = [
     timings: "Fri 09:30 - 12:30 PM",
     room: "Block B - 102",
     prerequisite: "None",
-    isRegistered: true,
+    isRegistered: false,
     status: "Open",
+  },
+  {
+    id: "c505",
+    semester: 5,
+    code: "NP301",
+    name: "Introduction to IoT (NPTEL)",
+    faculty: "Prof. R. K. Sen (IIT)",
+    credits: 3.0,
+    category: "Professional Elective",
+    availableSeats: 30,
+    totalSeats: 60,
+    timings: "Online Self-paced",
+    room: "NPTEL Portal",
+    prerequisite: "None",
+    isRegistered: false,
+    status: "Open",
+    isNptel: true,
   },
 
   // SEMESTER 6 (Year 3)

@@ -101,7 +101,7 @@ export function DigitalIdCard({ cardData }: DigitalIdCardProps) {
                   {cardData.name}
                 </h4>
                 <div className="text-blue-400 font-mono font-bold text-xs">
-                  Roll No: {cardData.rollNumber}
+                  Adm No: {cardData.rollNumber}
                 </div>
                 <div className="text-slate-300 text-[11px] font-medium">
                   {cardData.department}

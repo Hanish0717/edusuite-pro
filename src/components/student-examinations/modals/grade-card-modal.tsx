@@ -38,7 +38,7 @@ OFFICIAL ACADEMIC TRANSCRIPT & MARKS MEMORANDUM
 =====================================================
 Memo Number: ${result.memoNumber || `MEMO-2026-SEM${result.semester}-0542`}
 Published Date: ${result.publishedDate || "28 Jun 2026"}
-Student Name: ${profile.name} (Roll No: ${profile.rollNumber})
+Student Name: ${profile.name} (Adm No: ${profile.rollNumber})
 Degree & Program: ${profile.degree} - ${profile.branch} (${profile.section})
 Semester: ${result.semester} | Academic Year: ${result.academicYear}
 
@@ -142,7 +142,7 @@ Controller of Examinations Signature — EduSuite Academic Board`;
               <strong className="text-slate-900 dark:text-white">{profile.name}</strong>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px]">Roll Number</span>
+              <span className="text-slate-400 block text-[10px]">Admission Number</span>
               <strong className="font-mono text-blue-600">{profile.rollNumber}</strong>
             </div>
             <div>

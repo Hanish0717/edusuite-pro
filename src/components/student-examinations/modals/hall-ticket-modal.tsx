@@ -53,7 +53,7 @@ export function HallTicketModal({ open, onOpenChange, profile, exams, hallTicket
 Hall Ticket Number : ${htNumber}
 Status             : ${htStatus}
 Student Name       : ${profile.name}
-Roll Number        : ${profile.rollNumber}
+Admission Number   : ${profile.rollNumber}
 Degree / Program   : ${profile.program}
 Branch             : ${profile.branch} (${profile.section})
 Semester           : ${htSemester} | Academic Year: ${htYear}
@@ -127,7 +127,7 @@ Controller of Examinations — EduSuite Pro Academic Board`;
               />
               <div className="space-y-0.5 text-xs">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">{profile.name}</h3>
-                <p className="text-slate-500 font-mono">Roll No: <strong className="text-blue-600">{profile.rollNumber}</strong></p>
+                <p className="text-slate-500 font-mono">Adm No: <strong className="text-blue-600">{profile.rollNumber}</strong></p>
                 <p className="text-slate-500">{profile.program} &middot; {profile.branch}</p>
                 <p className="text-slate-600 font-semibold">{profile.degree} · Semester {htSemester} ({profile.section})</p>
               </div>

@@ -133,6 +133,7 @@ export interface AvailableCourseItem {
   prerequisite: string;
   isRegistered: boolean;
   status: "Open" | "Full" | "Waitlist";
+  isNptel?: boolean;
 }
 
 export interface RegistrationWorkflowStep {

@@ -24,6 +24,7 @@ import {
   Send,
   Building,
   GraduationCap,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -33,6 +34,8 @@ interface WebinarDetailModalProps {
   onClose: () => void;
   onRegisterToggle: (webinarId: string) => void;
   onJoinLive: (webinar: Webinar) => void;
+  newlyRegisteredIds?: string[];
+  registeringId?: string | null;
 }
 
 export function WebinarDetailModal({
@@ -41,6 +44,8 @@ export function WebinarDetailModal({
   onClose,
   onRegisterToggle,
   onJoinLive,
+  newlyRegisteredIds = [],
+  registeringId = null,
 }: WebinarDetailModalProps) {
   const [userQuestion, setUserQuestion] = useState("");
   const [questions, setQuestions] = useState([
@@ -119,7 +124,7 @@ export function WebinarDetailModal({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-2xl bg-muted/60 border border-border/50 text-xs">
             <div>
               <span className="text-muted-foreground block text-[11px]">Date</span>
-              <span className="font-bold text-foreground">{webinar.displayDate}</span>
+              <span className="font-bold text-foreground">{webinar.startDate ? new Date(webinar.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ""}</span>
             </div>
             <div>
               <span className="text-muted-foreground block text-[11px]">Time</span>
@@ -159,17 +164,28 @@ export function WebinarDetailModal({
               </Button>
             ) : (
               <Button
+                disabled={webinar.isRegistered || registeringId === webinar.id}
                 onClick={() => onRegisterToggle(webinar.id)}
                 className={`h-11 px-6 rounded-xl font-bold text-xs shadow-md transition-all ${
                   webinar.isRegistered
-                    ? "bg-emerald-600 hover:bg-emerald-500 text-white"
+                    ? "bg-emerald-600 text-white opacity-95 cursor-default pointer-events-none"
                     : "bg-indigo-600 hover:bg-indigo-500 text-white"
                 }`}
               >
-                {webinar.isRegistered ? (
+                {registeringId === webinar.id ? (
                   <>
-                    <Check className="size-4 mr-2" /> Reserved (Click to Cancel)
+                    <Loader2 className="size-4 mr-2 animate-spin" /> Loading...
                   </>
+                ) : webinar.isRegistered ? (
+                  newlyRegisteredIds.includes(webinar.id) ? (
+                    <>
+                      <Check className="size-4 mr-2" /> Registered ✓
+                    </>
+                  ) : (
+                    <>
+                      <Check className="size-4 mr-2" /> Already Registered
+                    </>
+                  )
                 ) : (
                   <>
                     <UserCheck className="size-4 mr-2" /> Reserve My Spot
@@ -213,7 +229,7 @@ export function WebinarDetailModal({
               Session Agenda & Key Takeaways
             </h3>
             <div className="space-y-2">
-              {webinar.agenda.map((item, idx) => (
+              {(webinar.agenda || []).map((item, idx) => (
                 <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-muted/40 text-xs">
                   <span className="flex items-center justify-center size-5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold text-[10px] shrink-0 mt-0.5">
                     {idx + 1}

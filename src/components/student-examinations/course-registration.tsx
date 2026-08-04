@@ -31,6 +31,9 @@ interface CourseRegistrationProps {
   onOpenConfirmModal: () => void;
   onCompleteCourseRegistration: () => void;
   onNavigateToExamReg: () => void;
+  selectedCourseIds: string[];
+  onToggleSelect: (courseId: string) => void;
+  onSubmitCourseRegistration: () => void;
 }
 
 export function CourseRegistration({
@@ -43,6 +46,9 @@ export function CourseRegistration({
   onToggleRegister,
   onCompleteCourseRegistration,
   onNavigateToExamReg,
+  selectedCourseIds = [],
+  onToggleSelect,
+  onSubmitCourseRegistration,
 }: CourseRegistrationProps) {
   const isCompleted = courseRegStatus === "Completed";
   const availableSemesters = YEAR_TO_SEMESTERS_MAP[selectedYear] || [5, 6];
@@ -128,37 +134,103 @@ export function CourseRegistration({
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredCourses.map((c) => (
-                <div
-                  key={c.id}
-                  className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-3"
-                >
-                  <div>
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="font-mono font-bold text-[#0b193c] dark:text-blue-400">{c.code}</span>
-                      <span className="text-[11px] text-slate-400 font-medium">{c.category === "Core" ? "Normal Subject" : c.category}</span>
-                    </div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">{c.name}</h4>
-                    
-                    <div className="mt-2 space-y-1 text-xs text-slate-500">
-                      <p className="font-mono text-[11px]">Credits: {c.credits.toFixed(1)} &bull; Semester: {c.semester}</p>
-                      <p className="text-[11px]">Mentor: <span className="text-[#0b193c] dark:text-blue-400 font-semibold">{c.faculty}</span></p>
-                    </div>
-                  </div>
-
-                  <Button
-                    disabled={c.isRegistered}
-                    onClick={() => !c.isRegistered && onToggleRegister(c.id)}
-                    className={`w-full h-9 text-xs font-bold rounded-xl transition-all shadow-sm ${
-                      c.isRegistered
-                        ? "bg-emerald-600 text-white cursor-not-allowed opacity-100"
-                        : "bg-[#0b193c] hover:bg-[#0b193c]/90 text-white"
+              {filteredCourses.map((c) => {
+                const isSelected = selectedCourseIds.includes(c.id);
+                return (
+                  <div
+                    key={c.id}
+                    className={`p-4 rounded-2xl border transition-all flex flex-col justify-between space-y-3 ${
+                      c.isRegistered || (isCompleted && c.isRegistered)
+                        ? "border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/10 dark:bg-emerald-950/5 shadow-sm opacity-90"
+                        : isSelected
+                        ? "border-blue-500 bg-blue-50/10 dark:bg-blue-950/10 shadow-md ring-1 ring-blue-500/20"
+                        : "border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md"
                     }`}
                   >
-                    {c.isRegistered ? "Course Registered ✓" : "Register Course"}
-                  </Button>
-                </div>
-              ))}
+                    <div>
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-[#0b193c] dark:text-blue-400">{c.code}</span>
+                          {c.isNptel && (
+                            <Badge variant="outline" className="text-[10px] px-1 py-0 bg-amber-500/10 text-amber-600 border-amber-500/20 font-bold shrink-0">
+                              NPTEL
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] text-slate-400 font-medium">
+                            {c.category === "Core" ? "Normal Subject" : c.category}
+                          </span>
+                          {!c.isRegistered && !isCompleted && (
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => onToggleSelect(c.id)}
+                              className="h-4.5 w-4.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            />
+                          )}
+                        </div>
+                      </div>
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">{c.name}</h4>
+                      
+                      <div className="mt-2 space-y-1 text-xs text-slate-500">
+                        <p className="font-mono text-[11px]">Credits: {c.credits.toFixed(1)} &bull; Semester: {c.semester}</p>
+                        <p className="text-[11px]">Mentor: <span className="text-[#0b193c] dark:text-blue-400 font-semibold">{c.faculty}</span></p>
+                      </div>
+                    </div>
+
+                    <Button
+                      disabled={c.isRegistered || isCompleted}
+                      onClick={() => {
+                        if (!c.isRegistered && !isCompleted) {
+                          onToggleSelect(c.id);
+                        }
+                      }}
+                      className={`w-full h-9 text-xs font-bold rounded-xl transition-all shadow-sm ${
+                        c.isRegistered || (isCompleted && c.isRegistered)
+                          ? "bg-emerald-600 text-white cursor-not-allowed opacity-100"
+                          : isCompleted
+                          ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed border-0"
+                          : isSelected
+                          ? "bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/10"
+                          : "bg-[#0b193c] hover:bg-[#0b193c]/90 text-white"
+                      }`}
+                    >
+                      {c.isRegistered || (isCompleted && c.isRegistered)
+                        ? "Course Registered ✓"
+                        : isCompleted
+                        ? "Not Registered"
+                        : isSelected
+                        ? "Selected ✓"
+                        : "Select Course"}
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* STICKY BOTTOM SUBMIT BAR */}
+          {!isCompleted && selectedCourseIds.length > 0 && (
+            <div className="sticky bottom-4 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg flex items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="text-xs">
+                <span className="text-slate-500 font-medium dark:text-slate-400">Selected:</span>{" "}
+                <span className="font-bold text-slate-900 dark:text-white">{selectedCourseIds.length} Subjects</span>
+                <span className="text-slate-400 mx-2">|</span>
+                <span className="text-slate-500 font-medium dark:text-slate-400">Credits:</span>{" "}
+                <span className="font-bold text-slate-900 dark:text-white">
+                  {courses
+                    .filter((c) => selectedCourseIds.includes(c.id))
+                    .reduce((sum, c) => sum + c.credits, 0)
+                    .toFixed(1)} Cr
+                </span>
+              </div>
+              <Button
+                onClick={onSubmitCourseRegistration}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-9 px-5 rounded-xl transition-all shadow-sm shrink-0"
+              >
+                Submit Course Registration ({selectedCourseIds.length})
+              </Button>
             </div>
           )}
 

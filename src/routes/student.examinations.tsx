@@ -32,14 +32,20 @@ import { GradeCardModal } from "@/components/student-examinations/modals/grade-c
 import { CourseDetailsDrawer } from "@/components/student-examinations/modals/course-details-drawer";
 import { RegistrationModal } from "@/components/student-examinations/modals/registration-modal";
 import { RevaluationModal } from "@/components/student-examinations/modals/revaluation-modal";
+import { NptelDeclarationModal } from "@/components/student-examinations/modals/nptel-declaration-modal";
 
 // UI Primitives & Icons
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import {
   BookOpen,
   Ticket,
   Award,
   ClipboardCheck,
   Lock,
+  AlertTriangle,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -59,7 +65,7 @@ function StudentExaminationsPage() {
   const [selectedSemester, setSelectedSemester] = useState<number>(5);
 
   // Linked Workflow State
-  const [courseRegStatus, setCourseRegStatus] = useState<CourseRegWorkflowStatus>("Submitted");
+  const [courseRegStatus, setCourseRegStatus] = useState<CourseRegWorkflowStatus>("Not Started");
   const [examRegStatus, setExamRegStatus] = useState<ExamRegWorkflowStatus>("Locked");
   const [hallTicketStatus, setHallTicketStatus] = useState<HallTicketWorkflowStatus>("Locked");
   const [resultStatus, setResultStatus] = useState<ResultWorkflowStatus>("Not Published");
@@ -90,17 +96,41 @@ function StudentExaminationsPage() {
   // Revaluation Modal
   const [revaluationModalOpen, setRevaluationModalOpen] = useState(false);
 
+  // Course selection and NPTEL declaration state
+  const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([]);
+  const [nptelDeclarations, setNptelDeclarations] = useState<Record<string, {
+    fileName: string;
+    fileSize: string;
+    comments: string;
+    pdfUrl: string;
+    isNptel: boolean;
+  }>>({});
+
+  // Registration Validation Modals
+  const [selectionRequiredOpen, setSelectionRequiredOpen] = useState(false);
+  const [nptelDeclarationOpen, setNptelDeclarationOpen] = useState(false);
+  const [successRegistrationOpen, setSuccessRegistrationOpen] = useState(false);
+  const [registeredSummary, setRegisteredSummary] = useState<{
+    regNumber: string;
+    count: number;
+    date: string;
+    academicYear: string;
+  } | null>(null);
+  const [isSubmittingCourseReg, setIsSubmittingCourseReg] = useState(false);
+
   // Year Change Handler
   const handleYearChange = (year: AcademicYearOption) => {
     setSelectedYear(year);
     const sems = YEAR_TO_SEMESTERS_MAP[year] || [1, 2];
     const defaultSem = sems[0] ?? 1;
     setSelectedSemester(defaultSem);
+    setSelectedCourseIds([]);
     toast.info(`Switched to ${year} (Semester ${defaultSem})`);
   };
 
   const handleSemesterChange = (sem: number) => {
     setSelectedSemester(sem);
+    setSelectedCourseIds([]);
     toast.info(`Switched to Semester ${sem}`);
   };
 
@@ -166,6 +196,14 @@ function StudentExaminationsPage() {
     });
   };
 
+  const handleToggleSelectCourse = (courseId: string) => {
+    setSelectedCourseIds((prev) =>
+      prev.includes(courseId)
+        ? prev.filter((id) => id !== courseId)
+        : [...prev, courseId]
+    );
+  };
+
   const handleToggleRegisterCourse = (courseId: string) => {
     setAvailableCourses((prev) =>
       prev.map((c) => {
@@ -185,6 +223,109 @@ function StudentExaminationsPage() {
         return c;
       })
     );
+  };
+
+  const executeFinalSubmission = (nptelData: Record<string, any> = {}) => {
+    setIsSubmittingCourseReg(true);
+    
+    // Simulate submission delay
+    setTimeout(() => {
+      setIsSubmittingCourseReg(false);
+      
+      // Update available courses list so the selected courses are marked as registered!
+      setAvailableCourses((prev) =>
+        prev.map((c) => {
+          if (selectedCourseIds.includes(c.id)) {
+            return {
+              ...c,
+              isRegistered: true,
+              availableSeats: c.availableSeats - 1,
+            };
+          }
+          return c;
+        })
+      );
+
+      // Save NPTEL declarations
+      setNptelDeclarations((prev) => ({
+        ...prev,
+        ...nptelData,
+      }));
+
+      // Set Course Registration Status to Completed, and Unlock Exam Registration & Hall Ticket
+      setCourseRegStatus("Completed");
+      setExamRegStatus("Paid & Registered");
+      setHallTicketStatus("Generated");
+
+      // Generate Exam Registration records for the newly registered courses (excluding NPTEL)
+      const newExamRegs = availableCourses
+        .filter((c) => selectedCourseIds.includes(c.id) && !c.isNptel)
+        .map((c) => ({
+          id: `er-${c.id}`,
+          semester: c.semester,
+          examType: "Regular" as const,
+          subjectCode: c.code,
+          subjectName: c.name,
+          credits: c.credits,
+          feeAmount: 500,
+          paymentStatus: "Paid" as const,
+          registrationDeadline: profile.registrationDeadline,
+          lateFee: 0,
+          examCentrePreference: "Main Campus - Academic Block A",
+          status: "Approved" as const,
+          receiptNumber: `EXM-REC-${Math.floor(1000 + Math.random() * 9000)}`,
+        }));
+
+      setExamRegistrations((prev) => {
+        const codesToReplace = newExamRegs.map((r) => r.subjectCode);
+        const filtered = prev.filter((r) => !codesToReplace.includes(r.subjectCode));
+        return [...filtered, ...newExamRegs];
+      });
+
+      // Generate a dynamic registration summary
+      const regId = `CR-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+      const today = new Date().toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
+
+      setRegisteredSummary({
+        regNumber: regId,
+        count: selectedCourseIds.length,
+        date: today,
+        academicYear: selectedYear,
+      });
+
+      // Clear selection list
+      setSelectedCourseIds([]);
+
+      // Open Success Dialog
+      setSuccessRegistrationOpen(true);
+      
+      toast.success("Course Registration Completed successfully!");
+    }, 1500);
+  };
+
+  const handleSubmitCourseRegistration = () => {
+    // 1. Check if no courses are selected
+    if (selectedCourseIds.length === 0) {
+      setSelectionRequiredOpen(true);
+      return;
+    }
+
+    // 2. Check if any selected course is NPTEL
+    const selectedNptelCourses = availableCourses.filter(
+      (c) => selectedCourseIds.includes(c.id) && c.isNptel
+    );
+
+    if (selectedNptelCourses.length > 0) {
+      // Open NPTEL Declaration Modal
+      setNptelDeclarationOpen(true);
+    } else {
+      // Proceed directly to final submission
+      executeFinalSubmission();
+    }
   };
 
   const handleTogglePublishResults = () => {
@@ -310,6 +451,9 @@ function StudentExaminationsPage() {
           onOpenConfirmModal={() => setRegistrationModalOpen(true)}
           onCompleteCourseRegistration={handleCompleteCourseRegistration}
           onNavigateToExamReg={() => setActiveSubmodule("exam-registration")}
+          selectedCourseIds={selectedCourseIds}
+          onToggleSelect={handleToggleSelectCourse}
+          onSubmitCourseRegistration={handleSubmitCourseRegistration}
         />
       )}
 
@@ -328,6 +472,7 @@ function StudentExaminationsPage() {
           onCompleteAllExamReg={handleCompleteAllExamRegistration}
           onNavigateToCourseReg={() => setActiveSubmodule("course-registration")}
           onNavigateToHallTicket={() => setActiveSubmodule("hall-ticket")}
+          nptelDeclarations={nptelDeclarations}
         />
       )}
 
@@ -416,6 +561,107 @@ function StudentExaminationsPage() {
           toast.success(`Revaluation request for ${data.subjectCode} submitted! Ref: REV-2026-${Math.floor(1000 + Math.random() * 9000)}`);
         }}
       />
+
+      {/* Course Selection Required Modal */}
+      <Dialog open={selectionRequiredOpen} onOpenChange={setSelectionRequiredOpen}>
+        <DialogContent className="max-w-md rounded-2xl p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-xl text-center">
+          <DialogHeader className="text-center space-y-2">
+            <AlertTriangle className="h-10 w-10 text-rose-500 mx-auto" />
+            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+              Course Selection Required
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
+              Please select at least one course before submitting your registration.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Button
+            type="button"
+            onClick={() => setSelectionRequiredOpen(false)}
+            className="w-full mt-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs h-9 font-semibold"
+          >
+            Okay, Go Back
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* NPTEL Course Declaration Modal */}
+      <NptelDeclarationModal
+        open={nptelDeclarationOpen}
+        onOpenChange={setNptelDeclarationOpen}
+        selectedNptelCourses={availableCourses.filter(
+          (c) => selectedCourseIds.includes(c.id) && c.isNptel
+        )}
+        savedDeclarations={nptelDeclarations}
+        onConfirm={(declarations) => {
+          executeFinalSubmission(declarations);
+        }}
+      />
+
+      {/* Course Registration Success Modal */}
+      <Dialog open={successRegistrationOpen} onOpenChange={setSuccessRegistrationOpen}>
+        <DialogContent className="max-w-md rounded-2xl p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-xl">
+          <div className="text-center space-y-2">
+            <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto" />
+            <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+              Course Registration Successful
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
+              Your selected courses have been registered successfully.
+            </DialogDescription>
+          </div>
+
+          {registeredSummary && (
+            <div className="my-5 p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-xs space-y-2.5">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 font-medium">Registration No:</span>
+                <span className="font-mono font-bold text-blue-600">{registeredSummary.regNumber}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 font-medium">Selected Courses:</span>
+                <span className="font-bold text-slate-900 dark:text-white">{registeredSummary.count} Courses</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 font-medium">Registration Date:</span>
+                <span className="font-bold text-slate-900 dark:text-white">{registeredSummary.date}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 font-medium">Academic Year:</span>
+                <span className="font-bold text-slate-900 dark:text-white">{registeredSummary.academicYear}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3 mt-4 text-xs font-semibold">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setSuccessRegistrationOpen(false)}
+              className="rounded-xl h-9 text-xs"
+            >
+              Close
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                setSuccessRegistrationOpen(false);
+                setActiveSubmodule("exam-registration");
+              }}
+              className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs h-9"
+            >
+              View Registration
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Loading Overlay */}
+      {isSubmittingCourseReg && (
+        <div className="fixed inset-0 z-[100] bg-slate-950/40 backdrop-blur-sm flex flex-col items-center justify-center space-y-3 text-white">
+          <Loader2 className="h-10 w-10 text-blue-500 animate-spin" />
+          <p className="text-xs font-bold font-mono">Submitting Course Registration...</p>
+        </div>
+      )}
 
     </div>
   );

@@ -3,8 +3,8 @@ import { PaymentRecordItem } from "./types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Download, FileSpreadsheet, Printer, Eye } from "lucide-react";
-import { toast } from "sonner";
+import { Search, Download, Printer, Eye } from "lucide-react";
+
 
 interface PaymentHistoryProps {
   payments: PaymentRecordItem[];
@@ -61,9 +61,7 @@ export function PaymentHistory({ payments, onOpenReceiptModal }: PaymentHistoryP
               ))}
             </div>
 
-            <Button onClick={() => toast.success("Exported Payment History Ledger to Excel (.xlsx)")} size="sm" variant="outline" className="rounded-xl text-xs gap-1.5 border-slate-200 dark:border-slate-700">
-              <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" /> Export Excel
-            </Button>
+
           </div>
         </div>
 

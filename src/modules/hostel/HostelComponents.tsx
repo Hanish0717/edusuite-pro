@@ -79,8 +79,8 @@ export function HostelModuleView() {
     status: "Available",
   });
 
-  const loadData = async () => {
-    setLoading(true);
+  const loadData = async (isSilent = false) => {
+    if (!isSilent) setLoading(true);
     const [rm, res, ps] = await Promise.all([
       fetchHostelRooms(),
       fetchHostelResidents(),
@@ -89,11 +89,15 @@ export function HostelModuleView() {
     setRooms(rm);
     setResidents(res);
     setPasses(ps);
-    setLoading(false);
+    if (!isSilent) setLoading(false);
   };
 
   useEffect(() => {
     loadData();
+    const interval = setInterval(() => {
+      loadData(true);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const filteredRooms = rooms.filter((r) => {

@@ -1,119 +1,145 @@
-import React from "react";
+import React, { useState } from "react";
 import { FineRecordItem } from "./types";
-import { CreditCard, ShieldCheck, Download, CheckCircle2, AlertTriangle } from "lucide-react";
+import { CreditCard, Download, ShieldCheck, ShieldAlert, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+import { FineNoticeModal } from "./fine-notice-modal";
+import { FineRecordModal } from "./fine-record-modal";
 
 interface FineTabProps {
   fines: FineRecordItem[];
-  onOpenFinePaymentModal: (fine: FineRecordItem) => void;
 }
 
-export function FineTab({ fines, onOpenFinePaymentModal }: FineTabProps) {
-  const pendingFines = fines.filter((f) => f.status === "Pending");
-  const completedFines = fines.filter((f) => f.status !== "Pending");
+export function FineTab({ fines }: FineTabProps) {
+  const [noticeModalOpen, setNoticeModalOpen] = useState(false);
+  const [selectedFineForRecord, setSelectedFineForRecord] = useState<FineRecordItem | null>(null);
 
-  const totalPendingAmount = pendingFines.reduce((acc, curr) => acc + curr.amount, 0);
+  const pendingFines = fines.filter((f) => f.status === "Pending");
+  const totalPending = pendingFines.reduce((sum, f) => sum + f.fineAmount, 0);
 
   return (
     <div className="space-y-6">
-      {/* HEADER SUMMARY CARD */}
-      <div className="p-5 rounded-2xl border border-rose-200 dark:border-rose-950/40 bg-gradient-to-r from-rose-50 to-pink-50/50 dark:from-rose-950/20 dark:to-slate-900 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-2xl bg-rose-500 text-white shadow-md">
-            <CreditCard className="h-6 w-6" />
+      {/* FINE SUMMARY CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="p-5 rounded-2xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/40 dark:bg-rose-950/20 shadow-2xs space-y-2">
+          <div className="flex items-center justify-between text-rose-700 dark:text-rose-400">
+            <span className="text-xs font-bold uppercase tracking-wider">Pending Fine Total</span>
+            <ShieldAlert className="h-5 w-5 text-rose-600" />
           </div>
-          <div>
-            <h3 className="text-base font-black text-slate-900 dark:text-white">Outstanding Library Fines</h3>
-            <p className="text-xs text-slate-500">Overdue fees, barcode damage and library administrative charges</p>
-          </div>
+          <p className="text-2xl font-black font-mono text-rose-600 dark:text-rose-400">
+            ₹{totalPending.toFixed(2)}
+          </p>
+          <p className="text-[11px] text-rose-600 dark:text-rose-400 font-medium">
+            Overdue Rate: ₹5.00 / late day
+          </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Total Payable</span>
-            <strong className="text-xl font-black text-rose-600 font-mono">₹{totalPendingAmount.toFixed(2)}</strong>
-          </div>
-          {pendingFines.length > 0 && (
-            <Button
-              onClick={() => onOpenFinePaymentModal(pendingFines[0])}
-              className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs h-10 px-5 shadow-md gap-1.5"
-            >
-              <ShieldCheck className="h-4 w-4" /> Pay All Outstanding
-            </Button>
-          )}
+        <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs space-y-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Fine Status</span>
+          <p className="text-sm font-bold text-slate-900 dark:text-white">
+            {totalPending > 0 ? `${pendingFines.length} Overdue Penalty Recorded` : "Account Good Standing"}
+          </p>
+          <p className="text-[11px] text-slate-500 font-medium">
+            Clear fines at library accounts counter to maintain borrowing privilege.
+          </p>
+        </div>
+
+        <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs space-y-2 flex flex-col justify-between">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Accounts Standing</span>
+          <Button
+            onClick={() => setNoticeModalOpen(true)}
+            className="w-full rounded-xl text-xs bg-purple-600 hover:bg-purple-700 text-white font-bold h-9 gap-1.5"
+          >
+            <CreditCard className="h-4 w-4" /> Fine Notice Info
+          </Button>
         </div>
       </div>
 
       {/* FINES TABLE */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-2xs">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-2xs space-y-3">
         <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <h4 className="font-black text-xs uppercase tracking-wider text-slate-900 dark:text-white">
             Fine Transactions Ledger ({fines.length})
           </h4>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/40 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                <th className="py-3 px-4 font-mono">Fine ID</th>
-                <th className="py-3 px-4">Book Title</th>
-                <th className="py-3 px-4">Reason / Penalty</th>
-                <th className="py-3 px-4 font-mono">Amount</th>
-                <th className="py-3 px-4 font-mono">Date Incurred</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Action / Receipt</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {fines.map((fine) => (
-                <tr key={fine.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                  <td className="py-3 px-4 font-mono text-slate-500">{fine.id}</td>
-                  <td className="py-3 px-4 font-bold text-slate-900 dark:text-white max-w-xs truncate">{fine.bookTitle}</td>
-                  <td className="py-3 px-4 text-slate-600 dark:text-slate-400">{fine.reason}</td>
-                  <td className="py-3 px-4 font-mono font-bold text-slate-900 dark:text-white">₹{fine.amount.toFixed(2)}</td>
-                  <td className="py-3 px-4 font-mono text-slate-500">{fine.dateIncurred}</td>
-                  <td className="py-3 px-4">
-                    <Badge
-                      className={`text-[9px] font-mono ${
-                        fine.status === "Pending"
-                          ? "bg-rose-500 text-white animate-pulse"
-                          : fine.status === "Paid"
-                          ? "bg-emerald-500 text-white"
-                          : "bg-slate-500 text-white"
-                      }`}
-                    >
-                      {fine.status}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4 text-right">
-                    {fine.status === "Pending" ? (
-                      <Button
-                        onClick={() => onOpenFinePaymentModal(fine)}
-                        size="sm"
-                        className="rounded-xl text-[11px] bg-rose-600 hover:bg-rose-700 text-white font-bold h-8"
+        {fines.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/40 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  <th className="py-3 px-4 font-mono">Fine ID</th>
+                  <th className="py-3 px-4">Book Title</th>
+                  <th className="py-3 px-4 font-mono">Due Date</th>
+                  <th className="py-3 px-4 font-mono">Late Days</th>
+                  <th className="py-3 px-4 font-mono">Rate/Day</th>
+                  <th className="py-3 px-4 font-mono">Total Fine</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4 text-right font-sans">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {fines.map((fine) => (
+                  <tr key={fine.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                    <td className="py-3 px-4 font-mono text-slate-500">{fine.id}</td>
+                    <td className="py-3 px-4 font-bold text-slate-900 dark:text-white max-w-xs truncate">
+                      {fine.bookTitle}
+                    </td>
+                    <td className="py-3 px-4 font-mono text-slate-500">{fine.dueDate}</td>
+                    <td className="py-3 px-4 font-mono font-bold text-rose-600">{fine.lateDays} Days</td>
+                    <td className="py-3 px-4 font-mono text-slate-500">₹{fine.ratePerDay.toFixed(2)}</td>
+                    <td className="py-3 px-4 font-mono font-bold text-slate-900 dark:text-white">
+                      ₹{fine.fineAmount.toFixed(2)}
+                    </td>
+                    <td className="py-3 px-4">
+                      <Badge
+                        className={`text-[9px] font-mono ${
+                          fine.status === "Pending"
+                            ? "bg-rose-500 text-white font-bold"
+                            : "bg-emerald-500 text-white"
+                        }`}
                       >
-                        Pay Now
-                      </Button>
-                    ) : (
+                        {fine.status}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-4 text-right">
                       <Button
-                        onClick={() => toast.success(`Downloaded Receipt ${fine.transactionId || fine.id}`)}
+                        onClick={() => setSelectedFineForRecord(fine)}
                         size="sm"
                         variant="outline"
-                        className="rounded-xl text-[11px] font-semibold h-8 gap-1"
+                        className="rounded-xl text-[11px] font-semibold h-8 gap-1 border-purple-200 dark:border-purple-900 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/40"
                       >
-                        <Download className="h-3.5 w-3.5 text-purple-600" /> Receipt
+                        <FileText className="h-3.5 w-3.5" /> Record
                       </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="p-12 text-center border-t border-slate-100 dark:border-slate-800 space-y-2">
+            <ShieldCheck className="h-10 w-10 text-emerald-500 mx-auto" />
+            <h4 className="font-bold text-xs text-slate-700 dark:text-slate-300">No fines recorded</h4>
+            <p className="text-xs text-slate-500 font-medium">
+              Your library account is in good standing with zero pending fees.
+            </p>
+          </div>
+        )}
       </div>
+
+      {/* READ ONLY DYNAMIC MODALS */}
+      <FineNoticeModal
+        open={noticeModalOpen}
+        onClose={() => setNoticeModalOpen(false)}
+        fine={pendingFines[0] || fines[0] || null}
+      />
+
+      <FineRecordModal
+        open={!!selectedFineForRecord}
+        onClose={() => setSelectedFineForRecord(null)}
+        fine={selectedFineForRecord}
+      />
     </div>
   );
 }

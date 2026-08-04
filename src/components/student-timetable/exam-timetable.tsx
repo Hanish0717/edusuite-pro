@@ -17,7 +17,7 @@ export function ExamTimetable({ exams }: ExamTimetableProps) {
 =====================================================
 OFFICIAL EXAMINATION HALL TICKET / ADMIT PASS
 =====================================================
-Candidate Name: Sai Teja | Roll No: 22CS101
+Candidate Name: Sai Teja | Adm No: 22CS101
 Branch: Computer Science & Engineering (Sem V)
 Academic Session: 2026-2027
 

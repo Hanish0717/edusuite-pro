@@ -33,6 +33,13 @@ interface ExamRegistrationProps {
   onCompleteAllExamReg: () => void;
   onNavigateToCourseReg: () => void;
   onNavigateToHallTicket: () => void;
+  nptelDeclarations?: Record<string, {
+    fileName: string;
+    fileSize: string;
+    comments: string;
+    pdfUrl: string;
+    isNptel: boolean;
+  }>;
 }
 
 export function ExamRegistration({
@@ -48,13 +55,14 @@ export function ExamRegistration({
   onCompleteAllExamReg,
   onNavigateToCourseReg,
   onNavigateToHallTicket,
+  nptelDeclarations = {},
 }: ExamRegistrationProps) {
   const isCourseRegCompleted = courseRegStatus === "Completed";
   const isExamRegPaid = examRegStatus === "Paid & Registered";
   const availableSemesters = YEAR_TO_SEMESTERS_MAP[selectedYear] || [5, 6];
 
-  // Dynamically filter courses for selected semester
-  const filteredCourses = courses.filter((c) => c.semester === selectedSemester);
+  // Dynamically filter courses for selected semester - ONLY display successfully registered ones!
+  const filteredCourses = courses.filter((c) => c.semester === selectedSemester && c.isRegistered);
 
   return (
     <div className="space-y-6">
@@ -129,14 +137,22 @@ export function ExamRegistration({
 
           {/* COURSES CARD GRID */}
           {filteredCourses.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-slate-200 rounded-2xl">
-              No exams scheduled for Semester {selectedSemester} yet.
+            <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-slate-200 rounded-2xl space-y-3">
+              <p>No registered courses found for Semester {selectedSemester} yet.</p>
+              <Button
+                onClick={onNavigateToCourseReg}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-9 px-4 rounded-xl shadow-sm"
+              >
+                Go to Course Registration
+              </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredCourses.map((c) => {
+                const isNptelCourse = c.isNptel;
+                const nptelData = nptelDeclarations[c.id];
+
                 const matchingReg = examRegistrations.find((r) => r.subjectCode === c.code);
-                const isPaid = matchingReg?.paymentStatus === "Paid" || (isExamRegPaid && selectedSemester === 5);
                 const isRegisteredCourse = c.isRegistered || (isCourseRegCompleted && selectedSemester === 5) || selectedSemester < 5;
 
                 return (
@@ -146,8 +162,17 @@ export function ExamRegistration({
                   >
                     <div>
                       <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="font-mono font-bold text-blue-600">{c.code}</span>
-                        <span className="text-[11px] text-slate-400 font-medium">{c.category === "Core" ? "Normal Subject" : c.category}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono font-bold text-blue-600">{c.code}</span>
+                          {isNptelCourse && (
+                            <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 font-bold hover:bg-amber-500/10 text-[9px] px-1.5 py-0">
+                              NPTEL
+                            </Badge>
+                          )}
+                        </div>
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          {c.category === "Core" ? "Normal Subject" : c.category}
+                        </span>
                       </div>
                       <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">{c.name}</h4>
                       
@@ -155,28 +180,48 @@ export function ExamRegistration({
                         <p className="font-mono text-[11px]">Credits: {c.credits.toFixed(1)} &bull; Semester: {c.semester}</p>
                         <p className="text-[11px]">Mentor: <span className="text-blue-600 font-semibold">{c.faculty}</span></p>
                       </div>
+
+                      {/* NPTEL specific declaration details */}
+                      {isNptelCourse && nptelData && (
+                        <div className="mt-3 p-2.5 rounded-lg bg-amber-500/5 border border-amber-500/10 text-[10px] space-y-1.5 text-slate-700 dark:text-slate-300">
+                          <div className="flex items-center justify-between font-semibold">
+                            <span className="text-amber-700 dark:text-amber-400">NPTEL Declaration:</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-0.5 font-bold">
+                              Submitted PDF ✔
+                            </span>
+                          </div>
+                          <div className="truncate text-slate-500 dark:text-slate-400">
+                            <span className="font-medium">File:</span> {nptelData.fileName}
+                          </div>
+                          {nptelData.comments && (
+                            <div className="text-slate-500 dark:text-slate-400 italic">
+                              <span className="font-medium not-italic text-slate-600 dark:text-slate-300">Remarks:</span> "{nptelData.comments}"
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
-                    {isPaid ? (
+                    {isNptelCourse ? (
+                      <Button
+                        disabled
+                        className="w-full h-9 text-xs font-bold rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 cursor-default opacity-100"
+                      >
+                        NPTEL Course Verified ✓
+                      </Button>
+                    ) : isRegisteredCourse ? (
                       <Button
                         disabled
                         className="w-full h-9 text-xs font-bold rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 cursor-default"
                       >
-                        <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Exam Registered (Paid)
+                        <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Exam Registered
                       </Button>
-                    ) : !isRegisteredCourse ? (
+                    ) : (
                       <Button
                         disabled
                         className="w-full h-9 text-xs font-medium rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed border-0"
                       >
                         Register for Course First
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => onRegisterExam(matchingReg?.id || c.id)}
-                        className="w-full h-9 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20"
-                      >
-                        Register for Exam (Pay ₹500)
                       </Button>
                     )}
                   </div>

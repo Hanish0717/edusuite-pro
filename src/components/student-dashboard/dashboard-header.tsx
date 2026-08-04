@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StudentInfo } from "./types";
 import { Search, Calendar, GraduationCap, Building2, User } from "lucide-react";
 
@@ -8,11 +8,38 @@ interface DashboardHeaderProps {
   onSearchChange: (q: string) => void;
 }
 
+export function getTimeBasedGreeting(name: string): string {
+  const now = new Date();
+  const hour = now.getHours();
+
+  if (hour >= 5 && hour < 12) {
+    return `Good Morning, ${name} ☀️`;
+  } else if (hour >= 12 && hour < 17) {
+    return `Good Afternoon, ${name} 🌤️`;
+  } else if (hour >= 17 && hour < 21) {
+    return `Good Evening, ${name} 🌇`;
+  } else {
+    return `Good Night, ${name} 🌙`;
+  }
+}
+
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   student,
   searchQuery,
   onSearchChange,
 }) => {
+  const [greeting, setGreeting] = useState<string>(() => getTimeBasedGreeting(student.name));
+
+  useEffect(() => {
+    const updateGreeting = () => {
+      setGreeting(getTimeBasedGreeting(student.name));
+    };
+
+    updateGreeting();
+    const interval = setInterval(updateGreeting, 1000);
+    return () => clearInterval(interval);
+  }, [student.name]);
+
   return (
     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 md:p-8 shadow-xl border border-indigo-900/40">
       {/* Subtle Background Elements */}
@@ -27,13 +54,13 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </div>
 
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white">
-            Good Morning, {student.name} <span className="inline-block animate-bounce">👋</span>
+            {greeting}
           </h1>
 
           {/* Student Badges Bar */}
           <div className="flex flex-wrap items-center gap-3 text-xs text-indigo-200">
             <span className="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-lg backdrop-blur-sm">
-              <User className="h-3.5 w-3.5 text-indigo-400" /> Roll No: <strong className="text-white">{student.rollNo}</strong>
+              <User className="h-3.5 w-3.5 text-indigo-400" /> Adm No: <strong className="text-white">{student.rollNo}</strong>
             </span>
             <span className="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-lg backdrop-blur-sm">
               <Building2 className="h-3.5 w-3.5 text-indigo-400" /> {student.department}
@@ -46,7 +73,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </span>
           </div>
         </div>
-
       </div>
     </div>
   );

@@ -38,7 +38,7 @@ export function OverviewCardsGrid({ student, onAdvisorClick }: OverviewCardsProp
       subtext: "First Class with Distinction",
       icon: Award,
       accent: "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-100 dark:border-emerald-900/40",
-      badge: `Rank #${student.rank}`,
+      badge: "Distinction",
       badgeColor: "bg-emerald-500/10 text-emerald-600",
     },
     {

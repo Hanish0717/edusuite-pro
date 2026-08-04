@@ -153,6 +153,7 @@ import { Route as StudentResultsRouteImport } from './routes/student.results'
 import { Route as StudentTimetableRouteImport } from './routes/student.timetable'
 import { Route as StudentUpdatesRouteImport } from './routes/student.updates'
 import { Route as StudentWebinarsRouteImport } from './routes/student.webinars'
+import { Route as StudentsIndexRouteImport } from './routes/students.index'
 import { Route as SuperAdminIndexRouteImport } from './routes/super-admin.index'
 import { Route as SuperAdminAcademicsRouteImport } from './routes/super-admin.academics'
 import { Route as SuperAdminAllClassesAttendanceRouteImport } from './routes/super-admin.all-classes-attendance'
@@ -176,6 +177,7 @@ import { Route as DashboardAcademicsFacultyStatusRouteImport } from './routes/da
 import { Route as DashboardAcademicsSyllabusTrackerRouteImport } from './routes/dashboard.academics.syllabus-tracker'
 import { Route as DashboardAcademicsTimetableRouteImport } from './routes/dashboard.academics.timetable'
 import { Route as PlacementDrivesDriveIdRouteImport } from './routes/placement.drives_.$driveId'
+import { Route as StudentsProfileIdRouteImport } from './routes/students.profile.$id'
 import { Route as SuperAdminAcademicsFacultyStatusRouteImport } from './routes/super-admin.academics.faculty-status'
 import { Route as SuperAdminAcademicsSyllabusTrackerRouteImport } from './routes/super-admin.academics.syllabus-tracker'
 import { Route as DashboardAcademicsAttendanceMarkRouteImport } from './routes/dashboard.academics.attendance.mark'
@@ -906,6 +908,11 @@ const StudentWebinarsRoute = StudentWebinarsRouteImport.update({
   path: '/webinars',
   getParentRoute: () => StudentRoute,
 } as any)
+const StudentsIndexRoute = StudentsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StudentsRoute,
+} as any)
 const SuperAdminIndexRoute = SuperAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -1028,6 +1035,11 @@ const PlacementDrivesDriveIdRoute = PlacementDrivesDriveIdRouteImport.update({
   path: '/drives/$driveId',
   getParentRoute: () => PlacementRoute,
 } as any)
+const StudentsProfileIdRoute = StudentsProfileIdRouteImport.update({
+  id: '/profile/$id',
+  path: '/profile/$id',
+  getParentRoute: () => StudentsRoute,
+} as any)
 const SuperAdminAcademicsFacultyStatusRoute =
   SuperAdminAcademicsFacultyStatusRouteImport.update({
     id: '/faculty-status',
@@ -1098,7 +1110,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/student': typeof StudentRouteWithChildren
-  '/students': typeof StudentsRoute
+  '/students': typeof StudentsRouteWithChildren
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
@@ -1215,12 +1227,14 @@ export interface FileRoutesByFullPath {
   '/parent/': typeof ParentIndexRoute
   '/placement/': typeof PlacementIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/students/': typeof StudentsIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
   '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
   '/dashboard/academics/syllabus-tracker': typeof DashboardAcademicsSyllabusTrackerRoute
   '/dashboard/academics/timetable': typeof DashboardAcademicsTimetableRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/students/profile/$id': typeof StudentsProfileIdRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/academics/attendance/mark': typeof DashboardAcademicsAttendanceMarkRoute
@@ -1258,7 +1272,6 @@ export interface FileRoutesByTo {
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
-  '/students': typeof StudentsRoute
   '/timetable': typeof TimetableRoute
   '/verify-email': typeof VerifyEmailRoute
   '/ai-analytics/attendance-prediction': typeof AiAnalyticsAttendancePredictionRoute
@@ -1373,12 +1386,14 @@ export interface FileRoutesByTo {
   '/parent': typeof ParentIndexRoute
   '/placement': typeof PlacementIndexRoute
   '/student': typeof StudentIndexRoute
+  '/students': typeof StudentsIndexRoute
   '/super-admin': typeof SuperAdminIndexRoute
   '/transport': typeof TransportIndexRoute
   '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
   '/dashboard/academics/syllabus-tracker': typeof DashboardAcademicsSyllabusTrackerRoute
   '/dashboard/academics/timetable': typeof DashboardAcademicsTimetableRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/students/profile/$id': typeof StudentsProfileIdRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/academics/attendance/mark': typeof DashboardAcademicsAttendanceMarkRoute
@@ -1430,7 +1445,7 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/student': typeof StudentRouteWithChildren
-  '/students': typeof StudentsRoute
+  '/students': typeof StudentsRouteWithChildren
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
@@ -1547,12 +1562,14 @@ export interface FileRoutesById {
   '/parent/': typeof ParentIndexRoute
   '/placement/': typeof PlacementIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/students/': typeof StudentsIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
   '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
   '/dashboard/academics/syllabus-tracker': typeof DashboardAcademicsSyllabusTrackerRoute
   '/dashboard/academics/timetable': typeof DashboardAcademicsTimetableRoute
   '/placement/drives_/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/students/profile/$id': typeof StudentsProfileIdRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/academics/attendance/mark': typeof DashboardAcademicsAttendanceMarkRoute
@@ -1722,12 +1739,14 @@ export interface FileRouteTypes {
     | '/parent/'
     | '/placement/'
     | '/student/'
+    | '/students/'
     | '/super-admin/'
     | '/transport/'
     | '/dashboard/academics/faculty-status'
     | '/dashboard/academics/syllabus-tracker'
     | '/dashboard/academics/timetable'
     | '/placement/drives/$driveId'
+    | '/students/profile/$id'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/academics/attendance/mark'
@@ -1765,7 +1784,6 @@ export interface FileRouteTypes {
     | '/results'
     | '/settings'
     | '/signup'
-    | '/students'
     | '/timetable'
     | '/verify-email'
     | '/ai-analytics/attendance-prediction'
@@ -1880,12 +1898,14 @@ export interface FileRouteTypes {
     | '/parent'
     | '/placement'
     | '/student'
+    | '/students'
     | '/super-admin'
     | '/transport'
     | '/dashboard/academics/faculty-status'
     | '/dashboard/academics/syllabus-tracker'
     | '/dashboard/academics/timetable'
     | '/placement/drives/$driveId'
+    | '/students/profile/$id'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/academics/attendance/mark'
@@ -2053,12 +2073,14 @@ export interface FileRouteTypes {
     | '/parent/'
     | '/placement/'
     | '/student/'
+    | '/students/'
     | '/super-admin/'
     | '/transport/'
     | '/dashboard/academics/faculty-status'
     | '/dashboard/academics/syllabus-tracker'
     | '/dashboard/academics/timetable'
     | '/placement/drives_/$driveId'
+    | '/students/profile/$id'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/academics/attendance/mark'
@@ -2110,7 +2132,7 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   StudentRoute: typeof StudentRouteWithChildren
-  StudentsRoute: typeof StudentsRoute
+  StudentsRoute: typeof StudentsRouteWithChildren
   SuperAdminRoute: typeof SuperAdminRouteWithChildren
   TimetableRoute: typeof TimetableRoute
   TransportRoute: typeof TransportRouteWithChildren
@@ -3128,6 +3150,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentWebinarsRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/students/': {
+      id: '/students/'
+      path: '/'
+      fullPath: '/students/'
+      preLoaderRoute: typeof StudentsIndexRouteImport
+      parentRoute: typeof StudentsRoute
+    }
     '/super-admin/': {
       id: '/super-admin/'
       path: '/'
@@ -3288,6 +3317,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/placement/drives/$driveId'
       preLoaderRoute: typeof PlacementDrivesDriveIdRouteImport
       parentRoute: typeof PlacementRoute
+    }
+    '/students/profile/$id': {
+      id: '/students/profile/$id'
+      path: '/profile/$id'
+      fullPath: '/students/profile/$id'
+      preLoaderRoute: typeof StudentsProfileIdRouteImport
+      parentRoute: typeof StudentsRoute
     }
     '/super-admin/academics/faculty-status': {
       id: '/super-admin/academics/faculty-status'
@@ -3647,6 +3683,20 @@ const StudentRouteChildren: StudentRouteChildren = {
 const StudentRouteWithChildren =
   StudentRoute._addFileChildren(StudentRouteChildren)
 
+interface StudentsRouteChildren {
+  StudentsIndexRoute: typeof StudentsIndexRoute
+  StudentsProfileIdRoute: typeof StudentsProfileIdRoute
+}
+
+const StudentsRouteChildren: StudentsRouteChildren = {
+  StudentsIndexRoute: StudentsIndexRoute,
+  StudentsProfileIdRoute: StudentsProfileIdRoute,
+}
+
+const StudentsRouteWithChildren = StudentsRoute._addFileChildren(
+  StudentsRouteChildren,
+)
+
 interface SuperAdminAcademicsRouteChildren {
   SuperAdminAcademicsFacultyStatusRoute: typeof SuperAdminAcademicsFacultyStatusRoute
   SuperAdminAcademicsSyllabusTrackerRoute: typeof SuperAdminAcademicsSyllabusTrackerRoute
@@ -3767,7 +3817,7 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   StudentRoute: StudentRouteWithChildren,
-  StudentsRoute: StudentsRoute,
+  StudentsRoute: StudentsRouteWithChildren,
   SuperAdminRoute: SuperAdminRouteWithChildren,
   TimetableRoute: TimetableRoute,
   TransportRoute: TransportRouteWithChildren,

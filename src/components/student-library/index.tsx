@@ -1,258 +1,311 @@
-import React, { useState } from "react";
-import { 
-  mockSummaryMetrics, 
-  mockIssuedBooks, 
-  mockReservedBooks, 
-  mockFineRecords, 
-  mockBorrowHistory, 
-  mockDigitalResources, 
-  mock500Books 
-} from "./mock-data";
-import { SummaryCards } from "./summary-cards";
-import { OverviewTab } from "./overview-tab";
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  loadLibraryState,
+  saveLibraryState,
+  calculateOverdueFine,
+  StorageSchema,
+} from "./library-store";
+import { LibraryMetrics } from "./types";
+
 import { CatalogTab } from "./catalog-tab";
-import { IssuedTab } from "./issued-tab";
-import { HistoryTab } from "./history-tab";
+import { BorrowedTab } from "./borrowed-tab";
 import { ReservationTab } from "./reservation-tab";
-import { DigitalResourcesTab } from "./digital-resources-tab";
+import { DigitalLibraryTab } from "./digital-resources-tab";
 import { FineTab } from "./fine-tab";
+import { ActivityTab } from "./activity-tab";
 import { LibraryRightSidebar } from "./sidebar";
+import { NotificationsDrawer } from "./notifications-drawer";
 
-// Modals
-import { BookDetailsModal } from "./modals/book-modal";
-import { RenewModal } from "./modals/renew-modal";
-import { ReserveModal } from "./modals/reserve-modal";
-import { FinePaymentModal } from "./modals/fine-payment-modal";
-import { LibraryCardModal } from "./modals/library-card-modal";
-import { ResourcePreviewModal } from "./modals/preview-modal";
-
-import { 
-  BookOpen, 
-  Search, 
-  RefreshCw, 
-  History, 
-  BookmarkCheck, 
-  Globe, 
-  CreditCard, 
-  Layers, 
-  Download, 
-  Home, 
-  ChevronRight 
+import {
+  BookOpen,
+  Search,
+  History,
+  BookmarkCheck,
+  CreditCard,
+  Home,
+  ChevronRight,
+  Bell,
+  ArrowRight,
+  Globe,
+  Monitor,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { BookItem, IssuedBookItem, FineRecordItem, DigitalResourceItem } from "./types";
-import { toast } from "sonner";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 
 export function StudentLibraryModule() {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("catalog");
+  const [store, setStore] = useState<StorageSchema>(loadLibraryState);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
-  // Datasets State
-  const [issuedBooks, setIssuedBooks] = useState(mockIssuedBooks);
-  const [reservedBooks, setReservedBooks] = useState(mockReservedBooks);
-  const [fines, setFines] = useState(mockFineRecords);
-
-  // Modal States
-  const [selectedBookModal, setSelectedBookModal] = useState<BookItem | null>(null);
-  const [selectedRenewModal, setSelectedRenewModal] = useState<IssuedBookItem | null>(null);
-  const [selectedReserveModal, setSelectedReserveModal] = useState<BookItem | null>(null);
-  const [selectedFineModal, setSelectedFineModal] = useState<FineRecordItem | null>(null);
-  const [libraryCardModalOpen, setLibraryCardModalOpen] = useState(false);
-  const [previewResourceModal, setPreviewResourceModal] = useState<DigitalResourceItem | null>(null);
-
-  // Actions
-  const handleConfirmRenew = (issuedId: string) => {
-    setIssuedBooks((prev) =>
-      prev.map((b) =>
-        b.id === issuedId
-          ? {
-              ...b,
-              renewalsCount: b.renewalsCount + 1,
-              dueDate: "2026-08-19",
-              daysRemaining: 14,
-            }
-          : b
-      )
-    );
-  };
-
-  const handleConfirmReserve = (book: BookItem) => {
-    const newRes = {
-      id: `RES-${Date.now()}`,
-      bookId: book.id,
-      title: book.title,
-      author: book.author,
-      reservedDate: new Date().toISOString().split("T")[0],
-      queuePosition: 3,
-      availabilityDate: "2026-08-09",
-      status: "In Queue" as const,
+  // Unblock body overflow
+  useEffect(() => {
+    document.body.style.overflow = "unset";
+    return () => {
+      document.body.style.overflow = "unset";
     };
-    setReservedBooks((prev) => [newRes, ...prev]);
-  };
+  }, []);
 
-  const handleCancelReservation = (resId: string) => {
-    setReservedBooks((prev) => prev.filter((r) => r.id !== resId));
-  };
+  // Sync to localStorage & listen for storage events (Live updates from Librarian actions)
+  useEffect(() => {
+    saveLibraryState(store);
+  }, [store]);
 
-  const handleConfirmFinePayment = (fineId: string) => {
-    setFines((prev) =>
-      prev.map((f) =>
-        f.id === fineId ? { ...f, status: "Paid" as const, transactionId: `TXN-LIB-${Date.now()}` } : f
-      )
-    );
-  };
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setStore(loadLibraryState());
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
-  const handleOpenBookDetailsById = (bookId: string) => {
-    const found = mock500Books.find((b) => b.id === bookId) || mock500Books[0];
-    setSelectedBookModal(found);
-  };
+  // Compute Metrics automatically
+  const metrics: LibraryMetrics = useMemo(() => {
+    const currentlyBorrowed = store.borrowed.filter((b) => b.status !== "Returned").length;
+    const totalBorrowed = store.borrowed.length;
 
-  const pendingFines = fines.filter((f) => f.status === "Pending");
+    const overdueCount = store.borrowed.filter((b) => {
+      const { lateDays } = calculateOverdueFine(b.dueDate, "2026-08-04");
+      return b.status !== "Returned" && lateDays > 0;
+    }).length;
+
+    const pendingFine = store.borrowed.reduce((sum, b) => {
+      if (b.status === "Returned" || b.finePaid) return sum;
+      const { fineAmount } = calculateOverdueFine(b.dueDate, "2026-08-04");
+      return sum + fineAmount;
+    }, 0);
+
+    const pendingFinesTable = store.fines.reduce((sum, f) => (f.status === "Pending" ? sum + f.fineAmount : sum), 0);
+
+    return {
+      totalBorrowed,
+      currentlyBorrowed,
+      overdueCount,
+      recentReturns: 3,
+      pendingFine: Math.max(pendingFine, pendingFinesTable),
+      reservedCount: store.reservations.length,
+      wishlistCount: store.wishlist.length,
+      digitalVisitsCount: store.digitalVisits ? store.digitalVisits.length : 0,
+    };
+  }, [store]);
+
+  const unreadNotifsCount = store.notifications.filter((n) => !n.read).length;
+
+  // Card Navigation Items Definition - Includes Digital Library Usage History
+  const navCards = [
+    {
+      id: "catalog",
+      title: "Book Availability",
+      count: `${store.books.length}`,
+      unit: "titles",
+      subtitle: "Search Portal",
+      icon: Search,
+      color: "purple",
+      activeBg: "border-purple-600 bg-purple-50/60 dark:bg-purple-950/40 ring-2 ring-purple-500/20",
+      activeIconBg: "bg-purple-600 text-white",
+      inactiveIconBg: "bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400",
+    },
+    {
+      id: "borrowed",
+      title: "My Issued Books",
+      count: `${metrics.currentlyBorrowed}`,
+      unit: "active",
+      subtitle: "Personal Tracker",
+      icon: BookOpen,
+      color: "purple",
+      activeBg: "border-purple-600 bg-purple-50/60 dark:bg-purple-950/40 ring-2 ring-purple-500/20",
+      activeIconBg: "bg-purple-600 text-white",
+      inactiveIconBg: "bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400",
+    },
+    {
+      id: "reservations",
+      title: "Holds",
+      count: `${metrics.reservedCount}`,
+      unit: "reserved",
+      subtitle: "Queue Status",
+      icon: BookmarkCheck,
+      color: "blue",
+      activeBg: "border-blue-600 bg-blue-50/60 dark:bg-blue-950/40 ring-2 ring-blue-500/20",
+      activeIconBg: "bg-blue-600 text-white",
+      inactiveIconBg: "bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400",
+    },
+    {
+      id: "digital",
+      title: "Digital Library",
+      count: `${metrics.digitalVisitsCount}`,
+      unit: "visits",
+      subtitle: "Usage History",
+      icon: Globe,
+      color: "blue",
+      activeBg: "border-blue-600 bg-blue-50/60 dark:bg-blue-950/40 ring-2 ring-blue-500/20",
+      activeIconBg: "bg-blue-600 text-white",
+      inactiveIconBg: "bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400",
+    },
+    {
+      id: "fines",
+      title: "Fine Ledger",
+      count: metrics.pendingFine > 0 ? `₹${metrics.pendingFine}` : "₹0",
+      unit: metrics.pendingFine > 0 ? "due" : "clear",
+      subtitle: "Overdue Dues",
+      icon: CreditCard,
+      color: metrics.pendingFine > 0 ? "rose" : "emerald",
+      activeBg: metrics.pendingFine > 0
+        ? "border-rose-600 bg-rose-50/60 dark:bg-rose-950/40 ring-2 ring-rose-500/20"
+        : "border-emerald-600 bg-emerald-50/60 dark:bg-emerald-950/40 ring-2 ring-emerald-500/20",
+      activeIconBg: metrics.pendingFine > 0 ? "bg-rose-600 text-white" : "bg-emerald-600 text-white",
+      inactiveIconBg: metrics.pendingFine > 0
+        ? "bg-rose-50 dark:bg-rose-950/50 text-rose-600"
+        : "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600",
+    },
+    {
+      id: "activity",
+      title: "Activity Log",
+      count: `${store.activities.length}`,
+      unit: "records",
+      subtitle: "System History",
+      icon: History,
+      color: "slate",
+      activeBg: "border-slate-800 dark:border-slate-300 bg-slate-100/80 dark:bg-slate-800/80 ring-2 ring-slate-400/20",
+      activeIconBg: "bg-slate-900 text-white dark:bg-white dark:text-slate-900",
+      inactiveIconBg: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+    },
+  ];
 
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-[1600px] mx-auto min-h-screen">
       {/* PAGE HEADER */}
       <div className="space-y-4">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+          <Home className="h-3.5 w-3.5" />
+          <span>Student</span>
+          <ChevronRight className="h-3 w-3 text-slate-400" />
+          <span className="font-bold text-slate-900 dark:text-slate-100">Library</span>
+        </div>
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 border-slate-200 dark:border-slate-800">
           <div>
             <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
               Library (OPAC)
             </h1>
             <p className="text-xs text-slate-500 font-medium mt-0.5">
-              Search books, manage issued books, digital resources and library services.
+              Read-only catalogue search portal, issued-book tracker, and lab usage history.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setActiveTab("catalog")}
-              className="rounded-xl text-xs bg-purple-600 hover:bg-purple-700 text-white font-bold h-9 gap-1.5 shadow-sm"
+          <div className="flex items-center">
+            {/* NOTIFICATIONS BUTTON */}
+            <button
+              onClick={() => setNotificationsOpen(true)}
+              className="relative p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 h-9 w-9 flex items-center justify-center transition-colors"
+              title="Library Notifications"
             >
-              <Search className="h-4 w-4" /> Search Catalogue
-            </Button>
-            <Button
-              onClick={() => {
-                toast.success("Library catalogue database synced!");
-              }}
-              variant="outline"
-              className="rounded-xl text-xs font-semibold h-9 gap-1.5"
-            >
-              <RefreshCw className="h-4 w-4 text-slate-500" /> Refresh
-            </Button>
+              <Bell className="h-4 w-4" />
+              {unreadNotifsCount > 0 && (
+                <span className="absolute -top-1 -right-1 size-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">
+                  {unreadNotifsCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* TOP SUMMARY CARDS */}
-      <SummaryCards metrics={mockSummaryMetrics} />
+      {/* CARD NAVIGATION GRID - 6 CARDS */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        {navCards.map((card) => {
+          const Icon = card.icon;
+          const isActive = activeTab === card.id;
 
-      {/* MAIN CONTENT + RIGHT SIDEBAR GRID */}
+          return (
+            <button
+              key={card.id}
+              onClick={() => setActiveTab(card.id)}
+              className={`p-4 rounded-2xl border transition-all text-left flex flex-col justify-between cursor-pointer group shadow-2xs ${
+                isActive
+                  ? `${card.activeBg} shadow-sm`
+                  : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-purple-300 dark:hover:border-purple-700 hover:shadow-xs"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span
+                  className={`text-[10px] sm:text-xs font-bold uppercase tracking-wider ${
+                    isActive ? "text-slate-900 dark:text-white font-extrabold" : "text-slate-500"
+                  }`}
+                >
+                  {card.title}
+                </span>
+                <div
+                  className={`p-2 rounded-xl transition-transform group-hover:scale-105 ${
+                    isActive ? card.activeIconBg : card.inactiveIconBg
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                </div>
+              </div>
+
+              <div className="mt-3 space-y-0.5">
+                <div className="flex items-baseline gap-1">
+                  <span
+                    className={`text-xl sm:text-2xl font-black font-mono tracking-tight ${
+                      isActive ? "text-slate-900 dark:text-white" : "text-slate-800 dark:text-slate-100"
+                    }`}
+                  >
+                    {card.count}
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium">{card.unit}</span>
+                </div>
+                <div className="flex items-center justify-between text-[10px] font-semibold">
+                  <span className={isActive ? "text-purple-700 dark:text-purple-300 font-bold" : "text-slate-400"}>
+                    {card.subtitle}
+                  </span>
+                  <ArrowRight
+                    className={`h-3 w-3 transition-transform ${
+                      isActive
+                        ? "text-purple-600 dark:text-purple-400 translate-x-0.5"
+                        : "text-slate-300 opacity-0 group-hover:opacity-100"
+                    }`}
+                  />
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* MAIN DATA CONTENT AREA */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* LEFT MAIN MODULE AREA (3 COLS) */}
         <div className="lg:col-span-3 space-y-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-5">
-            <TabsList className="flex flex-wrap h-auto p-1 bg-slate-100 dark:bg-slate-800/60 rounded-xl gap-1 border border-slate-200 dark:border-slate-800">
-              <TabsTrigger
-                value="overview"
-                className="rounded-lg text-xs font-bold py-2 px-3 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-purple-600 shadow-2xs gap-1.5"
-              >
-                <BookOpen className="h-3.5 w-3.5" /> Overview
-              </TabsTrigger>
-
-              <TabsTrigger
-                value="catalog"
-                className="rounded-lg text-xs font-bold py-2 px-3 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-purple-600 shadow-2xs gap-1.5"
-              >
-                <Search className="h-3.5 w-3.5" /> Book Catalog (500)
-              </TabsTrigger>
-
-              <TabsTrigger
-                value="issued"
-                className="rounded-lg text-xs font-bold py-2 px-3 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-purple-600 shadow-2xs gap-1.5"
-              >
-                <Layers className="h-3.5 w-3.5" /> Issued ({issuedBooks.length})
-              </TabsTrigger>
-
-              <TabsTrigger
-                value="history"
-                className="rounded-lg text-xs font-bold py-2 px-3 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-purple-600 shadow-2xs gap-1.5"
-              >
-                <History className="h-3.5 w-3.5" /> History (30)
-              </TabsTrigger>
-
-              <TabsTrigger
-                value="reservations"
-                className="rounded-lg text-xs font-bold py-2 px-3 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-purple-600 shadow-2xs gap-1.5"
-              >
-                <BookmarkCheck className="h-3.5 w-3.5" /> Holds ({reservedBooks.length})
-              </TabsTrigger>
-
-              <TabsTrigger
-                value="digital"
-                className="rounded-lg text-xs font-bold py-2 px-3 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-purple-600 shadow-2xs gap-1.5"
-              >
-                <Globe className="h-3.5 w-3.5" /> Digital Repository (150)
-              </TabsTrigger>
-
-              <TabsTrigger
-                value="fines"
-                className="rounded-lg text-xs font-bold py-2 px-3 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-rose-600 shadow-2xs gap-1.5"
-              >
-                <CreditCard className="h-3.5 w-3.5" /> Fines ({pendingFines.length})
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="overview">
-              <OverviewTab
-                issuedBooks={issuedBooks}
-                reservedBooks={reservedBooks}
-                pendingFines={pendingFines}
-                onOpenRenewModal={(b) => setSelectedRenewModal(b)}
-                onOpenBookDetails={(id) => handleOpenBookDetailsById(id)}
-                onOpenFineModal={(f) => setSelectedFineModal(f)}
-                onSwitchTab={setActiveTab}
-              />
-            </TabsContent>
-
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsContent value="catalog">
-              <CatalogTab
-                books={mock500Books}
-                onOpenBookDetails={(b) => setSelectedBookModal(b)}
-                onOpenReserveModal={(b) => setSelectedReserveModal(b)}
-              />
+              <CatalogTab books={store.books} />
             </TabsContent>
 
-            <TabsContent value="issued">
-              <IssuedTab
-                issuedBooks={issuedBooks}
-                onOpenRenewModal={(b) => setSelectedRenewModal(b)}
-                onOpenBookDetails={(id) => handleOpenBookDetailsById(id)}
-              />
-            </TabsContent>
-
-            <TabsContent value="history">
-              <HistoryTab history={mockBorrowHistory} />
+            <TabsContent value="borrowed">
+              <BorrowedTab borrowedBooks={store.borrowed} />
             </TabsContent>
 
             <TabsContent value="reservations">
               <ReservationTab
-                reservations={reservedBooks}
-                onCancelReservation={handleCancelReservation}
+                reservations={store.reservations}
+                onCancelReservation={(id) => {
+                  setStore((prev) => ({
+                    ...prev,
+                    reservations: prev.reservations.filter((r) => r.id !== id),
+                  }));
+                }}
               />
             </TabsContent>
 
             <TabsContent value="digital">
-              <DigitalResourcesTab
-                resources={mockDigitalResources}
-                onPreviewResource={(r) => setPreviewResourceModal(r)}
-              />
+              <DigitalLibraryTab visits={store.digitalVisits || []} />
             </TabsContent>
 
             <TabsContent value="fines">
-              <FineTab
-                fines={fines}
-                onOpenFinePaymentModal={(f) => setSelectedFineModal(f)}
-              />
+              <FineTab fines={store.fines} />
+            </TabsContent>
+
+            <TabsContent value="activity">
+              <ActivityTab activities={store.activities} />
             </TabsContent>
           </Tabs>
         </div>
@@ -260,49 +313,23 @@ export function StudentLibraryModule() {
         {/* RIGHT SIDEBAR (1 COL) */}
         <div className="lg:col-span-1">
           <LibraryRightSidebar
-            onOpenLibraryCard={() => setLibraryCardModalOpen(true)}
-            onSelectQuickAction={(action) => {
-              if (action === "search") setActiveTab("catalog");
-              if (action === "fines") setActiveTab("fines");
-              if (action === "digital") setActiveTab("digital");
-            }}
+            onOpenLibraryCard={() => {}}
+            onSelectQuickAction={(action) => setActiveTab(action)}
           />
         </div>
       </div>
 
-      {/* ALL MODALS */}
-      <BookDetailsModal
-        book={selectedBookModal}
-        onClose={() => setSelectedBookModal(null)}
-        onReserve={(b) => setSelectedReserveModal(b)}
-      />
-
-      <RenewModal
-        book={selectedRenewModal}
-        onClose={() => setSelectedRenewModal(null)}
-        onConfirmRenew={(id) => handleConfirmRenew(id)}
-      />
-
-      <ReserveModal
-        book={selectedReserveModal}
-        onClose={() => setSelectedReserveModal(null)}
-        onConfirmReserve={handleConfirmReserve}
-      />
-
-      <FinePaymentModal
-        fine={selectedFineModal}
-        onClose={() => setSelectedFineModal(null)}
-        onConfirmPayment={handleConfirmFinePayment}
-      />
-
-      <LibraryCardModal
-        open={libraryCardModalOpen}
-        onClose={() => setLibraryCardModalOpen(false)}
-      />
-
-      <ResourcePreviewModal
-        resource={previewResourceModal}
-        onClose={() => setPreviewResourceModal(null)}
+      {/* NOTIFICATIONS DRAWER */}
+      <NotificationsDrawer
+        open={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+        notifications={store.notifications}
+        onMarkRead={(id) => {
+          setStore((prev) => ({
+            ...prev,
+            notifications: prev.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
+          }));
+        }}
       />
     </div>
   );
