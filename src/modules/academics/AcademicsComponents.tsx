@@ -25,7 +25,6 @@ import {
   ShieldCheck,
   Calendar,
   PieChart,
-<<<<<<< HEAD
   CheckCircle2,
   XCircle,
   AlertCircle,
@@ -43,9 +42,7 @@ import {
   User,
   Coffee,
   X,
-=======
   UserCog,
->>>>>>> origin/feature/subject-allocation-modules
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -134,7 +131,6 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
   const [facultyStatuses, setFacultyStatuses] = useState<LiveFacultyStatus[]>(INITIAL_FACULTY_STATUS);
   const [selectedPeriod, setSelectedPeriod] = useState<number>(2);
 
-<<<<<<< HEAD
   // Modal State for Faculty Full-Day Timetable
   const [isTimetableModalOpen, setIsTimetableModalOpen] = useState(false);
   const [selectedFacultySchedule, setSelectedFacultySchedule] = useState<FacultyFullDaySchedule | null>(null);
@@ -159,47 +155,6 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDeptFilter, setSelectedDeptFilter] = useState("All Departments");
   const [selectedSemFilter, setSelectedSemFilter] = useState("All Semesters");
-=======
-  // Dashboard states
-  const [dashboardData, setDashboardData] = useState<AcademicDashboardData | null>(null);
-  const [dashboardLoading, setDashboardLoading] = useState<boolean>(true);
-  const [dashboardError, setDashboardError] = useState<string | null>(null);
-
-  // Fetch department-aware metrics when department changes
-  useEffect(() => {
-    let active = true;
-    setDashboardLoading(true);
-    setDashboardError(null);
-
-    getDashboardData(selectedDepartment)
-      .then((data) => {
-        if (active) {
-          setDashboardData(data);
-          setDashboardLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (active) {
-          setDashboardError("Failed to synchronize department analytics.");
-          setDashboardLoading(false);
-        }
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [selectedDepartment]);
-
-  useEffect(() => {
-    if (initialTab) {
-      setActiveSubpart(initialTab);
-    }
-  }, [initialTab]);
-
-  const [search, setSearch] = useState("");
-  const [selectedDept, setSelectedDept] = useState(selectedDepartment);
-  const [selectedSem, setSelectedSem] = useState("All Semesters");
->>>>>>> origin/feature/subject-allocation-modules
   const [loading, setLoading] = useState(false);
 
   // Dynamic Semester mapping based on active department
@@ -310,7 +265,6 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
     projectCredits: 20,
   });
 
-<<<<<<< HEAD
   useEffect(() => {
     if (initialTab) {
       setActiveSubpart(initialTab);
@@ -352,32 +306,6 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
   };
 
   // Filtered lists
-=======
-  // Re-fetch all data manually on refresh
-  const loadAllData = async () => {
-    setLoading(true);
-    try {
-      const [crs, dps, cur] = await Promise.all([
-        getSubjects({
-          department: selectedDepartment,
-          semester: selectedSem !== "All Semesters" ? selectedSem : undefined,
-          search: search || undefined,
-        }),
-        fetchAcademicDepartments(),
-        getCurriculum(selectedDepartment),
-      ]);
-      setCourses(crs);
-      setDepartments(dps);
-      setCurriculumSchemes(cur);
-    } catch (err) {
-      toast.error("Failed to load academic records.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Filtered Courses (Fallback Client Filter)
->>>>>>> origin/feature/subject-allocation-modules
   const filteredCourses = courses.filter((c) => {
     const matchesSearch =
       c.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -594,51 +522,15 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
               </Badge>
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-<<<<<<< HEAD
               Click any faculty card to inspect full-day period timetable. Live Faculty Status, Attendance & Syllabus Tracker.
-=======
-              Comprehensive control of Academic Departments, Course Cataloging, and Curriculum Schemes.
-              <span className="block mt-1.5 font-semibold text-primary/95 flex items-center gap-1.5 bg-primary/5 px-2.5 py-1 rounded-lg border border-primary/10 w-fit">
-                <Building2 className="size-3.5 shrink-0" />
-                Active Department: {activeDeptName} &middot; Dean: {deanName}
-              </span>
->>>>>>> origin/feature/subject-allocation-modules
             </p>
           </div>
         </div>
 
-<<<<<<< HEAD
         {/* Action Buttons */}
         <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
           <Button variant="outline" size="sm" onClick={loadAllData} disabled={loading} className="h-9 gap-2 text-xs font-medium">
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
-=======
-        {/* Action Buttons - Top Right Corner */}
-        <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start sm:self-auto">
-          {/* Global Department Selector */}
-          <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-            <SelectTrigger className="h-9 w-[260px] text-xs font-semibold bg-card border-border" aria-label="Selected Department">
-              <Building2 className="size-3.5 mr-1.5 text-primary shrink-0" />
-              <SelectValue placeholder="Department Scope" />
-            </SelectTrigger>
-            <SelectContent>
-              {academicDepartments.map((d) => (
-                <SelectItem key={d.code} value={d.code} className="text-xs">
-                  {d.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={loadAllData}
-            disabled={loading}
-            className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent"
-          >
-            <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} />
-            Refresh
->>>>>>> origin/feature/subject-allocation-modules
           </Button>
 
           <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-9 gap-2 text-xs font-medium">
@@ -659,7 +551,6 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
         </div>
       </div>
 
-<<<<<<< HEAD
       {/* KPI Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
@@ -699,45 +590,6 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
           <p className="text-2xl font-bold font-mono text-primary">{departments.length} Depts</p>
           <p className="text-[0.68rem] text-muted-foreground">CSE, ECE, ME, AI&DS</p>
         </div>
-=======
-      {/* Department-Aware KPI Metrics Dashboard */}
-      {dashboardError && (
-        <div className="p-3.5 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive text-xs font-semibold animate-fade-in">
-          {dashboardError}
-        </div>
-      )}
-
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3.5">
-        {[
-          { label: "Total Students", value: dashboardData?.totalStudents, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/25" },
-          { label: "Total Faculty", value: dashboardData?.totalFaculty, icon: UserCog, color: "text-indigo-500", bg: "bg-indigo-500/10 border-indigo-500/25" },
-          { label: "Total Subjects", value: dashboardData?.totalSubjects, icon: BookOpen, color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/25" },
-          { label: "Current Semester", value: dashboardData?.currentSemester, icon: Calendar, color: "text-amber-500", bg: "bg-amber-500/10 border-amber-500/25" },
-          { label: "Active Courses", value: dashboardData?.activeCourses, icon: Layers, color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/25" },
-          { label: "Avg Attendance", value: dashboardData ? `${dashboardData.averageAttendance}%` : undefined, icon: PieChart, color: "text-rose-500", bg: "bg-rose-500/10 border-rose-500/25" },
-          { label: "Pass Percentage", value: dashboardData ? `${dashboardData.passPercentage}%` : undefined, icon: Award, color: "text-teal-500", bg: "bg-teal-500/10 border-teal-500/25" },
-          { label: "Upcoming Exams", value: dashboardData?.upcomingExams, icon: FileText, color: "text-sky-500", bg: "bg-sky-500/10 border-sky-500/25" },
-          { label: "Grade Approvals", value: dashboardData?.pendingGradeApprovals, icon: CheckCircle, color: "text-emerald-600", bg: "bg-emerald-500/10 border-emerald-500/25" },
-          { label: "Total Credits", value: dashboardData?.totalCredits, icon: Bookmark, color: "text-primary", bg: "bg-primary/10 border-primary/25" },
-        ].map((card, index) => {
-          const Icon = card.icon;
-          return (
-            <div key={index} className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 hover:border-primary/30 transition-all duration-300">
-              <div className="flex items-center justify-between text-[0.65rem] font-semibold text-muted-foreground uppercase tracking-wider">
-                <span className="truncate mr-1">{card.label}</span>
-                <span className={cn("p-1 rounded-lg", card.bg)}>
-                  <Icon className={cn("size-3.5", card.color)} />
-                </span>
-              </div>
-              {dashboardLoading ? (
-                <div className="h-8 w-16 bg-muted/70 animate-pulse rounded-md mt-1.5" />
-              ) : (
-                <p className="text-xl font-bold font-mono text-foreground mt-0.5">{card.value ?? "--"}</p>
-              )}
-            </div>
-          );
-        })}
->>>>>>> origin/feature/subject-allocation-modules
       </div>
 
       {/* SEVEN SUBPARTS NAVIGATION TAB BAR */}
@@ -838,8 +690,6 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
               </div>
             </div>
           </div>
-
-<<<<<<< HEAD
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredFacultyStatus.map((f) => (
               <div
@@ -945,38 +795,6 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
                 <SelectTrigger className="h-9 text-xs w-[160px] rounded-xl"><SelectValue placeholder="Department" /></SelectTrigger>
                 <SelectContent>
                   {DEPARTMENTS_LIST.map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}
-=======
-              <Select value={selectedDept} onValueChange={(val) => {
-                setSelectedDept(val);
-                if (val !== "All Departments") {
-                  setSelectedDepartment(val);
-                }
-              }}>
-                <SelectTrigger className="h-9 w-full sm:w-[160px] text-xs">
-                  <Building2 className="size-3.5 mr-1.5 text-muted-foreground" />
-                  <SelectValue placeholder="Department" />
-                </SelectTrigger>
-                <SelectContent>
-                  {DEPARTMENTS_LIST.map((d) => (
-                    <SelectItem key={d} value={d} className="text-xs">
-                      {d}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={selectedSem} onValueChange={setSelectedSem}>
-                <SelectTrigger className="h-9 w-full sm:w-[150px] text-xs">
-                  <Filter className="size-3.5 mr-1.5 text-muted-foreground" />
-                  <SelectValue placeholder="Semester" />
-                </SelectTrigger>
-                <SelectContent>
-                  {semestersList.map((s) => (
-                    <SelectItem key={s} value={s} className="text-xs">
-                      {s}
-                    </SelectItem>
-                  ))}
->>>>>>> origin/feature/subject-allocation-modules
                 </SelectContent>
               </Select>
               <div className="relative flex-1 min-w-[150px]">
