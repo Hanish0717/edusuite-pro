@@ -455,40 +455,38 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Faculty Live Status</span>
-            <Users className="size-4 text-emerald-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-emerald-600">
-            {facultyStatuses.filter((f) => f.status === "FREE").length} Free / {facultyStatuses.length}
-          </p>
-          <p className="text-[0.68rem] text-emerald-600 font-medium">Period {selectedPeriod} Active Schedule</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Class Attendance Avg</span>
-            <UserCheck className="size-4 text-blue-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-blue-600">91.8% Institutional</p>
-          <p className="text-[0.68rem] text-muted-foreground">Daily / Weekly / Monthly Track</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Syllabus Completion</span>
-            <BarChart2 className="size-4 text-purple-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-purple-600">71% Overall</p>
-          <p className="text-[0.68rem] text-purple-600 font-medium">32 / 45 Classes Completed</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
             <span>Academic Departments</span>
             <Building2 className="size-4 text-primary" />
           </div>
           <p className="text-2xl font-bold font-mono text-primary">{departments.length} Depts</p>
-          <p className="text-[0.68rem] text-muted-foreground">CSE, ECE, ME, AI&DS</p>
+          <p className="text-[0.68rem] text-muted-foreground font-mono">CSE, ECE, EEE, ME, Civil, MBA</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Course Catalog</span>
+            <BookOpen className="size-4 text-blue-500" />
+          </div>
+          <p className="text-2xl font-bold font-mono text-blue-600">{courses.length} Subjects</p>
+          <p className="text-[0.68rem] text-muted-foreground">Theory, Labs & Electives</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Curriculum Schemes</span>
+            <Bookmark className="size-4 text-purple-500" />
+          </div>
+          <p className="text-2xl font-bold font-mono text-purple-600">{curriculumSchemes.length} Regulations</p>
+          <p className="text-[0.68rem] text-purple-600 font-medium">R24, R22 Approved Frameworks</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Accreditation Standard</span>
+            <Award className="size-4 text-emerald-500" />
+          </div>
+          <p className="text-2xl font-bold font-mono text-emerald-600">NAAC A+</p>
+          <p className="text-[0.68rem] text-emerald-600 font-medium">NBA Accredited Programs</p>
         </div>
       </div>
 
