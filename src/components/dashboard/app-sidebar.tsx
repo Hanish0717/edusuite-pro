@@ -1,11 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { ChevronRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,

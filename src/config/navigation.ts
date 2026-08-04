@@ -170,7 +170,17 @@ export const navigation: NavSection[] = [
         moduleId: "alumni",
         children: [
           { title: "Dashboard", url: "/alumni?tab=dashboard" },
-          { title: "Directory", url: "/alumni?tab=directory" },
+          { title: "Alumni Directory", url: "/alumni?tab=directory" },
+          { title: "Placement Portal", url: "/alumni?tab=placement-collaboration" },
+          { title: "Career Services", url: "/alumni?tab=career" },
+          { title: "Mentorship Hub", url: "/alumni?tab=mentorship" },
+          { title: "Guest Lectures", url: "/alumni?tab=guest-lectures" },
+          { title: "Student Networking", url: "/alumni?tab=student-networking" },
+          { title: "Events & Reunions", url: "/alumni?tab=events" },
+          { title: "News & Articles", url: "/alumni?tab=news-announcements" },
+          { title: "Invitations Hub", url: "/alumni?tab=invitations" },
+          { title: "Verification Queue", url: "/alumni?tab=verification-queue" },
+          { title: "Donations & Giving", url: "/alumni?tab=donations" },
           { title: "Analytics", url: "/alumni?tab=analytics" },
         ],
       },
@@ -181,6 +191,7 @@ export const navigation: NavSection[] = [
 function resolveUrlForUser(url: string, user: UserPermissionContext, title?: string): string {
   // Preserve standalone module URLs without rewriting
   if (
+    url.startsWith("/alumni") ||
     [
       "/employee-management",
       "/leave",
