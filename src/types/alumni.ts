@@ -197,7 +197,7 @@ export interface AlumniRegistrationFormData {
 export interface PlacementDriveRequest {
   id: string;
   company: string;
-  logo?: string;
+  logo?: string | undefined;
   title: string;
   driveType: "On-Campus" | "Off-Campus Referral" | "Pool Drive" | "Virtual Drive";
   ctcPackage: string;
@@ -208,6 +208,10 @@ export interface PlacementDriveRequest {
   alumniRole: string;
   status: "Pending Review" | "Approved" | "Scheduled" | "Completed" | "Rejected";
   registeredStudentsCount: number;
+  description?: string | undefined;
+  applicationDeadline?: string | undefined;
+  hasApplied?: boolean | undefined;
+  officerReviewNotes?: string | undefined;
 }
 
 export interface GuestLectureSession {
