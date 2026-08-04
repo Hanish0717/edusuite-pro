@@ -542,6 +542,8 @@ export function canUserApproveStep(
   delegations: DelegationRecord[] = storedDelegations
 ): boolean {
   if (step.status !== "active") return false;
+  // Super Admin has executive sign-off authority to approve/reject any active step directly
+  if (userRole === "super-admin") return true;
   if (!step.flagRequired) return true;
 
   // 1. Direct privilege flag check
