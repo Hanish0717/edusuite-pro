@@ -116,7 +116,6 @@ export const navigation: NavSection[] = [
   {
     label: "Menu",
     items: [
-      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
       { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
       { title: "Emergency Broadcast", url: "/emergency", icon: Siren, roles: ["super-admin", "staff"], badge: "Instant" },
     ],
