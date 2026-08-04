@@ -119,6 +119,7 @@ export const navigation: NavSection[] = [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
       { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
       { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
+      { title: "Emergency Broadcast", url: "/emergency", icon: Siren, roles: ["super-admin", "staff"], badge: "Instant" },
     ],
   },
   {
@@ -192,6 +193,8 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/grievance",
       "/alumni",
       "/approval-workflows",
+      "/emergency",
+      "/super-admin/emergency",
     ].includes(url)
   ) {
     return url;

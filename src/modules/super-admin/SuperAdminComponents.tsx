@@ -30,7 +30,9 @@ import {
   ChevronRight,
   SlidersHorizontal,
   LockKeyhole,
+  Siren,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -205,6 +207,15 @@ export function SuperAdminModuleView() {
             <Database className={`size-3.5 ${backupLoading ? "animate-bounce" : ""}`} />
             {backupLoading ? "Backing up..." : "Trigger Backup"}
           </Button>
+
+          <Link to="/emergency">
+            <Button
+              size="sm"
+              className="h-9 bg-rose-600 hover:bg-rose-700 text-white gap-2 font-bold text-xs shadow-md animate-pulse"
+            >
+              <Siren className="size-4" /> Emergency Broadcast
+            </Button>
+          </Link>
 
           <Button
             size="sm"
