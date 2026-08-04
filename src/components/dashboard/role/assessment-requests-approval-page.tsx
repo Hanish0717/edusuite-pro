@@ -444,12 +444,13 @@ export function AssessmentRequestsApprovalWorkspace() {
     toast.success(`Saved updated result for ${editingSub.studentName}! Status: ${editPassStatus ? "PASSED ✓" : "FAILED ✕"}`);
   };
 
-  // Send Results to Recruiter Modal State
+  // Send Results to Recruiter Modal State & Sent Tracking
   const [isSendToRecruiterModalOpen, setIsSendToRecruiterModalOpen] = useState(false);
   const [selectedRecruiterCompany, setSelectedRecruiterCompany] = useState("Google Cloud India (David Miller - david.miller@google.com)");
   const [sendCandidatesOption, setSendCandidatesOption] = useState<"PASSED_ONLY" | "ALL_SUBMISSIONS" | "SINGLE_CANDIDATE">("PASSED_ONLY");
   const [singleCandidateSub, setSingleCandidateSub] = useState<StudentSubmissionRecord | null>(null);
   const [customRecruiterNote, setCustomRecruiterNote] = useState("");
+  const [dispatchedStudentIds, setDispatchedStudentIds] = useState<Record<string, boolean>>({});
 
   const handleOpenSendResultsModal = (sub?: StudentSubmissionRecord) => {
     if (sub) {
@@ -466,15 +467,21 @@ export function AssessmentRequestsApprovalWorkspace() {
   const handleConfirmSendToRecruiter = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSendToRecruiterModalOpen(false);
+    
     if (singleCandidateSub) {
+      setDispatchedStudentIds((prev) => ({ ...prev, [singleCandidateSub.id]: true }));
       toast.success(
         `🚀 Dispatched ${singleCandidateSub.studentName}'s (${singleCandidateSub.rollNo}) verified scorecard to ${selectedRecruiterCompany}!`
       );
     } else {
       const allSubs = getAllStudentSubmissions();
-      const count = sendCandidatesOption === "PASSED_ONLY" ? allSubs.filter((s) => s.passStatus).length : allSubs.length;
+      const targetSubs = sendCandidatesOption === "PASSED_ONLY" ? allSubs.filter((s) => s.passStatus) : allSubs;
+      const updatedMap: Record<string, boolean> = { ...dispatchedStudentIds };
+      targetSubs.forEach((s) => { updatedMap[s.id] = true; });
+      setDispatchedStudentIds(updatedMap);
+
       toast.success(
-        `🚀 Successfully dispatched ${count} candidate scorecards to ${selectedRecruiterCompany}! Email report & PDF scorecards sent.`
+        `🚀 Successfully dispatched ${targetSubs.length} candidate scorecards to ${selectedRecruiterCompany}! Email report & PDF scorecards sent.`
       );
     }
   };
@@ -859,12 +866,23 @@ export function AssessmentRequestsApprovalWorkspace() {
         title="TPO Central Stored Student Assessment Results & Scorecards"
         action={
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              onClick={() => handleOpenSendResultsModal()}
-              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs"
-            >
-              <Send className="size-3.5" /> Send Results to Recruiter
-            </Button>
+            {Object.keys(dispatchedStudentIds).length > 0 ? (
+              <Button
+                type="button"
+                onClick={() => handleOpenSendResultsModal()}
+                className="bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-2xs"
+              >
+                <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" /> Submitted to Recruiter
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={() => handleOpenSendResultsModal()}
+                className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs"
+              >
+                <Send className="size-3.5" /> Send Results to Recruiter
+              </Button>
+            )}
 
             <Button onClick={handleExportStudentResultsCsv} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-8 cursor-pointer gap-1.5 shadow-xs">
               <Download className="size-3.5" /> Export Stored Results to Excel (.csv)
@@ -908,23 +926,32 @@ export function AssessmentRequestsApprovalWorkspace() {
                     <td className="p-3 font-bold text-purple-600">{sub.codingScore} / {sub.codingTotal}</td>
                     <td className="p-3 font-bold text-emerald-600">{sub.totalPercentage}%</td>
                     <td className="p-3">
-                      <button
-                        type="button"
-                        onClick={() => handleQuickTogglePassStatus(sub)}
-                        className="cursor-pointer group flex items-center gap-1.5"
-                        title="Click to toggle status between PASSED and FAILED"
-                      >
-                        <Badge className={sub.passStatus ? "bg-emerald-600 hover:bg-emerald-700 text-white text-[0.62rem] px-2 py-0.5 rounded-full" : "bg-rose-600 hover:bg-rose-700 text-white text-[0.62rem] px-2 py-0.5 rounded-full"}>
-                          {sub.passStatus ? "PASSED ✓" : "FAILED ✕"}
-                        </Badge>
-                        <span className="text-[0.62rem] text-muted-foreground underline group-hover:text-primary transition-colors font-sans">
-                          (Toggle)
-                        </span>
-                      </button>
+                      <div className="space-y-1">
+                        <button
+                          type="button"
+                          onClick={() => handleQuickTogglePassStatus(sub)}
+                          className="cursor-pointer group flex items-center gap-1.5"
+                          title="Click to toggle status between PASSED and FAILED"
+                        >
+                          <Badge className={sub.passStatus ? "bg-emerald-600 hover:bg-emerald-700 text-white text-[0.62rem] px-2 py-0.5 rounded-full" : "bg-rose-600 hover:bg-rose-700 text-white text-[0.62rem] px-2 py-0.5 rounded-full"}>
+                            {sub.passStatus ? "PASSED ✓" : "FAILED ✕"}
+                          </Badge>
+                          <span className="text-[0.62rem] text-muted-foreground underline group-hover:text-primary transition-colors font-sans">
+                            (Toggle)
+                          </span>
+                        </button>
+
+                        {dispatchedStudentIds[sub.id] && (
+                          <span className="inline-flex items-center gap-1 text-[0.62rem] font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+                            <CheckCircle2 className="size-3 text-emerald-600" /> Sent to Recruiter
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1.5 font-sans">
                         <Button
+                          type="button"
                           size="sm"
                           variant="outline"
                           onClick={() => openEditSubModal(sub)}
@@ -932,13 +959,28 @@ export function AssessmentRequestsApprovalWorkspace() {
                         >
                           <Edit className="size-3" /> Edit Result
                         </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handleOpenSendResultsModal(sub)}
-                          className="h-7 text-[0.68rem] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-lg cursor-pointer px-2.5 font-bold gap-1 shadow-xs"
-                        >
-                          <Send className="size-3" /> Send to Recruiter
-                        </Button>
+
+                        {dispatchedStudentIds[sub.id] ? (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleOpenSendResultsModal(sub)}
+                            className="h-7 text-[0.68rem] bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 rounded-lg cursor-pointer px-2.5 font-bold gap-1 shadow-2xs"
+                            title="Submitted to recruiter. Click to view or resend dispatch."
+                          >
+                            <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" /> Submitted
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => handleOpenSendResultsModal(sub)}
+                            className="h-7 text-[0.68rem] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-lg cursor-pointer px-2.5 font-bold gap-1 shadow-xs"
+                          >
+                            <Send className="size-3" /> Send to Recruiter
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -1452,6 +1494,8 @@ export function AssessmentRequestsApprovalWorkspace() {
             </form>
           )}
         </DialogContent>
+      </Dialog>
+
       {/* DISPATCH RESULTS TO RECRUITER MODAL */}
       <Dialog open={isSendToRecruiterModalOpen} onOpenChange={setIsSendToRecruiterModalOpen}>
         <DialogContent className="sm:max-w-lg rounded-2xl">

@@ -75,12 +75,25 @@ import { Route as ExaminationDashboardRouteImport } from './routes/examination.d
 import { Route as ExternalUserIndexRouteImport } from './routes/external-user.index'
 import { Route as ExternalUserDashboardRouteImport } from './routes/external-user.dashboard'
 import { Route as FacultyIndexRouteImport } from './routes/faculty.index'
+import { Route as FacultyAssessmentsRouteImport } from './routes/faculty.assessments'
+import { Route as FacultyAssignmentsRouteImport } from './routes/faculty.assignments'
 import { Route as FacultyAttendanceRouteImport } from './routes/faculty.attendance'
 import { Route as FacultyDashboardRouteImport } from './routes/faculty.dashboard'
 import { Route as FacultyExaminationsRouteImport } from './routes/faculty.examinations'
+import { Route as FacultyLeaveRouteImport } from './routes/faculty.leave'
+import { Route as FacultyLessonPlanRouteImport } from './routes/faculty.lesson-plan'
 import { Route as FacultyLmsRouteImport } from './routes/faculty.lms'
+import { Route as FacultyMaterialsRouteImport } from './routes/faculty.materials'
+import { Route as FacultyNotificationsRouteImport } from './routes/faculty.notifications'
+import { Route as FacultyPayrollRouteImport } from './routes/faculty.payroll'
 import { Route as FacultyProfileRouteImport } from './routes/faculty.profile'
+import { Route as FacultyReportsRouteImport } from './routes/faculty.reports'
+import { Route as FacultyResearchRouteImport } from './routes/faculty.research'
 import { Route as FacultyResultsRouteImport } from './routes/faculty.results'
+import { Route as FacultySettingsRouteImport } from './routes/faculty.settings'
+import { Route as FacultyStudentsRouteImport } from './routes/faculty.students'
+import { Route as FacultySubjectsRouteImport } from './routes/faculty.subjects'
+import { Route as FacultyTimetableRouteImport } from './routes/faculty.timetable'
 import { Route as FinanceIndexRouteImport } from './routes/finance.index'
 import { Route as FinanceDashboardRouteImport } from './routes/finance.dashboard'
 import { Route as FinanceFeesRouteImport } from './routes/finance.fees'
@@ -501,6 +514,16 @@ const FacultyIndexRoute = FacultyIndexRouteImport.update({
   path: '/',
   getParentRoute: () => FacultyRoute,
 } as any)
+const FacultyAssessmentsRoute = FacultyAssessmentsRouteImport.update({
+  id: '/assessments',
+  path: '/assessments',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyAssignmentsRoute = FacultyAssignmentsRouteImport.update({
+  id: '/assignments',
+  path: '/assignments',
+  getParentRoute: () => FacultyRoute,
+} as any)
 const FacultyAttendanceRoute = FacultyAttendanceRouteImport.update({
   id: '/attendance',
   path: '/attendance',
@@ -516,9 +539,34 @@ const FacultyExaminationsRoute = FacultyExaminationsRouteImport.update({
   path: '/examinations',
   getParentRoute: () => FacultyRoute,
 } as any)
+const FacultyLeaveRoute = FacultyLeaveRouteImport.update({
+  id: '/leave',
+  path: '/leave',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyLessonPlanRoute = FacultyLessonPlanRouteImport.update({
+  id: '/lesson-plan',
+  path: '/lesson-plan',
+  getParentRoute: () => FacultyRoute,
+} as any)
 const FacultyLmsRoute = FacultyLmsRouteImport.update({
   id: '/lms',
   path: '/lms',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyMaterialsRoute = FacultyMaterialsRouteImport.update({
+  id: '/materials',
+  path: '/materials',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyNotificationsRoute = FacultyNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyPayrollRoute = FacultyPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
   getParentRoute: () => FacultyRoute,
 } as any)
 const FacultyProfileRoute = FacultyProfileRouteImport.update({
@@ -526,9 +574,39 @@ const FacultyProfileRoute = FacultyProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => FacultyRoute,
 } as any)
+const FacultyReportsRoute = FacultyReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyResearchRoute = FacultyResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => FacultyRoute,
+} as any)
 const FacultyResultsRoute = FacultyResultsRouteImport.update({
   id: '/results',
   path: '/results',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultySettingsRoute = FacultySettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyStudentsRoute = FacultyStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultySubjectsRoute = FacultySubjectsRouteImport.update({
+  id: '/subjects',
+  path: '/subjects',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyTimetableRoute = FacultyTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
   getParentRoute: () => FacultyRoute,
 } as any)
 const FinanceIndexRoute = FinanceIndexRouteImport.update({
@@ -1037,12 +1115,25 @@ export interface FileRoutesByFullPath {
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
+  '/faculty/assessments': typeof FacultyAssessmentsRoute
+  '/faculty/assignments': typeof FacultyAssignmentsRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
   '/faculty/dashboard': typeof FacultyDashboardRoute
   '/faculty/examinations': typeof FacultyExaminationsRoute
+  '/faculty/leave': typeof FacultyLeaveRoute
+  '/faculty/lesson-plan': typeof FacultyLessonPlanRoute
   '/faculty/lms': typeof FacultyLmsRoute
+  '/faculty/materials': typeof FacultyMaterialsRoute
+  '/faculty/notifications': typeof FacultyNotificationsRoute
+  '/faculty/payroll': typeof FacultyPayrollRoute
   '/faculty/profile': typeof FacultyProfileRoute
+  '/faculty/reports': typeof FacultyReportsRoute
+  '/faculty/research': typeof FacultyResearchRoute
   '/faculty/results': typeof FacultyResultsRoute
+  '/faculty/settings': typeof FacultySettingsRoute
+  '/faculty/students': typeof FacultyStudentsRoute
+  '/faculty/subjects': typeof FacultySubjectsRoute
+  '/faculty/timetable': typeof FacultyTimetableRoute
   '/finance/dashboard': typeof FinanceDashboardRoute
   '/finance/fees': typeof FinanceFeesRoute
   '/finance/reports': typeof FinanceReportsRoute
@@ -1182,12 +1273,25 @@ export interface FileRoutesByTo {
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
+  '/faculty/assessments': typeof FacultyAssessmentsRoute
+  '/faculty/assignments': typeof FacultyAssignmentsRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
   '/faculty/dashboard': typeof FacultyDashboardRoute
   '/faculty/examinations': typeof FacultyExaminationsRoute
+  '/faculty/leave': typeof FacultyLeaveRoute
+  '/faculty/lesson-plan': typeof FacultyLessonPlanRoute
   '/faculty/lms': typeof FacultyLmsRoute
+  '/faculty/materials': typeof FacultyMaterialsRoute
+  '/faculty/notifications': typeof FacultyNotificationsRoute
+  '/faculty/payroll': typeof FacultyPayrollRoute
   '/faculty/profile': typeof FacultyProfileRoute
+  '/faculty/reports': typeof FacultyReportsRoute
+  '/faculty/research': typeof FacultyResearchRoute
   '/faculty/results': typeof FacultyResultsRoute
+  '/faculty/settings': typeof FacultySettingsRoute
+  '/faculty/students': typeof FacultyStudentsRoute
+  '/faculty/subjects': typeof FacultySubjectsRoute
+  '/faculty/timetable': typeof FacultyTimetableRoute
   '/finance/dashboard': typeof FinanceDashboardRoute
   '/finance/fees': typeof FinanceFeesRoute
   '/finance/reports': typeof FinanceReportsRoute
@@ -1343,12 +1447,25 @@ export interface FileRoutesById {
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
+  '/faculty/assessments': typeof FacultyAssessmentsRoute
+  '/faculty/assignments': typeof FacultyAssignmentsRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
   '/faculty/dashboard': typeof FacultyDashboardRoute
   '/faculty/examinations': typeof FacultyExaminationsRoute
+  '/faculty/leave': typeof FacultyLeaveRoute
+  '/faculty/lesson-plan': typeof FacultyLessonPlanRoute
   '/faculty/lms': typeof FacultyLmsRoute
+  '/faculty/materials': typeof FacultyMaterialsRoute
+  '/faculty/notifications': typeof FacultyNotificationsRoute
+  '/faculty/payroll': typeof FacultyPayrollRoute
   '/faculty/profile': typeof FacultyProfileRoute
+  '/faculty/reports': typeof FacultyReportsRoute
+  '/faculty/research': typeof FacultyResearchRoute
   '/faculty/results': typeof FacultyResultsRoute
+  '/faculty/settings': typeof FacultySettingsRoute
+  '/faculty/students': typeof FacultyStudentsRoute
+  '/faculty/subjects': typeof FacultySubjectsRoute
+  '/faculty/timetable': typeof FacultyTimetableRoute
   '/finance/dashboard': typeof FinanceDashboardRoute
   '/finance/fees': typeof FinanceFeesRoute
   '/finance/reports': typeof FinanceReportsRoute
@@ -1505,12 +1622,25 @@ export interface FileRouteTypes {
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
+    | '/faculty/assessments'
+    | '/faculty/assignments'
     | '/faculty/attendance'
     | '/faculty/dashboard'
     | '/faculty/examinations'
+    | '/faculty/leave'
+    | '/faculty/lesson-plan'
     | '/faculty/lms'
+    | '/faculty/materials'
+    | '/faculty/notifications'
+    | '/faculty/payroll'
     | '/faculty/profile'
+    | '/faculty/reports'
+    | '/faculty/research'
     | '/faculty/results'
+    | '/faculty/settings'
+    | '/faculty/students'
+    | '/faculty/subjects'
+    | '/faculty/timetable'
     | '/finance/dashboard'
     | '/finance/fees'
     | '/finance/reports'
@@ -1650,12 +1780,25 @@ export interface FileRouteTypes {
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
+    | '/faculty/assessments'
+    | '/faculty/assignments'
     | '/faculty/attendance'
     | '/faculty/dashboard'
     | '/faculty/examinations'
+    | '/faculty/leave'
+    | '/faculty/lesson-plan'
     | '/faculty/lms'
+    | '/faculty/materials'
+    | '/faculty/notifications'
+    | '/faculty/payroll'
     | '/faculty/profile'
+    | '/faculty/reports'
+    | '/faculty/research'
     | '/faculty/results'
+    | '/faculty/settings'
+    | '/faculty/students'
+    | '/faculty/subjects'
+    | '/faculty/timetable'
     | '/finance/dashboard'
     | '/finance/fees'
     | '/finance/reports'
@@ -1810,12 +1953,25 @@ export interface FileRouteTypes {
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
+    | '/faculty/assessments'
+    | '/faculty/assignments'
     | '/faculty/attendance'
     | '/faculty/dashboard'
     | '/faculty/examinations'
+    | '/faculty/leave'
+    | '/faculty/lesson-plan'
     | '/faculty/lms'
+    | '/faculty/materials'
+    | '/faculty/notifications'
+    | '/faculty/payroll'
     | '/faculty/profile'
+    | '/faculty/reports'
+    | '/faculty/research'
     | '/faculty/results'
+    | '/faculty/settings'
+    | '/faculty/students'
+    | '/faculty/subjects'
+    | '/faculty/timetable'
     | '/finance/dashboard'
     | '/finance/fees'
     | '/finance/reports'
@@ -2426,6 +2582,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacultyIndexRouteImport
       parentRoute: typeof FacultyRoute
     }
+    '/faculty/assessments': {
+      id: '/faculty/assessments'
+      path: '/assessments'
+      fullPath: '/faculty/assessments'
+      preLoaderRoute: typeof FacultyAssessmentsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/assignments': {
+      id: '/faculty/assignments'
+      path: '/assignments'
+      fullPath: '/faculty/assignments'
+      preLoaderRoute: typeof FacultyAssignmentsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
     '/faculty/attendance': {
       id: '/faculty/attendance'
       path: '/attendance'
@@ -2447,11 +2617,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacultyExaminationsRouteImport
       parentRoute: typeof FacultyRoute
     }
+    '/faculty/leave': {
+      id: '/faculty/leave'
+      path: '/leave'
+      fullPath: '/faculty/leave'
+      preLoaderRoute: typeof FacultyLeaveRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/lesson-plan': {
+      id: '/faculty/lesson-plan'
+      path: '/lesson-plan'
+      fullPath: '/faculty/lesson-plan'
+      preLoaderRoute: typeof FacultyLessonPlanRouteImport
+      parentRoute: typeof FacultyRoute
+    }
     '/faculty/lms': {
       id: '/faculty/lms'
       path: '/lms'
       fullPath: '/faculty/lms'
       preLoaderRoute: typeof FacultyLmsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/materials': {
+      id: '/faculty/materials'
+      path: '/materials'
+      fullPath: '/faculty/materials'
+      preLoaderRoute: typeof FacultyMaterialsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/notifications': {
+      id: '/faculty/notifications'
+      path: '/notifications'
+      fullPath: '/faculty/notifications'
+      preLoaderRoute: typeof FacultyNotificationsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/payroll': {
+      id: '/faculty/payroll'
+      path: '/payroll'
+      fullPath: '/faculty/payroll'
+      preLoaderRoute: typeof FacultyPayrollRouteImport
       parentRoute: typeof FacultyRoute
     }
     '/faculty/profile': {
@@ -2461,11 +2666,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacultyProfileRouteImport
       parentRoute: typeof FacultyRoute
     }
+    '/faculty/reports': {
+      id: '/faculty/reports'
+      path: '/reports'
+      fullPath: '/faculty/reports'
+      preLoaderRoute: typeof FacultyReportsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/research': {
+      id: '/faculty/research'
+      path: '/research'
+      fullPath: '/faculty/research'
+      preLoaderRoute: typeof FacultyResearchRouteImport
+      parentRoute: typeof FacultyRoute
+    }
     '/faculty/results': {
       id: '/faculty/results'
       path: '/results'
       fullPath: '/faculty/results'
       preLoaderRoute: typeof FacultyResultsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/settings': {
+      id: '/faculty/settings'
+      path: '/settings'
+      fullPath: '/faculty/settings'
+      preLoaderRoute: typeof FacultySettingsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/students': {
+      id: '/faculty/students'
+      path: '/students'
+      fullPath: '/faculty/students'
+      preLoaderRoute: typeof FacultyStudentsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/subjects': {
+      id: '/faculty/subjects'
+      path: '/subjects'
+      fullPath: '/faculty/subjects'
+      preLoaderRoute: typeof FacultySubjectsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/timetable': {
+      id: '/faculty/timetable'
+      path: '/timetable'
+      fullPath: '/faculty/timetable'
+      preLoaderRoute: typeof FacultyTimetableRouteImport
       parentRoute: typeof FacultyRoute
     }
     '/finance/': {
@@ -3161,22 +3408,48 @@ const ExternalUserRouteWithChildren = ExternalUserRoute._addFileChildren(
 )
 
 interface FacultyRouteChildren {
+  FacultyAssessmentsRoute: typeof FacultyAssessmentsRoute
+  FacultyAssignmentsRoute: typeof FacultyAssignmentsRoute
   FacultyAttendanceRoute: typeof FacultyAttendanceRoute
   FacultyDashboardRoute: typeof FacultyDashboardRoute
   FacultyExaminationsRoute: typeof FacultyExaminationsRoute
+  FacultyLeaveRoute: typeof FacultyLeaveRoute
+  FacultyLessonPlanRoute: typeof FacultyLessonPlanRoute
   FacultyLmsRoute: typeof FacultyLmsRoute
+  FacultyMaterialsRoute: typeof FacultyMaterialsRoute
+  FacultyNotificationsRoute: typeof FacultyNotificationsRoute
+  FacultyPayrollRoute: typeof FacultyPayrollRoute
   FacultyProfileRoute: typeof FacultyProfileRoute
+  FacultyReportsRoute: typeof FacultyReportsRoute
+  FacultyResearchRoute: typeof FacultyResearchRoute
   FacultyResultsRoute: typeof FacultyResultsRoute
+  FacultySettingsRoute: typeof FacultySettingsRoute
+  FacultyStudentsRoute: typeof FacultyStudentsRoute
+  FacultySubjectsRoute: typeof FacultySubjectsRoute
+  FacultyTimetableRoute: typeof FacultyTimetableRoute
   FacultyIndexRoute: typeof FacultyIndexRoute
 }
 
 const FacultyRouteChildren: FacultyRouteChildren = {
+  FacultyAssessmentsRoute: FacultyAssessmentsRoute,
+  FacultyAssignmentsRoute: FacultyAssignmentsRoute,
   FacultyAttendanceRoute: FacultyAttendanceRoute,
   FacultyDashboardRoute: FacultyDashboardRoute,
   FacultyExaminationsRoute: FacultyExaminationsRoute,
+  FacultyLeaveRoute: FacultyLeaveRoute,
+  FacultyLessonPlanRoute: FacultyLessonPlanRoute,
   FacultyLmsRoute: FacultyLmsRoute,
+  FacultyMaterialsRoute: FacultyMaterialsRoute,
+  FacultyNotificationsRoute: FacultyNotificationsRoute,
+  FacultyPayrollRoute: FacultyPayrollRoute,
   FacultyProfileRoute: FacultyProfileRoute,
+  FacultyReportsRoute: FacultyReportsRoute,
+  FacultyResearchRoute: FacultyResearchRoute,
   FacultyResultsRoute: FacultyResultsRoute,
+  FacultySettingsRoute: FacultySettingsRoute,
+  FacultyStudentsRoute: FacultyStudentsRoute,
+  FacultySubjectsRoute: FacultySubjectsRoute,
+  FacultyTimetableRoute: FacultyTimetableRoute,
   FacultyIndexRoute: FacultyIndexRoute,
 }
 
