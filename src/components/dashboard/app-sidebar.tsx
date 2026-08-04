@@ -1,11 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { ChevronRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
@@ -90,47 +89,42 @@ export function AppSidebar() {
 
                   if (item.children && !collapsed) {
                     return (
-                      <Collapsible
-                        key={item.title}
-                        defaultOpen={isItemActive}
-                        className="group/collapsible"
-                      >
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                              isActive={isItemActive}
-                              tooltip={item.title}
-                              className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
-                            >
-                              <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
-                              <span className="truncate">{item.title}</span>
-                              <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90 text-[#7F8DB5]" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent className="transition-all duration-200 ease-in-out data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                            <SidebarMenuSub className="ml-4 border-l border-[#24356B] pl-3 space-y-1 my-1">
-                              {item.children.map((child) => {
-                                const childCleanPath = child.url.split("?")[0];
-                                const hasSubParam = child.url.includes("?");
-                                const isSubActive = hasSubParam
-                                  ? href.includes(child.url) || (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard"))
-                                  : currentCleanPath === childCleanPath;
-                                return (
-                                  <SidebarMenuSubItem key={child.title}>
-                                    <SidebarMenuSubButton
-                                      asChild
-                                      isActive={isSubActive}
-                                      className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#4D78FF] data-[active=true]:bg-[#1A285D] rounded-[10px] px-3 py-1.5 transition-all duration-200"
-                                    >
-                                      <Link to={child.url} search={child.search}>{child.title}</Link>
-                                    </SidebarMenuSubButton>
-                                  </SidebarMenuSubItem>
-                                );
-                              })}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </SidebarMenuItem>
-                      </Collapsible>
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={isItemActive}
+                          tooltip={item.title}
+                          className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
+                        >
+                          <Link to={item.url} className="flex items-center gap-3">
+                            <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
+                            <span className="truncate">{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                        <SidebarMenuSub className="ml-4 border-l border-[#24356B] pl-3 space-y-1 my-1">
+                          {item.children.map((child) => {
+                            const childCleanPath = child.url.split("?")[0];
+                            const hasSubParam = child.url.includes("?");
+                            const isSubActive = hasSubParam
+                              ? href.includes(child.url) ||
+                                (href.includes("/alumni") &&
+                                  !href.includes("?tab=") &&
+                                  child.url.includes("tab=dashboard"))
+                              : currentCleanPath === childCleanPath;
+                            return (
+                              <SidebarMenuSubItem key={child.title}>
+                                <SidebarMenuSubButton
+                                  asChild
+                                  isActive={isSubActive}
+                                  className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#4D78FF] data-[active=true]:bg-[#1A285D] rounded-[10px] px-3 py-1.5 transition-all duration-200"
+                                >
+                                  <Link to={child.url}>{child.title}</Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            );
+                          })}
+                        </SidebarMenuSub>
+                      </SidebarMenuItem>
                     );
                   }
 
