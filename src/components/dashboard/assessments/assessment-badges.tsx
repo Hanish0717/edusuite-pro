@@ -32,12 +32,12 @@ export function StatusBadge({ status }: { status: AssessmentStatus }) {
 const TYPE_COLORS: Record<AssessmentType, string> = {
   "Internal 1":        "bg-blue-500/12 text-blue-700 dark:text-blue-300 border-blue-500/20",
   "Internal 2":        "bg-indigo-500/12 text-indigo-700 dark:text-indigo-300 border-indigo-500/20",
-  "Quiz":              "bg-violet-500/12 text-violet-700 dark:text-violet-300 border-violet-500/20",
-  "Assignment":        "bg-amber-500/12 text-amber-700 dark:text-amber-300 border-amber-500/20",
-  "Lab Assessment":    "bg-emerald-500/12 text-emerald-700 dark:text-emerald-300 border-emerald-500/20",
-  "Viva":              "bg-rose-500/12 text-rose-700 dark:text-rose-300 border-rose-500/20",
-  "Seminar":           "bg-teal-500/12 text-teal-700 dark:text-teal-300 border-teal-500/20",
-  "Project Evaluation":"bg-orange-500/12 text-orange-700 dark:text-orange-300 border-orange-500/20",
+  "Quiz":              "bg-sky-500/12 text-sky-700 dark:text-sky-300 border-sky-500/20",
+  "Assignment":        "bg-blue-600/12 text-blue-800 dark:text-blue-400 border-blue-600/20",
+  "Lab Assessment":    "bg-indigo-600/12 text-indigo-800 dark:text-indigo-400 border-indigo-600/20",
+  "Viva":              "bg-sky-600/12 text-sky-800 dark:text-sky-400 border-sky-600/20",
+  "Seminar":           "bg-blue-700/12 text-blue-900 dark:text-blue-300 border-blue-700/20",
+  "Project Evaluation":"bg-indigo-700/12 text-indigo-900 dark:text-indigo-300 border-indigo-700/20",
 };
 
 export function TypeBadge({ type }: { type: AssessmentType }) {

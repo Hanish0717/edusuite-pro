@@ -69,6 +69,7 @@ import { Route as AiAnalyticsSettingsRouteImport } from './routes/ai-analytics.s
 import { Route as AiAnalyticsStudentRiskRouteImport } from './routes/ai-analytics.student-risk'
 import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
+import { Route as DeanSubjectAllocationRouteImport } from './routes/dean.subject-allocation'
 import { Route as ExamTakeRouteImport } from './routes/exam.take'
 import { Route as ExaminationIndexRouteImport } from './routes/examination.index'
 import { Route as ExaminationDashboardRouteImport } from './routes/examination.dashboard'
@@ -482,6 +483,11 @@ const DeanIndexRoute = DeanIndexRouteImport.update({
 const DeanDashboardRoute = DeanDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => DeanRoute,
+} as any)
+const DeanSubjectAllocationRoute = DeanSubjectAllocationRouteImport.update({
+  id: '/subject-allocation',
+  path: '/subject-allocation',
   getParentRoute: () => DeanRoute,
 } as any)
 const ExamTakeRoute = ExamTakeRouteImport.update({
@@ -1112,6 +1118,7 @@ export interface FileRoutesByFullPath {
   '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
   '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -1270,6 +1277,7 @@ export interface FileRoutesByTo {
   '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
   '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -1444,6 +1452,7 @@ export interface FileRoutesById {
   '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
   '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -1619,6 +1628,7 @@ export interface FileRouteTypes {
     | '/ai-analytics/settings'
     | '/ai-analytics/student-risk'
     | '/dean/dashboard'
+    | '/dean/subject-allocation'
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -1777,6 +1787,7 @@ export interface FileRouteTypes {
     | '/ai-analytics/settings'
     | '/ai-analytics/student-risk'
     | '/dean/dashboard'
+    | '/dean/subject-allocation'
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -1950,6 +1961,7 @@ export interface FileRouteTypes {
     | '/ai-analytics/settings'
     | '/ai-analytics/student-risk'
     | '/dean/dashboard'
+    | '/dean/subject-allocation'
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -2538,6 +2550,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dean/dashboard'
       preLoaderRoute: typeof DeanDashboardRouteImport
+      parentRoute: typeof DeanRoute
+    }
+    '/dean/subject-allocation': {
+      id: '/dean/subject-allocation'
+      path: '/subject-allocation'
+      fullPath: '/dean/subject-allocation'
+      preLoaderRoute: typeof DeanSubjectAllocationRouteImport
       parentRoute: typeof DeanRoute
     }
     '/exam/take': {
@@ -3369,11 +3388,13 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 interface DeanRouteChildren {
   DeanDashboardRoute: typeof DeanDashboardRoute
+  DeanSubjectAllocationRoute: typeof DeanSubjectAllocationRoute
   DeanIndexRoute: typeof DeanIndexRoute
 }
 
 const DeanRouteChildren: DeanRouteChildren = {
   DeanDashboardRoute: DeanDashboardRoute,
+  DeanSubjectAllocationRoute: DeanSubjectAllocationRoute,
   DeanIndexRoute: DeanIndexRoute,
 }
 
