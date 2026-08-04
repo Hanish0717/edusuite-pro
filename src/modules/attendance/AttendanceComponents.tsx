@@ -19,12 +19,15 @@ import {
   Award,
   ShieldCheck,
   Sparkles,
+  Check,
+  BarChart2,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -51,6 +54,14 @@ import {
   type AttendanceRecord,
 } from "./AttendanceService";
 
+import {
+  fetchAllClassesAttendance,
+  fetchClassStudents,
+  submitAttendanceMark,
+  type AllClassesAttendance,
+  type ClassStudent,
+} from "@/modules/academics/AcademicsService";
+
 const DEPARTMENTS = [
   "All Departments",
   "CSE",
@@ -71,13 +82,28 @@ const SECTIONS = [
 
 const RANGES = ["All Ranges", "Above 90%", "75% - 90%", "Below 75% Shortage"] as const;
 
-export function AttendanceModuleView() {
+export type AttendanceSubpart =
+  | "all-classes-attendance"
+  | "attendance-mark"
+  | "records";
+
+export function AttendanceModuleView({ initialTab = "all-classes-attendance" }: { initialTab?: AttendanceSubpart }) {
+  const [activeSubpart, setActiveSubpart] = useState<AttendanceSubpart>(initialTab);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>(INITIAL_ATTENDANCE);
   const [search, setSearch] = useState("");
   const [selectedDept, setSelectedDept] = useState("All Departments");
   const [selectedSec, setSelectedSec] = useState("All Sections");
   const [selectedRange, setSelectedRange] = useState<string>("All Ranges");
   const [loading, setLoading] = useState(false);
+
+  // Subpart 1: All Classes Attendance Dashboard State
+  const [allClassesAttendance, setAllClassesAttendance] = useState<AllClassesAttendance[]>([]);
+  const [attendanceViewMode, setAttendanceViewMode] = useState<"daily" | "weekly" | "monthly">("daily");
+
+  // Subpart 2: Faculty Attendance Portal State
+  const [studentRoster, setStudentRoster] = useState<ClassStudent[]>([]);
+  const [selectedClass, setSelectedClass] = useState("CSE-5A");
+  const [submittingAttendance, setSubmittingAttendance] = useState(false);
 
   // Dialog States
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -100,14 +126,48 @@ export function AttendanceModuleView() {
 
   const loadData = async () => {
     setLoading(true);
-    const data = await fetchAttendanceRecords();
+    const [data, allClasses, students] = await Promise.all([
+      fetchAttendanceRecords(),
+      fetchAllClassesAttendance(),
+      fetchClassStudents("CSE-5A"),
+    ]);
     setAttendance(data);
+    setAllClassesAttendance(allClasses);
+    setStudentRoster(students);
     setLoading(false);
   };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  const handleToggleAttendance = (studentId: string, status: "Present" | "Absent" | "Late") => {
+    setStudentRoster((prev) =>
+      prev.map((s) => (s.id === studentId ? { ...s, status } : s))
+    );
+  };
+
+  const handleMarkAllPresent = () => {
+    setStudentRoster((prev) => prev.map((s) => ({ ...s, status: "Present" })));
+    toast.success("Marked all students in class as Present!");
+  };
+
+  const handleSubmitAttendanceMark = async () => {
+    setSubmittingAttendance(true);
+    const presentCount = studentRoster.filter((s) => s.status === "Present").length;
+    await submitAttendanceMark("CSE-5A", studentRoster);
+    setSubmittingAttendance(false);
+    toast.success(`Period 2 Attendance Submitted for CSE-5A! ${presentCount}/${studentRoster.length} Present.`);
+  };
+
+  const filteredAllClassesAttendance = allClassesAttendance.filter((c) => {
+    const matchesSearch =
+      c.className.toLowerCase().includes(search.toLowerCase()) ||
+      c.department.toLowerCase().includes(search.toLowerCase()) ||
+      c.classTeacher.toLowerCase().includes(search.toLowerCase());
+    const matchesDept = selectedDept === "All Departments" || c.department === selectedDept;
+    return matchesSearch && matchesDept;
+  });
 
   // Filtered Roster
   const filtered = attendance.filter((a) => {
@@ -362,8 +422,229 @@ export function AttendanceModuleView() {
         </div>
       </div>
 
-      {/* Control Bar & Filters */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-card border border-border/80 shadow-sm">
+      {/* THREE SUBPARTS NAVIGATION TAB BAR */}
+      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
+        <button
+          onClick={() => setActiveSubpart("all-classes-attendance")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "all-classes-attendance" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <UserCheck className="size-3.5" /> 🏛️ All Classes Attendance Dashboard
+        </button>
+
+        <button
+          onClick={() => setActiveSubpart("attendance-mark")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "attendance-mark" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <CheckCircle2 className="size-3.5" /> 📝 Faculty Attendance Portal
+        </button>
+
+        <button
+          onClick={() => setActiveSubpart("records")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "records" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <CalendarCheck className="size-3.5" /> 📊 Class Attendance Records Ledger
+        </button>
+      </div>
+
+      {/* SUBPART 1: ALL CLASSES ATTENDANCE DASHBOARD */}
+      {activeSubpart === "all-classes-attendance" && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-muted-foreground uppercase shrink-0">Timeframe:</span>
+              <div className="inline-flex p-1 rounded-xl bg-muted/60 border border-border/60">
+                <button
+                  onClick={() => setAttendanceViewMode("daily")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "daily" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  📅 Daily View
+                </button>
+                <button
+                  onClick={() => setAttendanceViewMode("weekly")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "weekly" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  📆 Weekly View
+                </button>
+                <button
+                  onClick={() => setAttendanceViewMode("monthly")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "monthly" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  🗓️ Monthly View
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Select value={selectedDept} onValueChange={setSelectedDept}>
+                <SelectTrigger className="h-9 text-xs w-[160px] rounded-xl"><SelectValue placeholder="Department" /></SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS.map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}
+                </SelectContent>
+              </Select>
+              <div className="relative flex-1 min-w-[150px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                <Input placeholder="Search class or teacher..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-9 text-xs rounded-xl" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                  <tr>
+                    <th className="py-3 px-3">Class / Section</th>
+                    <th className="py-3 px-3">Department</th>
+                    <th className="py-3 px-3">Total Enrolled</th>
+                    <th className="py-3 px-3">Present</th>
+                    <th className="py-3 px-3">Absent</th>
+                    <th className="py-3 px-3">Late</th>
+                    <th className="py-3 px-3">Attendance % ({attendanceViewMode.toUpperCase()})</th>
+                    <th className="py-3 px-3">Class Teacher</th>
+                    <th className="py-3 px-3">Governance Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {filteredAllClassesAttendance.map((c) => {
+                    const pct = attendanceViewMode === "daily" ? c.dailyPct : attendanceViewMode === "weekly" ? c.weeklyPct : c.monthlyPct;
+                    const isDefaulter = pct < 75;
+                    return (
+                      <tr key={c.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="py-3 px-3 font-mono font-bold text-foreground">{c.className}</td>
+                        <td className="py-3 px-3 font-semibold">{c.department}</td>
+                        <td className="py-3 px-3 font-mono">{c.totalStudents} Students</td>
+                        <td className="py-3 px-3 font-mono text-emerald-600 font-bold">{c.presentCount}</td>
+                        <td className="py-3 px-3 font-mono text-rose-600 font-bold">{c.absentCount}</td>
+                        <td className="py-3 px-3 font-mono text-amber-600 font-bold">{c.lateCount}</td>
+                        <td className="py-3 px-3 min-w-[130px]">
+                          <div className="flex items-center gap-2">
+                            <Progress value={pct} className="h-2 flex-1" />
+                            <span className={`font-mono text-xs font-bold ${isDefaulter ? "text-rose-600" : "text-emerald-600"}`}>
+                              {pct}%
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-muted-foreground">{c.classTeacher}</td>
+                        <td className="py-3 px-3">
+                          {isDefaulter ? (
+                            <Badge className="bg-rose-500/10 text-rose-600 border-rose-500/30">
+                              ⚠️ &lt;75% Defaulter Alert
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-emerald-500/10 text-emerald-600">
+                              ✅ Satisfactory ({pct}%)
+                            </Badge>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUBPART 2: FACULTY ATTENDANCE MARKING PORTAL */}
+      {activeSubpart === "attendance-mark" && (
+        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-5 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+            <div className="space-y-1">
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                <UserCheck className="size-4 text-primary" /> Period Attendance Marking Access
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Class: <strong className="text-foreground">{selectedClass}</strong> • Data Structures & Algorithms • Date: {new Date().toLocaleDateString()} (Period 2)
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={handleMarkAllPresent} className="h-9 gap-1.5 text-xs font-semibold border-emerald-500/40 text-emerald-600 hover:bg-emerald-50">
+                <CheckCircle2 className="size-3.5 text-emerald-500" /> Mark All Present
+              </Button>
+              <Button size="sm" onClick={handleSubmitAttendanceMark} disabled={submittingAttendance} className="h-9 bg-brand-gradient text-white gap-1.5 text-xs font-semibold shadow-glow">
+                {submittingAttendance ? <RefreshCw className="size-3.5 animate-spin" /> : <Check className="size-3.5" />} Submit Attendance
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-muted/30 border border-border/60">
+            <div className="flex items-center gap-4 font-semibold">
+              <span className="text-emerald-600">Present: {studentRoster.filter((s) => s.status === "Present").length}</span>
+              <span className="text-rose-600">Absent: {studentRoster.filter((s) => s.status === "Absent").length}</span>
+              <span className="text-amber-600">Late: {studentRoster.filter((s) => s.status === "Late").length}</span>
+            </div>
+            <span className="font-mono text-muted-foreground">Total Enrolled: {studentRoster.length} Students</span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                <tr>
+                  <th className="py-3 px-3">Roll Number</th>
+                  <th className="py-3 px-3">Student Name</th>
+                  <th className="py-3 px-3 text-center">Attendance Status Toggle</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {studentRoster.map((s) => (
+                  <tr key={s.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="py-3 px-3 font-mono font-bold text-foreground">{s.rollNo}</td>
+                    <td className="py-3 px-3 font-semibold text-foreground">{s.name}</td>
+                    <td className="py-3 px-3 text-center">
+                      <div className="inline-flex items-center gap-1.5 p-1 rounded-xl bg-muted/60 border border-border/60">
+                        <button
+                          onClick={() => handleToggleAttendance(s.id, "Present")}
+                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                            s.status === "Present" ? "bg-emerald-600 text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          P (Present)
+                        </button>
+                        <button
+                          onClick={() => handleToggleAttendance(s.id, "Absent")}
+                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                            s.status === "Absent" ? "bg-rose-600 text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          A (Absent)
+                        </button>
+                        <button
+                          onClick={() => handleToggleAttendance(s.id, "Late")}
+                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                            s.status === "Late" ? "bg-amber-500 text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          L (Late)
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* SUBPART 3: CLASS ATTENDANCE RECORDS LEDGER */}
+      {activeSubpart === "records" && (
+        <div className="space-y-4">
+          {/* Control Bar & Filters */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-card border border-border/80 shadow-sm">
         <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
           {/* Search Input */}
           <div className="relative flex-1 min-w-[220px]">
@@ -545,6 +826,8 @@ export function AttendanceModuleView() {
           </div>
         )}
       </div>
+    </div>
+  )}
 
       {/* DIALOG 1: MARK CLASS ATTENDANCE MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>

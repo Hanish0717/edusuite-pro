@@ -1,24 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { z } from "zod";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { AcademicsModuleView } from "@/modules/academics";
+import { AcademicsModuleView, type AcademicsSubpart } from "@/modules/academics";
 
-const academicsSearchSchema = z.object({
-  tab: z
-    .enum([
-      "courses",
-      "departments",
-      "curriculum",
-      "faculty-status",
-      "attendance-mark",
-      "syllabus-tracker",
-      "all-classes-attendance",
-    ])
-    .optional(),
-});
+const VALID_TABS: AcademicsSubpart[] = [
+  "courses",
+  "departments",
+  "curriculum",
+  "faculty-status",
+  "attendance-mark",
+  "syllabus-tracker",
+  "all-classes-attendance",
+];
 
 export const Route = createFileRoute("/academics")({
-  validateSearch: (search) => academicsSearchSchema.parse(search),
+  validateSearch: (search: Record<string, unknown>) => {
+    const tabStr = typeof search?.tab === "string" ? search.tab : undefined;
+    const tab = VALID_TABS.includes(tabStr as AcademicsSubpart)
+      ? (tabStr as AcademicsSubpart)
+      : undefined;
+    return { tab };
+  },
   head: () => ({
     meta: [{ title: "Academics & Faculty Governance — EduSuite Pro" }],
   }),
@@ -26,10 +27,11 @@ export const Route = createFileRoute("/academics")({
 });
 
 export function AcademicsPage() {
-  const { tab } = Route.useSearch();
+  const search = Route.useSearch();
+  const tab = search?.tab as AcademicsSubpart | undefined;
   return (
     <DashboardLayout>
-      <AcademicsModuleView initialTab={tab || "all-classes-attendance"} />
+      <AcademicsModuleView initialTab={tab || "departments"} />
     </DashboardLayout>
   );
 }

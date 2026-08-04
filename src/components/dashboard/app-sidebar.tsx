@@ -622,7 +622,7 @@ export function AppSidebar() {
         )}
       </SidebarHeader>
 
-      <SidebarContent className="px-1.5 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <SidebarContent className="px-2 py-2 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {sections.map((section) => (
           <SidebarGroup key={section.label} className="py-1">
             <SidebarGroupLabel className="text-[0.68rem] font-semibold uppercase tracking-[2px] text-[#7F8DB5] px-2 py-1.5">
@@ -631,28 +631,37 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu className="space-y-1">
                 {section.items.map((item) => {
-                  const currentCleanPath = pathname.split("?")[0];
+                  const currentCleanPath = (pathname || "").split("?")[0] || "";
                   const hasQueryParam = item.url.includes("?");
+                  const itemCleanPath = (item.url || "").split("?")[0] || "";
+                  const itemSlug = itemCleanPath.replace(/^\//, "").split("/")[0] || "";
                   let isItemActive = false;
+
+                  const isChildActive =
+                    item.children?.some((child) => {
+                      const childPath = (child.url || "").split("?")[0] || "";
+                      return currentCleanPath === childPath || (childPath !== "/" && currentCleanPath.startsWith(childPath));
+                    }) ?? false;
 
                   if (hasQueryParam) {
                     isItemActive =
                       href.includes(item.url) ||
                       (!href.includes("?module=") && item.url.includes("module=dashboard"));
+                  } else if (itemCleanPath === "/dashboard" || itemCleanPath === "/") {
+                    isItemActive = currentCleanPath === "/dashboard" || currentCleanPath === "/";
                   } else {
-                    const itemCleanPath = item.url.split("?")[0];
-                    const isChildActive =
-                      item.children?.some(
-                        (child) => child.url.split("?")[0] === currentCleanPath
-                      ) ?? false;
-                    isItemActive = currentCleanPath === itemCleanPath || isChildActive;
+                    isItemActive =
+                      currentCleanPath === itemCleanPath ||
+                      (itemCleanPath !== "/" && currentCleanPath.startsWith(itemCleanPath)) ||
+                      (itemSlug !== "" && currentCleanPath.includes(`/${itemSlug}`)) ||
+                      isChildActive;
                   }
 
                   if (item.children && !collapsed) {
                     return (
                       <Collapsible
                         key={item.title}
-                        defaultOpen={isItemActive}
+                        defaultOpen={true}
                         className="group/collapsible"
                       >
                         <SidebarMenuItem>
@@ -664,17 +673,16 @@ export function AppSidebar() {
                             >
                               <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
                               <span className="truncate">{item.title}</span>
-                              <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90 text-[#7F8DB5]" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent className="transition-all duration-200 ease-in-out data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
                             <SidebarMenuSub className="ml-4 border-l border-[#24356B] pl-3 space-y-1 my-1">
                               {item.children.map((child) => {
-                                const childCleanPath = child.url.split("?")[0];
+                                const childCleanPath = (child.url || "").split("?")[0] || "";
                                 const hasSubParam = child.url.includes("?");
                                 const isSubActive = hasSubParam
                                   ? href.includes(child.url) || (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard"))
-                                  : currentCleanPath === childCleanPath;
+                                  : currentCleanPath === childCleanPath || (childCleanPath !== "/" && currentCleanPath.startsWith(childCleanPath));
                                 return (
                                   <SidebarMenuSubItem key={child.title}>
                                     <SidebarMenuSubButton
@@ -682,7 +690,7 @@ export function AppSidebar() {
                                       isActive={isSubActive}
                                       className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#4D78FF] data-[active=true]:bg-[#1A285D] rounded-[10px] px-3 py-1.5 transition-all duration-200"
                                     >
-                                      <Link to={child.url} search={child.search}>{child.title}</Link>
+                                      <Link to={child.url}>{child.title}</Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
                                 );

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AcademicsModuleView } from "@/modules/academics";
+import { FacultyModuleView } from "@/modules/faculty";
 
 export const Route = createFileRoute("/super-admin/faculty-status")({
   head: () => ({
@@ -9,5 +9,5 @@ export const Route = createFileRoute("/super-admin/faculty-status")({
 });
 
 function SuperAdminFacultyStatusPage() {
-  return <AcademicsModuleView initialTab="faculty-status" />;
+  return <FacultyModuleView initialTab="faculty-status" />;
 }

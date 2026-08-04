@@ -13,20 +13,24 @@ import {
   fetchAuditLogs,
   fetchRolePermissions,
   updateRolePermission,
+  fetchDelegationRules,
+  updateDelegationRule,
   triggerBackup,
   type SuperAdminStats,
   type SuperAdminUser,
   type DepartmentItem,
   type AuditLogItem,
   type RolePermissionMatrixItem,
+  type DelegationRule,
   MOCK_SUPER_ADMIN_STATS,
   MOCK_USERS,
   MOCK_DEPARTMENTS,
   MOCK_AUDIT_LOGS,
   MOCK_ROLE_PERMISSIONS,
+  MOCK_DELEGATION_RULES,
 } from "./SuperAdminService";
 
-export type SuperAdminTab = "overview" | "users" | "departments" | "audit" | "rbac" | "ai";
+export type SuperAdminTab = "overview" | "users" | "departments" | "rbac" | "delegation" | "audit" | "ai";
 
 export type SortField = "id" | "name" | "email" | "role" | "department" | "status" | "lastLogin" | "createdAt";
 export type SortOrder = "asc" | "desc";
@@ -38,6 +42,7 @@ export function useSuperAdmin() {
   const [departments, setDepartments] = useState<DepartmentItem[]>(MOCK_DEPARTMENTS);
   const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>(MOCK_AUDIT_LOGS);
   const [rolePermissions, setRolePermissions] = useState<RolePermissionMatrixItem[]>(MOCK_ROLE_PERMISSIONS);
+  const [delegationRules, setDelegationRules] = useState<DelegationRule[]>(MOCK_DELEGATION_RULES);
 
   // Search, Filter, Sort & Pagination State
   const [search, setSearch] = useState("");
@@ -88,18 +93,20 @@ export function useSuperAdmin() {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [sData, uData, dData, aData, rData] = await Promise.all([
+      const [sData, uData, dData, aData, rData, delData] = await Promise.all([
         fetchSuperAdminStats(),
         fetchUsers(),
         fetchDepartments(),
         fetchAuditLogs(),
         fetchRolePermissions(),
+        fetchDelegationRules(),
       ]);
       setStats(sData);
       setUsers(uData);
       setDepartments(dData);
       setAuditLogs(aData);
       setRolePermissions(rData);
+      setDelegationRules(delData);
     } catch (err) {
       toast.error("Error loading Super Admin data. Using local offline state.");
     } finally {
@@ -383,6 +390,8 @@ export function useSuperAdmin() {
     departments,
     auditLogs,
     rolePermissions,
+    delegationRules,
+    setDelegationRules,
     search,
     setSearch,
     selectedRole,

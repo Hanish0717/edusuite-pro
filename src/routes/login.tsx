@@ -225,21 +225,21 @@ export function LoginPage() {
                 </Badge>
               </Label>
 
-            <div className="relative">
-              <select
-                value={step3Branch}
-                onChange={(e) => handleStep3Change(e.target.value)}
-                aria-label="3rd Dropdown: Branch or Department Scope"
-                className="w-full h-10 rounded-xl border border-input bg-card px-3 pr-8 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
-              >
-                {scopeOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            </div>
+              <div className="relative">
+                <select
+                  value={step3Branch}
+                  onChange={(e) => handleStep3Change(e.target.value)}
+                  aria-label="3rd Dropdown: Branch or Department Scope"
+                  className="w-full h-10 rounded-xl border border-input bg-card px-3 pr-8 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
+                >
+                  {scopeOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              </div>
             </div>
           )}
         </div>

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AcademicsModuleView } from "@/modules/academics";
+import { AttendanceModuleView } from "@/modules/attendance";
 
 export const Route = createFileRoute("/dashboard/academics/attendance/mark")({
   head: () => ({
@@ -9,5 +9,5 @@ export const Route = createFileRoute("/dashboard/academics/attendance/mark")({
 });
 
 function DashboardAttendanceMarkPage() {
-  return <AcademicsModuleView initialTab="attendance-mark" />;
+  return <AttendanceModuleView initialTab="attendance-mark" />;
 }
