@@ -190,9 +190,8 @@ function FacultyEvaluationAndMarksPage() {
       const newMids: Record<string, string> = {};
       const newAssigns: Record<string, string> = {};
       filtered.forEach(s => {
-        const mark = s.marks?.find(m => m.subjectCode === activeSection.subjectCode);
-        newMids[s.rollNumber] = mark && mark.internal !== undefined ? String(Math.round(mark.internal * 0.66)) : "0";
-        newAssigns[s.rollNumber] = mark && mark.internal !== undefined ? String(Math.round(mark.internal * 0.34)) : "0";
+        newMids[s.roll_number] = String(s.mid1_marks || 0);
+        newAssigns[s.roll_number] = String(s.assignment_marks || 0);
       });
       setMidScores(newMids);
       setAssignmentScores(newAssigns);
@@ -305,12 +304,11 @@ function FacultyEvaluationAndMarksPage() {
     }
   };
 
-  const hasMarksErrors = cohortStudents.some(s => 
-    validateMid(midScores[s.rollNumber] || "") || 
-    validateAssign(assignmentScores[s.rollNumber] || "")
-  );
+    const hasMarksErrors = cohortStudents.some(s => 
+      validateMid(midScores[s.roll_number] || "") || 
+      validateAssign(assignmentScores[s.roll_number] || "")
+    );
 
-  const handleSaveMarks = () => {
     if (!activeSection) return;
     if (hasMarksErrors) {
       toast.error("Please fix all red out-of-range errors before saving marks.");
@@ -322,23 +320,13 @@ function FacultyEvaluationAndMarksPage() {
                       s.year === activeSection.year && 
                       s.semester === activeSection.semester;
       if (isMatch) {
-        const midVal = Number(midScores[s.rollNumber] || 0);
-        const assignVal = Number(assignmentScores[s.rollNumber] || 0);
-        const totalInternal = midVal + assignVal;
-
-        const otherMarks = s.marks?.filter(m => m.subjectCode !== activeSection.subjectCode) || [];
-        const currentMark = s.marks?.find(m => m.subjectCode === activeSection.subjectCode);
-
-        const nextMark = {
-          subjectCode: activeSection.subjectCode,
-          subjectName: activeSection.subjectName,
-          internal: totalInternal,
-          external: currentMark?.external !== undefined ? currentMark.external : 0
-        };
+        const midVal = Number(midScores[s.roll_number] || 0);
+        const assignVal = Number(assignmentScores[s.roll_number] || 0);
 
         return {
           ...s,
-          marks: [...otherMarks, nextMark]
+          mid1_marks: midVal,
+          assignment_marks: assignVal,
         };
       }
       return s;
@@ -357,15 +345,15 @@ function FacultyEvaluationAndMarksPage() {
 
   const totalEnrolled = cohortStudents.length;
   const submittedCount = cohortStudents.filter(s => {
-    const mid = Number(midScores[s.rollNumber] || 0);
-    const assign = Number(assignmentScores[s.rollNumber] || 0);
+    const mid = Number(midScores[s.roll_number] || 0);
+    const assign = Number(assignmentScores[s.roll_number] || 0);
     return mid > 0 || assign > 0;
   }).length;
   const pendingCount = totalEnrolled - submittedCount;
 
   const filteredStudents = cohortStudents.filter(s => 
-    s.name.toLowerCase().includes(marksSearch.toLowerCase()) || 
-    s.rollNumber.toLowerCase().includes(marksSearch.toLowerCase())
+    s.full_name.toLowerCase().includes(marksSearch.toLowerCase()) || 
+    s.roll_number.toLowerCase().includes(marksSearch.toLowerCase())
   );
 
   return (
@@ -411,7 +399,7 @@ function FacultyEvaluationAndMarksPage() {
         <div className="space-y-6">
           {/* Stats Cards */}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <KpiCard label="Total Assigned Copies" value={String(totalAssigned)} icon={FileText} tone="default" />
+            <KpiCard label="Total Assigned Copies" value={String(totalAssigned)} icon={FileText} tone="primary" />
             <KpiCard label="Pending Evaluation" value={String(pending)} icon={Clock} tone="warning" />
             <KpiCard label="Completed & Corrected" value={String(completed)} icon={CheckCircle2} tone="success" />
             <KpiCard label="Completion Rate" value={`${rate}%`} icon={Award} tone="info" />
@@ -477,7 +465,7 @@ function FacultyEvaluationAndMarksPage() {
         <div className="space-y-6">
           {/* Stats Cards */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <KpiCard label="Enrolled Cohort" value={`${totalEnrolled} Students`} icon={Users} tone="default" />
+            <KpiCard label="Enrolled Cohort" value={`${totalEnrolled} Students`} icon={Users} tone="primary" />
             <KpiCard label="Marks Submitted" value={`${submittedCount} / ${totalEnrolled}`} icon={CheckCircle} tone="success" />
             <KpiCard label="Pending Submission" value={`${pendingCount}`} icon={AlertCircle} tone={pendingCount > 0 ? "warning" : "info"} />
           </div>
@@ -594,7 +582,7 @@ function FacultyEvaluationAndMarksPage() {
                       </thead>
                       <tbody className="divide-y divide-slate-100 bg-white font-semibold text-slate-700">
                         {filteredStudents.map((stud) => {
-                          const roll = stud.rollNumber;
+                          const roll = stud.roll_number;
                           const mid = midScores[roll] || "0";
                           const assign = assignmentScores[roll] || "0";
                           const totalInternal = (validateMid(mid) ? 0 : Number(mid)) + (validateAssign(assign) ? 0 : Number(assign));
@@ -606,7 +594,7 @@ function FacultyEvaluationAndMarksPage() {
                           return (
                             <tr key={roll} className="hover:bg-slate-50/50 transition">
                               <td className="px-6 py-3.5 font-mono font-bold text-slate-850">{roll}</td>
-                              <td className="px-6 py-3.5 text-slate-800 font-bold">{stud.name}</td>
+                              <td className="px-6 py-3.5 text-slate-800 font-bold">{stud.full_name}</td>
                               <td className="px-6 py-3.5 text-center">
                                 <Badge className="bg-emerald-50 border border-emerald-150 text-emerald-800 font-extrabold">Active</Badge>
                               </td>

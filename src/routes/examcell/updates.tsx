@@ -109,7 +109,7 @@ function ExamCellUpdatesPage() {
       return;
     }
 
-    const updatedExams = exams.map(e => 
+    const updatedExams: MockExamSchedule[] = exams.map(e => 
       e.id === examId ? { ...e, status: 'Upcoming' as const, enrollmentDeadline: new Date().toISOString().split('T')[0] } : e
     );
     
