@@ -113,8 +113,6 @@ export const PLACEMENT_OFFICER_NAVIGATION: NavSection[] = [
 
 export const navigation: NavSection[] = [
   {
-<<<<<<< HEAD
-=======
     label: "Menu",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
