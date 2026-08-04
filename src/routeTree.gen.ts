@@ -57,6 +57,7 @@ import { Route as TransportRouteImport } from './routes/transport'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
+import { Route as DeanSubjectAllocationRouteImport } from './routes/dean.subject-allocation'
 import { Route as ExamTakeRouteImport } from './routes/exam.take'
 import { Route as ExaminationIndexRouteImport } from './routes/examination.index'
 import { Route as ExaminationDashboardRouteImport } from './routes/examination.dashboard'
@@ -391,6 +392,11 @@ const DeanIndexRoute = DeanIndexRouteImport.update({
 const DeanDashboardRoute = DeanDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => DeanRoute,
+} as any)
+const DeanSubjectAllocationRoute = DeanSubjectAllocationRouteImport.update({
+  id: '/subject-allocation',
+  path: '/subject-allocation',
   getParentRoute: () => DeanRoute,
 } as any)
 const ExamTakeRoute = ExamTakeRouteImport.update({
@@ -919,6 +925,7 @@ export interface FileRoutesByFullPath {
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -1050,6 +1057,7 @@ export interface FileRoutesByTo {
   '/timetable': typeof TimetableRoute
   '/verify-email': typeof VerifyEmailRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -1196,6 +1204,7 @@ export interface FileRoutesById {
   '/transport': typeof TransportRouteWithChildren
   '/verify-email': typeof VerifyEmailRoute
   '/dean/dashboard': typeof DeanDashboardRoute
+  '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -1343,6 +1352,7 @@ export interface FileRouteTypes {
     | '/transport'
     | '/verify-email'
     | '/dean/dashboard'
+    | '/dean/subject-allocation'
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -1474,6 +1484,7 @@ export interface FileRouteTypes {
     | '/timetable'
     | '/verify-email'
     | '/dean/dashboard'
+    | '/dean/subject-allocation'
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -1619,6 +1630,7 @@ export interface FileRouteTypes {
     | '/transport'
     | '/verify-email'
     | '/dean/dashboard'
+    | '/dean/subject-allocation'
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -2103,6 +2115,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dean/dashboard'
       preLoaderRoute: typeof DeanDashboardRouteImport
+      parentRoute: typeof DeanRoute
+    }
+    '/dean/subject-allocation': {
+      id: '/dean/subject-allocation'
+      path: '/subject-allocation'
+      fullPath: '/dean/subject-allocation'
+      preLoaderRoute: typeof DeanSubjectAllocationRouteImport
       parentRoute: typeof DeanRoute
     }
     '/exam/take': {
@@ -2775,11 +2794,13 @@ declare module '@tanstack/react-router' {
 
 interface DeanRouteChildren {
   DeanDashboardRoute: typeof DeanDashboardRoute
+  DeanSubjectAllocationRoute: typeof DeanSubjectAllocationRoute
   DeanIndexRoute: typeof DeanIndexRoute
 }
 
 const DeanRouteChildren: DeanRouteChildren = {
   DeanDashboardRoute: DeanDashboardRoute,
+  DeanSubjectAllocationRoute: DeanSubjectAllocationRoute,
   DeanIndexRoute: DeanIndexRoute,
 }
 

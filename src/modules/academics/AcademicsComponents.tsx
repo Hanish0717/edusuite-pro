@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useAcademic } from "@/context/academic-context";
+import { getDashboardData, type AcademicDashboardData } from "./AcademicsDashboardService";
 import {
   GraduationCap,
   Plus,
@@ -23,6 +25,7 @@ import {
   ShieldCheck,
   Calendar,
   PieChart,
+  UserCog,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,17 +51,14 @@ import {
 import { Label } from "@/components/ui/label";
 
 import {
-  fetchAcademicCourses,
   fetchAcademicDepartments,
-  fetchCurriculumSchemes,
   createAcademicCourse,
   createAcademicDepartment,
   createCurriculumScheme,
   updateAcademicCourse,
   deleteAcademicCourse,
-  INITIAL_COURSES,
-  INITIAL_DEPARTMENTS,
-  INITIAL_CURRICULUM_SCHEMES,
+  getSubjects,
+  getCurriculum,
   type AcademicCourse,
   type AcademicDepartment,
   type CurriculumScheme,
@@ -68,30 +68,53 @@ const DEPARTMENTS_LIST = [
   "All Departments",
   "CSE",
   "ECE",
+  "EEE",
   "ME",
-  "AI&DS",
-  "Biotech",
-];
-
-const SEMESTERS_LIST = [
-  "All Semesters",
-  "Semester 1",
-  "Semester 2",
-  "Semester 3",
-  "Semester 4",
-  "Semester 5",
-  "Semester 6",
-  "Semester 7",
-  "Semester 8",
+  "Civil",
+  "MBA",
 ];
 
 export function AcademicsModuleView({ initialTab }: { initialTab?: "courses" | "departments" | "curriculum" }) {
-  const [courses, setCourses] = useState<AcademicCourse[]>(INITIAL_COURSES);
-  const [departments, setDepartments] = useState<AcademicDepartment[]>(INITIAL_DEPARTMENTS);
-  const [curriculumSchemes, setCurriculumSchemes] = useState<CurriculumScheme[]>(INITIAL_CURRICULUM_SCHEMES);
+  const { selectedDepartment, setSelectedDepartment, deanName, departments: academicDepartments } = useAcademic();
+  const activeDeptInfo = academicDepartments.find((d) => d.code === selectedDepartment);
+  const activeDeptName = activeDeptInfo ? activeDeptInfo.name : "Computer Science & Engineering (CSE)";
+
+  const [courses, setCourses] = useState<AcademicCourse[]>([]);
+  const [departments, setDepartments] = useState<AcademicDepartment[]>([]);
+  const [curriculumSchemes, setCurriculumSchemes] = useState<CurriculumScheme[]>([]);
 
   // Active Subpart Tab state: "courses" | "departments" | "curriculum"
   const [activeSubpart, setActiveSubpart] = useState<"courses" | "departments" | "curriculum">(initialTab || "departments");
+
+  // Dashboard states
+  const [dashboardData, setDashboardData] = useState<AcademicDashboardData | null>(null);
+  const [dashboardLoading, setDashboardLoading] = useState<boolean>(true);
+  const [dashboardError, setDashboardError] = useState<string | null>(null);
+
+  // Fetch department-aware metrics when department changes
+  useEffect(() => {
+    let active = true;
+    setDashboardLoading(true);
+    setDashboardError(null);
+
+    getDashboardData(selectedDepartment)
+      .then((data) => {
+        if (active) {
+          setDashboardData(data);
+          setDashboardLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (active) {
+          setDashboardError("Failed to synchronize department analytics.");
+          setDashboardLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [selectedDepartment]);
 
   useEffect(() => {
     if (initialTab) {
@@ -100,9 +123,75 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: "courses" | "
   }, [initialTab]);
 
   const [search, setSearch] = useState("");
-  const [selectedDept, setSelectedDept] = useState("All Departments");
+  const [selectedDept, setSelectedDept] = useState(selectedDepartment);
   const [selectedSem, setSelectedSem] = useState("All Semesters");
   const [loading, setLoading] = useState(false);
+
+  // Dynamic Semester mapping based on active department
+  const semestersList = useMemo(() => {
+    const isMba = selectedDepartment === "MBA";
+    const maxSem = isMba ? 4 : 8;
+    const list = ["All Semesters"];
+    for (let i = 1; i <= maxSem; i++) {
+      list.push(`Semester ${i}`);
+    }
+    return list;
+  }, [selectedDepartment]);
+
+  // Synchronize local filter selectedDept with global context selection
+  useEffect(() => {
+    setSelectedDept(selectedDepartment);
+  }, [selectedDepartment]);
+
+  // Reset selected semester if it falls outside the mapped semesters list of the department
+  useEffect(() => {
+    if (!semestersList.includes(selectedSem)) {
+      setSelectedSem("All Semesters");
+    }
+  }, [semestersList, selectedSem]);
+
+  // Fetch filtered courses and curriculum schemes
+  useEffect(() => {
+    let active = true;
+    const fetchCoursesAndCurriculum = async () => {
+      setLoading(true);
+      try {
+        const [crs, cur] = await Promise.all([
+          getSubjects({
+            department: selectedDepartment,
+            semester: selectedSem !== "All Semesters" ? selectedSem : undefined,
+            search: search || undefined,
+          }),
+          getCurriculum(selectedDepartment),
+        ]);
+        if (active) {
+          setCourses(crs);
+          setCurriculumSchemes(cur);
+        }
+      } catch (err) {
+        toast.error("Failed to load subjects or curriculum.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    fetchCoursesAndCurriculum();
+
+    return () => {
+      active = false;
+    };
+  }, [selectedDepartment, selectedSem, search]);
+
+  // Fetch static departments list once
+  useEffect(() => {
+    let active = true;
+    fetchAcademicDepartments().then((dps) => {
+      if (active) setDepartments(dps);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Dialog States
   const [isAddCourseOpen, setIsAddCourseOpen] = useState(false);
@@ -149,24 +238,30 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: "courses" | "
     projectCredits: 20,
   });
 
+  // Re-fetch all data manually on refresh
   const loadAllData = async () => {
     setLoading(true);
-    const [crs, dps, cur] = await Promise.all([
-      fetchAcademicCourses(),
-      fetchAcademicDepartments(),
-      fetchCurriculumSchemes(),
-    ]);
-    setCourses(crs);
-    setDepartments(dps);
-    setCurriculumSchemes(cur);
-    setLoading(false);
+    try {
+      const [crs, dps, cur] = await Promise.all([
+        getSubjects({
+          department: selectedDepartment,
+          semester: selectedSem !== "All Semesters" ? selectedSem : undefined,
+          search: search || undefined,
+        }),
+        fetchAcademicDepartments(),
+        getCurriculum(selectedDepartment),
+      ]);
+      setCourses(crs);
+      setDepartments(dps);
+      setCurriculumSchemes(cur);
+    } catch (err) {
+      toast.error("Failed to load academic records.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => {
-    loadAllData();
-  }, []);
-
-  // Filtered Courses
+  // Filtered Courses (Fallback Client Filter)
   const filteredCourses = courses.filter((c) => {
     const matchesSearch =
       c.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -334,12 +429,30 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: "courses" | "
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
               Comprehensive control of Academic Departments, Course Cataloging, and Curriculum Schemes.
+              <span className="block mt-1.5 font-semibold text-primary/95 flex items-center gap-1.5 bg-primary/5 px-2.5 py-1 rounded-lg border border-primary/10 w-fit">
+                <Building2 className="size-3.5 shrink-0" />
+                Active Department: {activeDeptName} &middot; Dean: {deanName}
+              </span>
             </p>
           </div>
         </div>
 
         {/* Action Buttons - Top Right Corner */}
-        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start sm:self-auto">
+          {/* Global Department Selector */}
+          <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+            <SelectTrigger className="h-9 w-[260px] text-xs font-semibold bg-card border-border" aria-label="Selected Department">
+              <Building2 className="size-3.5 mr-1.5 text-primary shrink-0" />
+              <SelectValue placeholder="Department Scope" />
+            </SelectTrigger>
+            <SelectContent>
+              {academicDepartments.map((d) => (
+                <SelectItem key={d.code} value={d.code} className="text-xs">
+                  {d.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button
             variant="outline"
             size="sm"
@@ -392,43 +505,43 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: "courses" | "
         </div>
       </div>
 
-      {/* KPI Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Academic Departments</span>
-            <Building2 className="size-4 text-primary" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-primary">{departments.length} Departments</p>
-          <p className="text-[0.68rem] text-muted-foreground">CSE, ECE, ME, AI&DS & Biotech</p>
+      {/* Department-Aware KPI Metrics Dashboard */}
+      {dashboardError && (
+        <div className="p-3.5 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive text-xs font-semibold animate-fade-in">
+          {dashboardError}
         </div>
+      )}
 
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Cataloged Courses</span>
-            <BookOpen className="size-4 text-emerald-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-emerald-600">{courses.length} Courses</p>
-          <p className="text-[0.68rem] text-muted-foreground">Theory, Labs & Electives</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Curriculum Schemes</span>
-            <Bookmark className="size-4 text-blue-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-blue-600">{curriculumSchemes.length} Schemes</p>
-          <p className="text-[0.68rem] text-muted-foreground">160 Credits / B.Tech Degree</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Regulations Standard</span>
-            <ShieldCheck className="size-4 text-purple-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-purple-600">R24 & R22 Active</p>
-          <p className="text-[0.68rem] text-purple-600 font-medium">Outcome-Based Education (OBE)</p>
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3.5">
+        {[
+          { label: "Total Students", value: dashboardData?.totalStudents, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/25" },
+          { label: "Total Faculty", value: dashboardData?.totalFaculty, icon: UserCog, color: "text-indigo-500", bg: "bg-indigo-500/10 border-indigo-500/25" },
+          { label: "Total Subjects", value: dashboardData?.totalSubjects, icon: BookOpen, color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/25" },
+          { label: "Current Semester", value: dashboardData?.currentSemester, icon: Calendar, color: "text-amber-500", bg: "bg-amber-500/10 border-amber-500/25" },
+          { label: "Active Courses", value: dashboardData?.activeCourses, icon: Layers, color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/25" },
+          { label: "Avg Attendance", value: dashboardData ? `${dashboardData.averageAttendance}%` : undefined, icon: PieChart, color: "text-rose-500", bg: "bg-rose-500/10 border-rose-500/25" },
+          { label: "Pass Percentage", value: dashboardData ? `${dashboardData.passPercentage}%` : undefined, icon: Award, color: "text-teal-500", bg: "bg-teal-500/10 border-teal-500/25" },
+          { label: "Upcoming Exams", value: dashboardData?.upcomingExams, icon: FileText, color: "text-sky-500", bg: "bg-sky-500/10 border-sky-500/25" },
+          { label: "Grade Approvals", value: dashboardData?.pendingGradeApprovals, icon: CheckCircle, color: "text-emerald-600", bg: "bg-emerald-500/10 border-emerald-500/25" },
+          { label: "Total Credits", value: dashboardData?.totalCredits, icon: Bookmark, color: "text-primary", bg: "bg-primary/10 border-primary/25" },
+        ].map((card, index) => {
+          const Icon = card.icon;
+          return (
+            <div key={index} className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 hover:border-primary/30 transition-all duration-300">
+              <div className="flex items-center justify-between text-[0.65rem] font-semibold text-muted-foreground uppercase tracking-wider">
+                <span className="truncate mr-1">{card.label}</span>
+                <span className={cn("p-1 rounded-lg", card.bg)}>
+                  <Icon className={cn("size-3.5", card.color)} />
+                </span>
+              </div>
+              {dashboardLoading ? (
+                <div className="h-8 w-16 bg-muted/70 animate-pulse rounded-md mt-1.5" />
+              ) : (
+                <p className="text-xl font-bold font-mono text-foreground mt-0.5">{card.value ?? "--"}</p>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* THREE SUBPARTS NAVIGATION TAB BAR */}
@@ -484,7 +597,12 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: "courses" | "
                 />
               </div>
 
-              <Select value={selectedDept} onValueChange={setSelectedDept}>
+              <Select value={selectedDept} onValueChange={(val) => {
+                setSelectedDept(val);
+                if (val !== "All Departments") {
+                  setSelectedDepartment(val);
+                }
+              }}>
                 <SelectTrigger className="h-9 w-full sm:w-[160px] text-xs">
                   <Building2 className="size-3.5 mr-1.5 text-muted-foreground" />
                   <SelectValue placeholder="Department" />
@@ -504,7 +622,7 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: "courses" | "
                   <SelectValue placeholder="Semester" />
                 </SelectTrigger>
                 <SelectContent>
-                  {SEMESTERS_LIST.map((s) => (
+                  {semestersList.map((s) => (
                     <SelectItem key={s} value={s} className="text-xs">
                       {s}
                     </SelectItem>

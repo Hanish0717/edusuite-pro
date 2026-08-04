@@ -7,11 +7,11 @@ interface QuickActionsProps {
 
 const ACTIONS = (handlers: QuickActionsProps) => [
   { label: "Create Assessment",   icon: Plus,          color: "from-blue-500 to-blue-600",   onClick: handlers.onCreateAssessment, id: "qa-create" },
-  { label: "Enter Marks",         icon: ClipboardList, color: "from-violet-500 to-violet-600", onClick: handlers.onEnterMarks,       id: "qa-marks"  },
-  { label: "View Analytics",      icon: BarChart2,     color: "from-amber-500 to-amber-600",  onClick: () => {},                     id: "qa-analytics" },
-  { label: "Export Marks",        icon: Download,      color: "from-teal-500 to-teal-600",    onClick: () => {},                     id: "qa-export" },
-  { label: "Grade Distribution",  icon: GitBranch,     color: "from-emerald-500 to-emerald-600", onClick: () => {},                 id: "qa-grades" },
-  { label: "Publish Results",     icon: Send,          color: "from-rose-500 to-rose-600",    onClick: () => {},                     id: "qa-publish" },
+  { label: "Enter Marks",         icon: ClipboardList, color: "from-indigo-500 to-indigo-600", onClick: handlers.onEnterMarks,       id: "qa-marks"  },
+  { label: "View Analytics",      icon: BarChart2,     color: "from-sky-500 to-sky-600",  onClick: () => {},                     id: "qa-analytics" },
+  { label: "Export Marks",        icon: Download,      color: "from-blue-600 to-indigo-700",    onClick: () => {},                     id: "qa-export" },
+  { label: "Grade Distribution",  icon: GitBranch,     color: "from-indigo-600 to-blue-600", onClick: () => {},                 id: "qa-grades" },
+  { label: "Publish Results",     icon: Send,          color: "from-sky-600 to-blue-700",    onClick: () => {},                     id: "qa-publish" },
 ];
 
 export function QuickActions(props: QuickActionsProps) {
