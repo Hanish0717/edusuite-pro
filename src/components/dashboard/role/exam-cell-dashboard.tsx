@@ -1,85 +1,243 @@
 import { useState } from "react";
-import { toast } from "sonner";
 import {
   FileSpreadsheet,
   Calendar,
   Award,
   CheckCircle2,
-  Lock,
-  Download,
-  Plus,
+  Users,
+  Percent,
+  Layers,
+  GraduationCap,
+  Bell,
+  Volume2
 } from "lucide-react";
-import { KpiCard } from "@/components/dashboard/kpi-card";
-import { Panel } from "@/components/dashboard/panel";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  ResponsiveContainer, 
+  Legend, 
+  CartesianGrid 
+} from "recharts";
+import { useRole } from "@/context/role-context";
+
+interface DepartmentDetails {
+  code: string;
+  name: string;
+  totalStudents: number;
+  totalFaculty: number;
+  attendanceRate: number;
+  passRate: number;
+  sectionsCount: number;
+}
+
+const DEPARTMENTS_DATA: DepartmentDetails[] = [
+  { code: "CSE", name: "Computer Science & Engineering", totalStudents: 1200, totalFaculty: 45, attendanceRate: 86, passRate: 88, sectionsCount: 8 },
+  { code: "AIML", name: "Artificial Intelligence & Machine Learning", totalStudents: 450, totalFaculty: 18, attendanceRate: 89, passRate: 90, sectionsCount: 3 },
+  { code: "AIDS", name: "Artificial Intelligence & Data Science", totalStudents: 480, totalFaculty: 20, attendanceRate: 88, passRate: 91, sectionsCount: 3 },
+  { code: "ECE", name: "Electronics & Communication Engineering", totalStudents: 600, totalFaculty: 28, attendanceRate: 84, passRate: 82, sectionsCount: 4 },
+  { code: "MECH", name: "Mechanical Engineering", totalStudents: 250, totalFaculty: 15, attendanceRate: 80, passRate: 76, sectionsCount: 2 }
+];
+
+const GENDER_PASS_DATA = [
+  { year: "1st Year", Male: 82, Female: 86 },
+  { year: "2nd Year", Male: 84, Female: 88 },
+  { year: "3rd Year", Male: 87, Female: 91 },
+  { year: "4th Year", Male: 92, Female: 95 }
+];
+
+const DEFAULT_NOTIFICATIONS = [
+  { id: 1, title: "Fee Submission Extended", message: "Fee payment deadline for backlog examinations extended to Aug 15.", time: "2 hours ago", type: "urgent" },
+  { id: 2, title: "Timetables Approved", message: "Draft timetables for AIML Year 2 Sem 3 released and approved.", time: "1 day ago", type: "info" },
+  { id: 3, title: "Booklet Valuation Schedule", message: "Physical answer sheet booklet collection scheduled for next Monday.", time: "2 days ago", type: "warning" },
+  { id: 4, title: "Invigilation Duties Draft", message: "Draft invigilation duty mappings dispatched to department heads.", time: "3 days ago", type: "info" }
+];
 
 export function ExamCellDashboard() {
+  const [notifications] = useState(DEFAULT_NOTIFICATIONS);
+  const { role, flags, department } = useRole();
+  const isOfficer = flags.includes("isExamController") || role === "super-admin";
+  const activeDeptCode = department || "CSE";
+
+  // Filter departments based on user scope
+  const filteredDepts = isOfficer 
+    ? DEPARTMENTS_DATA 
+    : DEPARTMENTS_DATA.filter(d => d.code === activeDeptCode);
+
+  const displayTotalStudents = isOfficer ? "2,980" : (filteredDepts[0]?.totalStudents.toLocaleString() || "0");
+  const displayTotalFaculty = isOfficer ? "126" : (filteredDepts[0]?.totalFaculty.toString() || "0");
+  const displayAttendanceAvg = isOfficer ? "85.4%" : `${filteredDepts[0]?.attendanceRate || 0}%`;
+  const displayPassRateAvg = isOfficer ? "86.2%" : `${filteredDepts[0]?.passRate || 0}%`;
+
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4">
         <div>
-          <h2 className="font-display text-2xl font-extrabold tracking-tight">
-            Exam Controller Management Console
+          <h2 className="font-display text-2xl font-extrabold tracking-tight text-slate-900">
+            Exam Cell Dashboard
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Scope: Examination Management, Scheduling, Hall Tickets, Gradebooks, Results, Revaluation.
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {isOfficer 
+              ? "Real-time overall metrics across all departments, gender pass demographics, and officer notifications."
+              : `Real-time metrics for ${activeDeptCode} department, gender pass demographics, and officer notifications.`}
           </p>
         </div>
-        <Badge className="bg-brand-gradient text-white w-fit font-mono">
-          EXAM CONTROLLER (EXAM CELL)
+        <Badge className="bg-brand-gradient text-white w-fit font-mono text-[10px] px-2.5 py-1">
+          {isOfficer ? "EXAM CONTROLLER CONSOLE" : `EXAM ASSISTANT CONSOLE - ${activeDeptCode}`}
         </Badge>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Upcoming Exams" value="48 Papers" icon={Calendar} />
-        <KpiCard label="Hall Tickets Issued" value="4,850 Generated" icon={FileSpreadsheet} tone="info" />
-        <KpiCard label="Valuation Completed" value="98.4%" icon={CheckCircle2} tone="success" />
-        <KpiCard label="Revaluation Requests" value="14 Pending" icon={Award} tone="warning" />
+      {/* KPI Cards Grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="p-4 bg-card border border-border/70 shadow-xs rounded-2xl flex items-center gap-4">
+          <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
+            <Users className="size-5" />
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-black">Total Students</p>
+            <h4 className="font-display text-lg font-bold text-slate-800 mt-0.5">{displayTotalStudents}</h4>
+          </div>
+        </Card>
+        <Card className="p-4 bg-card border border-border/70 shadow-xs rounded-2xl flex items-center gap-4">
+          <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+            <GraduationCap className="size-5" />
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-black">Total Faculty</p>
+            <h4 className="font-display text-lg font-bold text-slate-800 mt-0.5">{displayTotalFaculty}</h4>
+          </div>
+        </Card>
+        <Card className="p-4 bg-card border border-border/70 shadow-xs rounded-2xl flex items-center gap-4">
+          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+            <Percent className="size-5" />
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-black">Attendance Avg</p>
+            <h4 className="font-display text-lg font-bold text-slate-800 mt-0.5">{displayAttendanceAvg}</h4>
+          </div>
+        </Card>
+        <Card className="p-4 bg-card border border-border/70 shadow-xs rounded-2xl flex items-center gap-4">
+          <div className="p-3 bg-amber-50 text-amber-600 rounded-xl">
+            <CheckCircle2 className="size-5" />
+          </div>
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-black">Avg Pass Rate</p>
+            <h4 className="font-display text-lg font-bold text-slate-800 mt-0.5">{displayPassRateAvg}</h4>
+          </div>
+        </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          <Panel title="Active Examination Batches">
-            <div className="space-y-3">
-              {[
-                { batch: "B.Tech Sem 6 End Examinations 2026", status: "Valuation Complete", date: "Aug 1 - Aug 12" },
-                { batch: "M.Tech Sem 2 Regular Examinations", status: "Hall Tickets Ready", date: "Aug 15 - Aug 22" },
-                { batch: "MBA Semester 4 Final Viva & Project", status: "Marks Locked", date: "Jul 28 - Jul 30" },
-              ].map((ex) => (
-                <div key={ex.batch} className="p-4 rounded-xl border border-border/70 bg-card flex items-center justify-between">
-                  <div>
-                    <h4 className="font-display text-sm font-bold">{ex.batch}</h4>
-                    <p className="text-xs text-muted-foreground">Schedule: {ex.date}</p>
-                  </div>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-xs font-mono">
-                    {ex.status}
-                  </Badge>
+      {/* Department Details Table / Grid */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+          <Layers className="size-4 text-indigo-600" /> {isOfficer ? "Departmental Metrics Breakdown" : "My Department Metrics"}
+        </h3>
+        
+        <div className={`grid gap-4 md:grid-cols-2 ${isOfficer ? "lg:grid-cols-5" : "lg:grid-cols-1 max-w-sm"}`}>
+          {filteredDepts.map((dept) => (
+            <Card key={dept.code} className="p-4 bg-card border border-border/70 hover:border-indigo-200 transition shadow-xs rounded-2xl space-y-3">
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className="font-mono text-indigo-700 bg-indigo-50 border-indigo-200 font-extrabold text-[10px] px-2 py-0.5">
+                  {dept.code}
+                </Badge>
+                <span className="text-[10px] font-bold text-muted-foreground">{dept.sectionsCount} Sections</span>
+              </div>
+              <div>
+                <h4 className="text-xs font-black text-slate-800 truncate" title={dept.name}>
+                  {dept.name}
+                </h4>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50 text-[10px] font-semibold text-slate-700">
+                <div>
+                  <span className="text-muted-foreground block text-[9px]">Students</span>
+                  <span className="font-extrabold text-slate-900">{dept.totalStudents}</span>
                 </div>
-              ))}
-            </div>
-          </Panel>
+                <div>
+                  <span className="text-muted-foreground block text-[9px]">Faculty</span>
+                  <span className="font-extrabold text-slate-900">{dept.totalFaculty}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block text-[9px]">Attendance</span>
+                  <span className="font-extrabold text-slate-900 text-emerald-600">{dept.attendanceRate}%</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block text-[9px]">Pass %</span>
+                  <span className="font-extrabold text-slate-900 text-indigo-600">{dept.passRate}%</span>
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
+      </div>
 
-        <div className="space-y-6">
-          <Panel title="Exam Controller Actions">
-            <div className="space-y-2">
-              <Button
-                onClick={() => toast.success("Generating bulk Hall Tickets for all enrolled students...")}
-                className="w-full justify-start bg-brand-gradient text-xs cursor-pointer"
+      {/* Year-wise Pass charts & notifications panel */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Gender Pass Rate Chart */}
+        <Card className="lg:col-span-2 p-5 bg-card border border-border/70 shadow-xs rounded-2xl flex flex-col justify-between">
+          <div className="mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+              <Percent className="size-4 text-indigo-600" /> Year-Wise Pass Demographics {isOfficer ? "(Global)" : `(${activeDeptCode} Dept)`}
+            </h3>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              Comparison statistics based on final grades computed across academic years.
+            </p>
+          </div>
+          
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={GENDER_PASS_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="year" stroke="#94a3b8" fontSize={10} fontStyle="bold" />
+                <YAxis stroke="#94a3b8" fontSize={10} domain={[60, 100]} />
+                <Tooltip 
+                  contentStyle={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "11px", fontWeight: "bold" }} 
+                />
+                <Legend wrapperStyle={{ fontSize: "11px", fontWeight: "bold", paddingTop: "10px" }} />
+                <Bar dataKey="Male" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={16} />
+                <Bar dataKey="Female" fill="#ec4899" radius={[4, 4, 0, 0]} barSize={16} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        {/* Notifications list card */}
+        <Card className="p-5 bg-card border border-border/70 shadow-xs rounded-2xl flex flex-col justify-between">
+          <div className="mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+              <Bell className="size-4 text-indigo-600 animate-swing" /> Notifications Workspace
+            </h3>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              Bulletins and instructions dispatched by the Exam Officer.
+            </p>
+          </div>
+
+          <div className="space-y-3 flex-1 overflow-y-auto pr-1 max-h-[250px]">
+            {notifications.map((n) => (
+              <div 
+                key={n.id} 
+                className={`p-3 rounded-xl border text-[11px] font-semibold transition ${
+                  n.type === 'urgent' 
+                    ? 'border-red-200 bg-red-50/50 text-red-900' 
+                    : n.type === 'warning' 
+                      ? 'border-amber-200 bg-amber-50/50 text-amber-900'
+                      : 'border-slate-100 bg-slate-50/80 text-slate-850'
+                }`}
               >
-                <Download className="size-4 mr-2" /> Generate Bulk Hall Tickets
-              </Button>
-              <Button
-                onClick={() => toast.info("Locking gradebook SGPA/CGPA calculations...")}
-                variant="outline"
-                className="w-full justify-start text-xs cursor-pointer"
-              >
-                <Lock className="size-4 mr-2" /> Lock Gradebook & Moderation
-              </Button>
-            </div>
-          </Panel>
-        </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-black text-slate-900">{n.title}</span>
+                  <span className="text-[9px] font-normal text-muted-foreground">{n.time}</span>
+                </div>
+                <p className="mt-1 text-slate-700 leading-tight font-medium">{n.message}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
       </div>
     </div>
   );

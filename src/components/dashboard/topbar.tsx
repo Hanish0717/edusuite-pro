@@ -128,7 +128,8 @@ export function Topbar() {
                 <SelectContent>
                   <SelectItem value="isHod">Flag: isHod (HOD)</SelectItem>
                   <SelectItem value="isDean">Flag: isDean (Dean)</SelectItem>
-                  <SelectItem value="isExamController">Flag: isExamController</SelectItem>
+                  <SelectItem value="isExamController">Flag: Exam Officer</SelectItem>
+                  <SelectItem value="isExamAssistant">Flag: Exam Assistant</SelectItem>
                   <SelectItem value="isPlacementOfficer">Flag: isPlacementOfficer</SelectItem>
                   <SelectItem value="isTransportOfficer">Flag: isTransportOfficer</SelectItem>
                   <SelectItem value="isHostelWarden">Flag: isHostelWarden</SelectItem>

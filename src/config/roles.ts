@@ -140,6 +140,7 @@ export const RESPONSIBILITY_FLAGS = [
   { id: "isDean", label: "Dean", category: "Academic Privileges" },
   { id: "isHod", label: "HOD (Department Head)", category: "Academic Privileges" },
   { id: "isExamController", label: "Exam Controller", category: "Academic Privileges" },
+  { id: "isExamAssistant", label: "Exam Assistant", category: "Academic Privileges" },
   { id: "isAcademicCoordinator", label: "Academic Coordinator", category: "Academic Privileges" },
   { id: "isClassAdvisor", label: "Class Advisor", category: "Academic Privileges" },
   { id: "isMentor", label: "Mentor", category: "Academic Privileges" },
@@ -456,7 +457,7 @@ export function getDefaultRouteForUser(role: LoginRole, flags: string[]): string
 
   if (flags.includes("isHod")) return "/hod/dashboard";
   if (flags.includes("isDean")) return "/dean/dashboard";
-  if (flags.includes("isExamController")) return "/examination/dashboard";
+  if (flags.includes("isExamController") || flags.includes("isExamAssistant")) return "/examcell/dashboard";
   if (flags.includes("isPlacementOfficer")) return "/placement/dashboard";
   if (flags.includes("isLibraryAdmin")) return "/library/dashboard";
   if (flags.includes("isTransportOfficer")) return "/transport/dashboard";
@@ -557,6 +558,16 @@ export const DEMO_USERS: DemoUser[] = [
     category: "Academic Roles",
     avatarInitials: "RR",
     flags: ["isExamController"],
+  },
+  {
+    id: "exam-assistant",
+    name: "Sri. P. Venkatesh",
+    email: "venkatesh.assistant@edusuite.edu",
+    role: "staff",
+    title: "Exam Assistant",
+    category: "Academic Roles",
+    avatarInitials: "PV",
+    flags: ["isExamAssistant"],
   },
 
   // Administrative Officers

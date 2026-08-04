@@ -20,6 +20,12 @@ import {
   Package,
   ShieldAlert,
   Globe,
+  Calendar,
+  FileText,
+  CheckSquare,
+  CreditCard,
+  Bell,
+  Brain,
   type LucideIcon,
 } from "lucide-react";
 
@@ -211,7 +217,9 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     if (url === "/dashboard") return "/faculty/dashboard";
     if (url === "/attendance") return "/faculty/attendance";
     if (url === "/lms") return "/faculty/lms";
-    if (url === "/examinations") return "/faculty/examinations";
+    if (url === "/examinations") {
+      return flags.includes("isExamAssistant") ? "/examcell/dashboard" : "/faculty/evaluation-and-marks";
+    }
     if (url === "/results") return "/faculty/results";
     if (url === "/settings") return "/faculty/profile";
   }
@@ -225,12 +233,48 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
 }
 
 export function navigationForUser(user: UserPermissionContext): NavSection[] {
+  // If user has isExamController (Officer), return the exact sidebar configurations
+  if (user.role === "staff" && user.flags.includes("isExamController")) {
+    return [
+      {
+        label: "Exam Officer Portal",
+        items: [
+          { title: "dashboard", url: "/examcell/dashboard", icon: LayoutDashboard },
+          { title: "examcell updates", url: "/examcell/updates", icon: CalendarCheck },
+          { title: "Hall ticket controll", url: "/examcell/hall-tickets", icon: UserCog },
+          { title: "Correction Analysis", url: "/examcell/correction-analysis", icon: FileText },
+          { title: "Results publisher", url: "/examcell/results", icon: Award },
+          { title: "Exam analytics", url: "/examcell/analytics", icon: BarChart3 },
+          { title: "bloomstick analayis", url: "/examcell/bloomstick", icon: Brain },
+          { title: "notification", url: "/examcell/notifications", icon: Bell },
+          { title: "Profile", url: "/faculty/profile", icon: Settings }
+        ]
+      }
+    ];
+  }
+
+  const isStaff = user.role === "staff";
+  const isExamAssistant = isStaff && user.flags.includes("isExamAssistant");
+
   return navigation
     .map((section) => {
-      const items = section.items
+      // If user is standard faculty, completely skip the Examinations section
+      if (section.label === "Examinations" && isStaff && !isExamAssistant) {
+        return {
+          ...section,
+          items: [],
+        };
+      }
+
+      let items = section.items
         .filter((item) => {
           // 1. Role level filtering (optional explicit block)
           if (item.roles && !item.roles.includes(user.role)) {
+            return false;
+          }
+
+          // Hide separate root Results link for staff since it's now inside Examinations dropdown
+          if (item.title === "Results" && isStaff) {
             return false;
           }
 
@@ -250,10 +294,31 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
         })
         .map((item) => {
           const newUrl = resolveUrlForUser(item.url, user, item.title);
-          const newChildren = item.children?.map((child) => ({
+          let newChildren = item.children?.map((child) => ({
             ...child,
             url: resolveUrlForUser(child.url, user, child.title),
           }));
+
+          // If the user is an Exam Assistant / Faculty, inject the exact assistant modules into the "Examinations" children dropdown!
+          if (item.title === "Examinations" && isStaff && isExamAssistant) {
+            newChildren = [
+              { title: "Dashboard", url: "/examcell/dashboard" },
+              { title: "Schedule Exam", url: "/examcell/schedule" },
+              { title: "Course & Exam Enroll", url: "/examcell/course-enroll" },
+              { title: "Timetable Builder", url: "/examcell/timetable" },
+              { title: "Question Bank", url: "/examcell/questions" },
+              { title: "Hall Tickets", url: "/examcell/hall-tickets" },
+              { title: "Correction Requests", url: "/examcell/correction-requests" },
+              { title: "Supplementary Exams", url: "/examcell/supplementary" },
+              { title: "Results", url: "/examcell/results" },
+              { title: "Exam Analytics", url: "/examcell/analytics" },
+              { title: "Notifications", url: "/examcell/notifications" }
+            ].map(c => ({
+              ...c,
+              moduleId: "examination",
+              url: resolveUrlForUser(c.url, user, c.title)
+            }));
+          }
 
           return {
             ...item,
@@ -261,6 +326,18 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
             children: newChildren,
           };
         });
+
+      // For standard staff, append Evaluations & Marks link inside Academics section
+      if (section.label === "Academics" && isStaff && !isExamAssistant) {
+        items = [
+          ...items,
+          {
+            title: "Evaluations & Marks",
+            url: resolveUrlForUser("/faculty/evaluation-and-marks", user, "Evaluations & Marks"),
+            icon: FileSpreadsheet,
+          }
+        ];
+      }
 
       return {
         ...section,
