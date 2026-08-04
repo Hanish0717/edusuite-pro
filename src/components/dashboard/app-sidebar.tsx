@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, ChevronRight } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
 import { Badge } from "@/components/ui/badge";
@@ -71,15 +71,15 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu className="space-y-1">
                 {section.items.map((item) => {
-                  const currentCleanPath = pathname.split("?")[0];
+                  const currentCleanPath = (pathname || "").split("?")[0] || "";
                   const hasQueryParam = item.url.includes("?");
-                  const itemCleanPath = item.url.split("?")[0];
-                  const itemSlug = itemCleanPath.replace(/^\//, "").split("/")[0];
+                  const itemCleanPath = (item.url || "").split("?")[0] || "";
+                  const itemSlug = itemCleanPath.replace(/^\//, "").split("/")[0] || "";
                   let isItemActive = false;
 
                   const isChildActive =
                     item.children?.some((child) => {
-                      const childPath = child.url.split("?")[0];
+                      const childPath = (child.url || "").split("?")[0] || "";
                       return currentCleanPath === childPath || (childPath !== "/" && currentCleanPath.startsWith(childPath));
                     }) ?? false;
 
@@ -119,7 +119,7 @@ export function AppSidebar() {
                           <CollapsibleContent className="transition-all duration-200 ease-in-out data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
                             <SidebarMenuSub className="ml-4 border-l border-[#24356B] pl-3 space-y-1 my-1">
                               {item.children.map((child) => {
-                                const childCleanPath = child.url.split("?")[0];
+                                const childCleanPath = (child.url || "").split("?")[0] || "";
                                 const hasSubParam = child.url.includes("?");
                                 const isSubActive = hasSubParam
                                   ? href.includes(child.url) || (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard"))
@@ -131,7 +131,7 @@ export function AppSidebar() {
                                       isActive={isSubActive}
                                       className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#4D78FF] data-[active=true]:bg-[#1A285D] rounded-[10px] px-3 py-1.5 transition-all duration-200"
                                     >
-                                      <Link to={child.url} search={child.search}>{child.title}</Link>
+                                      <Link to={child.url}>{child.title}</Link>
                                     </SidebarMenuSubButton>
                                   </SidebarMenuSubItem>
                                 );
