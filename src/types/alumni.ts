@@ -210,14 +210,6 @@ export interface PlacementDriveRequest {
   registeredStudentsCount: number;
 }
 
-export interface DepartmentAlumniCoordinator {
-  dept: string;
-  coordinatorName: string;
-  title: string;
-  email: string;
-  avatar: string;
-}
-
 export interface GuestLectureSession {
   id: string;
   speakerName: string;
@@ -225,28 +217,17 @@ export interface GuestLectureSession {
   speakerRole: string;
   speakerCompany: string;
   speakerBatch: string;
-  speakerExperience?: string | undefined;
-  speakerLinkedIn?: string | undefined;
   title: string;
-  topic?: string | undefined;
   sessionType: "Guest Lecture" | "Technical Workshop" | "Career Guidance" | "Industry Webinar" | "Entrepreneurship Talk" | "Mock Interview Session" | "Research Seminar";
   targetDepartment: string;
-  targetYear?: string | undefined;
-  targetSemester?: string | undefined;
   scheduledDate: string;
   scheduledTime: string;
-  durationMinutes?: number | undefined;
-  mode?: "Offline (On-Campus)" | "Online (Virtual)" | undefined;
   venueOrLink: string;
-  assignedCoordinator?: DepartmentAlumniCoordinator | undefined;
-  status: "Submitted" | "Assigned" | "Under Review" | "Changes Requested" | "Approved" | "Scheduled" | "Published" | "Completed" | "Rejected";
+  status: "Proposed" | "Approved" | "Scheduled" | "Completed" | "Feedback Collected";
   registeredCount: number;
-  maxCapacity?: number | undefined;
-  rating?: number | undefined;
-  certificateId?: string | undefined;
+  rating?: number;
+  certificateId?: string;
   description: string;
-  presentationFile?: string | undefined;
-  submittedDate?: string | undefined;
 }
 
 export interface StudentNetworkQuestion {
