@@ -30,10 +30,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-import { OfferGuestLectureWizardModal } from "@/components/alumni/dialogs/OfferGuestLectureWizardModal";
-import { ProposalStatusTimeline } from "@/components/alumni/widgets/ProposalStatusTimeline";
-import { DepartmentCoordinatorGuestLecturesView } from "@/pages/alumni/GuestLectures/DepartmentCoordinatorGuestLecturesView";
-
 interface AlumniGuestLecturesViewProps {
   sessionsList: GuestLectureSession[];
   onOpenMessagingCenter?: (() => void) | undefined;
@@ -46,22 +42,47 @@ export const AlumniGuestLecturesView: React.FC<AlumniGuestLecturesViewProps> = (
   const [sessions, setSessions] = useState<GuestLectureSession[]>(sessionsList);
   const [activeSubTab, setActiveSubTab] = useState("upcoming");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isWizardModalOpen, setIsWizardModalOpen] = useState(false);
+  const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
   const [selectedSession, setSelectedSession] = useState<GuestLectureSession | null>(null);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
-  const handleSubmitProposal = (newSession: GuestLectureSession) => {
-    setSessions((prev) => [newSession, ...prev]);
-  };
+  // Offer Session Form State
+  const [offerForm, setOfferForm] = useState({
+    title: "Building Large-Scale Distributed Cloud Microservices",
+    sessionType: "Technical Workshop" as const,
+    targetDepartment: "Computer Science & IT",
+    scheduledDate: "2026-08-28",
+    scheduledTime: "04:00 PM IST",
+    venueOrLink: "Main University Auditorium (Capacity: 1,200)",
+    description: "Hands-on masterclass covering gRPC, Kubernetes microservices, and fault-tolerant architecture.",
+  });
 
-  const handleUpdateSessionStatus = (
-    id: string,
-    newStatus: GuestLectureSession["status"],
-    updatedData?: Partial<GuestLectureSession>
-  ) => {
-    setSessions((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, status: newStatus, ...updatedData } : s))
-    );
+  const handleOfferSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newSession: GuestLectureSession = {
+      id: `LEC-${Date.now()}`,
+      speakerName: "Sarah Jenkins (You)",
+      speakerAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+      speakerRole: "Senior Staff Engineer",
+      speakerCompany: "Google Cloud",
+      speakerBatch: "Batch of 2020",
+      title: offerForm.title,
+      sessionType: offerForm.sessionType,
+      targetDepartment: offerForm.targetDepartment,
+      scheduledDate: offerForm.scheduledDate,
+      scheduledTime: offerForm.scheduledTime,
+      venueOrLink: offerForm.venueOrLink,
+      status: "Proposed",
+      registeredCount: 0,
+      description: offerForm.description,
+    };
+
+    setSessions((prev) => [newSession, ...prev]);
+    toast.success(`Offered guest lecture: ${offerForm.title}!`, {
+      description: `Submitted for review. Reserved Venue: ${offerForm.venueOrLink}`,
+      icon: <CheckCircle2 className="size-4 text-emerald-600" />,
+    });
+    setIsOfferModalOpen(false);
   };
 
   const handleStudentRegister = (session: GuestLectureSession) => {
@@ -101,7 +122,7 @@ export const AlumniGuestLecturesView: React.FC<AlumniGuestLecturesViewProps> = (
     <div class="name">${session.speakerName} (${session.speakerCompany})</div>
     <p>for delivering an outstanding technical lecture titled</p>
     <p><strong>"${session.title}"</strong></p>
-    <p>Department: ${session.targetDepartment} • Coordinator: ${session.assignedCoordinator?.coordinatorName || "Academic HOD"}</p>
+    <p>Target Audience: ${session.targetDepartment} • Conducted on: ${session.scheduledDate}</p>
     <div class="footer">
       Verified Certificate ID: CERT-GUEST-${session.id}
       <br/><button class="btn" onclick="window.print()">Print / Save Certificate PDF</button>
@@ -123,9 +144,18 @@ export const AlumniGuestLecturesView: React.FC<AlumniGuestLecturesViewProps> = (
     toast.success(`Downloaded Official Speaker Certificate for ${session.title}!`);
   };
 
+  const handleScheduleSession = (id: string, title: string) => {
+    setSessions((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, status: "Scheduled" } : s))
+    );
+    toast.success(`Faculty & Admin approved and scheduled: ${title}!`, {
+      description: "College campus hall allocated & event published to student portals.",
+    });
+  };
+
   const filteredSessions = sessions.filter((s) => {
-    if (activeSubTab === "proposals") {
-      return s.status === "Submitted" || s.status === "Assigned" || s.status === "Under Review" || s.status === "Changes Requested";
+    if (activeSubTab === "requests") {
+      return s.status === "Proposed" || s.status === "Approved";
     }
     const matchesSearch =
       s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -137,17 +167,17 @@ export const AlumniGuestLecturesView: React.FC<AlumniGuestLecturesViewProps> = (
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Department-wise Guest Lecture Management"
-        subtitle="Alumni guest speaker multi-step proposals, automatic department routing, and faculty coordinator reviews."
+        title="Guest Lectures & Industry Sessions"
+        subtitle="Alumni guest speakers, technical workshops, career guidance keynotes, and student certificates."
         badgeText="Faculty & Alumni Academic Hub"
         icon={Award}
         onOpenMessagingCenter={onOpenMessagingCenter}
         actions={
           <Button
-            onClick={() => setIsWizardModalOpen(true)}
+            onClick={() => setIsOfferModalOpen(true)}
             className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs rounded-xl h-9 px-3.5 cursor-pointer shadow-md gap-1.5"
           >
-            <Plus className="size-4" /> Offer Guest Lecture (Wizard)
+            <Plus className="size-4" /> Offer a Guest Session
           </Button>
         }
       />
@@ -161,14 +191,14 @@ export const AlumniGuestLecturesView: React.FC<AlumniGuestLecturesViewProps> = (
         <StatCard title="Certificates Issued" value="420" change="Verified PDFs" icon={FileCheck2} />
       </div>
 
-      {/* SUB-NAVIGATION PILLS */}
+      {/* SUB-NAVIGATION PILLS & SEARCH */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 font-mono text-xs">
             {[
-              { id: "upcoming", label: "Published Sessions" },
-              { id: "proposals", label: "My Proposals & Status Timeline" },
-              { id: "coordinator", label: "Department Coordinator Workspace" },
+              { id: "upcoming", label: "Upcoming Sessions" },
+              { id: "requests", label: "Session Requests & Offers" },
+              { id: "webinars", label: "Webinar History" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -191,98 +221,167 @@ export const AlumniGuestLecturesView: React.FC<AlumniGuestLecturesViewProps> = (
           />
         </div>
 
-        {/* DEPARTMENT COORDINATOR WORKSPACE VIEW */}
-        {activeSubTab === "coordinator" ? (
-          <DepartmentCoordinatorGuestLecturesView
-            sessions={sessions}
-            onUpdateSessionStatus={handleUpdateSessionStatus}
-          />
-        ) : (
-          /* SESSIONS / PROPOSALS GRID */
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredSessions.map((session) => (
-              <GlassCard key={session.id} className="p-5 flex flex-col justify-between space-y-4 border border-[#24356B]/30 font-sans">
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-200 text-[0.65rem] font-mono">
-                      {session.sessionType}
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className={`text-[0.65rem] font-mono ${
-                        session.status === "Published" || session.status === "Approved"
-                          ? "bg-emerald-500/10 text-emerald-600 border-emerald-300 font-bold"
-                          : "bg-amber-500/10 text-amber-600 border-amber-300"
-                      }`}
-                    >
-                      {session.status}
-                    </Badge>
-                  </div>
+        {/* SESSIONS GRID */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredSessions.map((session) => (
+            <GlassCard key={session.id} className="p-5 flex flex-col justify-between space-y-4 border border-[#24356B]/30 font-sans">
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-200 text-[0.65rem] font-mono">
+                    {session.sessionType}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className={`text-[0.65rem] font-mono ${
+                      session.status === "Scheduled" || session.status === "Approved"
+                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-300"
+                        : "bg-amber-500/10 text-amber-600 border-amber-300"
+                    }`}
+                  >
+                    {session.status}
+                  </Badge>
+                </div>
 
-                  <div className="flex items-center gap-3">
-                    <img src={session.speakerAvatar} alt={session.speakerName} className="size-11 rounded-2xl object-cover border border-primary/20" />
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-extrabold text-sm text-foreground truncate">{session.speakerName}</h4>
-                      <p className="text-primary font-bold font-mono text-[0.72rem] truncate">
-                        {session.speakerRole} @ {session.speakerCompany}
-                      </p>
-                      <span className="text-[0.65rem] text-muted-foreground font-mono">{session.speakerBatch}</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h3 className="font-extrabold text-base text-foreground leading-snug">{session.title}</h3>
-                    <p className="text-xs text-muted-foreground line-clamp-2">{session.description}</p>
-                  </div>
-
-                  {/* PROPOSAL TIMELINE IN PROPOSALS TAB */}
-                  {activeSubTab === "proposals" && <ProposalStatusTimeline session={session} />}
-
-                  <div className="space-y-1 font-mono text-[0.72rem] text-muted-foreground pt-1 border-t border-border/60">
-                    <p>📅 Date: <strong className="text-foreground">{session.scheduledDate}</strong> ({session.scheduledTime})</p>
-                    <p>📍 Venue/Link: <strong className="text-[#2563EB]">{session.venueOrLink}</strong></p>
-                    <p>🎓 Target: <strong className="text-foreground">{session.targetDepartment}</strong></p>
+                <div className="flex items-center gap-3">
+                  <img src={session.speakerAvatar} alt={session.speakerName} className="size-11 rounded-2xl object-cover border border-primary/20" />
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-extrabold text-sm text-foreground truncate">{session.speakerName}</h4>
+                    <p className="text-primary font-bold font-mono text-[0.72rem] truncate">
+                      {session.speakerRole} @ {session.speakerCompany}
+                    </p>
+                    <span className="text-[0.65rem] text-muted-foreground font-mono">{session.speakerBatch}</span>
                   </div>
                 </div>
 
-                <div className="pt-2 flex items-center justify-between gap-2 border-t border-border/60">
-                  <span className="text-[0.68rem] font-mono text-muted-foreground">
-                    <strong>{session.registeredCount}</strong> Students Registered
-                  </span>
-
-                  <div className="flex items-center gap-1.5">
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setSelectedSession(session);
-                        setIsRegisterModalOpen(true);
-                      }}
-                      className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold h-8 text-xs rounded-xl cursor-pointer"
-                    >
-                      Register
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDownloadCertificate(session)}
-                      className="h-8 text-xs rounded-xl cursor-pointer gap-1"
-                    >
-                      <Download className="size-3" /> Certificate
-                    </Button>
-                  </div>
+                <div className="space-y-1">
+                  <h3 className="font-extrabold text-base text-foreground leading-snug">{session.title}</h3>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{session.description}</p>
                 </div>
-              </GlassCard>
-            ))}
-          </div>
-        )}
+
+                <div className="space-y-1 font-mono text-[0.72rem] text-muted-foreground pt-1 border-t border-border/60">
+                  <p>📅 Date: <strong className="text-foreground">{session.scheduledDate}</strong> ({session.scheduledTime})</p>
+                  <p>📍 Venue/Link: <strong className="text-[#2563EB]">{session.venueOrLink}</strong></p>
+                  <p>👥 Target: <strong className="text-foreground">{session.targetDepartment}</strong></p>
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between gap-2 border-t border-border/60">
+                <span className="text-[0.68rem] font-mono text-muted-foreground">
+                  <strong>{session.registeredCount}</strong> Students Registered
+                </span>
+
+                <div className="flex items-center gap-1.5">
+                  {session.status !== "Scheduled" && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleScheduleSession(session.id, session.title)}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-8 text-xs rounded-xl cursor-pointer gap-1"
+                    >
+                      <CheckCircle2 className="size-3.5" /> Schedule &amp; Assign Hall
+                    </Button>
+                  )}
+
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setSelectedSession(session);
+                      setIsRegisterModalOpen(true);
+                    }}
+                    className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold h-8 text-xs rounded-xl cursor-pointer"
+                  >
+                    Register
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleDownloadCertificate(session)}
+                    className="h-8 text-xs rounded-xl cursor-pointer gap-1"
+                  >
+                    <Download className="size-3" /> Certificate
+                  </Button>
+                </div>
+              </div>
+            </GlassCard>
+          ))}
+        </div>
       </div>
 
-      {/* MULTI-STEP PROPOSAL WIZARD MODAL */}
-      <OfferGuestLectureWizardModal
-        open={isWizardModalOpen}
-        onOpenChange={setIsWizardModalOpen}
-        onSubmitProposal={handleSubmitProposal}
-      />
+      {/* OFFER GUEST SESSION MODAL */}
+      <Dialog open={isOfferModalOpen} onOpenChange={setIsOfferModalOpen}>
+        <DialogContent className="sm:max-w-md rounded-3xl p-6">
+          <form onSubmit={handleOfferSubmit} className="space-y-3.5 text-xs font-sans">
+            <DialogHeader>
+              <DialogTitle className="font-extrabold text-base">Offer an Alumni Guest Session</DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-2.5 font-mono">
+              <div>
+                <label className="font-bold text-foreground font-sans block mb-1">Session Title / Topic</label>
+                <Input
+                  value={offerForm.title}
+                  onChange={(e) => setOfferForm({ ...offerForm, title: e.target.value })}
+                  className="h-9"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="font-bold text-foreground font-sans block mb-1">Target Department</label>
+                  <Input
+                    value={offerForm.targetDepartment}
+                    onChange={(e) => setOfferForm({ ...offerForm, targetDepartment: e.target.value })}
+                    className="h-9"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-foreground font-sans block mb-1">Proposed Date</label>
+                  <Input
+                    type="date"
+                    value={offerForm.scheduledDate}
+                    onChange={(e) => setOfferForm({ ...offerForm, scheduledDate: e.target.value })}
+                    className="h-9"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-foreground font-sans block mb-1">College Event Venue / Hall</label>
+                <select
+                  value={offerForm.venueOrLink}
+                  onChange={(e) => setOfferForm({ ...offerForm, venueOrLink: e.target.value })}
+                  className="w-full h-9 p-2 rounded-xl border border-input bg-background font-mono text-xs"
+                >
+                  <option value="Main University Auditorium (Capacity: 1,200)">Main University Auditorium (Capacity: 1,200)</option>
+                  <option value="Central Science Seminar Hall (Capacity: 450)">Central Science Seminar Hall (Capacity: 450)</option>
+                  <option value="Incubation Center Conference Room (Capacity: 250)">Incubation Center Conference Room (Capacity: 250)</option>
+                  <option value="ECE Smart Classroom 302 (Capacity: 120)">ECE Smart Classroom 302 (Capacity: 120)</option>
+                  <option value="Mechanical Engineering Workshop Hall (Capacity: 300)">Mechanical Engineering Workshop Hall (Capacity: 300)</option>
+                  <option value="Virtual Campus Webcast (Zoom Live Stream)">Virtual Campus Webcast (Zoom Live Stream)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-foreground font-sans block mb-1">Session Abstract / Details</label>
+                <textarea
+                  value={offerForm.description}
+                  onChange={(e) => setOfferForm({ ...offerForm, description: e.target.value })}
+                  rows={3}
+                  className="w-full p-2.5 rounded-xl border border-input bg-background font-mono text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsOfferModalOpen(false)} className="rounded-xl cursor-pointer">
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold rounded-xl cursor-pointer">
+                Submit Session Offer
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* STUDENT REGISTRATION MODAL */}
       {selectedSession && (
