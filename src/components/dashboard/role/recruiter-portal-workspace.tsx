@@ -72,7 +72,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { toast } from "sonner";
-import { pushToSharedQueue } from "@/lib/shared-assessment-store";
+import { pushToSharedQueue, getAllStudentSubmissions, type StudentSubmissionRecord } from "@/lib/shared-assessment-store";
 
 import { Panel } from "@/components/dashboard/panel";
 import { Badge } from "@/components/ui/badge";
@@ -482,15 +482,15 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const location = useLocation();
   const navigate = useNavigate();
 
-  const searchParams = new URLSearchParams(location.search);
-  const currentModuleFromUrl = (searchParams.get("module") as RecruiterPageModule) || initialModule;
+  const searchObj = (location.search || {}) as Record<string, string | undefined>;
+  const currentModuleFromUrl = (searchObj["module"] as RecruiterPageModule) || initialModule;
 
   const activeModule = currentModuleFromUrl;
 
   const setActiveModule = (mod: RecruiterPageModule) => {
     navigate({
       to: "/external-user/dashboard",
-      search: { module: mod } as any,
+      search: (prev: any) => ({ ...prev, module: mod }),
     });
   };
 
@@ -1852,6 +1852,78 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                   </div>
                 </div>
               ))}
+            </div>
+          </Panel>
+
+          {/* DISPATCHED CANDIDATE RESULTS FROM TPO PANEL */}
+          <Panel title="📩 Official Verified Student Results & Scorecards (Received from TPO)">
+            <div className="space-y-4 pt-1 font-sans">
+              <div className="p-3.5 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 text-xs font-mono flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-[#2563EB] text-white text-[0.65rem] animate-pulse">● Verified TPO Scorecards</Badge>
+                  <span className="font-bold text-slate-900 dark:text-white">
+                    {getAllStudentSubmissions().length} Candidate Scorecards Received
+                  </span>
+                </div>
+                <span className="text-muted-foreground text-[0.68rem]">
+                  Live synced with TPO Placement Operations Hub
+                </span>
+              </div>
+
+              <div className="overflow-x-auto border rounded-2xl">
+                <table className="w-full text-left text-xs font-sans">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/40 text-muted-foreground font-mono uppercase text-[0.65rem]">
+                      <th className="p-3">Candidate / Roll No</th>
+                      <th className="p-3">College Email</th>
+                      <th className="p-3">Dept</th>
+                      <th className="p-3">Assessment Title</th>
+                      <th className="p-3">MCQ Score</th>
+                      <th className="p-3">Coding Score</th>
+                      <th className="p-3">Overall %</th>
+                      <th className="p-3">Status</th>
+                      <th className="p-3 text-right">Recruiter Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50 font-mono text-[0.72rem]">
+                    {getAllStudentSubmissions().map((sub) => (
+                      <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
+                        <td className="p-3 font-sans font-bold text-slate-900 dark:text-white">{sub.studentName} ({sub.rollNo})</td>
+                        <td className="p-3 text-blue-600">{sub.studentEmail}</td>
+                        <td className="p-3 text-muted-foreground font-bold">{sub.department}</td>
+                        <td className="p-3 font-sans max-w-xs truncate">{sub.assessmentTitle}</td>
+                        <td className="p-3 font-bold text-slate-900 dark:text-white">{sub.mcqScore} / {sub.mcqTotal}</td>
+                        <td className="p-3 font-bold text-purple-600">{sub.codingScore} / {sub.codingTotal}</td>
+                        <td className="p-3 font-bold text-emerald-600">{sub.totalPercentage}%</td>
+                        <td className="p-3">
+                          <Badge className={sub.passStatus ? "bg-emerald-600 text-white text-[0.62rem]" : "bg-rose-600 text-white text-[0.62rem]"}>
+                            {sub.passStatus ? "PASSED ✓" : "FAILED ✕"}
+                          </Badge>
+                        </td>
+                        <td className="p-3 text-right font-sans">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              size="sm"
+                              onClick={() => toast.success(`Scheduled 1-on-1 Interview for ${sub.studentName} (${sub.rollNo})!`)}
+                              className="h-7 text-[0.68rem] bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-lg cursor-pointer px-2.5 font-bold gap-1 shadow-2xs"
+                            >
+                              Schedule Interview
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => toast.info(`Drafted formal Job Offer for ${sub.studentName}!`)}
+                              className="h-7 text-[0.68rem] rounded-lg cursor-pointer px-2.5 font-bold border-slate-200"
+                            >
+                              Offer Letter
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </Panel>
         </div>

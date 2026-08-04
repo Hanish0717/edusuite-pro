@@ -671,7 +671,10 @@ export function AppSidebar() {
                             <SidebarMenuSub className="ml-4 border-l border-[#24356B] pl-3 space-y-1 my-1">
                               {item.children.map((child) => {
                                 const childCleanPath = child.url.split("?")[0];
-                                const isSubActive = currentCleanPath === childCleanPath;
+                                const hasSubParam = child.url.includes("?");
+                                const isSubActive = hasSubParam
+                                  ? href.includes(child.url) || (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard"))
+                                  : currentCleanPath === childCleanPath;
                                 return (
                                   <SidebarMenuSubItem key={child.title}>
                                     <SidebarMenuSubButton
