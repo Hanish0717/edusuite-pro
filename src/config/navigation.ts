@@ -206,6 +206,9 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/approval-workflows",
       "/emergency",
       "/super-admin/emergency",
+      "/library",
+      "/hostel",
+      "/transport",
     ].includes(url)
   ) {
     return url;

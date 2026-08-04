@@ -80,7 +80,10 @@ export function AppSidebar() {
                   const isChildActive =
                     item.children?.some((child) => {
                       const childPath = (child.url || "").split("?")[0] || "";
-                      return currentCleanPath === childPath || (childPath !== "/" && currentCleanPath.startsWith(childPath));
+                      return (
+                        currentCleanPath === childPath ||
+                        (childPath !== "/" && currentCleanPath.startsWith(childPath))
+                      );
                     }) ?? false;
 
                   if (hasQueryParam) {
@@ -109,7 +112,7 @@ export function AppSidebar() {
                             <SidebarMenuButton
                               isActive={isItemActive}
                               tooltip={item.title}
-                              className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
+                              className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-white data-[active=true]:text-[#0F1B44] data-[active=true]:font-bold data-[active=true]:shadow-[0_0_0_1px_rgba(255,255,255,0.9),0_10px_24px_rgba(255,255,255,0.22)] transition-all duration-200 cursor-pointer"
                             >
                               <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
                               <span className="truncate">{item.title}</span>
@@ -121,14 +124,19 @@ export function AppSidebar() {
                                 const childCleanPath = (child.url || "").split("?")[0] || "";
                                 const hasSubParam = child.url.includes("?");
                                 const isSubActive = hasSubParam
-                                  ? href.includes(child.url) || (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard"))
-                                  : currentCleanPath === childCleanPath || (childCleanPath !== "/" && currentCleanPath.startsWith(childCleanPath));
+                                  ? href.includes(child.url) ||
+                                    (href.includes("/alumni") &&
+                                      !href.includes("?tab=") &&
+                                      child.url.includes("tab=dashboard"))
+                                  : currentCleanPath === childCleanPath ||
+                                    (childCleanPath !== "/" &&
+                                      currentCleanPath.startsWith(childCleanPath));
                                 return (
                                   <SidebarMenuSubItem key={child.title}>
                                     <SidebarMenuSubButton
                                       asChild
                                       isActive={isSubActive}
-                                      className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#4D78FF] data-[active=true]:bg-[#1A285D] rounded-[10px] px-3 py-1.5 transition-all duration-200"
+                                      className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#0F1B44] data-[active=true]:bg-white data-[active=true]:shadow-[0_0_0_1px_rgba(255,255,255,0.85),0_8px_20px_rgba(255,255,255,0.18)] rounded-[10px] px-3 py-1.5 transition-all duration-200"
                                     >
                                       <Link to={child.url}>{child.title}</Link>
                                     </SidebarMenuSubButton>
@@ -176,9 +184,7 @@ export function AppSidebar() {
           </span>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-bold text-white">
-                {profile.personaName}
-              </p>
+              <p className="truncate text-xs font-bold text-white">{profile.personaName}</p>
               <p className="truncate text-[11px] text-[#8F9CC3] font-mono">
                 {role === "student" ? "Roll No: 22CS101" : profile.label}
               </p>
