@@ -113,6 +113,28 @@ export const PLACEMENT_OFFICER_NAVIGATION: NavSection[] = [
 
 export const navigation: NavSection[] = [
   {
+<<<<<<< HEAD
+=======
+    label: "Menu",
+    items: [
+      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
+      { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
+    ],
+  },
+  {
+    label: "Academics",
+    items: [
+      { title: "Admissions", url: "/admission", icon: GraduationCap, moduleId: "admission" },
+      { title: "Academics", url: "/academics", icon: GraduationCap, moduleId: "academics" },
+      { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
+      { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
+      { title: "Attendance", url: "/attendance", icon: CalendarCheck, moduleId: "attendance" },
+      { title: "Timetable", url: "/timetable", icon: CalendarRange, moduleId: "academics" },
+      { title: "LMS", url: "/lms", icon: BookOpen, moduleId: "lms" },
+    ],
+  },
+  {
     label: "Examinations",
     items: [
       {
