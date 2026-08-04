@@ -23,12 +23,28 @@ import {
   FileSpreadsheet,
   ChevronDown,
   ChevronUp,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Check,
+  UserX,
+  Play,
+  RotateCcw,
+  BarChart2,
+  CalendarDays,
+  CalendarRange,
+  ExternalLink,
+  MapPin,
+  Coffee,
+  X,
+  FlaskConical,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -57,6 +73,42 @@ import {
   type FacultyStats,
 } from "./FacultyService";
 import { useAcademic } from "@/context/academic-context";
+import {
+  fetchLiveFacultyStatus,
+  fetchFacultyFullDaySchedule,
+  fetchClassStudents,
+  submitAttendanceMark,
+  fetchSyllabusProgress,
+  updateSyllabusUnitStatus,
+  fetchAllClassesAttendance,
+  INITIAL_FACULTY_STATUS,
+  INITIAL_CLASS_STUDENTS,
+  INITIAL_SYLLABUS_PROGRESS,
+  INITIAL_ALL_CLASSES_ATTENDANCE,
+  type LiveFacultyStatus,
+  type ClassStudentAttendance,
+  type SyllabusProgress,
+  type SyllabusUnit,
+  type AllClassesAttendanceItem,
+  type FacultyFullDaySchedule,
+} from "@/modules/academics/AcademicsService";
+
+const DEPARTMENTS_LIST = [
+  "All Departments",
+  "CSE",
+  "ECE",
+  "EEE",
+  "ME",
+  "Civil",
+  "MBA",
+];
+
+export type FacultySubpart =
+  | "roster"
+  | "faculty-status"
+  | "all-classes-attendance"
+  | "attendance-mark"
+  | "syllabus-tracker";
 
 const DESIGNATIONS = [
   "All Designations",
@@ -84,8 +136,38 @@ const EXPERIENCES = [
 
 const STATUS_LIST = ["All Status", "Active", "On Leave", "Sabbatical"] as const;
 
-export function FacultyModuleView() {
+export function FacultyModuleView({ initialTab }: { initialTab?: FacultySubpart }) {
   const { selectedDepartment } = useAcademic();
+  const [activeSubpart, setActiveSubpart] = useState<FacultySubpart>(initialTab || "roster");
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveSubpart(initialTab);
+    }
+  }, [initialTab]);
+
+  // Feature State 1: Faculty Live Status Matrix
+  const [facultyStatuses, setFacultyStatuses] = useState<LiveFacultyStatus[]>(INITIAL_FACULTY_STATUS);
+  const [selectedPeriod, setSelectedPeriod] = useState<number>(2);
+
+  // Modal State for Faculty Full-Day Timetable
+  const [isTimetableModalOpen, setIsTimetableModalOpen] = useState(false);
+  const [selectedFacultySchedule, setSelectedFacultySchedule] = useState<FacultyFullDaySchedule | null>(null);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
+
+  // Feature State 2: Attendance Marking Portal
+  const [studentRoster, setStudentRoster] = useState<ClassStudentAttendance[]>(INITIAL_CLASS_STUDENTS);
+  const [selectedClass, setSelectedClass] = useState<string>("CSE-3A");
+  const [submittingAttendance, setSubmittingAttendance] = useState<boolean>(false);
+
+  // Feature State 3: Syllabus Tracker
+  const [syllabusList, setSyllabusList] = useState<SyllabusProgress[]>(INITIAL_SYLLABUS_PROGRESS);
+
+  // Feature State 4: All Classes Attendance Dashboard (Super Admin)
+  const [allClassesAttendance, setAllClassesAttendance] = useState<AllClassesAttendanceItem[]>(INITIAL_ALL_CLASSES_ATTENDANCE);
+  const [attendanceViewMode, setAttendanceViewMode] = useState<"daily" | "weekly" | "monthly">("daily");
+
+  const [selectedDeptFilter, setSelectedDeptFilter] = useState("All Departments");
   const [faculty, setFaculty] = useState<FacultyRecord[]>([]);
   const [stats, setStats] = useState<FacultyStats | null>(null);
   
@@ -307,6 +389,75 @@ export function FacultyModuleView() {
     document.body.removeChild(link);
   };
 
+  // Handler to open faculty full-day timetable modal
+  const handleOpenFacultySchedule = async (facultyName: string) => {
+    setScheduleLoading(true);
+    setIsTimetableModalOpen(true);
+    const sched = await fetchFacultyFullDaySchedule(facultyName);
+    setSelectedFacultySchedule(sched);
+    setScheduleLoading(false);
+  };
+
+  // Toggle student attendance
+  const handleToggleAttendance = (studentId: string, status: "Present" | "Absent" | "Late") => {
+    setStudentRoster((prev) =>
+      prev.map((s) => (s.id === studentId ? { ...s, status } : s))
+    );
+  };
+
+  const handleMarkAllPresent = () => {
+    setStudentRoster((prev) => prev.map((s) => ({ ...s, status: "Present" })));
+    toast.success("All students marked Present");
+  };
+
+  const handleSubmitAttendance = async () => {
+    setSubmittingAttendance(true);
+    const res = await submitAttendanceMark("CSE-3A", 2, studentRoster);
+    setSubmittingAttendance(false);
+    if (res.success) {
+      toast.success(res.message);
+    }
+  };
+
+  const handleToggleSyllabusUnit = async (courseId: string, unitId: string) => {
+    setSyllabusList((prev) =>
+      prev.map((item) => {
+        if (item.id === courseId) {
+          const updatedUnits = item.units.map((u) =>
+            u.id === unitId ? { ...u, completed: !u.completed } : u
+          );
+          const completedCount = updatedUnits.filter((u) => u.completed).length;
+          const overallProgressPct = Math.round((completedCount / updatedUnits.length) * 100);
+          return { ...item, units: updatedUnits, overallProgressPct };
+        }
+        return item;
+      })
+    );
+    await updateSyllabusUnitStatus(courseId, unitId, true);
+    toast.success("Syllabus unit status updated");
+  };
+
+  const filteredFacultyStatus = useMemo(() => {
+    return facultyStatuses.filter((f) => {
+      const matchesSearch =
+        f.name.toLowerCase().includes(search.toLowerCase()) ||
+        f.subject.toLowerCase().includes(search.toLowerCase()) ||
+        f.currentClass.toLowerCase().includes(search.toLowerCase());
+      const matchesDept = selectedDeptFilter === "All Departments" || f.department === selectedDeptFilter;
+      return matchesSearch && matchesDept;
+    });
+  }, [facultyStatuses, search, selectedDeptFilter]);
+
+  const filteredAllClassesAttendance = useMemo(() => {
+    return allClassesAttendance.filter((c) => {
+      const matchesSearch =
+        c.className.toLowerCase().includes(search.toLowerCase()) ||
+        c.classTeacher.toLowerCase().includes(search.toLowerCase());
+      const matchesDept = selectedDeptFilter === "All Departments" || c.department === selectedDeptFilter;
+      return matchesSearch && matchesDept;
+    });
+  }, [allClassesAttendance, search, selectedDeptFilter]);
+
   return (
     <div className="space-y-6">
       {/* HEADER */}
@@ -362,7 +513,57 @@ export function FacultyModuleView() {
         </div>
       </div>
 
-      {/* KPI STATS CARDS */}
+      {/* FIVE SUBPARTS NAVIGATION TAB BAR */}
+      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
+        <button
+          onClick={() => setActiveSubpart("roster")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "roster" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <UserCog className="size-3.5" /> 👨‍🏫 Faculty Roster & Workload Control
+        </button>
+
+        <button
+          onClick={() => setActiveSubpart("faculty-status")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "faculty-status" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Clock className="size-3.5" /> 🟢 Real-Time Faculty Status Matrix
+        </button>
+
+        <button
+          onClick={() => setActiveSubpart("all-classes-attendance")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "all-classes-attendance" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <UserCheck className="size-3.5" /> 🏛️ All Classes Attendance Dashboard
+        </button>
+
+        <button
+          onClick={() => setActiveSubpart("attendance-mark")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "attendance-mark" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <CheckCircle2 className="size-3.5" /> 📝 Faculty Attendance Portal
+        </button>
+
+        <button
+          onClick={() => setActiveSubpart("syllabus-tracker")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "syllabus-tracker" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <BarChart2 className="size-3.5" /> 📊 Syllabus Tracker
+        </button>
+      </div>
+
+      {activeSubpart === "roster" && (
+        <>
+          {/* KPI STATS CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
@@ -655,6 +856,523 @@ export function FacultyModuleView() {
           </div>
         )}
       </div>
+      </>
+      )}
+
+      {/* FEATURE 1: REAL-TIME FACULTY STATUS MATRIX */}
+      {activeSubpart === "faculty-status" && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+              <span className="text-xs font-bold text-muted-foreground uppercase shrink-0">Current Period:</span>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setSelectedPeriod(p)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    selectedPeriod === p ? "bg-primary text-white shadow-sm" : "bg-muted/40 text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  Period {p}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Select value={selectedDeptFilter} onValueChange={setSelectedDeptFilter}>
+                <SelectTrigger className="h-9 text-xs w-[160px] rounded-xl"><SelectValue placeholder="Department" /></SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS_LIST.map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}
+                </SelectContent>
+              </Select>
+              <div className="relative flex-1 min-w-[150px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                <Input placeholder="Search faculty..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-9 text-xs rounded-xl" />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredFacultyStatus.map((f) => (
+              <div
+                key={f.id}
+                onClick={() => handleOpenFacultySchedule(f.name)}
+                className="p-4 rounded-2xl border border-border/80 bg-card space-y-3 shadow-sm hover:border-primary hover:shadow-md transition-all cursor-pointer group relative"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
+                      {f.name} <ExternalLink className="size-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
+                    </h3>
+                    <p className="text-xs text-muted-foreground font-mono">{f.department} Department</p>
+                  </div>
+                  {f.status === "FREE" && (
+                    <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 font-bold">
+                      🟢 FREE
+                    </Badge>
+                  )}
+                  {f.status === "IN CLASS / WORKING" && (
+                    <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border-blue-300 font-bold">
+                      🔵 IN CLASS
+                    </Badge>
+                  )}
+                  {f.status === "ON LEAVE" && (
+                    <Badge className="bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-300 font-bold">
+                      🔴 ON LEAVE
+                    </Badge>
+                  )}
+                </div>
+
+                {f.status === "IN CLASS / WORKING" && (
+                  <div className="p-3 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/30 text-xs space-y-1">
+                    <p className="font-bold text-blue-900 dark:text-blue-300">{f.subject}</p>
+                    <div className="flex items-center justify-between text-muted-foreground font-mono text-[0.7rem] pt-1">
+                      <span>Class: <strong className="text-foreground">{f.currentClass}</strong></span>
+                      <span>Room: <strong className="text-foreground">{f.roomNo}</strong></span>
+                    </div>
+                    <p className="text-[0.68rem] font-mono text-blue-600 dark:text-blue-400">Slot: {f.timeSlot}</p>
+                  </div>
+                )}
+
+                {f.status === "FREE" && (
+                  <div className="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 text-xs">
+                    <p className="text-emerald-700 dark:text-emerald-300 font-medium">Unassigned in Period {selectedPeriod}</p>
+                    <p className="text-[0.68rem] text-muted-foreground">Available for proxy / substitution</p>
+                  </div>
+                )}
+
+                {f.status === "ON LEAVE" && (
+                  <div className="p-3 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/50 text-xs">
+                    <p className="text-rose-700 dark:text-rose-300 font-semibold">{f.leaveReason || "Approved Leave"}</p>
+                    <p className="text-[0.68rem] text-muted-foreground">Substitute assigned by HOD</p>
+                  </div>
+                )}
+
+                <div className="text-[0.68rem] text-primary/80 font-semibold flex items-center justify-end gap-1 pt-1 border-t border-border/40">
+                  <span>Click to view full-day timetable</span>
+                  <Calendar className="size-3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* FEATURE 4: ALL CLASSES ATTENDANCE DASHBOARD (SUPER ADMIN GOVERNANCE) */}
+      {activeSubpart === "all-classes-attendance" && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-muted-foreground uppercase shrink-0">Timeframe:</span>
+              <div className="inline-flex p-1 rounded-xl bg-muted/60 border border-border/60">
+                <button
+                  onClick={() => setAttendanceViewMode("daily")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "daily" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  📅 Daily View
+                </button>
+                <button
+                  onClick={() => setAttendanceViewMode("weekly")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "weekly" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  📆 Weekly View
+                </button>
+                <button
+                  onClick={() => setAttendanceViewMode("monthly")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "monthly" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  🗓️ Monthly View
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Select value={selectedDeptFilter} onValueChange={setSelectedDeptFilter}>
+                <SelectTrigger className="h-9 text-xs w-[160px] rounded-xl"><SelectValue placeholder="Department" /></SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS_LIST.map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}
+                </SelectContent>
+              </Select>
+              <div className="relative flex-1 min-w-[150px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                <Input placeholder="Search class or teacher..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-9 text-xs rounded-xl" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                  <tr>
+                    <th className="py-3 px-3">Class / Section</th>
+                    <th className="py-3 px-3">Department</th>
+                    <th className="py-3 px-3">Total Enrolled</th>
+                    <th className="py-3 px-3">Present</th>
+                    <th className="py-3 px-3">Absent</th>
+                    <th className="py-3 px-3">Late</th>
+                    <th className="py-3 px-3">Attendance % ({attendanceViewMode.toUpperCase()})</th>
+                    <th className="py-3 px-3">Class Teacher</th>
+                    <th className="py-3 px-3">Governance Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {filteredAllClassesAttendance.map((c) => {
+                    const pct = attendanceViewMode === "daily" ? c.dailyPct : attendanceViewMode === "weekly" ? c.weeklyPct : c.monthlyPct;
+                    const isDefaulter = pct < 75;
+                    return (
+                      <tr key={c.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="py-3 px-3 font-mono font-bold text-foreground">{c.className}</td>
+                        <td className="py-3 px-3 font-semibold">{c.department}</td>
+                        <td className="py-3 px-3 font-mono">{c.totalStudents} Students</td>
+                        <td className="py-3 px-3 font-mono text-emerald-600 font-bold">{c.presentCount}</td>
+                        <td className="py-3 px-3 font-mono text-rose-600 font-bold">{c.absentCount}</td>
+                        <td className="py-3 px-3 font-mono text-amber-600 font-bold">{c.lateCount}</td>
+                        <td className="py-3 px-3 min-w-[130px]">
+                          <div className="flex items-center gap-2">
+                            <Progress value={pct} className="h-2 flex-1" />
+                            <span className={`font-mono text-xs font-bold ${isDefaulter ? "text-rose-600" : "text-emerald-600"}`}>
+                              {pct}%
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-muted-foreground">{c.classTeacher}</td>
+                        <td className="py-3 px-3">
+                          {isDefaulter ? (
+                            <Badge className="bg-rose-500/10 text-rose-600 border-rose-500/30">
+                              ⚠️ &lt;75% Defaulter Alert
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-emerald-500/10 text-emerald-600">
+                              ✅ Satisfactory ({pct}%)
+                            </Badge>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FEATURE 2: FACULTY ATTENDANCE MARKING PORTAL */}
+      {activeSubpart === "attendance-mark" && (
+        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-5 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+            <div className="space-y-1">
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                <UserCheck className="size-4 text-primary" /> Period Attendance Marking Access
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Class: <strong className="text-foreground">{selectedClass}</strong> • Data Structures & Algorithms • Date: {new Date().toLocaleDateString()} (Period 2)
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={handleMarkAllPresent} className="h-9 gap-1.5 text-xs font-semibold border-emerald-500/40 text-emerald-600 hover:bg-emerald-50">
+                <CheckCircle2 className="size-3.5 text-emerald-500" /> Mark All Present
+              </Button>
+              <Button size="sm" onClick={handleSubmitAttendance} disabled={submittingAttendance} className="h-9 bg-brand-gradient text-white gap-1.5 text-xs font-semibold shadow-glow">
+                {submittingAttendance ? <RefreshCw className="size-3.5 animate-spin" /> : <Check className="size-3.5" />} Submit Attendance
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-muted/30 border border-border/60">
+            <div className="flex items-center gap-4 font-semibold">
+              <span className="text-emerald-600">Present: {studentRoster.filter((s) => s.status === "Present").length}</span>
+              <span className="text-rose-600">Absent: {studentRoster.filter((s) => s.status === "Absent").length}</span>
+              <span className="text-amber-600">Late: {studentRoster.filter((s) => s.status === "Late").length}</span>
+            </div>
+            <span className="font-mono text-muted-foreground">Total Enrolled: {studentRoster.length} Students</span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                <tr>
+                  <th className="py-3 px-3">Roll Number</th>
+                  <th className="py-3 px-3">Student Name</th>
+                  <th className="py-3 px-3 text-center">Attendance Status Toggle</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {studentRoster.map((s) => (
+                  <tr key={s.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="py-3 px-3 font-mono font-bold text-foreground">{s.rollNo}</td>
+                    <td className="py-3 px-3 font-semibold text-foreground">{s.name}</td>
+                    <td className="py-3 px-3 text-center">
+                      <div className="inline-flex items-center gap-1.5 p-1 rounded-xl bg-muted/60 border border-border/60">
+                        <button
+                          onClick={() => handleToggleAttendance(s.id, "Present")}
+                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                            s.status === "Present" ? "bg-emerald-600 text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          P (Present)
+                        </button>
+                        <button
+                          onClick={() => handleToggleAttendance(s.id, "Absent")}
+                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                            s.status === "Absent" ? "bg-rose-600 text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          A (Absent)
+                        </button>
+                        <button
+                          onClick={() => handleToggleAttendance(s.id, "Late")}
+                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                            s.status === "Late" ? "bg-amber-500 text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          L (Late)
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* FEATURE 3: FACULTY ACADEMIC CALENDAR & SYLLABUS TRACKER */}
+      {activeSubpart === "syllabus-tracker" && (
+        <div className="space-y-6">
+          {syllabusList.map((syl) => (
+            <div key={syl.id} className="rounded-2xl border border-border/80 bg-card p-5 space-y-5 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">{syl.courseCode}</Badge>
+                    <h2 className="text-base font-bold text-foreground">{syl.courseName}</h2>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">Faculty: {syl.facultyName} • Dept: {syl.department}</p>
+                </div>
+
+                <div className="flex items-center gap-3 font-mono text-xs">
+                  <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 font-bold">
+                    {syl.classesCompleted} / {syl.totalClassesScheduled} Classes Completed
+                  </div>
+                  <div className="px-3 py-1.5 rounded-xl bg-primary/10 text-primary font-bold">
+                    {syl.overallProgressPct}% Syllabus Progress
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase">
+                  <span>Syllabus Unit Completion Ledger</span>
+                  <span>{syl.units.filter((u) => u.completed).length} / {syl.units.length} Units Done</span>
+                </div>
+                <Progress value={syl.overallProgressPct} className="h-2.5 rounded-full" />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-3">
+                {syl.units.map((unit) => (
+                  <div
+                    key={unit.id}
+                    onClick={() => handleToggleSyllabusUnit(syl.id, unit.id)}
+                    className={`p-3.5 rounded-xl border text-xs space-y-2 cursor-pointer transition-all ${
+                      unit.completed ? "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-900/50" : "bg-card border-border/80 hover:border-primary/40"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold font-mono text-primary">Unit {unit.unitNo}: {unit.title}</span>
+                      <Badge className={unit.completed ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"}>
+                        {unit.completed ? "Completed" : "Pending"}
+                      </Badge>
+                    </div>
+                    <p className="text-muted-foreground text-[0.75rem]">{unit.topicsCovered}</p>
+                    <p className="text-[0.68rem] font-mono text-muted-foreground">Target Hours: {unit.estimatedHours} hrs</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* FULL-DAY PERIOD TIMETABLE MODAL */}
+      <Dialog open={isTimetableModalOpen} onOpenChange={setIsTimetableModalOpen}>
+        <DialogContent className="max-w-2xl bg-card border-border p-6 shadow-2xl rounded-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader className="border-b border-border pb-4">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20 shrink-0">
+                  <UserCog className="size-6" />
+                </div>
+                <div>
+                  <DialogTitle className="text-lg font-bold text-foreground">
+                    {selectedFacultySchedule?.facultyName || "Faculty Timetable"}
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-muted-foreground font-mono mt-0.5">
+                    {selectedFacultySchedule?.department} Department &middot; Employee ID: {selectedFacultySchedule?.empId}
+                  </DialogDescription>
+                </div>
+              </div>
+
+              {selectedFacultySchedule && (
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 font-mono font-bold text-xs px-2.5 py-1">
+                    🟢 {selectedFacultySchedule.freePeriodsCount} Free Slots
+                  </Badge>
+                  <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 font-mono font-bold text-xs px-2.5 py-1">
+                    🔵 {selectedFacultySchedule.teachingPeriodsCount} Teaching
+                  </Badge>
+                </div>
+              )}
+            </div>
+          </DialogHeader>
+
+          {scheduleLoading ? (
+            <div className="p-12 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
+              <RefreshCw className="size-6 animate-spin text-primary" />
+              Loading live period schedule...
+            </div>
+          ) : !selectedFacultySchedule ? (
+            <div className="p-8 text-center text-xs text-muted-foreground font-medium">
+              No schedule records found for this faculty.
+            </div>
+          ) : (
+            <div className="space-y-4 pt-2">
+              <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase border-b border-border/40 pb-2">
+                <span>Daily Period Schedule Timeline</span>
+                <span className="font-mono text-[0.68rem] text-primary">8 Periods Configured</span>
+              </div>
+
+              <div className="space-y-2.5">
+                {selectedFacultySchedule.fullDaySchedule.map((slot) => {
+                  const isInClass = slot.status === "IN CLASS";
+                  const isFree = slot.status === "FREE";
+                  const isOnLeave = slot.status === "ON LEAVE";
+                  const isLab = slot.isLab;
+
+                  return (
+                    <div
+                      key={slot.period}
+                      className="flex items-center gap-3 p-2 rounded-2xl transition-all"
+                    >
+                      <div className="w-20 shrink-0 text-center py-2 px-2.5 rounded-xl bg-muted/60 border border-border/60">
+                        <span className="block font-bold text-xs text-foreground font-mono">P{slot.period}</span>
+                        <span className="block text-[0.65rem] text-muted-foreground font-mono">{slot.timeSlot}</span>
+                      </div>
+
+                      {isInClass && !isLab && (
+                        <div className="p-3.5 rounded-2xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/80 dark:border-blue-900/40 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 shrink-0">
+                              <BookOpen className="size-4" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-xs text-foreground">{slot.subject}</h4>
+                              <p className="text-[0.72rem] font-mono text-muted-foreground font-semibold">{slot.className}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                            <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border-blue-300 font-bold text-[0.68rem] px-2.5 py-0.5">
+                              🔵 IN CLASS
+                            </Badge>
+                            <div className="flex items-center gap-1.5 text-[0.72rem] font-mono text-muted-foreground font-semibold">
+                              <MapPin className="size-3.5 text-primary" /> {slot.roomNo}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {isInClass && isLab && (
+                        <div className="p-3.5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 shrink-0">
+                              <FlaskConical className="size-4" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-xs text-foreground">{slot.subject}</h4>
+                              <p className="text-[0.72rem] font-mono text-muted-foreground font-semibold">{slot.className}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                            <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 font-bold text-[0.68rem] px-2.5 py-0.5">
+                              🟠 IN CLASS (LAB)
+                            </Badge>
+                            <div className="flex items-center gap-1.5 text-[0.72rem] font-mono text-muted-foreground font-semibold">
+                              <FlaskConical className="size-3.5 text-amber-600" /> {slot.roomNo}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {isFree && (
+                        <div className="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 shrink-0">
+                              <Coffee className="size-4" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-xs text-emerald-900 dark:text-emerald-200">FREE PERIOD</h4>
+                              <p className="text-[0.72rem] text-emerald-700 dark:text-emerald-400 font-medium">Available Slot</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                            <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 font-bold text-[0.68rem] px-2.5 py-0.5">
+                              🟢 FREE
+                            </Badge>
+                            <span className="text-[0.72rem] text-muted-foreground font-mono font-semibold">—</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {isOnLeave && (
+                        <div className="p-3.5 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-xl bg-rose-100 dark:bg-rose-900/50 text-rose-600 shrink-0">
+                              <XCircle className="size-4" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-xs text-rose-900 dark:text-rose-200">ON APPROVED LEAVE</h4>
+                              <p className="text-[0.72rem] text-rose-700 dark:text-rose-400 font-medium">Substitute Assigned by HOD</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+                            <Badge className="bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 font-bold text-[0.68rem] px-2.5 py-0.5">
+                              🔴 ON LEAVE
+                            </Badge>
+                            <span className="text-[0.72rem] text-muted-foreground font-mono font-semibold">—</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Footer Close Button */}
+          <DialogFooter className="pt-3 border-t border-border flex justify-end">
+            <Button
+              onClick={() => setIsTimetableModalOpen(false)}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl h-10 px-5 gap-1.5 shadow-sm"
+            >
+              Close Schedule <X className="size-3.5" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* DIALOG 1: ADD NEW FACULTY MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
