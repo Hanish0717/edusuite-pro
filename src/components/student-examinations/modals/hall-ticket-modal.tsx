@@ -24,10 +24,11 @@ const STATUS_BADGE: Record<string, React.ReactNode> = {
 };
 
 export function HallTicketModal({ open, onOpenChange, profile, exams, hallTicketRecord }: HallTicketModalProps) {
-  // Use hallTicketRecord data if available, otherwise fall back to exams prop
-  const displayExams = hallTicketRecord && hallTicketRecord.subjects.length > 0
-    ? hallTicketRecord.subjects
-    : exams;
+  // For current semester, prioritize the single-source-of-truth exams array (derived from course registration)
+  const isCurrentSem = !hallTicketRecord || hallTicketRecord.semester === profile.currentSemester;
+  const displayExams = isCurrentSem && exams.length > 0
+    ? exams
+    : (hallTicketRecord && hallTicketRecord.subjects.length > 0 ? hallTicketRecord.subjects : exams);
 
   const htNumber = hallTicketRecord?.hallTicketNumber || `HT-2026-SEM${profile.currentSemester}-0542`;
   const htStatus = hallTicketRecord?.status || "Verified & Issued";

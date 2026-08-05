@@ -63,6 +63,7 @@ import {
   FeeReceipt,
   VisitorRecord,
 } from "./types";
+import { DailyMealConfirmation } from "./daily-meal-confirmation";
 
 export const StudentHostelModule: React.FC = () => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -1510,6 +1511,9 @@ export const StudentHostelModule: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* DAILY MEAL CONFIRMATION WIDGET */}
+      <DailyMealConfirmation studentId="22CS101" studentName="K. Sai Teja" />
 
       {/* MESS DETAILS SECTION */}
       <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">

@@ -9,6 +9,7 @@ export const YEAR_TO_SEMESTERS_MAP: Record<AcademicYearOption, number[]> = {
 
 export type AttendanceTab =
   | "summary"
+  | "calendar"
   | "subject-attendance"
   | "history"
   | "leave-management";

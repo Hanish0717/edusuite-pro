@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   ExamSubmodule,
   CourseRegWorkflowStatus,
@@ -10,6 +10,7 @@ import {
   YEAR_TO_SEMESTERS_MAP,
   HallTicketRecordItem,
   SemesterResultItem,
+  UpcomingExamItem,
 } from "@/components/student-examinations/types";
 import {
   MOCK_EXAM_PROFILE,
@@ -19,6 +20,7 @@ import {
   MOCK_REGISTRATION_WORKFLOW,
   MOCK_EXAM_REGISTRATIONS,
 } from "@/components/student-examinations/mock-data";
+import { isCourseNptelExempted } from "@/components/student-examinations/nptel-service";
 
 // Submodule Views
 import { CourseRegistration } from "@/components/student-examinations/course-registration";
@@ -46,6 +48,7 @@ import {
   AlertTriangle,
   Loader2,
   CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -72,8 +75,6 @@ function StudentExaminationsPage() {
 
   // Dynamic Datasets
   const [profile] = useState(MOCK_EXAM_PROFILE);
-  const [upcomingExams] = useState(MOCK_UPCOMING_EXAMS);
-  const [semesterResults] = useState(MOCK_SEMESTER_RESULTS);
   const [availableCourses, setAvailableCourses] = useState(MOCK_AVAILABLE_COURSES);
   const [workflow] = useState(MOCK_REGISTRATION_WORKFLOW);
   const [examRegistrations, setExamRegistrations] = useState(MOCK_EXAM_REGISTRATIONS);
@@ -98,6 +99,7 @@ function StudentExaminationsPage() {
 
   // Course selection and NPTEL declaration state
   const [selectedCourseIds, setSelectedCourseIds] = useState<string[]>([]);
+  const [nptelChoice, setNptelChoice] = useState<"YES" | "NO" | null>(null);
   const [nptelDeclarations, setNptelDeclarations] = useState<Record<string, {
     fileName: string;
     fileSize: string;
@@ -105,6 +107,119 @@ function StudentExaminationsPage() {
     pdfUrl: string;
     isNptel: boolean;
   }>>({});
+
+  // --------------------------------------------------------------------------
+  // SINGLE SOURCE OF TRUTH DYNAMIC DERIVATIONS
+  // Master Source: Registered Courses & Exam Registration for selectedSemester
+  // --------------------------------------------------------------------------
+
+  // 1. Current Semester Registered Exams (Master Source)
+  const currentSemExamRegs = useMemo(() => {
+    const registeredInSem = availableCourses.filter(
+      (c) => c.semester === selectedSemester && c.isRegistered
+    );
+
+    // If nptelChoice === "YES" or NPTEL credit transferred, exclude NPTEL course
+    const activeRegCourses = registeredInSem.filter((c) => {
+      if (c.isNptel) {
+        if (
+          nptelChoice === "YES" ||
+          isCourseNptelExempted(c.id, nptelDeclarations) ||
+          isCourseNptelExempted(c.code, nptelDeclarations)
+        ) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+    return activeRegCourses.map((c) => {
+      const existing = examRegistrations.find(
+        (e) => e.semester === selectedSemester && e.subjectCode === c.code
+      );
+      if (existing) return existing;
+
+      return {
+        id: `er-${c.id}`,
+        semester: c.semester,
+        examType: "Regular" as const,
+        subjectCode: c.code,
+        subjectName: c.name,
+        credits: c.credits,
+        feeAmount: 500,
+        paymentStatus: "Paid" as const,
+        registrationDeadline: profile.registrationDeadline,
+        lateFee: 0,
+        examCentrePreference: "Main Campus - Academic Block A",
+        status: "Approved" as const,
+        receiptNumber: `EXM-REC-${Math.floor(1000 + Math.random() * 9000)}`,
+      };
+    });
+  }, [availableCourses, selectedSemester, nptelChoice, nptelDeclarations, examRegistrations, profile.registrationDeadline]);
+
+  // 2. Master Dynamic Hall Ticket Exams: Exact match with currentSemExamRegs.length!
+  const derivedUpcomingExams: UpcomingExamItem[] = useMemo(() => {
+    const dates = ["Feb 10, 2025", "Feb 12, 2025", "Feb 14, 2025", "Feb 17, 2025", "Feb 19, 2025", "Feb 21, 2025"];
+    return currentSemExamRegs.map((reg, idx) => ({
+      id: `ex-${reg.id}`,
+      semester: reg.semester,
+      subjectCode: reg.subjectCode,
+      subjectName: reg.subjectName,
+      examDate: dates[idx % dates.length],
+      timeSlot: "09:30 AM - 12:30 PM",
+      duration: "3 Hours",
+      hallNumber: reg.subjectCode.includes("Lab") ? "Lab Block - 04" : "Block A - 302",
+      seatNumber: reg.subjectCode.includes("Lab") ? `L-${12 + idx}` : `A-${40 + idx}`,
+      credits: reg.credits,
+      type: reg.subjectCode.includes("Lab")
+        ? "Lab"
+        : reg.subjectCode.startsWith("OE") || reg.subjectCode.startsWith("PE") || reg.subjectCode.startsWith("NP")
+        ? "Elective"
+        : "Theory",
+      status: "Scheduled" as const,
+    }));
+  }, [currentSemExamRegs]);
+
+  // 3. Master Dynamic Results: Exact match with currentSemExamRegs.length!
+  const derivedSemesterResults: SemesterResultItem[] = useMemo(() => {
+    const currentSemSubjects = currentSemExamRegs.map((reg) => ({
+      code: reg.subjectCode,
+      name: reg.subjectName,
+      internal: 38,
+      external: 54,
+      total: 92,
+      grade: "O",
+      credits: reg.credits,
+      status: "Pass" as const,
+    }));
+
+    const totalCredits = currentSemSubjects.reduce((acc, s) => acc + s.credits, 0);
+
+    return MOCK_SEMESTER_RESULTS.map((semRes) => {
+      if (semRes.semester === selectedSemester) {
+        return {
+          ...semRes,
+          creditsAttempted: totalCredits,
+          creditsEarned: totalCredits,
+          subjects: currentSemSubjects,
+        };
+      }
+      return semRes;
+    });
+  }, [currentSemExamRegs, selectedSemester]);
+
+  // 4. Synchronization Safeguards Validation Check
+  useEffect(() => {
+    const regCount = currentSemExamRegs.length;
+    const htCount = derivedUpcomingExams.length;
+    const resCount = derivedSemesterResults.find((r) => r.semester === selectedSemester)?.subjects.length || 0;
+
+    if (regCount !== htCount || regCount !== resCount) {
+      console.warn(
+        `[Single Source Sync] Discrepancy detected for Semester ${selectedSemester}: Registered (${regCount}), Hall Ticket (${htCount}), Results (${resCount}). Datasets synchronized automatically.`
+      );
+    }
+  }, [currentSemExamRegs, derivedUpcomingExams, derivedSemesterResults, selectedSemester]);
 
   // Registration Validation Modals
   const [selectionRequiredOpen, setSelectionRequiredOpen] = useState(false);
@@ -125,12 +240,14 @@ function StudentExaminationsPage() {
     const defaultSem = sems[0] ?? 1;
     setSelectedSemester(defaultSem);
     setSelectedCourseIds([]);
+    setNptelChoice(null);
     toast.info(`Switched to ${year} (Semester ${defaultSem})`);
   };
 
   const handleSemesterChange = (sem: number) => {
     setSelectedSemester(sem);
     setSelectedCourseIds([]);
+    setNptelChoice(null);
     toast.info(`Switched to Semester ${sem}`);
   };
 
@@ -196,6 +313,46 @@ function StudentExaminationsPage() {
     });
   };
 
+  // NPTEL Pre-Registration Check Modal State
+  const [nptelCheckModalOpen, setNptelCheckModalOpen] = useState(false);
+
+  const handleSelectAllCourses = () => {
+    const unregisteredCourses = availableCourses.filter(
+      (c) => c.semester === selectedSemester && !c.isRegistered
+    );
+    const allSelected =
+      unregisteredCourses.length > 0 &&
+      unregisteredCourses.every((c) => selectedCourseIds.includes(c.id));
+
+    if (allSelected) {
+      setSelectedCourseIds([]);
+      toast.info("Deselected all courses");
+    } else {
+      // Instead of immediately selecting courses, open NPTEL check confirmation dialog
+      setNptelCheckModalOpen(true);
+    }
+  };
+
+  const handleNptelCheckYes = () => {
+    setNptelChoice("YES");
+    setNptelCheckModalOpen(false);
+    // Open existing NPTEL Certificate Declaration modal
+    setNptelDeclarationOpen(true);
+  };
+
+  const handleNptelCheckNo = () => {
+    setNptelChoice("NO");
+    setNptelCheckModalOpen(false);
+    // Select all available courses for selected semester (including NPTEL as regular subject)
+    const unregisteredCourses = availableCourses.filter(
+      (c) => c.semester === selectedSemester && !c.isRegistered
+    );
+    setSelectedCourseIds(unregisteredCourses.map((c) => c.id));
+    toast.success(
+      `Selected all ${unregisteredCourses.length} offered courses (including NPTEL as regular subject) for Semester ${selectedSemester}`
+    );
+  };
+
   const handleToggleSelectCourse = (courseId: string) => {
     setSelectedCourseIds((prev) =>
       prev.includes(courseId)
@@ -257,9 +414,14 @@ function StudentExaminationsPage() {
       setExamRegStatus("Paid & Registered");
       setHallTicketStatus("Generated");
 
-      // Generate Exam Registration records for the newly registered courses (excluding NPTEL)
+      // Generate Exam Registration records for the newly registered courses
+      // Exclude NPTEL ONLY IF nptelChoice === "YES" (credit transferred)
       const newExamRegs = availableCourses
-        .filter((c) => selectedCourseIds.includes(c.id) && !c.isNptel)
+        .filter((c) => {
+          if (!selectedCourseIds.includes(c.id)) return false;
+          if (c.isNptel && nptelChoice === "YES") return false;
+          return true;
+        })
         .map((c) => ({
           id: `er-${c.id}`,
           semester: c.semester,
@@ -314,18 +476,17 @@ function StudentExaminationsPage() {
       return;
     }
 
-    // 2. Check if any selected course is NPTEL
-    const selectedNptelCourses = availableCourses.filter(
-      (c) => selectedCourseIds.includes(c.id) && c.isNptel
-    );
-
-    if (selectedNptelCourses.length > 0) {
-      // Open NPTEL Declaration Modal
-      setNptelDeclarationOpen(true);
-    } else {
-      // Proceed directly to final submission
-      executeFinalSubmission();
+    // 2. If student chose YES for NPTEL completion, ensure certificate has been declared
+    if (nptelChoice === "YES") {
+      const hasUploadedNptelCert = Object.keys(nptelDeclarations).length > 0;
+      if (!hasUploadedNptelCert) {
+        setNptelDeclarationOpen(true);
+        return;
+      }
     }
+
+    // If nptelChoice is "NO" (or "YES" with certificate uploaded), skip NPTEL popup and submit directly!
+    executeFinalSubmission();
   };
 
   const handleTogglePublishResults = () => {
@@ -340,7 +501,7 @@ function StudentExaminationsPage() {
 
   // Semester Navigation inside GradeCard Modal
   const handleNavigateSemester = (sem: number) => {
-    const result = semesterResults.find((r) => r.semester === sem);
+    const result = derivedSemesterResults.find((r) => r.semester === sem);
     if (result) {
       setSelectedSemesterResult(result);
     }
@@ -349,51 +510,91 @@ function StudentExaminationsPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
       
-      {/* 1. TOP 4 METRIC CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 1. TOP 4 METRIC CARDS — Styled like 2nd Image */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
-        {/* Card 1: Branch */}
-        <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3">
-          <span className="text-xs font-semibold text-slate-500 block">Your Branch / Department</span>
-          <div className="text-3xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display">
-            CSE
+        {/* Card 1: Branch / Department */}
+        <div className="p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-bold tracking-wider text-[#344054] dark:text-slate-300 uppercase">
+              MY DEPARTMENT
+            </span>
+            <div className="w-11 h-11 rounded-full bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+              <BookOpen className="h-5 w-5" />
+            </div>
           </div>
-          <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#0b193c]/10 text-[#0b193c] dark:text-blue-400 border border-[#0b193c]/20">
-            Department Profile
-          </span>
+          <div className="mt-4">
+            <div className="flex items-baseline">
+              <span className="text-3xl font-bold text-[#101828] dark:text-white">CSE</span>
+              <span className="text-sm font-medium text-[#667085] dark:text-slate-400 ml-2">active</span>
+            </div>
+            <p className="text-xs font-normal text-[#98a2b3] dark:text-slate-500 mt-1.5">
+              Department Profile
+            </p>
+          </div>
         </div>
 
         {/* Card 2: Earned Credits */}
-        <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3">
-          <span className="text-xs font-semibold text-slate-500 block">Total Earned Credits</span>
-          <div className="text-3xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display">
-            {profile.creditsEarned} Credits
+        <div className="p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-bold tracking-wider text-[#344054] dark:text-slate-300 uppercase">
+              EARNED CREDITS
+            </span>
+            <div className="w-11 h-11 rounded-full bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <Award className="h-5 w-5" />
+            </div>
           </div>
-          <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#0b193c]/10 text-[#0b193c] dark:text-blue-400 border border-[#0b193c]/20">
-            From declared results
-          </span>
+          <div className="mt-4">
+            <div className="flex items-baseline">
+              <span className="text-3xl font-bold text-[#101828] dark:text-white">{profile.creditsEarned}</span>
+              <span className="text-sm font-medium text-[#667085] dark:text-slate-400 ml-2">completed</span>
+            </div>
+            <p className="text-xs font-normal text-[#98a2b3] dark:text-slate-500 mt-1.5">
+              From declared results
+            </p>
+          </div>
         </div>
 
         {/* Card 3: Registered Courses */}
-        <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3">
-          <span className="text-xs font-semibold text-slate-500 block">Registered Courses (Sem {selectedSemester})</span>
-          <div className="text-3xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display">
-            {registeredCoursesList.length}
+        <div className="p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-bold tracking-wider text-[#344054] dark:text-slate-300 uppercase">
+              REGISTERED COURSES
+            </span>
+            <div className="w-11 h-11 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <ClipboardCheck className="h-5 w-5" />
+            </div>
           </div>
-          <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#0b193c]/10 text-[#0b193c] dark:text-blue-400 border border-[#0b193c]/20">
-            Completed Enrolment
-          </span>
+          <div className="mt-4">
+            <div className="flex items-baseline">
+              <span className="text-3xl font-bold text-[#101828] dark:text-white">{registeredCoursesList.length}</span>
+              <span className="text-sm font-medium text-[#667085] dark:text-slate-400 ml-2">enrolled</span>
+            </div>
+            <p className="text-xs font-normal text-[#98a2b3] dark:text-slate-500 mt-1.5">
+              Semester {selectedSemester} Tracker
+            </p>
+          </div>
         </div>
 
         {/* Card 4: Registered Credits */}
-        <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3">
-          <span className="text-xs font-semibold text-slate-500 block">Total Registered Credits (Sem {selectedSemester})</span>
-          <div className="text-3xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display">
-            {registeredCreditsSum} Credits
+        <div className="p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] font-bold tracking-wider text-[#344054] dark:text-slate-300 uppercase">
+              REGISTERED CREDITS
+            </span>
+            <div className="w-11 h-11 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <Ticket className="h-5 w-5" />
+            </div>
           </div>
-          <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#0b193c]/10 text-[#0b193c] dark:text-blue-400 border border-[#0b193c]/20">
-            Max Limit: 24 Credits
-          </span>
+          <div className="mt-4">
+            <div className="flex items-baseline">
+              <span className="text-3xl font-bold text-[#101828] dark:text-white">{registeredCreditsSum}</span>
+              <span className="text-sm font-medium text-[#667085] dark:text-slate-400 ml-2">credits</span>
+            </div>
+            <p className="text-xs font-normal text-[#98a2b3] dark:text-slate-500 mt-1.5">
+              Max Limit: 24 Credits
+            </p>
+          </div>
         </div>
 
       </div>
@@ -453,14 +654,16 @@ function StudentExaminationsPage() {
           onNavigateToExamReg={() => setActiveSubmodule("exam-registration")}
           selectedCourseIds={selectedCourseIds}
           onToggleSelect={handleToggleSelectCourse}
+          onSelectAllCourses={handleSelectAllCourses}
           onSubmitCourseRegistration={handleSubmitCourseRegistration}
+          nptelDeclarations={nptelDeclarations}
         />
       )}
 
       {activeSubmodule === "exam-registration" && (
         <ExamRegistration
           profile={profile}
-          examRegistrations={examRegistrations}
+          examRegistrations={currentSemExamRegs}
           courses={availableCourses}
           courseRegStatus={courseRegStatus}
           examRegStatus={examRegStatus}
@@ -479,7 +682,7 @@ function StudentExaminationsPage() {
       {activeSubmodule === "hall-ticket" && (
         <HallTicket
           profile={profile}
-          exams={upcomingExams}
+          exams={derivedUpcomingExams}
           examRegStatus={examRegStatus}
           hallTicketStatus={hallTicketStatus}
           selectedYear={selectedYear}
@@ -491,13 +694,14 @@ function StudentExaminationsPage() {
             setHallTicketModalOpen(true);
           }}
           onNavigateToExamReg={() => setActiveSubmodule("exam-registration")}
+          nptelDeclarations={nptelDeclarations}
         />
       )}
 
       {activeSubmodule === "results" && (
         <Results
           profile={profile}
-          semesterResults={semesterResults}
+          semesterResults={derivedSemesterResults}
           resultStatus={resultStatus}
           selectedYear={selectedYear}
           selectedSemester={selectedSemester}
@@ -509,6 +713,7 @@ function StudentExaminationsPage() {
           }}
           onApplyRevaluation={() => setRevaluationModalOpen(true)}
           onTogglePublishResults={handleTogglePublishResults}
+          nptelDeclarations={nptelDeclarations}
         />
       )}
 
@@ -517,7 +722,7 @@ function StudentExaminationsPage() {
         open={hallTicketModalOpen}
         onOpenChange={setHallTicketModalOpen}
         profile={profile}
-        exams={upcomingExams}
+        exams={derivedUpcomingExams}
         hallTicketRecord={selectedHallTicketRecord}
       />
 
@@ -526,7 +731,7 @@ function StudentExaminationsPage() {
         onOpenChange={setGradeCardModalOpen}
         profile={profile}
         result={selectedSemesterResult}
-        allResults={semesterResults}
+        allResults={derivedSemesterResults}
         onNavigateSemester={handleNavigateSemester}
         onApplyRevaluation={() => {
           setGradeCardModalOpen(false);
@@ -555,7 +760,7 @@ function StudentExaminationsPage() {
       <RevaluationModal
         open={revaluationModalOpen}
         onOpenChange={setRevaluationModalOpen}
-        semesterResults={semesterResults}
+        semesterResults={derivedSemesterResults}
         defaultSemester={selectedSemesterResult?.semester || selectedSemester}
         onSubmitRevaluation={(data) => {
           toast.success(`Revaluation request for ${data.subjectCode} submitted! Ref: REV-2026-${Math.floor(1000 + Math.random() * 9000)}`);
@@ -585,16 +790,63 @@ function StudentExaminationsPage() {
         </DialogContent>
       </Dialog>
 
+      {/* NPTEL Course Completion Check Modal */}
+      <Dialog open={nptelCheckModalOpen} onOpenChange={setNptelCheckModalOpen}>
+        <DialogContent className="max-w-lg rounded-2xl p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl">
+          <DialogHeader className="space-y-3 text-center">
+            <div className="mx-auto p-3 rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 w-fit border border-blue-200 dark:border-blue-900">
+              <Award className="h-8 w-8" />
+            </div>
+            <DialogTitle className="text-base font-bold text-slate-900 dark:text-white font-display">
+              Have you completed any NPTEL Course?
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-md mx-auto">
+              If you have completed an NPTEL course, upload your certificate so that the NPTEL subject is excluded from regular exam registration, hall ticket generation, and result processing.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 pt-2">
+            <Button
+              type="button"
+              onClick={handleNptelCheckYes}
+              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-10 px-4 gap-1.5 shadow-sm"
+            >
+              <CheckCircle2 className="h-4 w-4" /> Yes, I Completed NPTEL
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleNptelCheckNo}
+              className="rounded-xl border-slate-300 dark:border-slate-700 font-bold text-xs h-10 px-4 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 gap-1.5"
+            >
+              <XCircle className="h-4 w-4 text-rose-500" /> No, Regular Registration
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* NPTEL Course Declaration Modal */}
       <NptelDeclarationModal
         open={nptelDeclarationOpen}
         onOpenChange={setNptelDeclarationOpen}
-        selectedNptelCourses={availableCourses.filter(
-          (c) => selectedCourseIds.includes(c.id) && c.isNptel
-        )}
+        selectedNptelCourses={
+          availableCourses.filter(
+            (c) => (selectedCourseIds.includes(c.id) || selectedCourseIds.length === 0) && c.semester === selectedSemester && c.isNptel
+          )
+        }
         savedDeclarations={nptelDeclarations}
         onConfirm={(declarations) => {
-          executeFinalSubmission(declarations);
+          setNptelDeclarations(declarations);
+          // Automatically select all remaining regular (non-NPTEL) courses for selected semester
+          const regularUnregisteredCourses = availableCourses.filter(
+            (c) => c.semester === selectedSemester && !c.isRegistered && !c.isNptel
+          );
+          setSelectedCourseIds(regularUnregisteredCourses.map((c) => c.id));
+          setNptelDeclarationOpen(false);
+          toast.success(
+            "NPTEL certificate submitted! NPTEL course exempted; remaining regular courses selected."
+          );
         }}
       />
 

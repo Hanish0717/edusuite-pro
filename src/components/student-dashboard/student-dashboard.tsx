@@ -15,7 +15,6 @@ import { LMSWidget } from "./lms-widget";
 import { LibraryWidget } from "./library-widget";
 import { QuickActions } from "./quick-actions";
 import { RecentActivityTimeline } from "./recent-activity";
-import { CalendarWidget } from "./calendar-widget";
 import { NoticeDetailDrawer } from "@/components/notice-board/notice-detail-drawer";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -145,9 +144,6 @@ export const StudentDashboard: React.FC = () => {
 
           {/* Library Snapshot */}
           <LibraryWidget onOpenLibrary={() => handleNavigate("/student/library")} />
-
-          {/* Mini Academic Calendar */}
-          <CalendarWidget />
 
           {/* Recent Activity Timeline */}
           <RecentActivityTimeline activities={recentActivities} />
