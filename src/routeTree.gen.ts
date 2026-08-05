@@ -74,8 +74,12 @@ import { Route as ExamTakeRouteImport } from './routes/exam.take'
 import { Route as ExaminationIndexRouteImport } from './routes/examination.index'
 import { Route as ExaminationDashboardRouteImport } from './routes/examination.dashboard'
 import { Route as ExaminationsIndexRouteImport } from './routes/examinations.index'
+import { Route as ExaminationsAnalyticsRouteImport } from './routes/examinations.analytics'
 import { Route as ExaminationsHallTicketsRouteImport } from './routes/examinations.hall-tickets'
 import { Route as ExaminationsInternalMarksRouteImport } from './routes/examinations.internal-marks'
+import { Route as ExaminationsNotificationsRouteImport } from './routes/examinations.notifications'
+import { Route as ExaminationsReportsRouteImport } from './routes/examinations.reports'
+import { Route as ExaminationsRevaluationRouteImport } from './routes/examinations.revaluation'
 import { Route as ExaminationsScheduleRouteImport } from './routes/examinations.schedule'
 import { Route as ExternalUserIndexRouteImport } from './routes/external-user.index'
 import { Route as ExternalUserDashboardRouteImport } from './routes/external-user.dashboard'
@@ -514,6 +518,11 @@ const ExaminationsIndexRoute = ExaminationsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ExaminationsRoute,
 } as any)
+const ExaminationsAnalyticsRoute = ExaminationsAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => ExaminationsRoute,
+} as any)
 const ExaminationsHallTicketsRoute = ExaminationsHallTicketsRouteImport.update({
   id: '/hall-tickets',
   path: '/hall-tickets',
@@ -525,6 +534,22 @@ const ExaminationsInternalMarksRoute =
     path: '/internal-marks',
     getParentRoute: () => ExaminationsRoute,
   } as any)
+const ExaminationsNotificationsRoute =
+  ExaminationsNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => ExaminationsRoute,
+  } as any)
+const ExaminationsReportsRoute = ExaminationsReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => ExaminationsRoute,
+} as any)
+const ExaminationsRevaluationRoute = ExaminationsRevaluationRouteImport.update({
+  id: '/revaluation',
+  path: '/revaluation',
+  getParentRoute: () => ExaminationsRoute,
+} as any)
 const ExaminationsScheduleRoute = ExaminationsScheduleRouteImport.update({
   id: '/schedule',
   path: '/schedule',
@@ -1146,8 +1171,12 @@ export interface FileRoutesByFullPath {
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
+  '/examinations/analytics': typeof ExaminationsAnalyticsRoute
   '/examinations/hall-tickets': typeof ExaminationsHallTicketsRoute
   '/examinations/internal-marks': typeof ExaminationsInternalMarksRoute
+  '/examinations/notifications': typeof ExaminationsNotificationsRoute
+  '/examinations/reports': typeof ExaminationsReportsRoute
+  '/examinations/revaluation': typeof ExaminationsRevaluationRoute
   '/examinations/schedule': typeof ExaminationsScheduleRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/assessments': typeof FacultyAssessmentsRoute
@@ -1308,8 +1337,12 @@ export interface FileRoutesByTo {
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
+  '/examinations/analytics': typeof ExaminationsAnalyticsRoute
   '/examinations/hall-tickets': typeof ExaminationsHallTicketsRoute
   '/examinations/internal-marks': typeof ExaminationsInternalMarksRoute
+  '/examinations/notifications': typeof ExaminationsNotificationsRoute
+  '/examinations/reports': typeof ExaminationsReportsRoute
+  '/examinations/revaluation': typeof ExaminationsRevaluationRoute
   '/examinations/schedule': typeof ExaminationsScheduleRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/assessments': typeof FacultyAssessmentsRoute
@@ -1487,8 +1520,12 @@ export interface FileRoutesById {
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
+  '/examinations/analytics': typeof ExaminationsAnalyticsRoute
   '/examinations/hall-tickets': typeof ExaminationsHallTicketsRoute
   '/examinations/internal-marks': typeof ExaminationsInternalMarksRoute
+  '/examinations/notifications': typeof ExaminationsNotificationsRoute
+  '/examinations/reports': typeof ExaminationsReportsRoute
+  '/examinations/revaluation': typeof ExaminationsRevaluationRoute
   '/examinations/schedule': typeof ExaminationsScheduleRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/assessments': typeof FacultyAssessmentsRoute
@@ -1667,8 +1704,12 @@ export interface FileRouteTypes {
     | '/dean/subject-allocation'
     | '/exam/take'
     | '/examination/dashboard'
+    | '/examinations/analytics'
     | '/examinations/hall-tickets'
     | '/examinations/internal-marks'
+    | '/examinations/notifications'
+    | '/examinations/reports'
+    | '/examinations/revaluation'
     | '/examinations/schedule'
     | '/external-user/dashboard'
     | '/faculty/assessments'
@@ -1829,8 +1870,12 @@ export interface FileRouteTypes {
     | '/dean/subject-allocation'
     | '/exam/take'
     | '/examination/dashboard'
+    | '/examinations/analytics'
     | '/examinations/hall-tickets'
     | '/examinations/internal-marks'
+    | '/examinations/notifications'
+    | '/examinations/reports'
+    | '/examinations/revaluation'
     | '/examinations/schedule'
     | '/external-user/dashboard'
     | '/faculty/assessments'
@@ -2007,8 +2052,12 @@ export interface FileRouteTypes {
     | '/dean/subject-allocation'
     | '/exam/take'
     | '/examination/dashboard'
+    | '/examinations/analytics'
     | '/examinations/hall-tickets'
     | '/examinations/internal-marks'
+    | '/examinations/notifications'
+    | '/examinations/reports'
+    | '/examinations/revaluation'
     | '/examinations/schedule'
     | '/external-user/dashboard'
     | '/faculty/assessments'
@@ -2634,6 +2683,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExaminationsIndexRouteImport
       parentRoute: typeof ExaminationsRoute
     }
+    '/examinations/analytics': {
+      id: '/examinations/analytics'
+      path: '/analytics'
+      fullPath: '/examinations/analytics'
+      preLoaderRoute: typeof ExaminationsAnalyticsRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
     '/examinations/hall-tickets': {
       id: '/examinations/hall-tickets'
       path: '/hall-tickets'
@@ -2646,6 +2702,27 @@ declare module '@tanstack/react-router' {
       path: '/internal-marks'
       fullPath: '/examinations/internal-marks'
       preLoaderRoute: typeof ExaminationsInternalMarksRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
+    '/examinations/notifications': {
+      id: '/examinations/notifications'
+      path: '/notifications'
+      fullPath: '/examinations/notifications'
+      preLoaderRoute: typeof ExaminationsNotificationsRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
+    '/examinations/reports': {
+      id: '/examinations/reports'
+      path: '/reports'
+      fullPath: '/examinations/reports'
+      preLoaderRoute: typeof ExaminationsReportsRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
+    '/examinations/revaluation': {
+      id: '/examinations/revaluation'
+      path: '/revaluation'
+      fullPath: '/examinations/revaluation'
+      preLoaderRoute: typeof ExaminationsRevaluationRouteImport
       parentRoute: typeof ExaminationsRoute
     }
     '/examinations/schedule': {
@@ -3490,15 +3567,23 @@ const ExaminationRouteWithChildren = ExaminationRoute._addFileChildren(
 )
 
 interface ExaminationsRouteChildren {
+  ExaminationsAnalyticsRoute: typeof ExaminationsAnalyticsRoute
   ExaminationsHallTicketsRoute: typeof ExaminationsHallTicketsRoute
   ExaminationsInternalMarksRoute: typeof ExaminationsInternalMarksRoute
+  ExaminationsNotificationsRoute: typeof ExaminationsNotificationsRoute
+  ExaminationsReportsRoute: typeof ExaminationsReportsRoute
+  ExaminationsRevaluationRoute: typeof ExaminationsRevaluationRoute
   ExaminationsScheduleRoute: typeof ExaminationsScheduleRoute
   ExaminationsIndexRoute: typeof ExaminationsIndexRoute
 }
 
 const ExaminationsRouteChildren: ExaminationsRouteChildren = {
+  ExaminationsAnalyticsRoute: ExaminationsAnalyticsRoute,
   ExaminationsHallTicketsRoute: ExaminationsHallTicketsRoute,
   ExaminationsInternalMarksRoute: ExaminationsInternalMarksRoute,
+  ExaminationsNotificationsRoute: ExaminationsNotificationsRoute,
+  ExaminationsReportsRoute: ExaminationsReportsRoute,
+  ExaminationsRevaluationRoute: ExaminationsRevaluationRoute,
   ExaminationsScheduleRoute: ExaminationsScheduleRoute,
   ExaminationsIndexRoute: ExaminationsIndexRoute,
 }
