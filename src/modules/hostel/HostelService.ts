@@ -68,6 +68,7 @@ export interface GatePassSecurityMetrics {
   approved: number;
   rejected: number;
   pending: number;
+  emergencyPasses: number;
   avgApprovalTime: string;
   securityIncidents: number;
   lateEntries: number;
@@ -89,6 +90,29 @@ export interface ComplaintComplianceSummary {
     inspectionStatus: string;
     governmentCompliance: string;
   };
+}
+
+export interface GatePassDetailItem {
+  id: string;
+  studentName: string;
+  rollNo: string;
+  department: string;
+  hostelBlock: string;
+  passType: "Outing Pass" | "Home Leave" | "Emergency Pass";
+  exitTime: string;
+  expectedReturn: string;
+  status: "Approved" | "Pending" | "Rejected" | "Late Return";
+}
+
+export interface HostelComplaintDetailItem {
+  id: string;
+  complaintId: string;
+  studentName: string;
+  hostelBlock: string;
+  category: "Plumbing" | "Electrical" | "Wi-Fi Network" | "Furniture / Maintenance";
+  priority: "High" | "Medium" | "Low";
+  assignedWarden: string;
+  status: "Open" | "In Progress" | "Resolved";
 }
 
 export interface ExecutiveHostelAnalyticsData {
@@ -374,11 +398,123 @@ export const DEFAULT_SECURITY_METRICS: GatePassSecurityMetrics = {
   approved: 14,
   rejected: 2,
   pending: 2,
+  emergencyPasses: 3,
   avgApprovalTime: "45 Mins",
   securityIncidents: 0,
-  lateEntries: 3,
+  lateEntries: 4,
   visitorRecords: 24,
 };
+
+export const INITIAL_GATE_PASS_DETAILS: GatePassDetailItem[] = [
+  {
+    id: "GPD-101",
+    studentName: "Aarav Sharma",
+    rollNo: "22CSE001",
+    department: "Computer Science",
+    hostelBlock: "Block A (Boys)",
+    passType: "Home Leave",
+    exitTime: "2026-08-02 09:00 AM",
+    expectedReturn: "2026-08-04 08:00 PM",
+    status: "Approved",
+  },
+  {
+    id: "GPD-102",
+    studentName: "Priya Nair",
+    rollNo: "24CIVIL009",
+    department: "Civil Engineering",
+    hostelBlock: "Block B (Girls)",
+    passType: "Outing Pass",
+    exitTime: "2026-08-04 04:30 PM",
+    expectedReturn: "2026-08-04 08:30 PM",
+    status: "Pending",
+  },
+  {
+    id: "GPD-103",
+    studentName: "Rohan Verma",
+    rollNo: "23MECH018",
+    department: "Mechanical",
+    hostelBlock: "Block A (Boys)",
+    passType: "Outing Pass",
+    exitTime: "2026-08-03 05:00 PM",
+    expectedReturn: "2026-08-03 08:30 PM",
+    status: "Late Return",
+  },
+  {
+    id: "GPD-104",
+    studentName: "Ananya Iyer",
+    rollNo: "22ECE042",
+    department: "Electronics",
+    hostelBlock: "Block B (Girls)",
+    passType: "Emergency Pass",
+    exitTime: "2026-08-05 10:15 AM",
+    expectedReturn: "2026-08-05 06:00 PM",
+    status: "Approved",
+  },
+  {
+    id: "GPD-105",
+    studentName: "Vikram Malhotra",
+    rollNo: "23AIDS012",
+    department: "AI & Data Science",
+    hostelBlock: "Block C (PG Scholars)",
+    passType: "Outing Pass",
+    exitTime: "2026-08-05 02:00 PM",
+    expectedReturn: "2026-08-05 07:00 PM",
+    status: "Rejected",
+  },
+];
+
+export const INITIAL_COMPLAINT_DETAILS: HostelComplaintDetailItem[] = [
+  {
+    id: "CMP-001",
+    complaintId: "CMP-2026-084",
+    studentName: "Rohan Verma",
+    hostelBlock: "Block A (Boys)",
+    category: "Plumbing",
+    priority: "High",
+    assignedWarden: "Dr. Rajesh Kumar",
+    status: "In Progress",
+  },
+  {
+    id: "CMP-002",
+    complaintId: "CMP-2026-089",
+    studentName: "Priya Nair",
+    hostelBlock: "Block B (Girls)",
+    category: "Wi-Fi Network",
+    priority: "Medium",
+    assignedWarden: "Dr. Meenakshi Sundaram",
+    status: "Open",
+  },
+  {
+    id: "CMP-003",
+    complaintId: "CMP-2026-072",
+    studentName: "Aarav Sharma",
+    hostelBlock: "Block A (Boys)",
+    category: "Electrical",
+    priority: "Low",
+    assignedWarden: "Dr. Rajesh Kumar",
+    status: "Resolved",
+  },
+  {
+    id: "CMP-004",
+    complaintId: "CMP-2026-091",
+    studentName: "Siddharth Nambiar",
+    hostelBlock: "Block C (PG Scholars)",
+    category: "Furniture / Maintenance",
+    priority: "High",
+    assignedWarden: "Prof. Vikramaditya",
+    status: "In Progress",
+  },
+  {
+    id: "CMP-005",
+    complaintId: "CMP-2026-065",
+    studentName: "Ananya Iyer",
+    hostelBlock: "Block B (Girls)",
+    category: "Plumbing",
+    priority: "Low",
+    assignedWarden: "Dr. Meenakshi Sundaram",
+    status: "Resolved",
+  },
+];
 
 export const DEFAULT_COMPLAINT_COMPLIANCE: ComplaintComplianceSummary = {
   complaints: {
@@ -494,83 +630,83 @@ export const DEFAULT_MAINTENANCE_SUMMARY: MaintenanceSummary = {
 export const INITIAL_ALERTS: HostelAlert[] = [
   {
     id: "ALT-101",
-    severity: "medium",
-    title: "Hostel Block A at 98% occupancy",
-    description: "Block A (Boys) has reached 98% occupancy capacity.",
-    timestamp: "2 Hours ago",
+    severity: "high",
+    title: "Students not returned before hostel curfew",
+    description: "3 students delayed return past 9:30 PM curfew in Block A (Boys).",
+    timestamp: "30 Mins ago",
   },
   {
     id: "ALT-102",
-    severity: "high",
-    title: "Fire Safety Inspection Due",
-    description: "Annual municipal fire audit due in 12 days for Block C.",
-    timestamp: "1 Day ago",
+    severity: "medium",
+    title: "High complaint volume in Block B",
+    description: "4 pending Wi-Fi connectivity tickets reported in Girls Block B 2nd floor.",
+    timestamp: "2 Hours ago",
   },
   {
     id: "ALT-103",
     severity: "info",
-    title: "Water Maintenance Scheduled",
-    description: "Overhead tank cleaning scheduled for Block A on Sunday 6:00 AM - 9:00 AM.",
-    timestamp: "5 Hours ago",
+    title: "Fire safety inspection due",
+    description: "Quarterly fire extinguisher & hydrant audit due in 12 days for Block C.",
+    timestamp: "4 Hours ago",
   },
   {
     id: "ALT-104",
-    severity: "medium",
-    title: "Internet Outage in Block C",
-    description: "Fiber line switch failure reported in PG Scholars Block C.",
-    timestamp: "3 Hours ago",
+    severity: "high",
+    title: "CCTV offline in Block C",
+    description: "Camera #C-12 in Block C main entrance offline for scheduled maintenance.",
+    timestamp: "1 Hour ago",
   },
   {
     id: "ALT-105",
-    severity: "info",
-    title: "Hostel Fee Collection Pending",
-    description: "Semester fee dues pending for 18 resident scholars.",
-    timestamp: "2 Days ago",
-  },
-  {
-    id: "ALT-106",
     severity: "medium",
-    title: "Security Audit Due",
-    description: "Quarterly CCTV & perimeter security audit scheduled for next week.",
-    timestamp: "3 Days ago",
+    title: "Visitor register pending verification",
+    description: "2 evening visitor entry logs pending warden counter-signature verification.",
+    timestamp: "3 Hours ago",
   },
 ];
 
 export const INITIAL_ACTIVITIES: HostelActivityLog[] = [
   {
     id: "ACT-001",
-    date: "2026-08-04 14:30",
-    user: "Dr. Rajesh Kumar (Chief Warden)",
-    action: "Occupancy Audit Completed",
-    category: "Audit",
+    date: "2026-08-05 13:30",
+    user: "System Automated Sync",
+    action: "Gate Pass Statistics Updated",
+    category: "Gate Pass",
   },
   {
     id: "ACT-002",
-    date: "2026-08-03 11:15",
-    user: "Estate Maintenance Lead",
-    action: "Room Maintenance Completed (A-104 AC Repair)",
-    category: "Maintenance",
+    date: "2026-08-05 11:15",
+    user: "Safety Inspection Committee",
+    action: "Hostel Inspection Completed",
+    category: "Inspection",
   },
   {
     id: "ACT-003",
-    date: "2026-08-02 09:00",
-    user: "Super Admin",
-    action: "New Hostel Block Opened (Block C PG Annex)",
-    category: "Infrastructure",
+    date: "2026-08-04 15:45",
+    user: "Fire Safety Auditor",
+    action: "Fire Safety Audit Completed",
+    category: "Compliance",
   },
   {
     id: "ACT-004",
-    date: "2026-08-01 16:45",
-    user: "Safety Auditor",
-    action: "Security & CCTV Audit Conducted",
-    category: "Safety",
+    date: "2026-08-04 10:20",
+    user: "Warden Office",
+    action: "Complaint Summary Updated",
+    category: "Complaints",
   },
   {
     id: "ACT-005",
-    date: "2026-07-31 10:20",
-    user: "Mess Committee Chair",
-    action: "Mess Menu Updated & Nutrition Approved",
-    category: "Mess",
+    date: "2026-08-03 16:00",
+    user: "Super Admin",
+    action: "Security Report Generated",
+    category: "Security",
+  },
+  {
+    id: "ACT-006",
+    date: "2026-08-03 09:30",
+    user: "Biometric Security System",
+    action: "Visitor Log Synced",
+    category: "Visitor",
   },
 ];
 

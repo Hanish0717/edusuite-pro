@@ -30,6 +30,14 @@ import {
   HeartPulse,
   Sparkles,
   Search,
+  Eye,
+  Loader2,
+  TrendingUp,
+  PhoneCall,
+  Flame,
+  Lock,
+  Printer,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -63,6 +71,8 @@ import {
   INITIAL_ROOMS,
   ENHANCED_RESIDENTS,
   INITIAL_PASSES,
+  INITIAL_GATE_PASS_DETAILS,
+  INITIAL_COMPLAINT_DETAILS,
   DEFAULT_SECURITY_METRICS,
   DEFAULT_COMPLAINT_COMPLIANCE,
   DEFAULT_ANALYTICS,
@@ -77,6 +87,8 @@ import {
   type HostelBlockInfo,
   type EnhancedResidentStudent,
   type GatePassRequest,
+  type GatePassDetailItem,
+  type HostelComplaintDetailItem,
   type GatePassSecurityMetrics,
   type ComplaintComplianceSummary,
   type ExecutiveHostelAnalyticsData,
@@ -112,16 +124,45 @@ export function HostelModuleView() {
   const [configTab, setConfigTab] = useState<"fees" | "policies" | "timings" | "operations">("fees");
   const [configForm, setConfigForm] = useState<HostelConfig>(DEFAULT_HOSTEL_CONFIG);
 
-  // Governance Telemetry
+  // Tab 3 Super Admin Compliance & Security State
+  const [isViewDetailsOpen, setIsViewDetailsOpen] = useState(false);
+  const [viewDetailsTab, setViewDetailsTab] = useState<"gatepass" | "complaints">("gatepass");
+  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
+  const [isSecurityReportOpen, setIsSecurityReportOpen] = useState(false);
+  const [isComplaintAnalyticsOpen, setIsComplaintAnalyticsOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const [auditForm, setAuditForm] = useState({
+    auditDate: "2026-08-20",
+    auditTime: "10:00",
+    auditScope: "Fire Safety & Perimeter Security Inspection",
+    inspector: "Super Admin Safety Audit Cell",
+    remarks: "Quarterly comprehensive hostel building compliance inspection.",
+  });
+
+  // Governance Telemetry & Lists
+  const [gatePassDetails] = useState<GatePassDetailItem[]>(INITIAL_GATE_PASS_DETAILS);
+  const [complaintDetails] = useState<HostelComplaintDetailItem[]>(INITIAL_COMPLAINT_DETAILS);
   const [healthStatus] = useState<HostelHealthStatus>(DEFAULT_HOSTEL_HEALTH);
   const [maintenanceSummary] = useState<MaintenanceSummary>(DEFAULT_MAINTENANCE_SUMMARY);
-  const [alerts] = useState<HostelAlert[]>(INITIAL_ALERTS);
-  const [activities] = useState<HostelActivityLog[]>(INITIAL_ACTIVITIES);
+  const [alerts, setAlerts] = useState<HostelAlert[]>(INITIAL_ALERTS);
+  const [activities, setActivities] = useState<HostelActivityLog[]>(INITIAL_ACTIVITIES);
   const [staffSummary] = useState<HostelStaffSummary>(DEFAULT_STAFF_SUMMARY);
   const [compliance] = useState<PolicyComplianceStatus>(DEFAULT_POLICY_COMPLIANCE);
   const [securityMetrics] = useState<GatePassSecurityMetrics>(DEFAULT_SECURITY_METRICS);
   const [complaintCompliance] = useState<ComplaintComplianceSummary>(DEFAULT_COMPLAINT_COMPLIANCE);
   const [analytics] = useState<ExecutiveHostelAnalyticsData>(DEFAULT_ANALYTICS);
+
+  const addActivityLog = (action: string, category: string) => {
+    const newLog: HostelActivityLog = {
+      id: `ACT-${Date.now()}`,
+      date: new Date().toISOString().replace("T", " ").substring(0, 16),
+      user: "Super Admin (Executive)",
+      action,
+      category,
+    };
+    setActivities((prev) => [newLog, ...prev]);
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -158,6 +199,7 @@ export function HostelModuleView() {
   const handleSaveConfig = (e: React.FormEvent) => {
     e.preventDefault();
     setIsConfigOpen(false);
+    addActivityLog("Updated Hostel Policy Configuration", "Configuration");
     toast.success("Hostel Governance & Policy Configuration updated!");
   };
 
@@ -172,19 +214,35 @@ export function HostelModuleView() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    addActivityLog("Exported Block Inventory Report to CSV", "Export");
     toast.success("Exported block inventory report to CSV!");
   };
 
   const handleExportPDF = () => {
+    addActivityLog("Generated Executive Hostel Analytics PDF Report", "Reports");
     toast.success("Hostel Analytics Executive Report (PDF) compiled and downloaded.");
   };
 
   const handleExportExcel = () => {
+    addActivityLog("Exported Hostel Master Ledger to Excel", "Reports");
     toast.success("Hostel Analytics Master Ledger (Excel) generated.");
   };
 
-  const handleScheduleAudit = () => {
-    toast.info("Hostel Audit inspection scheduled for Monday 10:00 AM.");
+  const handleScheduleAuditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsAuditModalOpen(false);
+    addActivityLog(`Scheduled Hostel Security Audit (${auditForm.auditScope}) for ${auditForm.auditDate}`, "Audit");
+    
+    const newAlert: HostelAlert = {
+      id: `ALT-${Date.now()}`,
+      severity: "medium",
+      title: "Hostel Security Audit Scheduled",
+      description: `Scheduled for ${auditForm.auditDate} at ${auditForm.auditTime}. Scope: ${auditForm.auditScope}`,
+      timestamp: "Just now",
+    };
+    setAlerts((prev) => [newAlert, ...prev]);
+
+    toast.success(`Hostel Security Audit scheduled for ${auditForm.auditDate}!`);
   };
 
   return (
@@ -198,25 +256,25 @@ export function HostelModuleView() {
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold font-display tracking-tight text-foreground">
-                Hostel & Resident Welfare Governance
+                Hostel & Residential Infrastructure Governance
               </h1>
               <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">
                 Super Admin Executive Console
               </Badge>
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-              Executive monitoring of occupancy, infrastructure health, compliance, resident roster, and analytics.
+              Super Admin monitoring console for block occupancy, resident rosters, compliance, security telemetry, and complaint analytics.
             </p>
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons - Executive Governance */}
         <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto flex-wrap">
           <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="h-9 gap-2 text-xs font-medium">
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
           </Button>
           <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-9 gap-2 text-xs font-medium">
-            <Download className="size-3.5" /> Export Ledger
+            <Download className="size-3.5" /> Export Blocks
           </Button>
           <Button size="sm" onClick={() => setIsConfigOpen(true)} className="h-9 bg-brand-gradient text-white gap-2 text-xs font-semibold shadow-glow">
             <Sliders className="size-4" /> Hostel Configuration
@@ -224,202 +282,250 @@ export function HostelModuleView() {
         </div>
       </div>
 
-      {/* TOP KPI CARDS - PRIMARY STRIP */}
+      {/* TOP KPI SECTION - ROW 1: PRIMARY KPIS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Total Hostel Capacity</span>
-            <Building className="size-4 text-primary" />
+            <span>Total Capacity & Occupancy</span>
+            <Users className="size-4 text-primary" />
           </div>
-          <p className="text-2xl font-bold font-mono text-primary">1,000 Beds</p>
-          <p className="text-[0.68rem] text-muted-foreground">Blocks A (Boys), B (Girls) & C (PG)</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Active Residents</span>
-            <Users className="size-4 text-emerald-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-emerald-600">944 Occupied</p>
+          <p className="text-2xl font-bold font-mono text-primary">944 / 1,000</p>
           <p className="text-[0.68rem] text-emerald-600 font-medium">94.4% Overall Occupancy Rate</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Available Vacancies</span>
-            <Bed className="size-4 text-blue-500" />
+            <span>Annual Revenue Realized</span>
+            <Bed className="size-4 text-emerald-500" />
           </div>
-          <p className="text-2xl font-bold font-mono text-blue-600">56 Vacant Beds</p>
-          <p className="text-[0.68rem] text-muted-foreground">Ready for admission allotment</p>
+          <p className="text-2xl font-bold font-mono text-emerald-600">₹8.78 Cr</p>
+          <p className="text-[0.68rem] text-muted-foreground">98.2% Fee Realization Rate</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Annual Revenue</span>
-            <PieChart className="size-4 text-amber-500" />
+            <span>Active Outings & Passes</span>
+            <KeyRound className="size-4 text-blue-500" />
           </div>
-          <p className="text-2xl font-bold font-mono text-amber-600">₹8.78 Cr</p>
-          <p className="text-[0.68rem] text-muted-foreground">98.2% Fee Collection Realized</p>
+          <p className="text-2xl font-bold font-mono text-blue-600">{securityMetrics.approved} Active Passes</p>
+          <p className="text-[0.68rem] text-muted-foreground">{securityMetrics.requestsToday} total pass requests today</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Open Maintenance & Complaints</span>
+            <Wrench className="size-4 text-amber-500" />
+          </div>
+          <p className="text-2xl font-bold font-mono text-amber-600">{complaintCompliance.complaints.open + complaintCompliance.complaints.inProgress} Pending</p>
+          <p className="text-[0.68rem] text-muted-foreground">Avg SLA: 24 Hours Resolution</p>
         </div>
       </div>
 
-      {/* EXECUTIVE TABS SWITCHER */}
+      {/* EXECUTIVE GOVERNANCE WIDGET: HEALTH STATUS TELEMETRY */}
+      <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+            <Activity className="size-4 text-emerald-500" /> Hostel Health & Infrastructure Telemetry
+          </h3>
+          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-mono text-xs">
+            Health Score: {healthStatus.overallHealthScore} / 100
+          </Badge>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex justify-between text-xs font-semibold">
+            <span className="text-muted-foreground">Overall Residential Infrastructure & Utility Health Score</span>
+            <span className="text-emerald-600 font-mono font-bold">{healthStatus.overallHealthScore}% Operational Uptime</span>
+          </div>
+          <Progress value={healthStatus.overallHealthScore} className="h-2 bg-muted" />
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 pt-1">
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Users className="size-3.5 text-primary" /> Occupancy
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.occupancyStatus}</p>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Zap className="size-3.5 text-amber-500" /> Grid Electricity
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.electricityStatus}</p>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Droplet className="size-3.5 text-blue-500" /> Water Supply
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.waterSupply}</p>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Wifi className="size-3.5 text-purple-500" /> Campus Wi-Fi
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.wifiStatus}</p>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Video className="size-3.5 text-emerald-500" /> CCTV Network
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.cctvStatus}</p>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <FileCheck className="size-3.5 text-blue-600" /> Fire Safety
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.fireSafetyCompliance}</p>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <ShieldCheck className="size-3.5 text-emerald-500" /> Security Duty
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.securityStatus}</p>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Wrench className="size-3.5 text-amber-500" /> Maintenance
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.maintenanceStatus}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* EXECUTIVE VIEW TABS SWITCHER */}
       <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
-        <button onClick={() => setActiveTab("blocks")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${activeTab === "blocks" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
-          1. Room Inventory & Block Overview ({blocks.length} Blocks)
+        <button
+          onClick={() => setActiveTab("blocks")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "blocks" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          1. Hostel Blocks Overview ({blocks.length} Blocks)
         </button>
-        <button onClick={() => setActiveTab("residents")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${activeTab === "residents" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
-          2. Resident Roster ({residents.length})
+        <button
+          onClick={() => setActiveTab("residents")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "residents" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          2. Resident Roster & Directory ({residents.length})
         </button>
-        <button onClick={() => setActiveTab("compliance")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${activeTab === "compliance" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
+        <button
+          onClick={() => setActiveTab("compliance")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "compliance" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
           3. Compliance, Security & Gate Pass Monitoring
         </button>
-        <button onClick={() => setActiveTab("analytics")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${activeTab === "analytics" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
+        <button
+          onClick={() => setActiveTab("analytics")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "analytics" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
           4. Hostel Analytics & Reports
         </button>
       </div>
 
-      {/* TAB 1: ROOM INVENTORY & BLOCK OVERVIEW */}
+      {/* TAB 1: HOSTEL BLOCKS OVERVIEW */}
       {activeTab === "blocks" && (
         <div className="space-y-4">
-          {/* SUMMARY CARDS */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Hostel Blocks</span>
-              <span className="text-lg font-bold font-mono text-foreground">3 Blocks</span>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {blocks.map((b) => (
+              <div key={b.id} className="p-5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <div>
+                    <span className="font-mono text-[0.65rem] text-muted-foreground block">{b.id}</span>
+                    <h3 className="font-bold text-base text-foreground">{b.name}</h3>
+                  </div>
+                  <Badge className={b.healthStatus === "Healthy" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}>
+                    {b.quickStatusBadge}
+                  </Badge>
+                </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Total Capacity</span>
-              <span className="text-lg font-bold font-mono text-primary">1,000 Beds</span>
-            </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-semibold">
+                    <span className="text-muted-foreground">Occupancy Capacity</span>
+                    <span className="font-mono text-primary">{b.occupiedRooms} / {b.capacity} Students ({b.occupancyPercentage}%)</span>
+                  </div>
+                  <Progress value={b.occupancyPercentage} className="h-2 bg-muted" />
+                </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Occupied Rooms</span>
-              <span className="text-lg font-bold font-mono text-emerald-600">944 Beds</span>
-            </div>
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground uppercase block font-semibold">Vacant</span>
+                    <span className="font-mono font-bold text-emerald-600">{b.vacantRooms}</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground uppercase block font-semibold">Maintenance</span>
+                    <span className="font-mono font-bold text-amber-600">{b.underMaintenance}</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground uppercase block font-semibold">Revenue</span>
+                    <span className="font-mono font-bold text-primary">₹{(b.annualRevenue / 100000).toFixed(1)}L</span>
+                  </div>
+                </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Vacant Rooms</span>
-              <span className="text-lg font-bold font-mono text-blue-600">56 Beds</span>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Under Repair</span>
-              <span className="text-lg font-bold font-mono text-amber-600">1 Room (C-304)</span>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Overall Occupancy</span>
-              <span className="text-lg font-bold font-mono text-primary">94.4%</span>
-            </div>
+                <div className="space-y-1 text-xs border-t border-border/60 pt-3">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Chief Warden:</span>
+                    <span className="font-semibold text-foreground">{b.currentWarden}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Maintenance Due:</span>
+                    <span className="font-mono text-muted-foreground">{b.maintenanceDue}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Last Inspected:</span>
+                    <span className="font-mono text-muted-foreground">{b.inspectionDate}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* BLOCK HEALTH SECTION */}
+          {/* ROOM TYPES OVERVIEW TABLE */}
           <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <Activity className="size-4 text-emerald-500" /> Block Facilities Infrastructure & Health Status
+                <Bed className="size-4 text-primary" /> Room Categories & Fee Tier Overview
               </h3>
-              <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-xs">
-                Overall Score: {healthStatus.overallHealthScore} / 100
-              </Badge>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-              <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center justify-center gap-1">
-                  <Zap className="size-3 text-amber-500" /> Electricity
-                </span>
-                <p className="text-xs font-bold text-foreground">100% Operational</p>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center justify-center gap-1">
-                  <Droplet className="size-3 text-blue-500" /> Water Supply
-                </span>
-                <p className="text-xs font-bold text-foreground">98% Tank Normal</p>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center justify-center gap-1">
-                  <Wifi className="size-3 text-primary" /> Internet Wi-Fi
-                </span>
-                <p className="text-xs font-bold text-foreground">1 Gbps Active</p>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center justify-center gap-1">
-                  <Video className="size-3 text-purple-500" /> CCTV Surveillance
-                </span>
-                <p className="text-xs font-bold text-foreground">128/128 Active</p>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center justify-center gap-1">
-                  <ShieldCheck className="size-3 text-emerald-500" /> Fire Safety
-                </span>
-                <p className="text-xs font-bold text-emerald-600">Compliant</p>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center justify-center gap-1">
-                  <Wrench className="size-3 text-orange-500" /> Housekeeping
-                </span>
-                <p className="text-xs font-bold text-foreground">Grade A Clean</p>
-              </div>
-
-              <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center justify-center gap-1">
-                  <HeartPulse className="size-3 text-primary" /> Health Score
-                </span>
-                <p className="text-xs font-bold text-primary font-mono">96% Optimal</p>
-              </div>
-            </div>
-          </div>
-
-          {/* ROOM INVENTORY & BLOCK OVERVIEW TABLE */}
-          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <Building className="size-4 text-primary" /> Hostel Block Inventory Overview
-              </h3>
-              <span className="text-xs text-muted-foreground">Executive Monitoring View</span>
+              <span className="text-xs text-muted-foreground">Governance Inventory View</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
                   <tr>
+                    <th className="py-3 px-3">Room No</th>
                     <th className="py-3 px-3">Hostel Block</th>
+                    <th className="py-3 px-3">Category Type</th>
                     <th className="py-3 px-3">Capacity</th>
-                    <th className="py-3 px-3">Occupied</th>
-                    <th className="py-3 px-3">Vacant</th>
-                    <th className="py-3 px-3">Under Repair</th>
-                    <th className="py-3 px-3">Occupancy %</th>
-                    <th className="py-3 px-3">Annual Revenue</th>
-                    <th className="py-3 px-3">Current Warden</th>
-                    <th className="py-3 px-3">Maintenance Due</th>
-                    <th className="py-3 px-3">Inspection Date</th>
+                    <th className="py-3 px-3">Occupancy</th>
+                    <th className="py-3 px-3">Annual Fee (INR)</th>
                     <th className="py-3 px-3">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60">
-                  {blocks.map((blk) => (
-                    <tr key={blk.id} className="hover:bg-muted/20 transition-colors">
-                      <td className="py-3 px-3 font-mono font-bold text-foreground">{blk.name}</td>
-                      <td className="py-3 px-3 font-mono font-bold">{blk.capacity} Beds</td>
-                      <td className="py-3 px-3 font-mono text-emerald-600 font-bold">{blk.occupiedRooms}</td>
-                      <td className="py-3 px-3 font-mono text-blue-600 font-bold">{blk.vacantRooms}</td>
-                      <td className="py-3 px-3 font-mono text-amber-600 font-bold">{blk.underMaintenance}</td>
-                      <td className="py-3 px-3 font-mono font-bold text-primary">{blk.occupancyPercentage}%</td>
-                      <td className="py-3 px-3 font-mono font-bold text-foreground">₹{(blk.annualRevenue / 10000000).toFixed(2)} Cr</td>
-                      <td className="py-3 px-3 font-medium text-foreground">{blk.currentWarden}</td>
-                      <td className="py-3 px-3 text-muted-foreground">{blk.maintenanceDue}</td>
-                      <td className="py-3 px-3 font-mono text-muted-foreground">{blk.inspectionDate}</td>
+                  {rooms.map((rm) => (
+                    <tr key={rm.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="py-3 px-3 font-mono font-bold text-foreground">{rm.roomNo}</td>
+                      <td className="py-3 px-3 font-semibold text-foreground">{rm.block}</td>
+                      <td className="py-3 px-3"><Badge variant="outline" className="font-mono text-xs">{rm.type}</Badge></td>
+                      <td className="py-3 px-3 font-mono">{rm.capacity} Beds</td>
+                      <td className="py-3 px-3 font-mono font-semibold text-primary">{rm.occupancy} / {rm.capacity} Occupied</td>
+                      <td className="py-3 px-3 font-mono font-bold text-emerald-600">₹{rm.annualFee.toLocaleString()}</td>
                       <td className="py-3 px-3">
-                        <Badge className={blk.quickStatusBadge === "Healthy" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}>
-                          {blk.quickStatusBadge}
+                        <Badge className={rm.status === "Available" ? "bg-emerald-500/10 text-emerald-600" : rm.status === "Full" ? "bg-blue-500/10 text-blue-600" : "bg-amber-500/10 text-amber-600"}>
+                          {rm.status}
                         </Badge>
                       </td>
                     </tr>
@@ -431,89 +537,26 @@ export function HostelModuleView() {
         </div>
       )}
 
-      {/* TAB 2: RESIDENT ROSTER */}
+      {/* TAB 2: RESIDENT ROSTER & DIRECTORY */}
       {activeTab === "residents" && (
         <div className="space-y-4">
-          {/* RESIDENT ANALYTICS SUMMARY CARDS */}
-          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2.5 text-center">
-            <div className="p-2.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-0.5">
-              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">Total Residents</span>
-              <span className="text-base font-bold font-mono text-primary">850</span>
+          {/* SEARCH & FILTERS ROW */}
+          <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <Filter className="size-4 text-primary" /> Filter Resident Student Directory
+              </h3>
+              <span className="text-xs font-mono text-muted-foreground">{filteredResidents.length} Residents Found</span>
             </div>
 
-            <div className="p-2.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-0.5">
-              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">Boys Hostel</span>
-              <span className="text-base font-bold font-mono text-blue-600">433</span>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-0.5">
-              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">Girls Hostel</span>
-              <span className="text-base font-bold font-mono text-emerald-600">379</span>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-0.5">
-              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">PG Scholars</span>
-              <span className="text-base font-bold font-mono text-purple-600">38</span>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-0.5">
-              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">International</span>
-              <span className="text-base font-bold font-mono text-indigo-600">12</span>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-0.5">
-              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">Scholarship</span>
-              <span className="text-base font-bold font-mono text-emerald-600">420</span>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-0.5">
-              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">Pending Fees</span>
-              <span className="text-base font-bold font-mono text-amber-600">18</span>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-0.5">
-              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">On Leave</span>
-              <span className="text-base font-bold font-mono text-primary">14</span>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-0.5">
-              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">Medical Cases</span>
-              <span className="text-base font-bold font-mono text-destructive">3</span>
-            </div>
-          </div>
-
-          {/* QUICK FILTERS BAR */}
-          <div className="p-4 rounded-2xl border border-border/80 bg-card space-y-3 shadow-sm">
-            <div className="flex items-center justify-between border-b border-border/60 pb-2">
-              <h4 className="text-xs font-bold text-foreground flex items-center gap-2">
-                <Filter className="size-3.5 text-primary" /> Resident Roster Quick Filters & Telemetry Search
-              </h4>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setResidentSearch("");
-                  setFilterDept("All");
-                  setFilterYear("All");
-                  setFilterBlock("All");
-                  setFilterStatus("All");
-                  setFilterFee("All");
-                  setFilterMedicalOnly(false);
-                }}
-                className="h-7 text-[0.68rem] text-muted-foreground"
-              >
-                Reset Filters
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2.5 text-xs">
-              <div className="relative">
-                <Search className="size-3.5 absolute left-2.5 top-2.5 text-muted-foreground" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2.5">
+              <div className="relative col-span-1 sm:col-span-2">
+                <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
                 <Input
-                  placeholder="Search resident..."
+                  placeholder="Search name, roll no, room..."
                   value={residentSearch}
                   onChange={(e) => setResidentSearch(e.target.value)}
-                  className="h-8 pl-8 text-xs"
+                  className="pl-8 h-8 text-xs"
                 />
               </div>
 
@@ -525,17 +568,6 @@ export function HostelModuleView() {
                   <SelectItem value="ECE">ECE</SelectItem>
                   <SelectItem value="Mechanical">Mechanical</SelectItem>
                   <SelectItem value="Civil">Civil</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={filterYear} onValueChange={setFilterYear}>
-                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Year" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All Years</SelectItem>
-                  <SelectItem value="1st Year">1st Year</SelectItem>
-                  <SelectItem value="2nd Year">2nd Year</SelectItem>
-                  <SelectItem value="3rd Year">3rd Year</SelectItem>
-                  <SelectItem value="4th Year">4th Year</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -629,115 +661,476 @@ export function HostelModuleView() {
 
       {/* TAB 3: COMPLIANCE, SECURITY & GATE PASS MONITORING */}
       {activeTab === "compliance" && (
-        <div className="space-y-4">
-          {/* GATE PASS & SECURITY KPI STRIP */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Passes Today</span>
-              <span className="text-lg font-bold font-mono text-primary">{securityMetrics.requestsToday}</span>
+        <div className="space-y-6">
+          {/* SECTION 1: EXECUTIVE SUMMARY */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <Activity className="size-4 text-primary" /> Executive Summary & Security KPI Telemetry
+              </h3>
+              <Badge variant="outline" className="font-mono text-xs text-primary">Super Admin Monitoring</Badge>
             </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Approved</span>
-              <span className="text-lg font-bold font-mono text-emerald-600">{securityMetrics.approved}</span>
-            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-3">
+              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Passes Today</span>
+                <span className="text-lg font-bold font-mono text-primary">{securityMetrics.requestsToday}</span>
+              </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Rejected</span>
-              <span className="text-lg font-bold font-mono text-destructive">{securityMetrics.rejected}</span>
-            </div>
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-emerald-700 uppercase block truncate">Approved Passes</span>
+                <span className="text-lg font-bold font-mono text-emerald-700">{securityMetrics.approved}</span>
+              </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Pending</span>
-              <span className="text-lg font-bold font-mono text-amber-600">{securityMetrics.pending}</span>
-            </div>
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-amber-700 uppercase block truncate">Pending Passes</span>
+                <span className="text-lg font-bold font-mono text-amber-700">{securityMetrics.pending}</span>
+              </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Avg Approval Time</span>
-              <span className="text-lg font-bold font-mono text-foreground">{securityMetrics.avgApprovalTime}</span>
-            </div>
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-red-700 uppercase block truncate">Rejected Passes</span>
+                <span className="text-lg font-bold font-mono text-red-700">{securityMetrics.rejected}</span>
+              </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Incidents</span>
-              <span className="text-lg font-bold font-mono text-emerald-600">{securityMetrics.securityIncidents}</span>
-            </div>
+              <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-purple-700 uppercase block truncate">Emergency Passes</span>
+                <span className="text-lg font-bold font-mono text-purple-700">{securityMetrics.emergencyPasses || 3}</span>
+              </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Late Curfew Entries</span>
-              <span className="text-lg font-bold font-mono text-amber-600">{securityMetrics.lateEntries}</span>
-            </div>
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-amber-800 uppercase block truncate">Late Return Cases</span>
+                <span className="text-lg font-bold font-mono text-amber-800">{securityMetrics.lateEntries}</span>
+              </div>
 
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Visitors Logged</span>
-              <span className="text-lg font-bold font-mono text-primary">{securityMetrics.visitorRecords}</span>
+              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Total Complaints</span>
+                <span className="text-lg font-bold font-mono text-foreground">{complaintCompliance.complaints.open + complaintCompliance.complaints.inProgress + complaintCompliance.complaints.resolved}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-amber-700 uppercase block truncate">Open Complaints</span>
+                <span className="text-lg font-bold font-mono text-amber-700">{complaintCompliance.complaints.open}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-emerald-700 uppercase block truncate">Resolved Complaints</span>
+                <span className="text-lg font-bold font-mono text-emerald-700">{complaintCompliance.complaints.resolved}</span>
+              </div>
             </div>
           </div>
 
-          {/* COMPLAINTS & COMPLIANCE SUMMARY GRID */}
+          {/* SECTION 2 & SECTION 3: GATE PASS & COMPLAINT ANALYTICS GRID */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* COMPLAINT SUMMARY */}
+            {/* SECTION 2: GATE PASS ANALYTICS */}
             <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
               <div className="flex items-center justify-between border-b border-border/60 pb-3">
                 <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                  <Wrench className="size-4 text-amber-500" /> Resident Complaints Summary
+                  <KeyRound className="size-4 text-primary" /> Gate Pass Analytics & Outing Statistics
                 </h3>
-                <Badge variant="outline" className="text-[0.65rem] font-mono">Facilities Desk</Badge>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setViewDetailsTab("gatepass");
+                    setIsViewDetailsOpen(true);
+                  }}
+                  className="h-8 text-xs font-semibold gap-1.5"
+                >
+                  <Eye className="size-3.5 text-primary" /> View Details
+                </Button>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                  <span className="text-[0.65rem] font-semibold text-amber-700 uppercase block">Open</span>
-                  <span className="text-xl font-bold font-mono text-amber-700">{complaintCompliance.complaints.open}</span>
+              <div className="space-y-3 text-xs">
+                {/* Trends grid */}
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="p-2.5 rounded-xl bg-muted/30 border border-border/50">
+                    <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Daily Trend</span>
+                    <span className="font-mono font-bold text-primary">18 Passes</span>
+                    <span className="text-[0.62rem] text-emerald-600 block">+12% vs Yesterday</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-muted/30 border border-border/50">
+                    <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Weekly Trend</span>
+                    <span className="font-mono font-bold text-foreground">112 Passes</span>
+                    <span className="text-[0.62rem] text-emerald-600 block">Normal Outing Peak</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-muted/30 border border-border/50">
+                    <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Monthly Trend</span>
+                    <span className="font-mono font-bold text-primary">428 Passes</span>
+                    <span className="text-[0.62rem] text-muted-foreground block">Aug 2026 Total</span>
+                  </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                  <span className="text-[0.65rem] font-semibold text-blue-700 uppercase block">In Progress</span>
-                  <span className="text-xl font-bold font-mono text-blue-700">{complaintCompliance.complaints.inProgress}</span>
+                {/* Department-wise & Hostel split */}
+                <div className="space-y-2 pt-1">
+                  <div className="space-y-1">
+                    <div className="flex justify-between font-semibold">
+                      <span>Boys Hostel vs Girls Hostel Requests</span>
+                      <span className="font-mono text-primary">58% Boys | 42% Girls</span>
+                    </div>
+                    <Progress value={58} className="h-1.5 bg-muted" />
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="flex justify-between font-semibold">
+                      <span>Department Requests Breakdown (Top: CSE 38%, ECE 26%)</span>
+                      <span className="font-mono text-emerald-600">38% CSE Share</span>
+                    </div>
+                    <Progress value={38} className="h-1.5 bg-muted" />
+                  </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                  <span className="text-[0.65rem] font-semibold text-emerald-700 uppercase block">Resolved</span>
-                  <span className="text-xl font-bold font-mono text-emerald-700">{complaintCompliance.complaints.resolved}</span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-muted/40 border border-border/60">
-                  <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Escalated</span>
-                  <span className="text-xl font-bold font-mono text-emerald-600">{complaintCompliance.complaints.escalated}</span>
+                {/* Peak Hours & Weekend Stats */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Peak Exit & Return Hours</span>
+                    <p className="font-bold text-foreground text-xs">Exit: 4:30 - 6:30 PM</p>
+                    <p className="font-bold text-foreground text-xs">Return: 7:30 - 9:00 PM</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Weekend Outing Stats</span>
+                    <p className="font-bold text-primary text-xs">148 Weekend Outings</p>
+                    <p className="font-bold text-emerald-600 text-xs">96.4% On-Time Return</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* COMPLIANCE SUMMARY */}
+            {/* SECTION 3: COMPLAINT ANALYTICS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <Wrench className="size-4 text-amber-500" /> Resident Complaint Analytics & SLA Status
+                </h3>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setViewDetailsTab("complaints");
+                    setIsViewDetailsOpen(true);
+                  }}
+                  className="h-8 text-xs font-semibold gap-1.5"
+                >
+                  <Eye className="size-3.5 text-amber-600" /> View Details
+                </Button>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                {/* Category breakdown */}
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                    <span className="text-[0.62rem] font-semibold text-amber-700 uppercase block">Plumbing</span>
+                    <span className="font-mono font-bold text-amber-800">35%</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                    <span className="text-[0.62rem] font-semibold text-blue-700 uppercase block">Electrical</span>
+                    <span className="font-mono font-bold text-blue-800">28%</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                    <span className="text-[0.62rem] font-semibold text-purple-700 uppercase block">Wi-Fi / Net</span>
+                    <span className="font-mono font-bold text-purple-800">22%</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">Furniture</span>
+                    <span className="font-mono font-bold text-foreground">15%</span>
+                  </div>
+                </div>
+
+                {/* Hostel breakdown */}
+                <div className="space-y-1">
+                  <div className="flex justify-between font-semibold">
+                    <span>Hostel-wise Complaints Share</span>
+                    <span className="font-mono text-primary">Block A: 42% | Block B: 38% | Block C: 20%</span>
+                  </div>
+                  <Progress value={42} className="h-1.5 bg-muted" />
+                </div>
+
+                {/* SLA, High Priority & Repeated */}
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Avg Resolution SLA</span>
+                    <p className="font-bold text-emerald-600 text-xs">24 Hours SLA</p>
+                    <p className="text-[0.68rem] text-muted-foreground">94.2% On SLA</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20">
+                    <span className="text-[0.65rem] text-red-700 font-semibold uppercase block">High Priority</span>
+                    <p className="font-bold text-red-700 text-xs">1 Active Ticket</p>
+                    <p className="text-[0.68rem] text-red-600">Leakage in C-304</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                    <span className="text-[0.65rem] text-amber-700 font-semibold uppercase block">Repeated Complaints</span>
+                    <p className="font-bold text-amber-800 text-xs">2 Repeated</p>
+                    <p className="text-[0.68rem] text-amber-700">Block B Wi-Fi 2F</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 4 & SECTION 5: SECURITY MONITORING & COMPLIANCE STATUS GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* SECTION 4: SECURITY MONITORING */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <Video className="size-4 text-emerald-500" /> Security & Infrastructure Monitoring
+                </h3>
+                <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">24/7 Security Active</Badge>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                  <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Incidents Today</span>
+                  <span className="font-mono font-bold text-emerald-600 text-sm">0 Critical</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                  <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Visitors Logged Today</span>
+                  <span className="font-mono font-bold text-primary text-sm">{securityMetrics.visitorRecords} Logged</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                  <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Unauthorized Entry</span>
+                  <span className="font-mono font-bold text-emerald-600 text-sm">0 Breach Attempts</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                  <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">CCTV Health</span>
+                  <span className="font-mono font-bold text-emerald-600 text-sm">128/128 Active</span>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-xs pt-1 border-t border-border/60">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Fire Safety System Status:</span>
+                  <span className="font-bold text-emerald-600">Smoke Detectors & Hydrants Certified</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Emergency Contacts:</span>
+                  <span className="font-mono font-semibold text-foreground">Chief Warden: +91 99000 11223 | Security: Ext. 101</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">Hostel Inspection Status:</span>
+                  <span className="font-bold text-emerald-600">Grade A+ (Passed Municipal Audit)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 5: COMPLIANCE STATUS */}
             <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
               <div className="flex items-center justify-between border-b border-border/60 pb-3">
                 <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-primary" /> Institutional Compliance Summary
+                  <ShieldCheck className="size-4 text-primary" /> Institutional Compliance Status & Audit Schedule
                 </h3>
-                <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">100% Certified</Badge>
+                <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">100% Compliant</Badge>
               </div>
 
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground font-medium">Fire Safety Certification</span>
+                  <span className="text-muted-foreground font-medium">Fire Safety Compliance</span>
                   <span className="font-bold text-emerald-600">{complaintCompliance.compliance.fireSafety}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground font-medium">Hostel Code of Conduct</span>
+                  <span className="text-muted-foreground font-medium">Building Safety Compliance</span>
+                  <span className="font-bold text-foreground">{compliance.buildingSafetyCertificate}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Hostel Policy Compliance</span>
                   <span className="font-bold text-foreground">{complaintCompliance.compliance.hostelRules}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground font-medium">Visitor Register System</span>
+                  <span className="text-muted-foreground font-medium">Visitor Register Compliance</span>
                   <span className="font-bold text-primary">{complaintCompliance.compliance.visitorRegister}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground font-medium">Annual Security Audit</span>
+                  <span className="text-muted-foreground font-medium">Security Audit Status</span>
                   <span className="font-bold text-emerald-600">{complaintCompliance.compliance.securityAudit}</span>
                 </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Last Inspection Date</span>
+                  <span className="font-mono font-bold text-foreground">{compliance.lastAuditDate}</span>
+                </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-muted-foreground font-medium">Municipal Inspection</span>
-                  <span className="font-bold text-emerald-600">{complaintCompliance.compliance.inspectionStatus}</span>
+                  <span className="text-muted-foreground font-medium">Next Inspection Due</span>
+                  <span className="font-mono font-bold text-amber-600">2026-08-28 (23 Days)</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* SECTION 6 & SECTION 8: ALERTS & RECENT ACTIVITIES GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* SECTION 6: ALERTS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <BellRing className="size-4 text-amber-500" /> Active Security & Compliance Alerts
+                </h3>
+                <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">{alerts.length} Active</Badge>
+              </div>
+
+              <div className="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+                {alerts.map((alt) => (
+                  <div key={alt.id} className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        {alt.severity === "high" ? (
+                          <span className="inline-block size-2 rounded-full bg-red-600 shrink-0" />
+                        ) : alt.severity === "medium" ? (
+                          <span className="inline-block size-2 rounded-full bg-amber-500 shrink-0" />
+                        ) : (
+                          <span className="inline-block size-2 rounded-full bg-blue-500 shrink-0" />
+                        )}
+                        {alt.title}
+                      </span>
+                      <Badge className={alt.severity === "high" ? "bg-red-500/10 text-red-600 text-[0.6rem]" : alt.severity === "medium" ? "bg-amber-500/10 text-amber-600 text-[0.6rem]" : "bg-blue-500/10 text-blue-600 text-[0.6rem]"}>
+                        {alt.severity.toUpperCase()}
+                      </Badge>
+                    </div>
+                    <p className="text-[0.72rem] text-muted-foreground leading-snug">{alt.description}</p>
+                    <span className="text-[0.62rem] text-muted-foreground font-mono block text-right">{alt.timestamp}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* SECTION 8: RECENT ACTIVITIES TIMELINE */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <Clock className="size-4 text-primary" /> Security Audit Trail & Activity Timeline
+                </h3>
+                <Badge variant="outline" className="text-[0.65rem] font-mono">{activities.length} Logs</Badge>
+              </div>
+
+              <div className="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+                {activities.map((act) => (
+                  <div key={act.id} className="p-2.5 rounded-xl bg-muted/30 border border-border/60 space-y-0.5">
+                    <div className="flex justify-between text-[0.68rem] text-muted-foreground">
+                      <span className="font-mono">{act.date}</span>
+                      <Badge variant="secondary" className="text-[0.6rem] px-1.5 py-0">{act.category}</Badge>
+                    </div>
+                    <p className="text-xs font-semibold text-foreground">{act.action}</p>
+                    <p className="text-[0.68rem] text-muted-foreground">By: {act.user}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 9: EXECUTIVE QUICK ACTIONS */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <Zap className="size-4 text-primary" /> Executive Governance Quick Actions
+              </h3>
+              <span className="text-xs text-muted-foreground">Read-Only Super Admin Monitoring Console</span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+              <Button
+                variant="outline"
+                onClick={() => setIsSecurityReportOpen(true)}
+                className="justify-start gap-2 h-10 text-xs font-semibold"
+              >
+                <Video className="size-4 text-primary shrink-0" /> View Security Report
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setActionLoading("comp-report");
+                  setTimeout(() => {
+                    const text = `INSTITUTIONAL HOSTEL COMPLIANCE REPORT\nDate: ${new Date().toISOString().split("T")[0]}\nFire Safety: Certified\nBuilding Safety: Certified\nSecurity Audit: Grade A+ Passed`;
+                    const blob = new Blob([text], { type: "application/pdf" });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `Hostel_Compliance_Report_${new Date().toISOString().split("T")[0]}.pdf`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    setActionLoading(null);
+                    addActivityLog("Generated Institutional Hostel Compliance Report", "Compliance");
+                    toast.success("Hostel Compliance Report generated & downloaded!");
+                  }, 400);
+                }}
+                disabled={actionLoading === "comp-report"}
+                className="justify-start gap-2 h-10 text-xs font-semibold text-emerald-700 border-emerald-500/30"
+              >
+                {actionLoading === "comp-report" ? <Loader2 className="size-4 animate-spin shrink-0" /> : <FileCheck className="size-4 text-emerald-600 shrink-0" />}
+                Generate Compliance Report
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setActionLoading("gate-analytics");
+                  setTimeout(() => {
+                    const csv = `GATE PASS ANALYTICS REPORT\nDate,Requests,Approved,Rejected,Pending,Late\n2026-08-05,18,14,2,2,4\n`;
+                    const blob = new Blob([csv], { type: "text/csv" });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `Gate_Pass_Analytics_${new Date().toISOString().split("T")[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    setActionLoading(null);
+                    addActivityLog("Downloaded Gate Pass Analytics & Trend Ledger", "Analytics");
+                    toast.success("Gate Pass Analytics CSV exported successfully!");
+                  }, 400);
+                }}
+                disabled={actionLoading === "gate-analytics"}
+                className="justify-start gap-2 h-10 text-xs font-semibold"
+              >
+                {actionLoading === "gate-analytics" ? <Loader2 className="size-4 animate-spin shrink-0" /> : <Download className="size-4 text-blue-600 shrink-0" />}
+                Download Gate Pass Analytics
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => setIsAuditModalOpen(true)}
+                className="justify-start gap-2 h-10 text-xs font-semibold"
+              >
+                <ShieldCheck className="size-4 text-purple-600 shrink-0" /> Schedule Security Audit
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => setIsComplaintAnalyticsOpen(true)}
+                className="justify-start gap-2 h-10 text-xs font-semibold"
+              >
+                <Wrench className="size-4 text-amber-600 shrink-0" /> View Complaint Analytics
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setActionLoading("export-comp");
+                  setTimeout(() => {
+                    const csv = `INSTITUTIONAL HOSTEL COMPLIANCE LEDGER\nFire Safety: Certified\nBuilding Safety: Certified\nVisitor Register: Biometric Logged\n`;
+                    const blob = new Blob([csv], { type: "text/csv" });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `Hostel_Compliance_Ledger_${new Date().toISOString().split("T")[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    setActionLoading(null);
+                    addActivityLog("Exported Institutional Compliance Report to CSV", "Export");
+                    toast.success("Compliance Report exported to CSV!");
+                  }, 400);
+                }}
+                disabled={actionLoading === "export-comp"}
+                className="justify-start gap-2 h-10 text-xs font-semibold"
+              >
+                {actionLoading === "export-comp" ? <Loader2 className="size-4 animate-spin shrink-0" /> : <FileSpreadsheet className="size-4 text-emerald-600 shrink-0" />}
+                Export Compliance Report
+              </Button>
             </div>
           </div>
         </div>
@@ -811,109 +1204,309 @@ export function HostelModuleView() {
         </div>
       )}
 
-      {/* HOSTEL ALERTS, STAFF SUMMARY & QUICK ACTIONS GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* HOSTEL ALERTS */}
-        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
-          <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-              <BellRing className="size-4 text-amber-500" /> Compact Hostel Alerts
-            </h3>
-            <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">{alerts.length} Active</Badge>
+      {/* SECTION 7: VIEW DETAILS READ-ONLY MODAL */}
+      <Dialog open={isViewDetailsOpen} onOpenChange={setIsViewDetailsOpen}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Eye className="size-5 text-primary" /> Institutional Hostel Records Detail Ledger
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Super Admin Executive Read-Only View (Daily operations like approval/rejection & ticket resolution are managed by Hostel Wardens).
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Modal Tabs: Gate Passes / Complaints */}
+          <div className="flex items-center gap-2 border-b border-border pb-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setViewDetailsTab("gatepass")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                viewDetailsTab === "gatepass"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              Gate Passes Ledger ({gatePassDetails.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewDetailsTab("complaints")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                viewDetailsTab === "complaints"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              Resident Complaints Ledger ({complaintDetails.length})
+            </button>
           </div>
 
-          <div className="space-y-2 max-h-[240px] overflow-y-auto pr-1">
-            {alerts.map((alt) => (
-              <div key={alt.id} className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                    {alt.severity === "high" ? (
-                      <ShieldAlert className="size-3.5 text-destructive shrink-0" />
-                    ) : (
-                      <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
-                    )}
-                    {alt.title}
-                  </span>
-                  <span className="text-[0.62rem] text-muted-foreground font-mono">{alt.timestamp}</span>
-                </div>
-                <p className="text-[0.72rem] text-muted-foreground leading-snug">{alt.description}</p>
+          {/* GATE PASSES READ-ONLY TABLE */}
+          {viewDetailsTab === "gatepass" && (
+            <div className="space-y-3 pt-2">
+              <div className="overflow-x-auto border border-border/80 rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase text-[0.65rem]">
+                    <tr>
+                      <th className="py-2.5 px-3">Student Name</th>
+                      <th className="py-2.5 px-3">Roll Number</th>
+                      <th className="py-2.5 px-3">Department</th>
+                      <th className="py-2.5 px-3">Hostel Block</th>
+                      <th className="py-2.5 px-3">Pass Type</th>
+                      <th className="py-2.5 px-3">Exit Time</th>
+                      <th className="py-2.5 px-3">Expected Return</th>
+                      <th className="py-2.5 px-3">Current Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {gatePassDetails.map((pass) => (
+                      <tr key={pass.id} className="hover:bg-muted/20">
+                        <td className="py-2.5 px-3 font-semibold text-foreground">{pass.studentName}</td>
+                        <td className="py-2.5 px-3 font-mono font-bold text-foreground">{pass.rollNo}</td>
+                        <td className="py-2.5 px-3 text-muted-foreground">{pass.department}</td>
+                        <td className="py-2.5 px-3 font-mono text-primary font-bold">{pass.hostelBlock}</td>
+                        <td className="py-2.5 px-3">
+                          <Badge variant="outline" className="font-mono text-xs">{pass.passType}</Badge>
+                        </td>
+                        <td className="py-2.5 px-3 font-mono text-muted-foreground">{pass.exitTime}</td>
+                        <td className="py-2.5 px-3 font-mono text-muted-foreground">{pass.expectedReturn}</td>
+                        <td className="py-2.5 px-3">
+                          <Badge className={pass.status === "Approved" ? "bg-emerald-500/10 text-emerald-600" : pass.status === "Pending" ? "bg-amber-500/10 text-amber-600" : pass.status === "Late Return" ? "bg-purple-500/10 text-purple-600" : "bg-red-500/10 text-red-600"}>
+                            {pass.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* HOSTEL STAFF SUMMARY */}
-        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
-          <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-              <UserCheck className="size-4 text-purple-600" /> Hostel Staff Overview
-            </h3>
-          </div>
-
-          <div className="space-y-2 text-xs">
-            <div className="flex justify-between py-1 border-b border-border/40">
-              <span className="text-muted-foreground">Chief Warden:</span>
-              <span className="font-bold text-foreground">{staffSummary.chiefWarden}</span>
+              <p className="text-[0.68rem] text-muted-foreground text-center">
+                * Note: Super Admin monitoring view. Gate pass approval/rejection operations are conducted at Warden Desk.
+              </p>
             </div>
+          )}
 
-            <div className="flex justify-between py-1 border-b border-border/40">
-              <span className="text-muted-foreground">Assistant Wardens:</span>
-              <span className="font-bold font-mono text-primary">{staffSummary.assistantWardensCount} Officers</span>
+          {/* COMPLAINTS READ-ONLY TABLE */}
+          {viewDetailsTab === "complaints" && (
+            <div className="space-y-3 pt-2">
+              <div className="overflow-x-auto border border-border/80 rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase text-[0.65rem]">
+                    <tr>
+                      <th className="py-2.5 px-3">Complaint ID</th>
+                      <th className="py-2.5 px-3">Student Name</th>
+                      <th className="py-2.5 px-3">Hostel Block</th>
+                      <th className="py-2.5 px-3">Category</th>
+                      <th className="py-2.5 px-3">Priority</th>
+                      <th className="py-2.5 px-3">Assigned Warden</th>
+                      <th className="py-2.5 px-3">Current Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {complaintDetails.map((cmp) => (
+                      <tr key={cmp.id} className="hover:bg-muted/20">
+                        <td className="py-2.5 px-3 font-mono font-bold text-foreground">{cmp.complaintId}</td>
+                        <td className="py-2.5 px-3 font-semibold text-foreground">{cmp.studentName}</td>
+                        <td className="py-2.5 px-3 font-mono text-primary font-bold">{cmp.hostelBlock}</td>
+                        <td className="py-2.5 px-3"><Badge variant="outline" className="font-mono text-xs">{cmp.category}</Badge></td>
+                        <td className="py-2.5 px-3">
+                          <Badge className={cmp.priority === "High" ? "bg-red-500/10 text-red-600" : cmp.priority === "Medium" ? "bg-amber-500/10 text-amber-600" : "bg-blue-500/10 text-blue-600"}>
+                            {cmp.priority}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 px-3 font-medium text-foreground">{cmp.assignedWarden}</td>
+                        <td className="py-2.5 px-3">
+                          <Badge className={cmp.status === "Resolved" ? "bg-emerald-500/10 text-emerald-600" : cmp.status === "In Progress" ? "bg-blue-500/10 text-blue-600" : "bg-amber-500/10 text-amber-600"}>
+                            {cmp.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-[0.68rem] text-muted-foreground text-center">
+                * Note: Super Admin monitoring view. Complaint resolution and warden assignments are performed at Warden Desk.
+              </p>
             </div>
+          )}
 
-            <div className="flex justify-between py-1 border-b border-border/40">
-              <span className="text-muted-foreground">Security Staff:</span>
-              <span className="font-bold font-mono text-foreground">{staffSummary.securityStaffCount} Guards</span>
-            </div>
-
-            <div className="flex justify-between py-1 border-b border-border/40">
-              <span className="text-muted-foreground">Maintenance Staff:</span>
-              <span className="font-bold font-mono text-foreground">{staffSummary.maintenanceStaffCount} Techs</span>
-            </div>
-
-            <div className="flex justify-between py-1 border-b border-border/40">
-              <span className="text-muted-foreground">Mess Supervisor:</span>
-              <span className="font-bold text-foreground">{staffSummary.messSupervisor}</span>
-            </div>
-
-            <div className="flex justify-between pt-1">
-              <span className="text-muted-foreground">Staff Availability:</span>
-              <span className="font-bold text-emerald-600">{staffSummary.staffAvailability}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* EXECUTIVE QUICK ACTIONS */}
-        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
-          <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-              <Zap className="size-4 text-primary" /> Executive Quick Actions
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 gap-2">
-            <Button variant="outline" onClick={() => setIsConfigOpen(true)} className="justify-start gap-2.5 h-9 text-xs font-semibold">
-              <Sliders className="size-3.5 text-primary" /> Hostel Policy & Governance Configuration
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setIsViewDetailsOpen(false)} className="text-xs">
+              Close Ledger
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-            <Button variant="outline" onClick={handleExportPDF} className="justify-start gap-2.5 h-9 text-xs font-semibold">
-              <FileText className="size-3.5 text-emerald-600" /> Download Occupancy Report
-            </Button>
+      {/* QUICK ACTION MODAL A: SECURITY REPORT MODAL */}
+      <Dialog open={isSecurityReportOpen} onOpenChange={setIsSecurityReportOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <Video className="size-4 text-emerald-500" /> Executive Security & Infrastructure Telemetry
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Daily perimeter security, CCTV status, and unauthorized access telemetry summary.
+            </DialogDescription>
+          </DialogHeader>
 
-            <Button variant="outline" onClick={handleScheduleAudit} className="justify-start gap-2.5 h-9 text-xs font-semibold">
-              <ShieldCheck className="size-3.5 text-blue-600" /> Schedule Hostel Audit
-            </Button>
-
-            <Button variant="outline" onClick={() => setActiveTab("compliance")} className="justify-start gap-2.5 h-9 text-xs font-semibold">
-              <Wrench className="size-3.5 text-amber-600" /> View Maintenance & Compliance Report
-            </Button>
-
-            <Button variant="outline" onClick={() => setActiveTab("analytics")} className="justify-start gap-2.5 h-9 text-xs font-semibold">
-              <BarChart3 className="size-3.5 text-purple-600" /> Infrastructure & Analytics Summary
-            </Button>
+          <div className="space-y-2 text-xs pt-1">
+            <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">CCTV Cameras Operational:</span>
+                <span className="font-mono font-bold text-emerald-600">128 / 128 (100%)</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Biometric RFID Smart Gates:</span>
+                <span className="font-mono font-bold text-emerald-600">Operational</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Perimeter Intrusion Attempts:</span>
+                <span className="font-mono font-bold text-emerald-600">0 Incidents Logged</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Visitors Registered Today:</span>
+                <span className="font-mono font-bold text-primary">24 Logged</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="text-muted-foreground">Security Personnel Manned:</span>
+                <span className="font-mono font-bold text-foreground">18 Guards / 24 Hours</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setIsSecurityReportOpen(false)} className="text-xs">
+              Close Report
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* QUICK ACTION MODAL B: SCHEDULE SECURITY AUDIT */}
+      <Dialog open={isAuditModalOpen} onOpenChange={setIsAuditModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <ShieldCheck className="size-4 text-purple-600" /> Schedule Hostel Security Audit
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Schedule an institutional security inspection or compliance audit.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleScheduleAuditSubmit} className="space-y-3 pt-1 text-xs">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs font-semibold">Audit Date</Label>
+                <Input
+                  type="date"
+                  value={auditForm.auditDate}
+                  onChange={(e) => setAuditForm({ ...auditForm, auditDate: e.target.value })}
+                  className="h-9 text-xs"
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs font-semibold">Audit Time</Label>
+                <Input
+                  type="time"
+                  value={auditForm.auditTime}
+                  onChange={(e) => setAuditForm({ ...auditForm, auditTime: e.target.value })}
+                  className="h-9 text-xs"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold">Audit Scope</Label>
+              <Input
+                value={auditForm.auditScope}
+                onChange={(e) => setAuditForm({ ...auditForm, auditScope: e.target.value })}
+                className="h-9 text-xs"
+                required
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold">Inspector / Committee Lead</Label>
+              <Input
+                value={auditForm.inspector}
+                onChange={(e) => setAuditForm({ ...auditForm, inspector: e.target.value })}
+                className="h-9 text-xs"
+                required
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold">Remarks & Instructions</Label>
+              <Textarea
+                rows={2}
+                value={auditForm.remarks}
+                onChange={(e) => setAuditForm({ ...auditForm, remarks: e.target.value })}
+                className="text-xs"
+              />
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsAuditModalOpen(false)} className="text-xs">
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-purple-600 text-white text-xs font-semibold gap-1">
+                <ShieldCheck className="size-3.5" /> Schedule Audit
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* QUICK ACTION MODAL C: COMPLAINT ANALYTICS BREAKDOWN */}
+      <Dialog open={isComplaintAnalyticsOpen} onOpenChange={setIsComplaintAnalyticsOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <Wrench className="size-4 text-amber-500" /> Resident Complaint SLA & Breakdown
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Category-wise resolution metrics and Warden SLA tracking.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2.5 text-xs pt-1">
+            <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Plumbing Tickets:</span>
+                <span className="font-mono font-bold text-amber-700">35% (18 Tickets)</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Electrical Tickets:</span>
+                <span className="font-mono font-bold text-blue-700">28% (15 Tickets)</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Wi-Fi Network Tickets:</span>
+                <span className="font-mono font-bold text-purple-700">22% (12 Tickets)</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Furniture & Carpentry:</span>
+                <span className="font-mono font-bold text-foreground">15% (8 Tickets)</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="text-muted-foreground">Resolution SLA Compliance:</span>
+                <span className="font-bold text-emerald-600">94.2% within 24 Hours</span>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setIsComplaintAnalyticsOpen(false)} className="text-xs">
+              Close Breakdown
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* DIALOG: HOSTEL CONFIGURATION & POLICY GOVERNANCE */}
       <Dialog open={isConfigOpen} onOpenChange={setIsConfigOpen}>

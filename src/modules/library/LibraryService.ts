@@ -37,6 +37,15 @@ export interface LibraryConfig {
   holidayCalendar: string;
   notificationRules: string;
   lateReturnPolicy: string;
+  gracePeriodDays?: number;
+  maxFineLimit?: number;
+  remoteVpnAccess?: boolean;
+  maxConcurrentDownloads?: number;
+  weekendHours?: string;
+  holdPeriodHours?: number;
+  maxReservationsPerUser?: number;
+  preDueReminderDays?: number;
+  lostBookPenaltyMultiplier?: number;
 }
 
 export interface LibraryHealthStatus {
@@ -65,6 +74,10 @@ export interface DigitalSubscription {
   activeSubscription: boolean;
   expiryDate: string;
   usageStats: string;
+  licenseCount?: number;
+  licenseSeats?: string;
+  ipRange?: string;
+  contactPerson?: string;
 }
 
 export interface LibrarianStaffSummary {
@@ -205,12 +218,21 @@ export const DEFAULT_LIBRARY_CONFIG: LibraryConfig = {
   maxBooksPerStudent: 4,
   maxBooksPerFaculty: 10,
   finePerDay: 10,
+  gracePeriodDays: 2,
+  maxFineLimit: 500,
   lostBookPolicy: "Replacement with new copy or 150% printed book cost penalty.",
+  lostBookPenaltyMultiplier: 150,
   reservationPolicy: "Reserved titles held for 48 Hours upon check-in return.",
+  holdPeriodHours: 48,
+  maxReservationsPerUser: 2,
   digitalLibraryAccess: "24/7 Remote VPN & Campus IP Range Access authorized.",
-  workingHours: "Mon-Sat: 8:00 AM - 9:00 PM | Sun: 10:00 AM - 4:00 PM",
+  remoteVpnAccess: true,
+  maxConcurrentDownloads: 5,
+  workingHours: "Mon-Sat: 8:00 AM - 9:00 PM",
+  weekendHours: "Sun: 10:00 AM - 4:00 PM",
   holidayCalendar: "Gazetted University Holidays & Festival Vacations apply.",
   notificationRules: "Automated SMS & Email alerts sent 2 days prior to due date.",
+  preDueReminderDays: 2,
   lateReturnPolicy: "Suspension of borrowing privileges if overdue exceeds 15 days.",
 };
 
@@ -241,6 +263,10 @@ export const DEFAULT_DIGITAL_SUBSCRIPTIONS: DigitalSubscription[] = [
     activeSubscription: true,
     expiryDate: "2026-12-31",
     usageStats: "14,250 Downloads / Month",
+    licenseCount: 500,
+    licenseSeats: "500 Concurrent Seats",
+    ipRange: "192.168.1.0/24",
+    contactPerson: "licensing@ieee.org",
   },
   {
     id: "DS-002",
@@ -249,6 +275,10 @@ export const DEFAULT_DIGITAL_SUBSCRIPTIONS: DigitalSubscription[] = [
     activeSubscription: true,
     expiryDate: "2026-11-15",
     usageStats: "9,800 Searches / Month",
+    licenseCount: 250,
+    licenseSeats: "250 Concurrent Seats",
+    ipRange: "192.168.1.0/24",
+    contactPerson: "support@springer.com",
   },
   {
     id: "DS-003",
@@ -257,6 +287,10 @@ export const DEFAULT_DIGITAL_SUBSCRIPTIONS: DigitalSubscription[] = [
     activeSubscription: true,
     expiryDate: "2027-03-31",
     usageStats: "11,400 Articles Downloaded",
+    licenseCount: 1000,
+    licenseSeats: "Campus-wide Access",
+    ipRange: "192.168.1.0/24",
+    contactPerson: "admin@elsevier.com",
   },
   {
     id: "DS-004",
@@ -265,22 +299,34 @@ export const DEFAULT_DIGITAL_SUBSCRIPTIONS: DigitalSubscription[] = [
     activeSubscription: true,
     expiryDate: "2026-10-30",
     usageStats: "8,200 Papers Accessed",
+    licenseCount: 300,
+    licenseSeats: "300 Concurrent Seats",
+    ipRange: "192.168.1.0/24",
+    contactPerson: "acm-help@acm.org",
   },
   {
     id: "DS-005",
     name: "NPTEL Video Portal",
     publisher: "IIT / MHRD Govt of India",
     activeSubscription: true,
-    expiryDate: "Lifetime Access",
+    expiryDate: "2030-12-31",
     usageStats: "24,500 Streaming Hours",
+    licenseCount: 5000,
+    licenseSeats: "Open Institutional Access",
+    ipRange: "All Campus IPs",
+    contactPerson: "nptel@iitm.ac.in",
   },
   {
     id: "DS-006",
     name: "National Digital Library (NDLI)",
     publisher: "IIT Kharagpur",
     activeSubscription: true,
-    expiryDate: "Institutional Member",
+    expiryDate: "2028-06-30",
     usageStats: "18,900 Student Logins",
+    licenseCount: 10000,
+    licenseSeats: "National Member Access",
+    ipRange: "All Campus IPs",
+    contactPerson: "support@ndl.gov.in",
   },
 ];
 
