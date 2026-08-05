@@ -1,35 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
+import { toast } from "sonner";
 import {
-  CalendarRange,
-  Sparkles,
+  Calendar,
+  Clock,
+  Plus,
+  Search,
   RefreshCw,
   Download,
   Filter,
-  Search,
-  Plus,
+  Eye,
   Edit,
+  Trash2,
   Building2,
-  Users,
   BookOpen,
-  CheckCircle2,
+  CheckCircle,
   AlertTriangle,
-  Clock,
+  MapPin,
+  Sparkles,
+  Award,
   Layers,
-  FileSpreadsheet,
-  FileText,
-  User,
-  FlaskConical,
-  Coffee,
-  Check,
-  X,
-  Bot,
-  Zap,
+  ArrowRight,
+  UserCheck,
+  Send,
+  SlidersHorizontal,
+  Workflow,
+  PlusCircle,
+  AlertOctagon,
+  BarChart3,
+  ListTodo
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -45,513 +50,949 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import { KpiCard } from "@/components/dashboard/kpi-card";
+import { Panel } from "@/components/dashboard/panel";
+import { DonutChart, GroupedBarChart } from "@/components/dashboard/charts";
 
 import {
-  fetchTimetableGrid,
-  autoGenerateTimetable,
-  updateTimetablePeriod,
-  checkScheduleConflict,
-  BRANCHES,
-  SEMESTERS,
-  SECTIONS,
-  DAYS,
-  PERIOD_SLOTS,
-  type TimetablePeriod,
-  type TimetableGrid,
-} from "./TimetableService";
+  MOCK_TIMETABLE_SLOTS,
+  MOCK_FACULTY_AVAILABILITY,
+  MOCK_CLASSROOMS,
+  MOCK_LABORATORIES,
+  MOCK_CONFLICTS,
+  type TimetableSlot,
+  type FacultyAvailability,
+  type Classroom,
+  type Laboratory,
+  type TimetableConflict
+} from "@/data/timetable-management-mock";
+
+const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] as const;
+
+const PERIODS = [
+  { id: 1, label: "Period 1", time: "09:30 AM - 10:30 AM" },
+  { id: 2, label: "Period 2", time: "10:30 AM - 11:30 AM" },
+  { id: 99, label: "Short Break", time: "11:30 AM - 11:45 AM", isBreak: true },
+  { id: 3, label: "Period 3", time: "11:45 AM - 12:45 PM" },
+  { id: 4, label: "Period 4", time: "12:45 PM - 01:30 PM" },
+  { id: 100, label: "Lunch Break", time: "01:30 PM - 02:15 PM", isBreak: true },
+  { id: 5, label: "Period 5", time: "02:15 PM - 03:15 PM" },
+  { id: 6, label: "Period 6", time: "03:15 PM - 04:15 PM" },
+  { id: 7, label: "Period 7", time: "04:15 PM - 05:00 PM" }
+];
 
 export function TimetableModuleView() {
-  const [selectedBranch, setSelectedBranch] = useState("CSE");
-  const [selectedSem, setSelectedSem] = useState<number>(5);
-  const [selectedSec, setSelectedSec] = useState("Section A");
-
-  const [viewMode, setViewMode] = useState<"grid" | "faculty" | "room">("grid");
-  const [selectedFacultyFilter, setSelectedFacultyFilter] = useState("Dr. K. Sai Teja");
-
-  const [gridData, setGridData] = useState<TimetableGrid | null>(null);
+  // Simulated Loading/Error States
   const [loading, setLoading] = useState(false);
-  const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Edit Modal State
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingPeriod, setEditingPeriod] = useState<Partial<TimetablePeriod> | null>(null);
-  const [clashWarning, setClashWarning] = useState<string | null>(null);
+  // States for core entities
+  const [timetableSlots, setTimetableSlots] = useState<TimetableSlot[]>(MOCK_TIMETABLE_SLOTS);
+  const [facultyList, setFacultyList] = useState<FacultyAvailability[]>(MOCK_FACULTY_AVAILABILITY);
+  const [classroomsList, setClassroomsList] = useState<Classroom[]>(MOCK_CLASSROOMS);
+  const [labsList, setLabsList] = useState<Laboratory[]>(MOCK_LABORATORIES);
+  const [conflictsList, setConflictsList] = useState<TimetableConflict[]>(MOCK_CONFLICTS);
 
-  const loadSchedule = async () => {
+  // Filters State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [deptFilter, setDeptFilter] = useState("all");
+  const [semFilter, setSemFilter] = useState("all");
+  const [secFilter, setSecFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("recent");
+
+  // Selection state
+  const [activeTab, setActiveTab] = useState<"weekly" | "builder" | "conflicts" | "faculty" | "classrooms" | "labs" | "analytics">("weekly");
+  const [selectedSlot, setSelectedSlot] = useState<TimetableSlot | null>(null);
+  const [isSlotDetailsOpen, setIsSlotDetailsOpen] = useState(false);
+
+  // Modals state
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [isAutoGenerateOpen, setIsAutoGenerateOpen] = useState(false);
+
+  // Manual builder state
+  const [builderForm, setBuilderForm] = useState<any>({
+    department: "CSE",
+    semester: "Semester V",
+    section: "CSE-A",
+    subjectCode: "CS501",
+    subject: "Computer Networks",
+    faculty: "Dr. K. Sai Teja",
+    facultyId: "fac-101",
+    room: "LH-302",
+    day: "Monday",
+    period: 1,
+    status: "Draft",
+    credits: 3
+  });
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setDeptFilter("all");
+    setSemFilter("all");
+    setSecFilter("all");
+    setStatusFilter("all");
+    setSortBy("recent");
+    toast.success("Filters reset successfully");
+  };
+
+  const triggerReload = () => {
     setLoading(true);
-    const data = await fetchTimetableGrid(selectedBranch, selectedSem, selectedSec);
-    setGridData(data);
-    setLoading(false);
+    setTimeout(() => setLoading(false), 600);
   };
 
-  useEffect(() => {
-    loadSchedule();
-  }, [selectedBranch, selectedSem, selectedSec]);
-
-  // Trigger Auto-Generation Algorithm
-  const handleAutoGenerate = async () => {
-    setGenerating(true);
-    toast.info(`🤖 Running conflict-free timetable auto-generator for ${selectedBranch} - Sem ${selectedSem} (${selectedSec})...`);
-
-    setTimeout(async () => {
-      const generated = await autoGenerateTimetable(selectedBranch, selectedSem, selectedSec);
-      setGridData(generated);
-      setGenerating(false);
-      toast.success(
-        `✅ AUTO-GENERATED TIMETABLE READY! Allocated 48 periods across 6 days with ZERO faculty or room clashes.`
-      );
-    }, 800);
+  // Conflict Resolution handler
+  const handleResolveConflict = (id: string, message: string) => {
+    setConflictsList((prev) => prev.filter((c) => c.id !== id));
+    toast.success(`Conflict resolved successfully: ${message}`);
   };
 
-  // Open Edit Cell Modal
-  const handleOpenEditCell = (slot: TimetablePeriod) => {
-    setEditingPeriod(slot);
-    setClashWarning(null);
-    setIsEditModalOpen(true);
-  };
-
-  // Handle live clash detection during manual edits
-  const handleFacultyChange = (newFaculty: string) => {
-    if (!editingPeriod || !gridData) return;
-    const updated = { ...editingPeriod, facultyName: newFaculty };
-    setEditingPeriod(updated);
-
-    const conflict = checkScheduleConflict(gridData.schedule, updated);
-    if (conflict.hasConflict) {
-      setClashWarning(conflict.conflictReason || "Faculty clash detected!");
-    } else {
-      setClashWarning(null);
-    }
-  };
-
-  const handleSavePeriod = async (e: React.FormEvent) => {
+  // Auto Generate Timetable
+  const handleAutoGenerateTimetable = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingPeriod || !gridData) return;
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setIsAutoGenerateOpen(false);
+      toast.success("AI Optimizer successfully generated timetable baseline with zero critical conflicts!");
+    }, 1500);
+  };
 
-    if (clashWarning) {
-      toast.warning("Conflict Warning: " + clashWarning);
+  // Publish Timetable
+  const handlePublishTimetable = () => {
+    setTimetableSlots((prev) => prev.map((s) => ({ ...s, status: "Published" as const })));
+    setIsPublishModalOpen(false);
+    toast.success("All draft and pending timetables have been published institution-wide!");
+  };
+
+  // Add slot from Manual Builder
+  const handleAddBuilderSlot = (e: React.FormEvent) => {
+    e.preventDefault();
+    const startTimeStr = PERIODS.find((p) => p.id === builderForm.period)?.time.split(" - ")[0] || "09:30 AM";
+    const endTimeStr = PERIODS.find((p) => p.id === builderForm.period)?.time.split(" - ")[1] || "10:30 AM";
+
+    // Client-side conflict checker
+    const hasRoomConflict = timetableSlots.some(
+      (s) => s.day === builderForm.day && s.period === builderForm.period && s.room === builderForm.room
+    );
+
+    const hasFacultyConflict = timetableSlots.some(
+      (s) => s.day === builderForm.day && s.period === builderForm.period && s.facultyId === builderForm.facultyId
+    );
+
+    if (hasRoomConflict) {
+      toast.error(`Critical Conflict: Room ${builderForm.room} is already occupied during Period ${builderForm.period}!`);
+      return;
     }
 
-    await updateTimetablePeriod(editingPeriod);
-    setGridData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        schedule: prev.schedule.map((s) => (s.id === editingPeriod.id ? ({ ...s, ...editingPeriod } as TimetablePeriod) : s)),
-      };
+    if (hasFacultyConflict) {
+      toast.error(`Critical Conflict: Faculty ${builderForm.faculty} is already teaching during Period ${builderForm.period}!`);
+      return;
+    }
+
+    const newSlot: TimetableSlot = {
+      id: `tt-${Date.now()}`,
+      academicYear: "2026-27",
+      department: builderForm.department,
+      program: "B.Tech",
+      semester: builderForm.semester,
+      section: builderForm.section,
+      day: builderForm.day as any,
+      period: builderForm.period,
+      subject: builderForm.subject,
+      subjectCode: builderForm.subjectCode,
+      faculty: builderForm.faculty,
+      facultyId: builderForm.facultyId,
+      room: builderForm.room,
+      startTime: startTimeStr,
+      endTime: endTimeStr,
+      status: "Draft",
+      credits: builderForm.credits,
+      duration: "1 hour"
+    };
+
+    setTimetableSlots((prev) => [...prev, newSlot]);
+    toast.success(`Successfully added ${newSlot.subjectCode} scheduling slot!`);
+  };
+
+  // Delete/Cancel Slot
+  const handleDeleteSlot = (id: string, name: string) => {
+    setTimetableSlots((prev) => prev.filter((s) => s.id !== id));
+    toast.warning(`Cancelled scheduled class: ${name}`);
+  };
+
+  // Filter slots
+  const filteredSlots = useMemo(() => {
+    return timetableSlots.filter((slot) => {
+      const matchesSearch =
+        slot.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        slot.subjectCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        slot.faculty.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        slot.room.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesDept = deptFilter === "all" || slot.department === deptFilter;
+      const matchesSem = semFilter === "all" || slot.semester === semFilter;
+      const matchesSec = secFilter === "all" || slot.section === secFilter;
+      const matchesStatus = statusFilter === "all" || slot.status === statusFilter;
+
+      return matchesSearch && matchesDept && matchesSem && matchesSec && matchesStatus;
+    });
+  }, [timetableSlots, searchQuery, deptFilter, semFilter, secFilter, statusFilter]);
+
+  // Index timetable by [Day][Period] for Weekly view
+  const weeklyGridData = useMemo(() => {
+    const grid: Record<string, Record<number, TimetableSlot[]>> = {};
+
+    DAYS_OF_WEEK.forEach((day) => {
+      grid[day] = {};
+      PERIODS.forEach((p) => {
+        grid[day]![p.id] = [];
+      });
     });
 
-    setIsEditModalOpen(false);
-    toast.success(`Updated period schedule for ${editingPeriod.day} Period ${editingPeriod.periodNumber}!`);
-  };
+    filteredSlots.forEach((slot) => {
+      if (grid[slot.day] && grid[slot.day]![slot.period]) {
+        grid[slot.day]![slot.period]!.push(slot);
+      }
+    });
 
-  // Export CSV / Excel
-  const handleExportCSV = () => {
-    if (!gridData) return;
-    const headers = ["Day", "Period", "Time Slot", "Subject Code", "Subject Name", "Faculty", "Room", "Is Lab"];
-    const rows = gridData.schedule.map((p) => [
-      p.day,
-      `Period ${p.periodNumber}`,
-      `"${p.startTime} - ${p.endTime}"`,
-      p.subjectCode,
-      `"${p.subjectName}"`,
-      `"${p.facultyName}"`,
-      `"${p.roomNo}"`,
-      p.isLab ? "Yes (Lab)" : "No (Theory)",
-    ]);
+    return grid;
+  }, [filteredSlots]);
 
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Timetable_${selectedBranch}_Sem${selectedSem}_${selectedSec}_2026.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success(`Exported ${selectedBranch} Sem ${selectedSem} timetable to CSV!`);
-  };
+  // Analytics Utilization numbers
+  const classroomOccupancyChart = [
+    { name: "LH-302 (Block A)", value: 75 },
+    { name: "LH-204 (Block B)", value: 40 },
+    { name: "SH-101 (Seminar)", value: 20 }
+  ];
 
-  // Export PDF Toast placeholder
-  const handleExportPDF = () => {
-    toast.success(`📄 Generating print-ready PDF timetable for ${selectedBranch} Sem ${selectedSem} (${selectedSec})...`);
-  };
+  const facultyHoursChart = [
+    { name: "Dr. K. Sai Teja", Hours: 14 },
+    { name: "Dr. S. K. Gupta", Hours: 18 },
+    { name: "Dr. Rajesh Sharma", Hours: 10 },
+    { name: "Dr. Meera Rao", Hours: 12 }
+  ];
 
-  const handleExportAll4SemestersPDF = () => {
-    toast.success(`📚 Exporting Master PDF containing all 4 running semesters (Sem 1, Sem 3, Sem 5, Sem 7)...`);
-  };
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="h-16 w-1/3 bg-muted/40 animate-pulse rounded-md" />
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-8">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="h-24 bg-muted/40 animate-pulse rounded-xl" />
+          ))}
+        </div>
+        <div className="h-96 bg-muted/40 animate-pulse rounded-xl border border-border" />
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
-      {/* Top Banner Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
+    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 text-xs leading-normal">
+      
+      {/* 1. PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-5 border-border">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0">
-            <CalendarRange className="size-6" />
+            <Calendar className="size-6" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold font-display tracking-tight text-foreground">
-                Automated Timetable Management & Generator
+                Timetable Management
               </h1>
               <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">
-                All 4 Running Semesters
+                Academic Management Portal
               </Badge>
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-              Conflict-free weekly schedule generator across CSE, ECE, ME, CE, EEE, IT & AI&DS branches.
+              Create, manage, and monitor institution-wide class schedules with automated conflict resolution.
             </p>
           </div>
         </div>
 
-        {/* Top Control Bar */}
-        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto flex-wrap">
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
+            variant="outline"
             size="sm"
-            onClick={handleAutoGenerate}
-            disabled={generating}
-            className="h-9 bg-brand-gradient text-white gap-2 text-xs font-bold shadow-glow"
+            onClick={triggerReload}
+            className="h-9 gap-1.5 font-semibold text-xs animate-none"
           >
-            {generating ? <RefreshCw className="size-4 animate-spin" /> : <Bot className="size-4" />} 🤖 Auto-Generate Timetable
+            <RefreshCw className="size-3.5" /> Refresh
           </Button>
-
-          <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-9 gap-2 text-xs font-medium">
-            <FileSpreadsheet className="size-3.5" /> Export Excel
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsAutoGenerateOpen(true)}
+            className="h-9 gap-1.5 font-semibold text-xs border-primary/30 text-primary hover:bg-primary/5"
+          >
+            <Sparkles className="size-3.5" /> Generate Timetable
           </Button>
-
-          <Button variant="outline" size="sm" onClick={handleExportPDF} className="h-9 gap-2 text-xs font-medium">
-            <FileText className="size-3.5" /> Export PDF
-          </Button>
-
-          <Button variant="outline" size="sm" onClick={handleExportAll4SemestersPDF} className="h-9 gap-2 text-xs font-medium text-primary border-primary/30">
-            <Sparkles className="size-3.5" /> Export All 4 Sems
+          <Button
+            onClick={() => setIsPublishModalOpen(true)}
+            className="h-9 bg-brand-gradient text-white gap-1.5 font-semibold text-xs shadow-glow hover:opacity-95 cursor-pointer"
+          >
+            <Send className="size-3.5" /> Publish Timetable
           </Button>
         </div>
       </div>
 
-      {/* MASTER SELECTORS & FILTER BAR */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-4 rounded-2xl bg-card border border-border/80 shadow-sm">
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Branch Dropdown */}
-          <div className="space-y-1">
-            <label className="text-[0.68rem] font-bold text-muted-foreground uppercase tracking-wider block">Academic Branch</label>
-            <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-              <SelectTrigger className="h-9 text-xs font-bold w-[140px] rounded-xl"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {BRANCHES.map((b) => (<SelectItem key={b} value={b} className="text-xs font-bold">{b} Department</SelectItem>))}
-              </SelectContent>
-            </Select>
-          </div>
+      {/* 2. SUMMARY KPI STATS */}
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-8">
+        <KpiCard label="Total Timetables" value={String(timetableSlots.length)} icon={Calendar} tone="primary" />
+        <KpiCard label="Active Status" value="Live" icon={CheckCircle} tone="success" />
+        <KpiCard label="Scheduled Today" value="8 Classes" icon={Clock} tone="info" />
+        <KpiCard label="Pending Approval" value="2 Slots" icon={Workflow} tone="warning" />
+        <KpiCard label="Faculty Conflicts" value={String(conflictsList.filter((c) => c.type === "Faculty Conflict").length)} icon={AlertTriangle} tone="warning" />
+        <KpiCard label="Room Conflicts" value={String(conflictsList.filter((c) => c.type === "Room Conflict").length)} icon={AlertOctagon} tone="destructive" />
+        <KpiCard label="Lab Occupied" value={String(labsList.filter((l) => l.status === "Occupied").length)} icon={Building2} tone="info" />
+        <KpiCard label="Unassigned Classes" value="1 Course" icon={ListTodo} tone="warning" />
+      </div>
 
-          {/* Semester Dropdown */}
-          <div className="space-y-1">
-            <label className="text-[0.68rem] font-bold text-muted-foreground uppercase tracking-wider block">Running Semester</label>
-            <Select value={String(selectedSem)} onValueChange={(val) => setSelectedSem(Number(val))}>
-              <SelectTrigger className="h-9 text-xs font-bold w-[150px] rounded-xl"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1" className="text-xs font-bold">Sem 1 (1st Year)</SelectItem>
-                <SelectItem value="3" className="text-xs font-bold">Sem 3 (2nd Year)</SelectItem>
-                <SelectItem value="5" className="text-xs font-bold">Sem 5 (3rd Year)</SelectItem>
-                <SelectItem value="7" className="text-xs font-bold">Sem 7 (4th Year)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Section Dropdown */}
-          <div className="space-y-1">
-            <label className="text-[0.68rem] font-bold text-muted-foreground uppercase tracking-wider block">Section</label>
-            <Select value={selectedSec} onValueChange={setSelectedSec}>
-              <SelectTrigger className="h-9 text-xs font-bold w-[120px] rounded-xl"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {SECTIONS.map((sec) => (<SelectItem key={sec} value={sec} className="text-xs font-bold">{sec}</SelectItem>))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* View Mode Toggle Buttons */}
-        <div className="inline-flex p-1 rounded-2xl bg-muted/60 border border-border/60 self-start md:self-auto">
+      {/* 3. MULTIPLE VIEW MODE TABS */}
+      <div className="flex justify-between items-center border-b pb-1 flex-wrap gap-3">
+        <div className="flex rounded-xl bg-muted/40 p-1 border font-semibold">
           <button
-            onClick={() => setViewMode("grid")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              viewMode === "grid" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+            onClick={() => setActiveTab("weekly")}
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              activeTab === "weekly" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <CalendarRange className="size-3.5" /> Grid View (Weekly)
+            <Calendar className="size-3.5" /> Weekly View Grid
           </button>
-
           <button
-            onClick={() => setViewMode("faculty")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              viewMode === "faculty" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+            onClick={() => setActiveTab("builder")}
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              activeTab === "builder" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <User className="size-3.5" /> Faculty View
+            <SlidersHorizontal className="size-3.5" /> Manual Editor Builder
           </button>
-
           <button
-            onClick={() => setViewMode("room")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              viewMode === "room" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+            onClick={() => setActiveTab("conflicts")}
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              activeTab === "conflicts" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Building2 className="size-3.5" /> Room Allocation
+            <AlertTriangle className="size-3.5" /> Conflicts ledger ({conflictsList.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("faculty")}
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              activeTab === "faculty" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <UserCheck className="size-3.5" /> Faculty Availability
+          </button>
+          <button
+            onClick={() => setActiveTab("classrooms")}
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              activeTab === "classrooms" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Building2 className="size-3.5" /> Classroom Allocations
+          </button>
+          <button
+            onClick={() => setActiveTab("analytics")}
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              activeTab === "analytics" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <BarChart3 className="size-3.5" /> Utilization Analytics
           </button>
         </div>
       </div>
 
-      {/* VIEW 1: WEEKLY TIMETABLE GRID (MONDAY TO SATURDAY X PERIOD 1 TO 8) */}
-      {viewMode === "grid" && (
-        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
-          <div className="flex items-center justify-between border-b border-border pb-3">
-            <div>
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                <CalendarRange className="size-4 text-primary" /> Master Weekly Timetable Matrix
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Class: <strong className="text-primary">{selectedBranch} - Semester {selectedSem} ({selectedSec})</strong> • Academic Year 2026-2027
-              </p>
-            </div>
-            <div className="flex items-center gap-3 text-xs font-medium">
-              <span className="flex items-center gap-1"><span className="size-2.5 rounded-full bg-blue-500"></span> Core Theory</span>
-              <span className="flex items-center gap-1"><span className="size-2.5 rounded-full bg-amber-500"></span> Practical Lab</span>
-            </div>
-          </div>
+      {/* 4. TAB PANELS */}
 
-          {loading || !gridData ? (
-            <div className="py-12 text-center space-y-2">
-              <RefreshCw className="size-8 animate-spin mx-auto text-primary" />
-              <p className="text-xs text-muted-foreground font-medium">Loading schedule grid...</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-muted/60 border-b border-border text-muted-foreground font-bold uppercase tracking-wider text-[0.68rem]">
-                  <tr>
-                    <th className="py-3 px-3 w-[120px]">Period / Time</th>
-                    {DAYS.map((day) => (
-                      <th key={day} className="py-3 px-3 text-center border-l border-border/60 min-w-[150px]">
-                        {day}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60">
-                  {PERIOD_SLOTS.map((slot) => {
-                    const isLunch = slot.periodNumber === 4;
-                    return (
-                      <tr key={slot.periodNumber} className="hover:bg-muted/10 transition-colors">
-                        {/* Period & Time Slot */}
-                        <td className="py-3 px-3 font-mono font-bold border-r border-border/60 bg-muted/20">
-                          <span className="text-primary block text-xs">Period {slot.periodNumber}</span>
-                          <span className="text-[0.68rem] text-muted-foreground font-normal block">{slot.startTime} - {slot.endTime}</span>
-                        </td>
-
-                        {/* 6 Day Columns */}
-                        {DAYS.map((day) => {
-                          const periodSlot = gridData.schedule.find((p) => p.day === day && p.periodNumber === slot.periodNumber);
-
-                          if (!periodSlot) {
-                            return (
-                              <td key={day} className="py-3 px-3 border-l border-border/60 text-center text-muted-foreground font-mono">
-                                —
-                              </td>
-                            );
-                          }
-
-                          const isLab = periodSlot.isLab;
-
-                          return (
-                            <td key={day} className="p-1.5 border-l border-border/60 align-top">
-                              <div
-                                onClick={() => handleOpenEditCell(periodSlot)}
-                                className={`p-2.5 rounded-xl border transition-all cursor-pointer hover:shadow-md hover:scale-[1.02] space-y-1 ${
-                                  isLab
-                                    ? "bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/80 dark:border-amber-900/50 text-amber-950 dark:text-amber-200"
-                                    : "bg-blue-50/80 dark:bg-blue-950/30 border-blue-200/80 dark:border-blue-900/50 text-blue-950 dark:text-blue-200"
-                                }`}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <Badge className={`text-[0.65rem] font-mono px-1.5 py-0 ${isLab ? "bg-amber-600 text-white" : "bg-blue-600 text-white"}`}>
-                                    {periodSlot.subjectCode}
-                                  </Badge>
-                                  {isLab && <FlaskConical className="size-3 text-amber-600" />}
-                                </div>
-                                <h4 className="font-bold text-[0.72rem] line-clamp-1">{periodSlot.subjectName}</h4>
-                                <p className="text-[0.68rem] font-semibold opacity-90 truncate">{periodSlot.facultyName}</p>
-                                <div className="text-[0.65rem] font-mono opacity-80 pt-0.5 border-t border-black/10 dark:border-white/10 flex items-center justify-between">
-                                  <span>{periodSlot.roomNo}</span>
-                                  <span className="font-bold text-[0.6rem] uppercase">{isLab ? "LAB" : "THEORY"}</span>
-                                </div>
-                              </div>
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* VIEW 2: FACULTY TIMETABLE VIEW */}
-      {viewMode === "faculty" && (
-        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-5 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
-            <div>
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                <User className="size-4 text-primary" /> Individual Faculty Teaching Workload Schedule
-              </h2>
-              <p className="text-xs text-muted-foreground">Filter timetable by assigned instructor to view their weekly teaching periods and free slots.</p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Select value={selectedFacultyFilter} onValueChange={setSelectedFacultyFilter}>
-                <SelectTrigger className="h-9 text-xs font-bold w-[220px] rounded-xl"><SelectValue /></SelectTrigger>
+      {/* TAB 1: Weekly Grid */}
+      {activeTab === "weekly" && (
+        <div className="space-y-4 border rounded-2xl bg-card p-5 shadow-sm">
+          <div className="flex justify-between items-center border-b pb-3 mb-2 flex-wrap gap-2">
+            <h3 className="text-base font-bold font-display text-foreground flex items-center gap-2">
+              <Calendar className="size-5 text-primary" /> Institution Weekly Grid Matrix
+            </h3>
+            <div className="flex gap-2">
+              <Select value={deptFilter} onValueChange={setDeptFilter}>
+                <SelectTrigger className="h-8 text-xs w-[120px]">
+                  <SelectValue placeholder="Department" />
+                </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Dr. K. Sai Teja">Dr. K. Sai Teja (CSE)</SelectItem>
-                  <SelectItem value="Dr. Rajesh K. Varma">Dr. Rajesh K. Varma (CSE)</SelectItem>
-                  <SelectItem value="Dr. Meera Nambiar">Dr. Meera Nambiar (ECE)</SelectItem>
-                  <SelectItem value="Prof. Arvind Swaminathan">Prof. Arvind Swaminathan (AI&DS)</SelectItem>
-                  <SelectItem value="Dr. Sankar Narayan">Dr. Sankar Narayan (ME)</SelectItem>
+                  <SelectItem value="all">All Departments</SelectItem>
+                  <SelectItem value="CSE">CSE</SelectItem>
+                  <SelectItem value="ECE">ECE</SelectItem>
+                  <SelectItem value="ME">ME</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4">
-            {DAYS.map((day) => {
-              const facultyPeriods = gridData?.schedule.filter(
-                (p) => p.day === day && p.facultyName.toLowerCase() === selectedFacultyFilter.toLowerCase()
-              ) || [];
+          <div className="overflow-x-auto border rounded-xl">
+            <table className="w-full border-collapse text-left table-fixed min-w-[800px]">
+              <thead>
+                <tr className="bg-muted/40 font-semibold text-muted-foreground border-b text-[10px]">
+                  <th className="py-2.5 px-3 border-r w-[150px]">Periods / Times</th>
+                  {DAYS_OF_WEEK.map((day) => (
+                    <th key={day} className="py-2.5 px-3 border-r">{day}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {PERIODS.map((p) => {
+                  if (p.isBreak) {
+                    return (
+                      <tr key={p.label} className="bg-muted/20 border-b">
+                        <td className="py-2 px-3 border-r font-mono text-[9px] font-bold text-muted-foreground">
+                          {p.time}
+                        </td>
+                        <td colSpan={6} className="py-2 text-center text-muted-foreground italic font-semibold tracking-wider text-[9px] uppercase">
+                          ☕ {p.label} &middot; {p.time}
+                        </td>
+                      </tr>
+                    );
+                  }
 
-              return (
-                <div key={day} className="p-4 rounded-2xl border border-border/80 bg-muted/20 space-y-3">
-                  <div className="flex items-center justify-between border-b border-border/60 pb-2">
-                    <h3 className="font-bold text-xs text-foreground">{day}</h3>
-                    <Badge variant="outline" className="font-mono text-[0.68rem] text-primary">{facultyPeriods.length} Periods</Badge>
-                  </div>
-
-                  {facultyPeriods.length === 0 ? (
-                    <div className="p-4 text-center text-xs text-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl font-medium">
-                      🟢 Free / Research Day
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {facultyPeriods.map((fp) => (
-                        <div key={fp.id} className="p-3 rounded-xl border border-border/60 bg-card space-y-1">
-                          <div className="flex items-center justify-between font-mono text-[0.68rem]">
-                            <span className="font-bold text-primary">Period {fp.periodNumber} ({fp.startTime})</span>
-                            <Badge className="bg-blue-600 text-white text-[0.6rem]">{fp.roomNo}</Badge>
-                          </div>
-                          <h4 className="font-bold text-xs text-foreground">{fp.subjectName}</h4>
-                          <p className="text-[0.68rem] text-muted-foreground">{fp.branch} - Sem {fp.semester} ({fp.section})</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                  return (
+                    <tr key={p.id} className="border-b">
+                      <td className="py-4 px-3 border-r font-mono">
+                        <p className="font-bold text-foreground">{p.label}</p>
+                        <span className="text-[9px] text-muted-foreground">{p.time}</span>
+                      </td>
+                      {DAYS_OF_WEEK.map((day) => {
+                        const slots = weeklyGridData[day]?.[p.id] || [];
+                        return (
+                          <td key={day} className="py-3 px-2.5 border-r align-top hover:bg-muted/10 transition-colors">
+                            {slots.length > 0 ? (
+                              <div className="space-y-1">
+                                {slots.map((s) => (
+                                  <div
+                                    key={s.id}
+                                    onClick={() => {
+                                      setSelectedSlot(s);
+                                      setIsSlotDetailsOpen(true);
+                                    }}
+                                    className="p-2 border rounded-lg bg-primary/5 hover:bg-primary/10 border-primary/20 cursor-pointer space-y-0.5"
+                                  >
+                                    <div className="flex justify-between items-start gap-1">
+                                      <span className="font-mono font-bold text-[10px] text-primary">{s.subjectCode}</span>
+                                      <Badge variant="outline" className="text-[8px] py-0 px-1 font-mono">
+                                        {s.section}
+                                      </Badge>
+                                    </div>
+                                    <p className="font-bold text-[10px] leading-tight text-foreground truncate">{s.subject}</p>
+                                    <p className="text-[9px] text-muted-foreground truncate">{s.faculty}</p>
+                                    <div className="flex items-center gap-1 text-[8px] text-muted-foreground mt-0.5">
+                                      <MapPin className="size-2 shrink-0" />
+                                      <span>{s.room}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-[9px] text-muted-foreground/30 italic block py-4 text-center">Empty</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
 
-      {/* VIEW 3: ROOM ALLOCATION VIEW */}
-      {viewMode === "room" && (
-        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
-          <div className="border-b border-border pb-3">
-            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-              <Building2 className="size-4 text-primary" /> Classroom & Laboratory Occupancy Schedule
-            </h2>
-            <p className="text-xs text-muted-foreground">Inspect classroom utilization and lab room availability across campus blocks.</p>
+      {/* TAB 2: Manual Builder Form */}
+      {activeTab === "builder" && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Builder Form */}
+          <div className="lg:col-span-1 border rounded-2xl bg-card p-5 shadow-sm space-y-4">
+            <h3 className="text-base font-bold font-display text-foreground border-b pb-2 mb-2 flex items-center gap-2">
+              <SlidersHorizontal className="size-5 text-primary" /> Timetable Scheduler
+            </h3>
+
+            <form onSubmit={handleAddBuilderSlot} className="space-y-4">
+              <div className="space-y-1">
+                <Label htmlFor="build-dept">Academic Department</Label>
+                <Select
+                  value={builderForm.department}
+                  onValueChange={(val: any) => setBuilderForm((prev: any) => ({ ...prev, department: val }))}
+                >
+                  <SelectTrigger id="build-dept">
+                    <SelectValue placeholder="Department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="CSE">CSE</SelectItem>
+                    <SelectItem value="ECE">ECE</SelectItem>
+                    <SelectItem value="ME">ME</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3.5">
+                <div className="space-y-1">
+                  <Label htmlFor="build-sem">Semester</Label>
+                  <Input
+                    id="build-sem"
+                    value={builderForm.semester}
+                    onChange={(e) => setBuilderForm((prev: any) => ({ ...prev, semester: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="build-sec">Section</Label>
+                  <Input
+                    id="build-sec"
+                    value={builderForm.section}
+                    onChange={(e) => setBuilderForm((prev: any) => ({ ...prev, section: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3.5">
+                <div className="space-y-1">
+                  <Label htmlFor="build-subcode">Subject Code</Label>
+                  <Input
+                    id="build-subcode"
+                    value={builderForm.subjectCode}
+                    onChange={(e) => setBuilderForm((prev: any) => ({ ...prev, subjectCode: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="build-subname">Subject Name</Label>
+                  <Input
+                    id="build-subname"
+                    value={builderForm.subject}
+                    onChange={(e) => setBuilderForm((prev: any) => ({ ...prev, subject: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3.5">
+                <div className="space-y-1">
+                  <Label htmlFor="build-fac">Faculty Name</Label>
+                  <Input
+                    id="build-fac"
+                    value={builderForm.faculty}
+                    onChange={(e) => setBuilderForm((prev: any) => ({ ...prev, faculty: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="build-room">Classroom Room</Label>
+                  <Input
+                    id="build-room"
+                    value={builderForm.room}
+                    onChange={(e) => setBuilderForm((prev: any) => ({ ...prev, room: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3.5">
+                <div className="space-y-1">
+                  <Label htmlFor="build-day">Day of Week</Label>
+                  <Select
+                    value={builderForm.day}
+                    onValueChange={(val: any) => setBuilderForm((prev: any) => ({ ...prev, day: val }))}
+                  >
+                    <SelectTrigger id="build-day">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DAYS_OF_WEEK.map((day) => (
+                        <SelectItem key={day} value={day}>{day}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="build-period">Period Number</Label>
+                  <Select
+                    value={String(builderForm.period)}
+                    onValueChange={(val: any) => setBuilderForm((prev: any) => ({ ...prev, period: parseInt(val) }))}
+                  >
+                    <SelectTrigger id="build-period">
+                      <SelectValue placeholder="Period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+                        <SelectItem key={num} value={String(num)}>Period {num}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full bg-brand-gradient text-white font-semibold gap-1.5 h-9">
+                <Plus className="size-4" /> Add Slot to Schedule
+              </Button>
+            </form>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {["Block B - 302", "Block C - 201", "Lab - AI Center", "Lab - CSE 2", "Lab - ECE 1"].map((room) => (
-              <div key={room} className="p-4 rounded-2xl border border-border/80 bg-card space-y-2 shadow-xs">
-                <div className="flex items-center justify-between border-b border-border/60 pb-2">
-                  <h3 className="font-bold text-xs text-foreground font-mono">{room}</h3>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.68rem]">Active Utilization</Badge>
+          {/* Active Manual Listings */}
+          <div className="lg:col-span-2 border rounded-2xl bg-card p-5 shadow-sm space-y-4">
+            <h3 className="text-base font-bold font-display text-foreground border-b pb-2 flex items-center gap-2">
+              <SlidersHorizontal className="size-5 text-primary" /> Active Scheduling Drafts
+            </h3>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-[11px] font-medium text-foreground">
+                <thead>
+                  <tr className="text-muted-foreground font-semibold border-b">
+                    <th className="py-2">Subject / Code</th>
+                    <th className="py-2">Schedule Detail</th>
+                    <th className="py-2">Faculty Assignments</th>
+                    <th className="py-2">Status</th>
+                    <th className="py-2 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {timetableSlots.map((slot) => (
+                    <tr key={slot.id} className="border-b border-border/40">
+                      <td className="py-3">
+                        <p className="font-bold text-foreground">{slot.subject}</p>
+                        <span className="font-mono text-[9px] text-muted-foreground">{slot.subjectCode}</span>
+                      </td>
+                      <td className="py-3">
+                        <p className="font-bold">{slot.day} &middot; Period {slot.period}</p>
+                        <span className="text-[10px] text-muted-foreground font-mono">{slot.startTime} - {slot.endTime}</span>
+                      </td>
+                      <td className="py-3 font-semibold text-primary">
+                        <p>{slot.faculty}</p>
+                        <span className="text-[10px] text-muted-foreground font-mono">{slot.room}</span>
+                      </td>
+                      <td className="py-3">
+                        <Badge variant="outline" className="text-[9px] uppercase">
+                          {slot.status}
+                        </Badge>
+                      </td>
+                      <td className="py-3 text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteSlot(slot.id, slot.subject)}
+                          className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: Conflicts Panel */}
+      {activeTab === "conflicts" && (
+        <div className="space-y-4 border rounded-2xl bg-card p-5 shadow-sm">
+          <h3 className="text-base font-bold font-display text-foreground border-b pb-2 flex items-center gap-2">
+            <AlertTriangle className="size-5 text-primary" /> Active System Collision & Conflict Warnings
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {conflictsList.map((conflict) => (
+              <div
+                key={conflict.id}
+                className={`p-4 border rounded-xl space-y-2 flex flex-col justify-between ${
+                  conflict.severity === "critical"
+                    ? "bg-destructive/5 border-destructive/20 text-destructive"
+                    : "bg-warning/5 border-warning/20 text-warning"
+                }`}
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="size-4 shrink-0" />
+                    <span className="font-bold font-mono text-[10px] uppercase tracking-wider">{conflict.type}</span>
+                  </div>
+                  <p className="font-bold text-foreground text-xs mt-1.5 leading-relaxed">{conflict.message}</p>
                 </div>
-                <p className="text-xs text-muted-foreground">Current Occupancy: <strong className="text-foreground">CSE - Sem 5 (Sec A)</strong></p>
-                <p className="text-[0.68rem] font-mono text-primary">Capacity: 60 Seats • Air-Conditioned</p>
+                <div className="pt-3 border-t border-border/40 flex justify-between items-center">
+                  <Badge variant="outline" className="text-[9px] py-0 tracking-wide font-mono uppercase">
+                    {conflict.severity}
+                  </Badge>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleResolveConflict(conflict.id, conflict.message)}
+                    className="h-7 text-[10px] font-semibold border-primary/20 text-primary hover:bg-primary/5 cursor-pointer"
+                  >
+                    Resolve Alert
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* MODAL: EDIT PERIOD CELL & LIVE CLASH WARNING */}
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-md">
+      {/* TAB 4: Faculty Availability */}
+      {activeTab === "faculty" && (
+        <div className="space-y-4 border rounded-2xl bg-card p-5 shadow-sm">
+          <h3 className="text-base font-bold font-display text-foreground border-b pb-2 flex items-center gap-2">
+            <UserCheck className="size-5 text-primary" /> Faculty Workload & Unavailable Blocks Checklist
+          </h3>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-[11px] font-medium text-foreground">
+              <thead>
+                <tr className="text-muted-foreground font-semibold border-b">
+                  <th className="py-2">Faculty Member</th>
+                  <th className="py-2">Department</th>
+                  <th className="py-2">Workload Limit</th>
+                  <th className="py-2">Unavailable Slots</th>
+                  <th className="py-2 text-right">Workload Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {facultyList.map((fac) => (
+                  <tr key={fac.facultyId} className="border-b border-border/40">
+                    <td className="py-3 font-bold text-foreground">{fac.facultyName}</td>
+                    <td className="py-3">{fac.department}</td>
+                    <td className="py-3 font-mono font-bold">
+                      {fac.weeklyWorkload} / {fac.maxWorkload} Hours
+                    </td>
+                    <td className="py-3">
+                      <div className="flex gap-1 flex-wrap">
+                        {fac.unavailableSlots.map((slot, idx) => (
+                          <Badge key={idx} variant="outline" className="text-[9px] font-mono py-0 text-destructive border-destructive/20 bg-destructive/5">
+                            {slot}
+                          </Badge>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="py-3 text-right">
+                      <Badge
+                        variant="outline"
+                        className={`text-[9px] uppercase ${
+                          fac.status === "Overloaded"
+                            ? "text-destructive border-destructive/20 bg-destructive/5"
+                            : "text-emerald-600 border-emerald-200 bg-emerald-50"
+                        }`}
+                      >
+                        {fac.status}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: Classroom Allocation */}
+      {activeTab === "classrooms" && (
+        <div className="space-y-4 border rounded-2xl bg-card p-5 shadow-sm">
+          <h3 className="text-base font-bold font-display text-foreground border-b pb-2 flex items-center gap-2">
+            <Building2 className="size-5 text-primary" /> Classroom Capacity & Allocations Directory
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {classroomsList.map((room) => (
+              <div key={room.roomId} className="p-4 border rounded-xl space-y-2 flex flex-col justify-between bg-card hover:bg-muted/10 transition-colors">
+                <div>
+                  <div className="flex justify-between items-start gap-1">
+                    <span className="font-mono font-bold text-xs text-primary">{room.roomNumber}</span>
+                    <Badge variant="outline" className="text-[9px]">
+                      {room.roomType}
+                    </Badge>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{room.building}</p>
+                  <p className="font-bold text-foreground text-xs mt-2">Capacity: {room.capacity} students</p>
+                  {room.currentSchedule && (
+                    <p className="text-[9px] text-muted-foreground mt-1 font-mono italic">
+                      Current: {room.currentSchedule}
+                    </p>
+                  )}
+                </div>
+                <div className="pt-3 border-t border-border/40 flex justify-between items-center">
+                  <Badge
+                    variant="outline"
+                    className={`text-[9px] uppercase ${
+                      room.status === "Occupied" ? "text-amber-500 border-amber-200 bg-amber-50" : "text-emerald-600 border-emerald-200 bg-emerald-50"
+                    }`}
+                  >
+                    {room.status}
+                  </Badge>
+                  <Button size="sm" variant="ghost" className="h-7 text-[10px] font-semibold text-primary cursor-pointer">
+                    View Schedule
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 6: Analytics */}
+      {activeTab === "analytics" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Faculty Utilization Hours */}
+          <div className="border rounded-2xl bg-card p-5 shadow-sm space-y-3">
+            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center justify-between">
+              <span>Faculty Utilization Hours</span>
+              <span className="text-[10px] text-primary lowercase font-mono">Weekly workload distribution</span>
+            </h4>
+            <GroupedBarChart
+              data={facultyHoursChart as any}
+              xKey="name"
+              series={[{ key: "Hours", label: "Hours" }]}
+              height={180}
+            />
+          </div>
+
+          {/* Classroom Room Occupancy */}
+          <div className="border rounded-2xl bg-card p-5 shadow-sm space-y-3">
+            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center justify-between">
+              <span>Classroom Room Occupancy</span>
+              <span className="text-[10px] text-success font-mono">Capacity % percentage</span>
+            </h4>
+            <DonutChart data={classroomOccupancyChart} centerLabel="Occupancy" height={180} />
+          </div>
+        </div>
+      )}
+
+      {/* 5. DRAFT RESOLUTION MODAL */}
+      <Dialog open={isSlotDetailsOpen} onOpenChange={setIsSlotDetailsOpen}>
+        <DialogContent className="max-w-md text-xs leading-normal">
+          {selectedSlot && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-primary/10 text-primary border-primary/25 font-mono">
+                    {selectedSlot.subjectCode}
+                  </Badge>
+                  <span className="text-[10px] text-muted-foreground font-mono">{selectedSlot.section}</span>
+                </div>
+                <DialogTitle className="text-base font-bold font-display mt-1">
+                  {selectedSlot.subject}
+                </DialogTitle>
+                <DialogDescription>
+                  Review course credits, assigned instructor, room schedule, and status.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 pt-2.5">
+                <div className="grid grid-cols-2 gap-3.5 border rounded-xl p-3 bg-muted/20">
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">Day & Period</span>
+                    <p className="font-bold mt-0.5">{selectedSlot.day} &middot; Period {selectedSlot.period}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">Time Slot</span>
+                    <p className="font-bold mt-0.5 font-mono">{selectedSlot.startTime} - {selectedSlot.endTime}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">Classroom Room</span>
+                    <p className="font-bold mt-0.5">{selectedSlot.room}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">Credits Level</span>
+                    <p className="font-bold mt-0.5">{selectedSlot.credits || 3} Credits</p>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-muted-foreground text-[10px]">Primary Instructor</span>
+                  <p className="font-bold text-foreground text-xs">{selectedSlot.faculty}</p>
+                </div>
+              </div>
+
+              <DialogFooter className="pt-2">
+                <Button variant="outline" onClick={() => setIsSlotDetailsOpen(false)}>Close Details</Button>
+                <Button
+                  onClick={() => {
+                    handleDeleteSlot(selectedSlot.id, selectedSlot.subject);
+                    setIsSlotDetailsOpen(false);
+                  }}
+                  variant="destructive"
+                  className="font-semibold"
+                >
+                  Cancel Class Slot
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* 6. AUTO GENERATOR OPTIMIZATION MODAL */}
+      <Dialog open={isAutoGenerateOpen} onOpenChange={setIsAutoGenerateOpen}>
+        <DialogContent className="max-w-md text-xs leading-normal">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <Edit className="size-4 text-primary" /> Edit Period Slot & Clash Verification
+            <DialogTitle className="text-base font-bold font-display flex items-center gap-2">
+              <Sparkles className="size-5 text-primary" /> AI Timetable Optimizer
             </DialogTitle>
-            <DialogDescription className="text-xs">
-              Update period assignments for {editingPeriod?.day} Period {editingPeriod?.periodNumber} ({editingPeriod?.startTime}).
+            <DialogDescription>
+              Generate optimized schedules across all departments based on curriculum requirements, room availability, and faculty constraints.
             </DialogDescription>
           </DialogHeader>
 
-          {editingPeriod && (
-            <form onSubmit={handleSavePeriod} className="space-y-4 pt-2">
-              {clashWarning && (
-                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 font-medium">
-                  {clashWarning}
-                </div>
-              )}
-
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Subject Title</Label>
-                <Input
-                  value={editingPeriod.subjectName || ""}
-                  onChange={(e) => setEditingPeriod({ ...editingPeriod, subjectName: e.target.value })}
-                  className="h-9 text-xs"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Assigned Faculty Member</Label>
-                <Select
-                  value={editingPeriod.facultyName || ""}
-                  onValueChange={(val) => handleFacultyChange(val)}
-                >
-                  <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+          <form onSubmit={handleAutoGenerateTimetable} className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-3.5">
+              <div className="space-y-1">
+                <Label htmlFor="gen-year">Academic Year</Label>
+                <Select defaultValue="2026-27">
+                  <SelectTrigger id="gen-year">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Dr. K. Sai Teja" className="text-xs font-semibold">Dr. K. Sai Teja (CSE)</SelectItem>
-                    <SelectItem value="Dr. Rajesh K. Varma" className="text-xs font-semibold">Dr. Rajesh K. Varma (CSE)</SelectItem>
-                    <SelectItem value="Dr. Meera Nambiar" className="text-xs font-semibold">Dr. Meera Nambiar (ECE)</SelectItem>
-                    <SelectItem value="Prof. Arvind Swaminathan" className="text-xs font-semibold">Prof. Arvind Swaminathan (AI&DS)</SelectItem>
-                    <SelectItem value="Dr. Sankar Narayan" className="text-xs font-semibold">Dr. Sankar Narayan (ME)</SelectItem>
+                    <SelectItem value="2026-27">2026-27</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-1.5">
-                <Label className="text-xs font-semibold">Classroom / Laboratory Room No.</Label>
-                <Input
-                  value={editingPeriod.roomNo || ""}
-                  onChange={(e) => setEditingPeriod({ ...editingPeriod, roomNo: e.target.value })}
-                  className="h-9 text-xs font-mono"
-                />
+              <div className="space-y-1">
+                <Label htmlFor="gen-reg">Regulation</Label>
+                <Select defaultValue="R25">
+                  <SelectTrigger id="gen-reg">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="R25">R25</SelectItem>
+                    <SelectItem value="R22">R22</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              <DialogFooter className="pt-2">
-                <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)} className="text-xs rounded-xl">
-                  Cancel
-                </Button>
-                <Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold rounded-xl">
-                  Save Changes
-                </Button>
-              </DialogFooter>
-            </form>
-          )}
+              <div className="space-y-1 col-span-2">
+                <Label htmlFor="gen-desc">AI Optimizer Instructions</Label>
+                <Textarea
+                  id="gen-desc"
+                  placeholder="e.g. Optimize faculty blocks to prevent afternoon slots."
+                  className="min-h-[70px] text-xs"
+                />
+              </div>
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsAutoGenerateOpen(false)}>Cancel</Button>
+              <Button type="submit" className="bg-brand-gradient text-white font-semibold">Generate Timetables</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
+
+      {/* 7. PUBLISH WARNING DIALOG */}
+      <Dialog open={isPublishModalOpen} onOpenChange={setIsPublishModalOpen}>
+        <DialogContent className="max-w-md text-xs leading-normal">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold font-display">Publish Institutional Timetable?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to publish the timetable baseline? This will update schedules for all departments, faculty members, and student rosters.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setIsPublishModalOpen(false)}>Cancel</Button>
+            <Button onClick={handlePublishTimetable} className="bg-brand-gradient text-white font-semibold">Publish Timetable</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

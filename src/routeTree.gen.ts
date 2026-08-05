@@ -11,24 +11,30 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AcademicCalendarRouteImport } from './routes/academic-calendar'
 import { Route as AcademicsRouteImport } from './routes/academics'
 import { Route as AccreditationRouteImport } from './routes/accreditation'
 import { Route as AdmissionRouteImport } from './routes/admission'
 import { Route as AiAnalyticsRouteImport } from './routes/ai-analytics'
 import { Route as AlumniRouteImport } from './routes/alumni'
+import { Route as ApprovalCenterRouteImport } from './routes/approval-center'
 import { Route as ApprovalWorkflowsRouteImport } from './routes/approval-workflows'
 import { Route as AttendanceRouteImport } from './routes/attendance'
+import { Route as AuditLogsRouteImport } from './routes/audit-logs'
 import { Route as CampusEventsRouteImport } from './routes/campus-events'
 import { Route as CommunicationRouteImport } from './routes/communication'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CurriculumManagementRouteImport } from './routes/curriculum-management'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DeanRouteImport } from './routes/dean'
+import { Route as DepartmentsRouteImport } from './routes/departments'
 import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as EmployeeManagementRouteImport } from './routes/employee-management'
 import { Route as ExaminationRouteImport } from './routes/examination'
 import { Route as ExaminationsRouteImport } from './routes/examinations'
 import { Route as ExternalUserRouteImport } from './routes/external-user'
 import { Route as FacultyRouteImport } from './routes/faculty'
+import { Route as FacultyManagementRouteImport } from './routes/faculty-management'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as FinanceRouteImport } from './routes/finance'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -48,12 +54,15 @@ import { Route as PlacementExamRouteImport } from './routes/placement-exam'
 import { Route as PlacementsRouteImport } from './routes/placements'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ProcurementRouteImport } from './routes/procurement'
+import { Route as PromotionsRouteImport } from './routes/promotions'
 import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as StudentsRouteImport } from './routes/students'
+import { Route as SubjectManagementRouteImport } from './routes/subject-management'
 import { Route as SuperAdminRouteImport } from './routes/super-admin'
 import { Route as TimetableRouteImport } from './routes/timetable'
 import { Route as TransportRouteImport } from './routes/transport'
@@ -192,6 +201,11 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AcademicCalendarRoute = AcademicCalendarRouteImport.update({
+  id: '/academic-calendar',
+  path: '/academic-calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AcademicsRoute = AcademicsRouteImport.update({
   id: '/academics',
   path: '/academics',
@@ -217,6 +231,11 @@ const AlumniRoute = AlumniRouteImport.update({
   path: '/alumni',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApprovalCenterRoute = ApprovalCenterRouteImport.update({
+  id: '/approval-center',
+  path: '/approval-center',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApprovalWorkflowsRoute = ApprovalWorkflowsRouteImport.update({
   id: '/approval-workflows',
   path: '/approval-workflows',
@@ -225,6 +244,11 @@ const ApprovalWorkflowsRoute = ApprovalWorkflowsRouteImport.update({
 const AttendanceRoute = AttendanceRouteImport.update({
   id: '/attendance',
   path: '/attendance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuditLogsRoute = AuditLogsRouteImport.update({
+  id: '/audit-logs',
+  path: '/audit-logs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CampusEventsRoute = CampusEventsRouteImport.update({
@@ -242,6 +266,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CurriculumManagementRoute = CurriculumManagementRouteImport.update({
+  id: '/curriculum-management',
+  path: '/curriculum-management',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -250,6 +279,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const DeanRoute = DeanRouteImport.update({
   id: '/dean',
   path: '/dean',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DepartmentsRoute = DepartmentsRouteImport.update({
+  id: '/departments',
+  path: '/departments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmergencyRoute = EmergencyRouteImport.update({
@@ -280,6 +314,11 @@ const ExternalUserRoute = ExternalUserRouteImport.update({
 const FacultyRoute = FacultyRouteImport.update({
   id: '/faculty',
   path: '/faculty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FacultyManagementRoute = FacultyManagementRouteImport.update({
+  id: '/faculty-management',
+  path: '/faculty-management',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeaturesRoute = FeaturesRouteImport.update({
@@ -377,9 +416,19 @@ const ProcurementRoute = ProcurementRouteImport.update({
   path: '/procurement',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PromotionsRoute = PromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportsRoute = ReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResultsRoute = ResultsRouteImport.update({
@@ -405,6 +454,11 @@ const StudentRoute = StudentRouteImport.update({
 const StudentsRoute = StudentsRouteImport.update({
   id: '/students',
   path: '/students',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubjectManagementRoute = SubjectManagementRouteImport.update({
+  id: '/subject-management',
+  path: '/subject-management',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SuperAdminRoute = SuperAdminRouteImport.update({
@@ -1062,24 +1116,30 @@ const SuperAdminAcademicsAttendanceMarkRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/academic-calendar': typeof AcademicCalendarRoute
   '/academics': typeof AcademicsRoute
   '/accreditation': typeof AccreditationRoute
   '/admission': typeof AdmissionRoute
   '/ai-analytics': typeof AiAnalyticsRouteWithChildren
   '/alumni': typeof AlumniRoute
+  '/approval-center': typeof ApprovalCenterRoute
   '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
+  '/audit-logs': typeof AuditLogsRoute
   '/campus-events': typeof CampusEventsRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
+  '/curriculum-management': typeof CurriculumManagementRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dean': typeof DeanRouteWithChildren
+  '/departments': typeof DepartmentsRoute
   '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
   '/examination': typeof ExaminationRouteWithChildren
   '/examinations': typeof ExaminationsRoute
   '/external-user': typeof ExternalUserRouteWithChildren
   '/faculty': typeof FacultyRouteWithChildren
+  '/faculty-management': typeof FacultyManagementRoute
   '/features': typeof FeaturesRoute
   '/finance': typeof FinanceRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
@@ -1099,12 +1159,15 @@ export interface FileRoutesByFullPath {
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
+  '/promotions': typeof PromotionsRoute
   '/reports': typeof ReportsRoute
+  '/resources': typeof ResourcesRoute
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/student': typeof StudentRouteWithChildren
   '/students': typeof StudentsRoute
+  '/subject-management': typeof SubjectManagementRoute
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
@@ -1236,19 +1299,25 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/academic-calendar': typeof AcademicCalendarRoute
   '/academics': typeof AcademicsRoute
   '/accreditation': typeof AccreditationRoute
   '/admission': typeof AdmissionRoute
   '/alumni': typeof AlumniRoute
+  '/approval-center': typeof ApprovalCenterRoute
   '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
+  '/audit-logs': typeof AuditLogsRoute
   '/campus-events': typeof CampusEventsRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
+  '/curriculum-management': typeof CurriculumManagementRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/departments': typeof DepartmentsRoute
   '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
   '/examinations': typeof ExaminationsRoute
+  '/faculty-management': typeof FacultyManagementRoute
   '/features': typeof FeaturesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/grievance': typeof GrievanceRoute
@@ -1261,11 +1330,14 @@ export interface FileRoutesByTo {
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
+  '/promotions': typeof PromotionsRoute
   '/reports': typeof ReportsRoute
+  '/resources': typeof ResourcesRoute
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/students': typeof StudentsRoute
+  '/subject-management': typeof SubjectManagementRoute
   '/timetable': typeof TimetableRoute
   '/verify-email': typeof VerifyEmailRoute
   '/ai-analytics/attendance-prediction': typeof AiAnalyticsAttendancePredictionRoute
@@ -1396,24 +1468,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/academic-calendar': typeof AcademicCalendarRoute
   '/academics': typeof AcademicsRoute
   '/accreditation': typeof AccreditationRoute
   '/admission': typeof AdmissionRoute
   '/ai-analytics': typeof AiAnalyticsRouteWithChildren
   '/alumni': typeof AlumniRoute
+  '/approval-center': typeof ApprovalCenterRoute
   '/approval-workflows': typeof ApprovalWorkflowsRoute
   '/attendance': typeof AttendanceRoute
+  '/audit-logs': typeof AuditLogsRoute
   '/campus-events': typeof CampusEventsRoute
   '/communication': typeof CommunicationRoute
   '/contact': typeof ContactRoute
+  '/curriculum-management': typeof CurriculumManagementRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dean': typeof DeanRouteWithChildren
+  '/departments': typeof DepartmentsRoute
   '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
   '/examination': typeof ExaminationRouteWithChildren
   '/examinations': typeof ExaminationsRoute
   '/external-user': typeof ExternalUserRouteWithChildren
   '/faculty': typeof FacultyRouteWithChildren
+  '/faculty-management': typeof FacultyManagementRoute
   '/features': typeof FeaturesRoute
   '/finance': typeof FinanceRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
@@ -1433,12 +1511,15 @@ export interface FileRoutesById {
   '/placements': typeof PlacementsRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
+  '/promotions': typeof PromotionsRoute
   '/reports': typeof ReportsRoute
+  '/resources': typeof ResourcesRoute
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/student': typeof StudentRouteWithChildren
   '/students': typeof StudentsRoute
+  '/subject-management': typeof SubjectManagementRoute
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/timetable': typeof TimetableRoute
   '/transport': typeof TransportRouteWithChildren
@@ -1572,24 +1653,30 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/academic-calendar'
     | '/academics'
     | '/accreditation'
     | '/admission'
     | '/ai-analytics'
     | '/alumni'
+    | '/approval-center'
     | '/approval-workflows'
     | '/attendance'
+    | '/audit-logs'
     | '/campus-events'
     | '/communication'
     | '/contact'
+    | '/curriculum-management'
     | '/dashboard'
     | '/dean'
+    | '/departments'
     | '/emergency'
     | '/employee-management'
     | '/examination'
     | '/examinations'
     | '/external-user'
     | '/faculty'
+    | '/faculty-management'
     | '/features'
     | '/finance'
     | '/forgot-password'
@@ -1609,12 +1696,15 @@ export interface FileRouteTypes {
     | '/placements'
     | '/pricing'
     | '/procurement'
+    | '/promotions'
     | '/reports'
+    | '/resources'
     | '/results'
     | '/settings'
     | '/signup'
     | '/student'
     | '/students'
+    | '/subject-management'
     | '/super-admin'
     | '/timetable'
     | '/transport'
@@ -1746,19 +1836,25 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/academic-calendar'
     | '/academics'
     | '/accreditation'
     | '/admission'
     | '/alumni'
+    | '/approval-center'
     | '/approval-workflows'
     | '/attendance'
+    | '/audit-logs'
     | '/campus-events'
     | '/communication'
     | '/contact'
+    | '/curriculum-management'
     | '/dashboard'
+    | '/departments'
     | '/emergency'
     | '/employee-management'
     | '/examinations'
+    | '/faculty-management'
     | '/features'
     | '/forgot-password'
     | '/grievance'
@@ -1771,11 +1867,14 @@ export interface FileRouteTypes {
     | '/placements'
     | '/pricing'
     | '/procurement'
+    | '/promotions'
     | '/reports'
+    | '/resources'
     | '/results'
     | '/settings'
     | '/signup'
     | '/students'
+    | '/subject-management'
     | '/timetable'
     | '/verify-email'
     | '/ai-analytics/attendance-prediction'
@@ -1905,24 +2004,30 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/academic-calendar'
     | '/academics'
     | '/accreditation'
     | '/admission'
     | '/ai-analytics'
     | '/alumni'
+    | '/approval-center'
     | '/approval-workflows'
     | '/attendance'
+    | '/audit-logs'
     | '/campus-events'
     | '/communication'
     | '/contact'
+    | '/curriculum-management'
     | '/dashboard'
     | '/dean'
+    | '/departments'
     | '/emergency'
     | '/employee-management'
     | '/examination'
     | '/examinations'
     | '/external-user'
     | '/faculty'
+    | '/faculty-management'
     | '/features'
     | '/finance'
     | '/forgot-password'
@@ -1942,12 +2047,15 @@ export interface FileRouteTypes {
     | '/placements'
     | '/pricing'
     | '/procurement'
+    | '/promotions'
     | '/reports'
+    | '/resources'
     | '/results'
     | '/settings'
     | '/signup'
     | '/student'
     | '/students'
+    | '/subject-management'
     | '/super-admin'
     | '/timetable'
     | '/transport'
@@ -2080,24 +2188,30 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AcademicCalendarRoute: typeof AcademicCalendarRoute
   AcademicsRoute: typeof AcademicsRoute
   AccreditationRoute: typeof AccreditationRoute
   AdmissionRoute: typeof AdmissionRoute
   AiAnalyticsRoute: typeof AiAnalyticsRouteWithChildren
   AlumniRoute: typeof AlumniRoute
+  ApprovalCenterRoute: typeof ApprovalCenterRoute
   ApprovalWorkflowsRoute: typeof ApprovalWorkflowsRoute
   AttendanceRoute: typeof AttendanceRoute
+  AuditLogsRoute: typeof AuditLogsRoute
   CampusEventsRoute: typeof CampusEventsRoute
   CommunicationRoute: typeof CommunicationRoute
   ContactRoute: typeof ContactRoute
+  CurriculumManagementRoute: typeof CurriculumManagementRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   DeanRoute: typeof DeanRouteWithChildren
+  DepartmentsRoute: typeof DepartmentsRoute
   EmergencyRoute: typeof EmergencyRoute
   EmployeeManagementRoute: typeof EmployeeManagementRoute
   ExaminationRoute: typeof ExaminationRouteWithChildren
   ExaminationsRoute: typeof ExaminationsRoute
   ExternalUserRoute: typeof ExternalUserRouteWithChildren
   FacultyRoute: typeof FacultyRouteWithChildren
+  FacultyManagementRoute: typeof FacultyManagementRoute
   FeaturesRoute: typeof FeaturesRoute
   FinanceRoute: typeof FinanceRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -2117,12 +2231,15 @@ export interface RootRouteChildren {
   PlacementsRoute: typeof PlacementsRoute
   PricingRoute: typeof PricingRoute
   ProcurementRoute: typeof ProcurementRoute
+  PromotionsRoute: typeof PromotionsRoute
   ReportsRoute: typeof ReportsRoute
+  ResourcesRoute: typeof ResourcesRoute
   ResultsRoute: typeof ResultsRoute
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   StudentRoute: typeof StudentRouteWithChildren
   StudentsRoute: typeof StudentsRoute
+  SubjectManagementRoute: typeof SubjectManagementRoute
   SuperAdminRoute: typeof SuperAdminRouteWithChildren
   TimetableRoute: typeof TimetableRoute
   TransportRoute: typeof TransportRouteWithChildren
@@ -2144,6 +2261,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/academic-calendar': {
+      id: '/academic-calendar'
+      path: '/academic-calendar'
+      fullPath: '/academic-calendar'
+      preLoaderRoute: typeof AcademicCalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/academics': {
@@ -2181,6 +2305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlumniRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/approval-center': {
+      id: '/approval-center'
+      path: '/approval-center'
+      fullPath: '/approval-center'
+      preLoaderRoute: typeof ApprovalCenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/approval-workflows': {
       id: '/approval-workflows'
       path: '/approval-workflows'
@@ -2193,6 +2324,13 @@ declare module '@tanstack/react-router' {
       path: '/attendance'
       fullPath: '/attendance'
       preLoaderRoute: typeof AttendanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/audit-logs': {
+      id: '/audit-logs'
+      path: '/audit-logs'
+      fullPath: '/audit-logs'
+      preLoaderRoute: typeof AuditLogsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/campus-events': {
@@ -2216,6 +2354,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/curriculum-management': {
+      id: '/curriculum-management'
+      path: '/curriculum-management'
+      fullPath: '/curriculum-management'
+      preLoaderRoute: typeof CurriculumManagementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -2228,6 +2373,13 @@ declare module '@tanstack/react-router' {
       path: '/dean'
       fullPath: '/dean'
       preLoaderRoute: typeof DeanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/departments': {
+      id: '/departments'
+      path: '/departments'
+      fullPath: '/departments'
+      preLoaderRoute: typeof DepartmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/emergency': {
@@ -2270,6 +2422,13 @@ declare module '@tanstack/react-router' {
       path: '/faculty'
       fullPath: '/faculty'
       preLoaderRoute: typeof FacultyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faculty-management': {
+      id: '/faculty-management'
+      path: '/faculty-management'
+      fullPath: '/faculty-management'
+      preLoaderRoute: typeof FacultyManagementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/features': {
@@ -2405,11 +2564,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProcurementRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/promotions': {
+      id: '/promotions'
+      path: '/promotions'
+      fullPath: '/promotions'
+      preLoaderRoute: typeof PromotionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reports': {
       id: '/reports'
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/results': {
@@ -2445,6 +2618,13 @@ declare module '@tanstack/react-router' {
       path: '/students'
       fullPath: '/students'
       preLoaderRoute: typeof StudentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/subject-management': {
+      id: '/subject-management'
+      path: '/subject-management'
+      fullPath: '/subject-management'
+      preLoaderRoute: typeof SubjectManagementRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/super-admin': {
@@ -3746,24 +3926,30 @@ const TransportRouteWithChildren = TransportRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AcademicCalendarRoute: AcademicCalendarRoute,
   AcademicsRoute: AcademicsRoute,
   AccreditationRoute: AccreditationRoute,
   AdmissionRoute: AdmissionRoute,
   AiAnalyticsRoute: AiAnalyticsRouteWithChildren,
   AlumniRoute: AlumniRoute,
+  ApprovalCenterRoute: ApprovalCenterRoute,
   ApprovalWorkflowsRoute: ApprovalWorkflowsRoute,
   AttendanceRoute: AttendanceRoute,
+  AuditLogsRoute: AuditLogsRoute,
   CampusEventsRoute: CampusEventsRoute,
   CommunicationRoute: CommunicationRoute,
   ContactRoute: ContactRoute,
+  CurriculumManagementRoute: CurriculumManagementRoute,
   DashboardRoute: DashboardRouteWithChildren,
   DeanRoute: DeanRouteWithChildren,
+  DepartmentsRoute: DepartmentsRoute,
   EmergencyRoute: EmergencyRoute,
   EmployeeManagementRoute: EmployeeManagementRoute,
   ExaminationRoute: ExaminationRouteWithChildren,
   ExaminationsRoute: ExaminationsRoute,
   ExternalUserRoute: ExternalUserRouteWithChildren,
   FacultyRoute: FacultyRouteWithChildren,
+  FacultyManagementRoute: FacultyManagementRoute,
   FeaturesRoute: FeaturesRoute,
   FinanceRoute: FinanceRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
@@ -3783,12 +3969,15 @@ const rootRouteChildren: RootRouteChildren = {
   PlacementsRoute: PlacementsRoute,
   PricingRoute: PricingRoute,
   ProcurementRoute: ProcurementRoute,
+  PromotionsRoute: PromotionsRoute,
   ReportsRoute: ReportsRoute,
+  ResourcesRoute: ResourcesRoute,
   ResultsRoute: ResultsRoute,
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   StudentRoute: StudentRouteWithChildren,
   StudentsRoute: StudentsRoute,
+  SubjectManagementRoute: SubjectManagementRoute,
   SuperAdminRoute: SuperAdminRouteWithChildren,
   TimetableRoute: TimetableRoute,
   TransportRoute: TransportRouteWithChildren,

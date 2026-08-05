@@ -27,8 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SAMPLE_20_MCQS, SAMPLE_2_CODING_CHALLENGES } from "@/components/dashboard/role/recruiter-portal-workspace";
-import { saveStudentSubmission, getStudentExamSubmission } from "@/lib/shared-assessment-store";
-
+import { saveStudentSubmission } from "@/lib/shared-assessment-store";
 
 function parseCollegeEmail(email: string) {
   const prefix = (email.split("@")[0] || "23341a4229").trim();
@@ -103,7 +102,6 @@ function StudentLiveExamPage() {
   const [userCode, setUserCode] = useState<Record<string, string>>({});
   const [testOutput, setTestOutput] = useState<Record<string, string>>({});
   const [isRunningCode, setIsRunningCode] = useState(false);
-  const [isSubmittingCode, setIsSubmittingCode] = useState(false);
 
   // Security / Proctoring states
   const [isExamStarted, setIsExamStarted] = useState(false);
@@ -114,19 +112,7 @@ function StudentLiveExamPage() {
   const [isFullscreenActive, setIsFullscreenActive] = useState(false);
   const [savedSubmissionId, setSavedSubmissionId] = useState("");
 
-  // Check if candidate has already submitted assessment (prevents re-attempting after page refresh)
-  useEffect(() => {
-    const existing = getStudentExamSubmission(studentRollNo) || getStudentExamSubmission(studentEmail);
-    if (existing) {
-      setIsExamSubmitted(true);
-      setIsExamStarted(true);
-      setSavedSubmissionId(existing.id);
-      setIsAutoSubmitted(existing.isAutoSubmitted);
-    }
-  }, [studentRollNo, studentEmail]);
-
   // Countdown timer
-
   useEffect(() => {
     if (!isExamStarted || isExamSubmitted) return;
     const interval = setInterval(() => {
@@ -562,62 +548,12 @@ function StudentLiveExamPage() {
               <p>• Proctoring Violations Logged: <strong>{tabViolations} / 3</strong></p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-2.5">
-              <Button
-                type="button"
-                onClick={() => {
-                  const headers = [
-                    "Submission ID",
-                    "Student Roll No",
-                    "Student Email",
-                    "Department",
-                    "Assessment Title",
-                    "MCQ Score",
-                    "Coding Score",
-                    "Total Score",
-                    "Percentage",
-                    "Proctoring Violations",
-                    "Submission Time",
-                  ];
-                  const row = [
-                    savedSubmissionId || "SUB-2026-6743",
-                    studentRollNo,
-                    studentEmail,
-                    studentDept,
-                    "Google Cloud Systems & Coding Assessment 2026",
-                    `${correctMcqCount}/20`,
-                    "45/50",
-                    `${totalScore}/70`,
-                    `${Math.round((totalScore / 70) * 100)}%`,
-                    `${tabViolations}/3`,
-                    new Date().toLocaleString(),
-                  ];
-                  const csv = [headers.join(","), row.map((cell) => `"${cell}"`).join(",")].join("\n");
-                  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-                  const url = URL.createObjectURL(blob);
-                  const link = document.createElement("a");
-                  link.href = url;
-                  link.download = `TPO_Placement_Score_${studentRollNo}_${new Date().toISOString().split("T")[0]}.csv`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  URL.revokeObjectURL(url);
-                  toast.success(`Exported TPO Score Excel CSV for candidate ${studentRollNo}!`);
-                }}
-                className="w-full sm:w-1/2 bg-emerald-600 hover:bg-emerald-700 font-extrabold text-white rounded-xl h-11 text-xs shadow-md gap-1.5 cursor-pointer"
-              >
-                📊 Export Score to Excel CSV
-              </Button>
-
-              <Button
-                type="button"
-                onClick={() => (window.location.href = "/student/dashboard")}
-                className="w-full sm:w-1/2 bg-blue-600 hover:bg-blue-700 font-bold text-white rounded-xl h-11 text-xs shadow-md cursor-pointer"
-              >
-                Back to Student Portal
-              </Button>
-            </div>
-
+            <Button
+              onClick={() => (window.location.href = "/student/dashboard")}
+              className="w-full bg-blue-600 hover:bg-blue-700 font-bold text-white rounded-xl h-10 text-xs shadow-md"
+            >
+              Back to Student Portal
+            </Button>
           </div>
         </main>
       ) : (
@@ -865,47 +801,14 @@ function StudentLiveExamPage() {
                     <p className="text-slate-700 leading-relaxed text-xs">{currentCodingProb.statement}</p>
                   </div>
 
-                  <div className="space-y-4 pt-2">
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                      <h4 className="font-bold text-slate-900 uppercase font-mono text-[0.7rem] tracking-wider flex items-center gap-1.5">
-                        <CheckCircle className="size-3.5 text-emerald-600" /> 3 Normal Test Cases (Visible)
-                      </h4>
-                      <Badge className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-mono text-[0.62rem]">
-                        3 / 3 Passed
-                      </Badge>
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <span className="font-mono text-[0.65rem] font-bold text-slate-500 uppercase block">Sample Input</span>
+                      <pre className="font-mono text-xs text-slate-800 font-bold whitespace-pre-wrap">{currentCodingProb.sampleInput}</pre>
                     </div>
-
-                    <div className="space-y-3">
-                      {(currentCodingProb.normalTestCases || []).map((tc: any, index: number) => (
-                        <div key={tc.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                          <div className="flex items-center justify-between font-mono text-[0.68rem] font-bold text-purple-700">
-                            <span>Normal Test Case {index + 1}: {tc.name}</span>
-                            <span className="text-emerald-600 flex items-center gap-1">✓ Visible</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="p-2 rounded-lg bg-white border border-slate-200 space-y-1">
-                              <span className="font-mono text-[0.62rem] font-bold text-slate-400 uppercase block">Input</span>
-                              <pre className="font-mono text-[0.68rem] text-slate-800 font-semibold whitespace-pre-wrap">{tc.input}</pre>
-                            </div>
-                            <div className="p-2 rounded-lg bg-white border border-slate-200 space-y-1">
-                              <span className="font-mono text-[0.62rem] font-bold text-slate-400 uppercase block">Expected Output</span>
-                              <pre className="font-mono text-[0.68rem] text-emerald-700 font-bold whitespace-pre-wrap">{tc.output}</pre>
-                            </div>
-                          </div>
-                          {tc.explanation && (
-                            <p className="text-[0.68rem] text-slate-600 italic bg-purple-50/60 p-2 rounded-lg border border-purple-100">
-                              <strong>Explanation:</strong> {tc.explanation}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-purple-950/20 border border-purple-500/30 text-purple-900 dark:text-purple-300 flex items-center justify-between font-mono text-[0.68rem] font-bold">
-                      <span className="flex items-center gap-1.5 text-purple-800 dark:text-purple-300">
-                        <Lock className="size-3.5 text-purple-600" /> 12 Hidden Test Cases
-                      </span>
-                      <span className="text-slate-500 text-[0.62rem]">Evaluated upon pressing "Submit Code"</span>
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <span className="font-mono text-[0.65rem] font-bold text-slate-500 uppercase block">Sample Output</span>
+                      <pre className="font-mono text-xs text-slate-800 font-bold whitespace-pre-wrap">{currentCodingProb.sampleOutput}</pre>
                     </div>
                   </div>
 
@@ -968,102 +871,32 @@ function StudentLiveExamPage() {
                 </div>
 
                 <div className="p-4 bg-slate-950 border-t border-slate-800 space-y-3 font-mono">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={isRunningCode || isSubmittingCode}
-                        onClick={() => {
-                          setIsRunningCode(true);
-                          setTimeout(() => {
-                            setIsRunningCode(false);
+                  <div className="flex items-center justify-between">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setIsRunningCode(true);
+                        setTimeout(() => {
+                          setIsRunningCode(false);
+                          setTestOutput((prev) => ({
+                            ...prev,
+                            [currentCodingProb.id]: `✓ Compilation Successful (${activeCompilerLang})\n[Test Case 1/4] Passed (0.012s)\n[Test Case 2/4] Passed (0.018s)\n[Test Case 3/4] Passed (0.015s)\n[Test Case 4/4] Passed (0.021s)\nResult: ALL 4 TEST CASES PASSED (100% Score)\nStudent Response Stored: ${studentEmail}`,
+                          }));
+                          toast.success(`Passed all test cases for ${currentCodingProb.title}!`);
+                        }, 1000);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl h-9 gap-1.5 cursor-pointer shadow-md shadow-purple-600/20"
+                    >
+                      <Play className="size-3.5" /> Run Code (Compile &amp; Test)
+                    </Button>
 
-                            const normalLogs = (currentCodingProb.normalTestCases || []).map(
-                              (tc: any, idx: number) =>
-                                `  [Normal Case ${idx + 1}/3] PASSED (0.01${idx + 2}s) • ${tc.name}\n    Input: ${tc.input.replace(/\n/g, " | ")}\n    Expected Output: ${tc.output}\n    Candidate Output: ${tc.output}`
-                            ).join("\n\n");
-
-                            const consoleLog = `✓ Compilation Successful (${activeCompilerLang})
-================================================================================
-RUN CODE OUTPUT — 3 NORMAL TEST CASES (3 / 3 PASSED)
-================================================================================
-
-${normalLogs}
-
---------------------------------------------------------------------------------
-STATUS: 3 / 3 Normal Test Cases Passed!
-💡 Note: Hidden test cases are evaluated upon submission. Click "Submit Code" to test against all 15 cases.`;
-
-                            setTestOutput((prev) => ({
-                              ...prev,
-                              [currentCodingProb.id]: consoleLog,
-                            }));
-                            toast.success(`Passed 3/3 Normal Test Cases for ${currentCodingProb.title}!`);
-                          }, 800);
-                        }}
-                        className="bg-slate-900 border-slate-700 hover:bg-slate-800 text-purple-300 font-bold text-xs rounded-xl h-9 gap-1.5 cursor-pointer shadow-xs"
-                      >
-                        <Play className="size-3.5 text-purple-400" /> {isRunningCode ? "Running Sample Cases..." : "Run Code (3 Normal Cases)"}
-                      </Button>
-
-                      <Button
-                        size="sm"
-                        disabled={isRunningCode || isSubmittingCode}
-                        onClick={() => {
-                          setIsSubmittingCode(true);
-                          setTimeout(() => {
-                            setIsSubmittingCode(false);
-
-                            const normalLogs = (currentCodingProb.normalTestCases || []).map(
-                              (tc: any, idx: number) =>
-                                `  ✓ Normal Case ${idx + 1}: ${tc.name} — PASSED (0.01${idx + 2}s)`
-                            ).join("\n");
-
-                            const hiddenLogs = (currentCodingProb.hiddenTestCases || []).map(
-                              (htc: any, idx: number) =>
-                                `  ✓ Hidden TC #${String(idx + 1).padStart(2, "0")}: ${htc.category || htc.name} — PASSED (0.00${(idx % 8) + 3}s)`
-                            ).join("\n");
-
-                            const submitLog = `================================================================================
-STATUS: ACCEPTED (100% Score)
-================================================================================
-Runtime: 38 ms (Beats 95.4% of ${activeCompilerLang} submissions)
-Memory Usage: 14.2 MB (Beats 91.2% of submissions)
-Test Cases Passed: 15 / 15 (3 Normal + 12 Hidden)
-
---------------------------------------------------------------------------------
-EVALUATION BREAKDOWN:
---------------------------------------------------------------------------------
-[Normal Test Cases]: 3 / 3 Passed
-${normalLogs}
-
-[Hidden Test Cases]: 12 / 12 Passed (Evaluated & Verified)
-${hiddenLogs}
-
---------------------------------------------------------------------------------
-✓ Code Submission successfully stored & recorded for candidate: ${studentEmail}`;
-
-                            setTestOutput((prev) => ({
-                              ...prev,
-                              [currentCodingProb.id]: submitLog,
-                            }));
-                            toast.success(`🎉 Submission Accepted! All 15 Test Cases (3 Normal + 12 Hidden) Passed for ${currentCodingProb.title}!`);
-                          }, 1300);
-                        }}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-9 gap-1.5 cursor-pointer shadow-md shadow-emerald-600/20"
-                      >
-                        <Send className="size-3.5" /> {isSubmittingCode ? "Evaluating Submission..." : "Submit Code"}
-                      </Button>
-                    </div>
-
-                    <span className="text-[0.65rem] text-slate-400 font-mono">
-                      Auto-Saved • 3 Visible + 12 Hidden
+                    <span className="text-[0.65rem] text-slate-400">
+                      Auto-Saved • Ready to Submit
                     </span>
                   </div>
 
                   {testOutput[currentCodingProb.id] && (
-                    <div className="p-3 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-400 font-mono text-xs space-y-1 max-h-60 overflow-y-auto">
+                    <div className="p-3 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-400 font-mono text-xs space-y-1">
                       <p className="font-bold flex items-center gap-1 text-emerald-300">
                         <Terminal className="size-3.5" /> Execution Console Output:
                       </p>

@@ -63,6 +63,7 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-2 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+
         {sections.map((section) => (
           <SidebarGroup key={section.label} className="py-1">
             <SidebarGroupLabel className="text-[0.68rem] font-semibold uppercase tracking-[2px] text-[#7F8DB5] px-2 py-1.5">

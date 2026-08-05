@@ -168,7 +168,7 @@ export async function createExamSchedule(data: Partial<ExamSchedule>): Promise<E
   return {
     id: `EXM-${Math.floor(104 + Math.random() * 900)}`,
     examCode: data.examCode || "REG-APR-2026",
-    subjectCode: data.subjectCode || "CS405",
+    subjectCode: data.subjectCode ?? "CS405",
     subjectName: data.subjectName || "Cloud Computing",
     department: data.department || "CSE",
     semester: data.semester || "Semester 7",
@@ -195,6 +195,6 @@ export async function publishResultRecord(data: Partial<StudentResultRecord>): P
     totalCredits: 140,
     resultStatus: "Passed (Distinction)",
     backlogCount: 0,
-    publishedDate: new Date().toISOString().split("T")[0],
+    publishedDate: new Date().toISOString().split("T")[0] || "",
   };
 }

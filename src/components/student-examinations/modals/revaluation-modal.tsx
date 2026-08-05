@@ -88,7 +88,7 @@ export function RevaluationModal({
                 setSelectedSem(sem);
                 const res = semesterResults.find((r) => r.semester === sem);
                 if (res && res.subjects.length > 0) {
-                  setSelectedSubjectCode(res.subjects[0].code);
+                  setSelectedSubjectCode(res.subjects[0]?.code ?? "");
                 }
               }}
               className="w-full h-9 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-semibold text-xs"

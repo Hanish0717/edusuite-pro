@@ -8,6 +8,7 @@ import {
   ClipboardCheck,
   CalendarRange,
   BookOpen,
+  Layers,
   FileSpreadsheet,
   Award,
   Library,
@@ -117,6 +118,7 @@ export const navigation: NavSection[] = [
     label: "Menu",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Approval Center", url: "/approval-center", icon: GitBranch, badge: "Inbox" },
       { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
       { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
       { title: "Emergency Broadcast", url: "/emergency", icon: Siren, roles: ["super-admin", "staff"], badge: "Instant" },
@@ -206,8 +208,18 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/approval-workflows",
       "/emergency",
       "/super-admin/emergency",
+
+      "/approval-center",
+      "/reports",
+      "/academic-calendar",
+      "/promotions",
+      "/resources",
+      "/communication",
+      "/audit-logs",
+      "/settings",
     ].includes(url)
   ) {
+
     return url;
   }
 
@@ -343,10 +355,40 @@ export const RECRUITER_NAVIGATION: NavSection[] = [
   },
 ];
 
+export const ACADEMIC_MANAGEMENT_NAVIGATION: NavSection[] = [
+  {
+    label: "Academic Management",
+    items: [
+      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Approval Center", url: "/approval-center", icon: GitBranch, badge: "Inbox" },
+      { title: "Departments", url: "/departments", icon: Building2 },
+      { title: "Faculty", url: "/faculty-management", icon: UserCog },
+      { title: "Subjects", url: "/subject-management", icon: BookOpen },
+      { title: "Curriculum", url: "/curriculum-management", icon: Layers },
+      { title: "Timetable", url: "/timetable", icon: CalendarRange },
+      { title: "Classrooms & Labs", url: "/resources", icon: Building2 },
+      { title: "Academic Calendar", url: "/academic-calendar", icon: CalendarCheck },
+      { title: "Attendance", url: "/attendance", icon: CalendarCheck },
+      { title: "Examinations", url: "/examinations", icon: FileSpreadsheet },
+      { title: "Results", url: "/results", icon: Award },
+      { title: "Promotions & Graduation", url: "/promotions", icon: GraduationCap },
+      { title: "Reports", url: "/reports", icon: BarChart3 },
+      { title: "Notifications", url: "/communication", icon: Bell, badge: "New" },
+      { title: "Audit Logs", url: "/audit-logs", icon: ShieldCheck },
+      { title: "Settings", url: "/settings", icon: Settings },
+    ],
+  },
+];
+
 export function navigationForUser(user: UserPermissionContext): NavSection[] {
   // Student Portal Navigation
   if (user.role === "student") {
     return studentNavigation;
+  }
+
+  // Academic Management Portal Navigation
+  if (user.role === "academic_management" || user.flags.includes("isAcademicManagement")) {
+    return ACADEMIC_MANAGEMENT_NAVIGATION;
   }
 
   // Placement Officer specific navigation menu

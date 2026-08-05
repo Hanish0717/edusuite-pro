@@ -1,10 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { ReportsModuleView } from "@/modules/reports";
+import { AcademicReportsModuleView } from "@/modules/reports";
 
 export const Route = createFileRoute("/reports")({
   head: () => ({
-    meta: [{ title: "Institutional Reports — EduSuite Pro" }],
+    meta: [
+      { title: "Academic Reports & Analytics — EduSuite Pro" },
+      {
+        name: "description",
+        content: "Institutional academic performance analysis, custom report builder, and compliance reports.",
+      },
+    ],
   }),
   component: ReportsPage,
 });
@@ -12,7 +18,7 @@ export const Route = createFileRoute("/reports")({
 export function ReportsPage() {
   return (
     <DashboardLayout>
-      <ReportsModuleView />
+      <AcademicReportsModuleView />
     </DashboardLayout>
   );
 }

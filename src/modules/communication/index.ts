@@ -1,2 +1,2 @@
-export * from "./CommunicationService";
-export * from "./CommunicationComponents";
+export * from "./CommunicationCenterComponents";
+export { CommunicationCenterModuleView as default } from "./CommunicationCenterComponents";
