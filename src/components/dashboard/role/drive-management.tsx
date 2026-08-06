@@ -265,6 +265,10 @@ const DRIVE_CALENDAR_EVENTS = [
   { date: "Aug 20, 2026", title: "Google Cloud Offer Letter Distribution", type: "Offers", color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
 ];
 
+export function DriveManagementWorkspace(props: any) {
+  return <PlacementDriveWorkspace {...props} />;
+}
+
 export function PlacementDriveWorkspace() {
   const [drives, setDrives] = useState<PlacementDrive[]>(INITIAL_DRIVES);
   const [searchQuery, setSearchQuery] = useState("");
@@ -713,3 +717,4 @@ export function PlacementDriveWorkspace() {
 }
 
 export { PlacementDriveWorkspace as DriveManagementWorkspace };
+export default PlacementDriveWorkspace;
