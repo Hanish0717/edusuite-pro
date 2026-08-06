@@ -716,5 +716,4 @@ export function PlacementDriveWorkspace() {
   );
 }
 
-export { PlacementDriveWorkspace as DriveManagementWorkspace };
 export default PlacementDriveWorkspace;
