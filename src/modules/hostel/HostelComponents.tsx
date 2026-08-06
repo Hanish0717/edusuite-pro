@@ -1176,8 +1176,75 @@ export function HostelModuleView() {
         </div>
       )}
 
-<<<<<<< HEAD
-      {/* TAB 4: MESS PREPARATION DASHBOARD */}
+      {/* TAB 4: HOSTEL ANALYTICS & REPORTS */}
+      {activeTab === "analytics" && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
+            <div>
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <BarChart3 className="size-4 text-primary" /> Executive Hostel Analytics & Institutional Reports
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Comprehensive analytics on occupancy trends, revenue, maintenance costs, and mess utilization.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={handleExportPDF} className="h-9 gap-1.5 text-xs font-semibold">
+                <FileText className="size-3.5 text-destructive" /> Export PDF
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleExportExcel} className="h-9 gap-1.5 text-xs font-semibold">
+                <FileSpreadsheet className="size-3.5 text-emerald-600" /> Export Excel
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 text-center">
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Hostel Revenue</span>
+              <span className="text-lg font-bold font-mono text-emerald-600">{analytics.hostelRevenue}</span>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Maintenance Cost</span>
+              <span className="text-lg font-bold font-mono text-amber-600">{analytics.maintenanceCost}</span>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Mess Utilization</span>
+              <span className="text-lg font-bold font-mono text-primary">{analytics.messUtilization}</span>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Satisfaction Score</span>
+              <span className="text-lg font-bold font-mono text-emerald-600">{analytics.studentSatisfaction}</span>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Complaint Trend</span>
+              <span className="text-lg font-bold font-mono text-blue-600">{analytics.complaintTrend}</span>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Inspection Status</span>
+              <span className="text-lg font-bold font-mono text-emerald-600">{analytics.inspectionReports}</span>
+            </div>
+          </div>
+
+          {/* MONTHLY OCCUPANCY TREND BARS */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Monthly Occupancy Trend (2026)</h4>
+            <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 text-center">
+              {analytics.monthlyOccupancyTrend.map((m) => (
+                <div key={m.month} className="p-2.5 rounded-xl bg-muted/30 border border-border/60 space-y-1">
+                  <span className="text-xs font-bold font-mono text-foreground block">{m.month}</span>
+                  <span className="text-sm font-bold font-mono text-primary">{m.occupancyPct}%</span>
+                  <Progress value={m.occupancyPct} className="h-1.5 bg-muted" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: MESS PREPARATION DASHBOARD */}
       {activeTab === "mess" && (
         <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-6 shadow-sm">
           {/* Dashboard Header */}
@@ -1234,29 +1301,10 @@ export function HostelModuleView() {
                 className="h-8 text-xs font-medium gap-1.5"
               >
                 <FileDown className="size-3.5 text-purple-500" /> Monthly Report
-=======
-      {/* TAB 4: HOSTEL ANALYTICS & REPORTS */}
-      {activeTab === "analytics" && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
-            <div>
-              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <BarChart3 className="size-4 text-primary" /> Executive Hostel Analytics & Institutional Reports
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Comprehensive analytics on occupancy trends, revenue, maintenance costs, and mess utilization.</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={handleExportPDF} className="h-9 gap-1.5 text-xs font-semibold">
-                <FileText className="size-3.5 text-destructive" /> Export PDF
-              </Button>
-              <Button size="sm" variant="outline" onClick={handleExportExcel} className="h-9 gap-1.5 text-xs font-semibold">
-                <FileSpreadsheet className="size-3.5 text-emerald-600" /> Export Excel
->>>>>>> origin/main
               </Button>
             </div>
           </div>
 
-<<<<<<< HEAD
           {/* Meal Forecasting Cards (Breakfast, Lunch, Snacks, Dinner) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {(["Breakfast", "Lunch", "Snacks", "Dinner"] as MealType[]).map((meal) => {
@@ -1351,60 +1399,11 @@ export function HostelModuleView() {
                     ))}
                 </tbody>
               </table>
-=======
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 text-center">
-            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Hostel Revenue</span>
-              <span className="text-lg font-bold font-mono text-emerald-600">{analytics.hostelRevenue}</span>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Maintenance Cost</span>
-              <span className="text-lg font-bold font-mono text-amber-600">{analytics.maintenanceCost}</span>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Mess Utilization</span>
-              <span className="text-lg font-bold font-mono text-primary">{analytics.messUtilization}</span>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Satisfaction Score</span>
-              <span className="text-lg font-bold font-mono text-emerald-600">{analytics.studentSatisfaction}</span>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Complaint Trend</span>
-              <span className="text-lg font-bold font-mono text-blue-600">{analytics.complaintTrend}</span>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Inspection Status</span>
-              <span className="text-lg font-bold font-mono text-emerald-600">{analytics.inspectionReports}</span>
-            </div>
-          </div>
-
-          {/* MONTHLY OCCUPANCY TREND BARS */}
-          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
-            <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Monthly Occupancy Trend (2026)</h4>
-            <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 text-center">
-              {analytics.monthlyOccupancyTrend.map((m) => (
-                <div key={m.month} className="p-2.5 rounded-xl bg-muted/30 border border-border/60 space-y-1">
-                  <span className="text-xs font-bold font-mono text-foreground block">{m.month}</span>
-                  <span className="text-sm font-bold font-mono text-primary">{m.occupancyPct}%</span>
-                  <Progress value={m.occupancyPct} className="h-1.5 bg-muted" />
-                </div>
-              ))}
->>>>>>> origin/main
             </div>
           </div>
         </div>
       )}
 
-<<<<<<< HEAD
-      {/* DIALOG: ADD ROOM */}
-      <Dialog open={isAddRoomOpen} onOpenChange={setIsAddRoomOpen}>
-=======
       {/* SECTION 7: VIEW DETAILS READ-ONLY MODAL */}
       <Dialog open={isViewDetailsOpen} onOpenChange={setIsViewDetailsOpen}>
         <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
@@ -1543,7 +1542,6 @@ export function HostelModuleView() {
 
       {/* QUICK ACTION MODAL A: SECURITY REPORT MODAL */}
       <Dialog open={isSecurityReportOpen} onOpenChange={setIsSecurityReportOpen}>
->>>>>>> origin/main
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">

@@ -931,7 +931,6 @@ export const DEFAULT_POLICY_COMPLIANCE: PolicyComplianceStatus = {
   insuranceStatus: "Active Comprehensive Cover",
   lastAuditDate: "2026-07-28",
 };
->>>>>>> origin/main
 
 export async function fetchHostelRooms(): Promise<HostelRoom[]> {
   await new Promise((resolve) => setTimeout(resolve, 300));
