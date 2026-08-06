@@ -308,13 +308,13 @@ export function ExaminationsModuleView() {
       {/* 2. SUMMARY DASHBOARD KPI CARDS */}
       <div className="grid gap-4 grid-cols-2 md:grid-cols-8">
         <KpiCard label="Total Exams" value={String(metrics.total)} icon={FileSpreadsheet} tone="primary" />
-        <KpiCard label="Upcoming Exams" value={String(metrics.upcoming)} icon={Calendar} tone="info" />
-        <KpiCard label="Completed Exams" value={String(metrics.completed)} icon={CheckCircle} tone="success" />
-        <KpiCard label="Pending Schedules" value={String(metrics.pending)} icon={Clock} tone="warning" />
+        <KpiCard label="Upcoming Exams" value={String(metrics.upcoming)} icon={Calendar} tone="primary" />
+        <KpiCard label="Completed Exams" value={String(metrics.completed)} icon={CheckCircle} tone="primary" />
+        <KpiCard label="Pending Schedules" value={String(metrics.pending)} icon={Clock} tone="primary" />
         <KpiCard label="Allocated Halls" value={String(metrics.allocatedHalls)} icon={Building2} tone="primary" />
-        <KpiCard label="Assigned Invigilators" value={String(metrics.invigilatorsCount)} icon={Users} tone="success" />
-        <KpiCard label="Students Appearing" value={String(metrics.totalStudentsAppearing)} icon={Award} tone="info" />
-        <KpiCard label="Pending Approvals" value="1 Exam" icon={Workflow} tone="warning" />
+        <KpiCard label="Assigned Invigilators" value={String(metrics.invigilatorsCount)} icon={Users} tone="primary" />
+        <KpiCard label="Students Appearing" value={String(metrics.totalStudentsAppearing)} icon={Award} tone="primary" />
+        <KpiCard label="Pending Approvals" value="1 Exam" icon={Workflow} tone="primary" />
       </div>
 
       {/* 3. MULTIPLE VIEW MODE TABS */}

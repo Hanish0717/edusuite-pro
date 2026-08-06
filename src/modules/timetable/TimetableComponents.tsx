@@ -81,32 +81,39 @@ const PERIODS = [
   { id: 7, label: "Period 7", time: "04:15 PM - 05:00 PM" }
 ];
 
+import {
+  getCentralizedMasterTimetable,
+  addMasterTimetableEntry,
+  deleteMasterTimetableEntry,
+  validateTimetableConflicts,
+  type TimetableEntry,
+  type DayOfWeek,
+} from "@/services/master-timetable-service";
+
+import { WeeklyGrid } from "@/components/dashboard/timetable/weekly-grid-master";
+
 export function TimetableModuleView() {
   // Simulated Loading/Error States
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // States for core entities
-  const [timetableSlots, setTimetableSlots] = useState<TimetableSlot[]>(MOCK_TIMETABLE_SLOTS);
-  const [facultyList, setFacultyList] = useState<FacultyAvailability[]>(MOCK_FACULTY_AVAILABILITY);
-  const [classroomsList, setClassroomsList] = useState<Classroom[]>(MOCK_CLASSROOMS);
-  const [labsList, setLabsList] = useState<Laboratory[]>(MOCK_LABORATORIES);
-  const [conflictsList, setConflictsList] = useState<TimetableConflict[]>(MOCK_CONFLICTS);
+  // View Mode State
+  const [viewMode, setViewMode] = useState<"institution" | "department" | "faculty" | "room" | "lab" | "section">("institution");
 
-  // Filters State
+  // Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [deptFilter, setDeptFilter] = useState("all");
   const [semFilter, setSemFilter] = useState("all");
   const [secFilter, setSecFilter] = useState("all");
+  const [facultyFilter, setFacultyFilter] = useState("all");
+  const [roomFilter, setRoomFilter] = useState("all");
+  const [dayFilter, setDayFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("recent");
 
-  // Selection state
+  // Selection & Modal States
   const [activeTab, setActiveTab] = useState<"weekly" | "builder" | "conflicts" | "faculty" | "classrooms" | "labs" | "analytics">("weekly");
-  const [selectedSlot, setSelectedSlot] = useState<TimetableSlot | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
   const [isSlotDetailsOpen, setIsSlotDetailsOpen] = useState(false);
-
-  // Modals state
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isAutoGenerateOpen, setIsAutoGenerateOpen] = useState(false);
 
@@ -126,13 +133,91 @@ export function TimetableModuleView() {
     credits: 3
   });
 
+  // Core entities state
+  const [facultyList, setFacultyList] = useState<FacultyAvailability[]>(MOCK_FACULTY_AVAILABILITY);
+  const [classroomsList, setClassroomsList] = useState<Classroom[]>(MOCK_CLASSROOMS);
+  const [labsList, setLabsList] = useState<Laboratory[]>(MOCK_LABORATORIES);
+  const [conflictsList, setConflictsList] = useState<TimetableConflict[]>(MOCK_CONFLICTS);
+
+  // Master entries from centralized single source of truth
+  const [masterEntries, setMasterEntries] = useState<TimetableEntry[]>(getCentralizedMasterTimetable());
+
+  // Normalized compatibility derived list for components referencing timetableSlots
+  const timetableSlots = useMemo(() => {
+    return (masterEntries || []).map((e) => ({
+      id: e.id,
+      academicYear: e.academicYear,
+      department: e.deptCode || e.department,
+      program: e.program,
+      semester: e.semester,
+      section: e.section,
+      day: e.day as any,
+      period: e.period,
+      subject: e.subjectName,
+      subjectCode: e.subjectCode,
+      faculty: e.facultyName,
+      facultyId: e.facultyId,
+      room: e.room,
+      startTime: e.startTime,
+      endTime: e.endTime,
+      status: (e.status === "Scheduled" ? "Approved" : e.status) as any,
+      credits: e.credits,
+    }));
+  }, [masterEntries]);
+
+  const setTimetableSlots = (updater: any) => {
+    if (typeof updater === "function") {
+      setMasterEntries((prev: any) => updater(prev));
+    } else {
+      setMasterEntries(updater);
+    }
+  };
+
+  // Dynamic conflicts validation
+  const conflicts = useMemo(() => {
+    return validateTimetableConflicts(masterEntries);
+  }, [masterEntries]);
+
+  // Dynamic filtering based on active view mode and filter selections
+  const filteredMasterEntries = useMemo(() => {
+    return masterEntries.filter((e) => {
+      // View Mode restrictions
+      if (viewMode === "department" && deptFilter !== "all" && e.deptCode !== deptFilter) return false;
+      if (viewMode === "faculty" && facultyFilter !== "all" && e.facultyId !== facultyFilter && !e.facultyName.includes(facultyFilter)) return false;
+      if (viewMode === "room" && roomFilter !== "all" && e.room !== roomFilter) return false;
+      if (viewMode === "lab" && (e.lectureType !== "Lab" && !e.room.toLowerCase().includes("lab"))) return false;
+      if (viewMode === "section" && secFilter !== "all" && e.section !== secFilter) return false;
+
+      // General Filters
+      if (deptFilter !== "all" && e.deptCode !== deptFilter) return false;
+      if (semFilter !== "all" && e.semester !== semFilter) return false;
+      if (secFilter !== "all" && e.section !== secFilter) return false;
+      if (statusFilter !== "all" && e.status !== statusFilter) return false;
+      if (dayFilter !== "all" && e.day.toLowerCase() !== dayFilter.toLowerCase()) return false;
+
+      if (searchQuery.trim() !== "") {
+        const q = searchQuery.toLowerCase();
+        const matchesSubject = e.subjectName.toLowerCase().includes(q) || e.subjectCode.toLowerCase().includes(q);
+        const matchesFaculty = e.facultyName.toLowerCase().includes(q);
+        const matchesRoom = e.room.toLowerCase().includes(q);
+        const matchesSec = e.section.toLowerCase().includes(q);
+        return matchesSubject || matchesFaculty || matchesRoom || matchesSec;
+      }
+
+      return true;
+    });
+  }, [masterEntries, viewMode, deptFilter, semFilter, secFilter, facultyFilter, roomFilter, statusFilter, dayFilter, searchQuery]);
+
   const handleResetFilters = () => {
     setSearchQuery("");
     setDeptFilter("all");
     setSemFilter("all");
     setSecFilter("all");
+    setFacultyFilter("all");
+    setRoomFilter("all");
+    setDayFilter("all");
     setStatusFilter("all");
-    setSortBy("recent");
+    setViewMode("institution");
     toast.success("Filters reset successfully");
   };
 
@@ -172,11 +257,11 @@ export function TimetableModuleView() {
     const endTimeStr = PERIODS.find((p) => p.id === builderForm.period)?.time.split(" - ")[1] || "10:30 AM";
 
     // Client-side conflict checker
-    const hasRoomConflict = timetableSlots.some(
+    const hasRoomConflict = (timetableSlots || []).some(
       (s) => s.day === builderForm.day && s.period === builderForm.period && s.room === builderForm.room
     );
 
-    const hasFacultyConflict = timetableSlots.some(
+    const hasFacultyConflict = (timetableSlots || []).some(
       (s) => s.day === builderForm.day && s.period === builderForm.period && s.facultyId === builderForm.facultyId
     );
 
@@ -211,19 +296,19 @@ export function TimetableModuleView() {
       duration: "1 hour"
     };
 
-    setTimetableSlots((prev) => [...prev, newSlot]);
+    setTimetableSlots((prev) => [...(prev || []), newSlot]);
     toast.success(`Successfully added ${newSlot.subjectCode} scheduling slot!`);
   };
 
   // Delete/Cancel Slot
   const handleDeleteSlot = (id: string, name: string) => {
-    setTimetableSlots((prev) => prev.filter((s) => s.id !== id));
+    setTimetableSlots((prev) => (prev || []).filter((s) => s.id !== id));
     toast.warning(`Cancelled scheduled class: ${name}`);
   };
 
   // Filter slots
   const filteredSlots = useMemo(() => {
-    return timetableSlots.filter((slot) => {
+    return (timetableSlots || []).filter((slot) => {
       const matchesSearch =
         slot.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
         slot.subjectCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -340,7 +425,7 @@ export function TimetableModuleView() {
 
       {/* 2. SUMMARY KPI STATS */}
       <div className="grid gap-4 grid-cols-2 md:grid-cols-8">
-        <KpiCard label="Total Timetables" value={String(timetableSlots.length)} icon={Calendar} tone="primary" />
+        <KpiCard label="Total Timetables" value={String((timetableSlots || []).length)} icon={Calendar} tone="primary" />
         <KpiCard label="Active Status" value="Live" icon={CheckCircle} tone="success" />
         <KpiCard label="Scheduled Today" value="8 Classes" icon={Clock} tone="info" />
         <KpiCard label="Pending Approval" value="2 Slots" icon={Workflow} tone="warning" />
@@ -428,16 +513,17 @@ export function TimetableModuleView() {
             </div>
           </div>
 
-          <div className="overflow-x-auto border rounded-xl">
-            <table className="w-full border-collapse text-left table-fixed min-w-[800px]">
+          <div className="overflow-x-auto border rounded-xl no-scrollbar">
+            <table className="w-full border-collapse text-left table-fixed min-w-[1000px] xl:min-w-[1100px]">
               <thead>
                 <tr className="bg-muted/40 font-semibold text-muted-foreground border-b text-[10px]">
-                  <th className="py-2.5 px-3 border-r w-[150px]">Periods / Times</th>
+                  <th className="py-2.5 px-3 border-r w-[140px]">Periods / Times</th>
                   {DAYS_OF_WEEK.map((day) => (
-                    <th key={day} className="py-2.5 px-3 border-r">{day}</th>
+                    <th key={day} className="py-2.5 px-3 border-r w-[140px] sm:w-auto">{day}</th>
                   ))}
                 </tr>
               </thead>
+
               <tbody className="divide-y">
                 {PERIODS.map((p) => {
                   if (p.isBreak) {
@@ -647,7 +733,7 @@ export function TimetableModuleView() {
                   </tr>
                 </thead>
                 <tbody>
-                  {timetableSlots.map((slot) => (
+                  {(timetableSlots || []).map((slot) => (
                     <tr key={slot.id} className="border-b border-border/40">
                       <td className="py-3">
                         <p className="font-bold text-foreground">{slot.subject}</p>

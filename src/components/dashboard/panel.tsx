@@ -29,9 +29,10 @@ export function Panel({
     >
       <CardHeader className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
         <div className="min-w-0">
-          <CardTitle className="truncate text-base">{title}</CardTitle>
+          <CardTitle className="truncate text-base" title={title}>{title}</CardTitle>
           {description && <CardDescription className="mt-1">{description}</CardDescription>}
         </div>
+
         {action}
       </CardHeader>
       <CardContent className={cn("pt-0", contentClassName)}>{children}</CardContent>

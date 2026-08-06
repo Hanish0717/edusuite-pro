@@ -458,11 +458,11 @@ export function FacultyManagement() {
       </div>
 
       {/* 2. SUMMARY CARDS */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <KpiCard label="Total Faculty" value={String(metrics.total)} icon={Users} tone="primary" className="h-full" />
-        <KpiCard label="Teaching Faculty" value={String(metrics.teaching)} icon={BookOpen} tone="info" className="h-full" />
-        <KpiCard label="Non-Teaching" value={String(metrics.nonTeaching)} icon={Briefcase} tone="warning" className="h-full" />
-        <KpiCard label="Active Faculty" value={String(metrics.active)} icon={UserCheck} tone="success" className="h-full" />
+      <div className="grid gap-3.5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-6">
+        <KpiCard label="Total Faculty" value={String(metrics.total)} icon={Users} tone="primary" className="h-full min-w-0" />
+        <KpiCard label="Teaching Faculty" value={String(metrics.teaching)} icon={BookOpen} tone="info" className="h-full min-w-0" />
+        <KpiCard label="Non-Teaching" value={String(metrics.nonTeaching)} icon={Briefcase} tone="warning" className="h-full min-w-0" />
+        <KpiCard label="Active Faculty" value={String(metrics.active)} icon={UserCheck} tone="success" className="h-full min-w-0" />
         <KpiCard
           label="Unassigned Depts"
           value={String(metrics.noSubjects)}
@@ -470,7 +470,7 @@ export function FacultyManagement() {
           tone={metrics.noSubjects > 0 ? "warning" : "success"}
           delta={metrics.noSubjects > 0 ? "Needs Subject" : "All set"}
           trend={metrics.noSubjects > 0 ? "down" : "up"}
-          className="h-full"
+          className="h-full min-w-0"
         />
         <KpiCard
           label="High Workload"
@@ -478,16 +478,17 @@ export function FacultyManagement() {
           icon={Clock}
           tone={metrics.highWorkload > 0 ? "destructive" : "success"}
           delta="16+ hrs weekly"
-          className="h-full"
+          className="h-full min-w-0"
         />
       </div>
 
       {/* 3. SEARCH & FILTERS SECTION */}
       <div className="p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-3.5 text-xs">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 sm:gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
           
           {/* Search bar */}
-          <div className="relative col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-2 xl:col-span-2">
+          <div className="relative flex-1 min-w-[220px]">
+
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               placeholder="Search faculty name, ID, email..."
@@ -499,7 +500,7 @@ export function FacultyManagement() {
 
           {/* Department Filter */}
           <Select value={deptFilter} onValueChange={setDeptFilter}>
-            <SelectTrigger className="h-9 w-full text-xs">
+            <SelectTrigger className="h-9 w-full sm:w-[150px] text-xs">
               <SelectValue placeholder="Department" />
             </SelectTrigger>
             <SelectContent>
@@ -514,7 +515,7 @@ export function FacultyManagement() {
 
           {/* Designation Filter */}
           <Select value={designationFilter} onValueChange={setDesignationFilter}>
-            <SelectTrigger className="h-9 w-full text-xs">
+            <SelectTrigger className="h-9 w-full sm:w-[150px] text-xs">
               <SelectValue placeholder="Designation" />
             </SelectTrigger>
             <SelectContent>
@@ -527,7 +528,7 @@ export function FacultyManagement() {
 
           {/* Employment Type */}
           <Select value={employmentFilter} onValueChange={setEmploymentFilter}>
-            <SelectTrigger className="h-9 w-full text-xs">
+            <SelectTrigger className="h-9 w-full sm:w-[130px] text-xs">
               <SelectValue placeholder="Employment" />
             </SelectTrigger>
             <SelectContent>
@@ -541,7 +542,7 @@ export function FacultyManagement() {
 
           {/* Status */}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="h-9 w-full text-xs">
+            <SelectTrigger className="h-9 w-full sm:w-[120px] text-xs">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -554,7 +555,7 @@ export function FacultyManagement() {
 
           {/* Workload Level */}
           <Select value={workloadFilter} onValueChange={setWorkloadFilter}>
-            <SelectTrigger className="h-9 w-full text-xs">
+            <SelectTrigger className="h-9 w-full sm:w-[130px] text-xs">
               <SelectValue placeholder="Workload" />
             </SelectTrigger>
             <SelectContent>
@@ -565,6 +566,7 @@ export function FacultyManagement() {
               <SelectItem value="overloaded">Overloaded (18h+)</SelectItem>
             </SelectContent>
           </Select>
+
 
         </div>
 

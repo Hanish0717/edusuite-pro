@@ -256,23 +256,23 @@ export function AttendanceModuleView({ initialTab = "overview" }: { initialTab?:
       </div>
 
       {/* 2. SUMMARY DASHBOARD KPI CARDS */}
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-8">
-        <KpiCard label="Overall Attendance" value={`${metrics.avgStudentAtt}%`} icon={CalendarCheck} tone="primary" />
-        <KpiCard label="Faculty Submissions" value={`${metrics.submissionRate}%`} icon={UserCheck} tone="success" />
-        <KpiCard label="Today's Attendance" value="84.2%" icon={ShieldCheck} tone="info" />
-        <KpiCard label="Students Below 75%" value={String(metrics.defaultersCount)} icon={UserX} tone="critical" />
-        <KpiCard label="Depts Below Target" value="1 Dept" icon={Building2} tone="warning" />
-        <KpiCard label="Leave OD Pending" value={String(metrics.pendingLeaves)} icon={Clock} tone="info" />
-        <KpiCard label="Corrections Pending" value={String(metrics.pendingCorrections)} icon={AlertTriangle} tone="warning" />
-        <KpiCard label="Reports Generated" value="12 Reports" icon={FileText} tone="success" />
+      <div className="grid gap-3.5 grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 2xl:grid-cols-8">
+        <KpiCard label="Overall Attendance" value={`${metrics.avgStudentAtt}%`} icon={CalendarCheck} tone="primary" className="h-full min-w-0" />
+        <KpiCard label="Faculty Submissions" value={`${metrics.submissionRate}%`} icon={UserCheck} tone="success" className="h-full min-w-0" />
+        <KpiCard label="Today's Attendance" value="84.2%" icon={ShieldCheck} tone="info" className="h-full min-w-0" />
+        <KpiCard label="Students Below 75%" value={String(metrics.defaultersCount)} icon={UserX} tone="critical" className="h-full min-w-0" />
+        <KpiCard label="Depts Below Target" value="1 Dept" icon={Building2} tone="warning" className="h-full min-w-0" />
+        <KpiCard label="Leave OD Pending" value={String(metrics.pendingLeaves)} icon={Clock} tone="info" className="h-full min-w-0" />
+        <KpiCard label="Corrections Pending" value={String(metrics.pendingCorrections)} icon={AlertTriangle} tone="warning" className="h-full min-w-0" />
+        <KpiCard label="Reports Generated" value="12 Reports" icon={FileText} tone="success" className="h-full min-w-0" />
       </div>
 
       {/* 3. MULTIPLE VIEW TABS */}
       <div className="flex justify-between items-center border-b pb-1 flex-wrap gap-3">
-        <div className="flex rounded-xl bg-muted/40 p-1 border font-semibold">
+        <div className="flex rounded-xl bg-muted/40 p-1 border font-semibold overflow-x-auto max-w-full no-scrollbar">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === "overview" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -280,7 +280,7 @@ export function AttendanceModuleView({ initialTab = "overview" }: { initialTab?:
           </button>
           <button
             onClick={() => setActiveTab("defaulters")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === "defaulters" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -288,7 +288,7 @@ export function AttendanceModuleView({ initialTab = "overview" }: { initialTab?:
           </button>
           <button
             onClick={() => setActiveTab("departments")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === "departments" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -296,7 +296,7 @@ export function AttendanceModuleView({ initialTab = "overview" }: { initialTab?:
           </button>
           <button
             onClick={() => setActiveTab("faculty")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === "faculty" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -304,7 +304,7 @@ export function AttendanceModuleView({ initialTab = "overview" }: { initialTab?:
           </button>
           <button
             onClick={() => setActiveTab("corrections")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === "corrections" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -312,7 +312,7 @@ export function AttendanceModuleView({ initialTab = "overview" }: { initialTab?:
           </button>
           <button
             onClick={() => setActiveTab("leaves")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === "leaves" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -374,7 +374,8 @@ export function AttendanceModuleView({ initialTab = "overview" }: { initialTab?:
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-[11px] font-medium text-foreground">
+            <table className="w-full text-left text-[11px] font-medium text-foreground min-w-[850px]">
+
               <thead>
                 <tr className="text-muted-foreground font-semibold border-b">
                   <th className="py-2">Student ID</th>

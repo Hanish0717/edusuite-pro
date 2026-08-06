@@ -175,7 +175,7 @@ export function PayrollSummaryCards({ activeSlip }: { activeSlip: SalarySlip | n
   if (!activeSlip) return null;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3.5">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
       {[
         { label: "Gross Salary", val: `₹${activeSlip.basicPay + activeSlip.hra + activeSlip.allowances}`, color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/20" },
         { label: "Net Salary", val: `₹${activeSlip.netSalary}`, color: "text-emerald-600", bg: "bg-emerald-500/10 border-emerald-500/20" },
@@ -185,15 +185,17 @@ export function PayrollSummaryCards({ activeSlip }: { activeSlip: SalarySlip | n
       ].map((card, i) => (
         <div
           key={i}
-          className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-sm space-y-1 hover:border-primary/30 transition-colors duration-300"
+          className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-sm space-y-1 hover:border-primary/30 transition-colors duration-300 min-w-0 flex flex-col justify-between h-full"
         >
-          <p className="text-[0.65rem] font-semibold text-muted-foreground uppercase tracking-wider">{card.label}</p>
-          <p className="font-display text-lg font-bold text-foreground mt-1">{card.val}</p>
+          <p className="text-[0.65rem] font-semibold text-muted-foreground uppercase tracking-wider leading-snug break-words block" title={card.label}>{card.label}</p>
+          <p className="font-display text-lg font-bold text-foreground mt-1 whitespace-nowrap">{card.val}</p>
         </div>
+
       ))}
     </div>
   );
 }
+
 
 export function NetSalaryCard({ activeSlip, onDownload }: { activeSlip: SalarySlip | null; onDownload: () => void }) {
   if (!activeSlip) return null;
@@ -602,8 +604,9 @@ export function PayrollHistoryTable({
 
       <div className="overflow-x-auto rounded-xl border border-border/60">
         {/* Desktop view */}
-        <table className="w-full text-left text-xs hidden md:table">
+        <table className="w-full text-left text-xs hidden md:table min-w-[800px]">
           <thead className="bg-muted/40 text-muted-foreground font-mono text-[0.68rem] uppercase border-b border-border/60">
+
             <tr>
               <th className="py-3 px-3.5">Payroll ID</th>
               <th className="py-3 px-3.5">Salary Month</th>
