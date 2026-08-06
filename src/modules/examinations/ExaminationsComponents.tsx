@@ -160,7 +160,6 @@ export function ExaminationsModuleView() {
     toast.success("Exported master grade sheet to CSV!");
   };
 
->>>>>>> Stashed changes
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -275,6 +274,7 @@ export function ExaminationsModuleView() {
             ))}
           </div>
         </div>
+      </div>
 
       {/* TAB 2: HALL TICKETS */}
       {activeTab === "hall-tickets" && (
@@ -420,10 +420,9 @@ export function ExaminationsModuleView() {
                 ))}
               </tbody>
             </table>
->>>>>>> Stashed changes
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

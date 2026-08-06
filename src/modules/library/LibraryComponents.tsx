@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "@tanstack/react-router";
 import {
   Library,
   RefreshCw,
@@ -93,7 +94,7 @@ const DEPARTMENTS = [
   "Mechanical",
   "Civil Engineering",
   "AI & Data Science",
-import { useLocation } from "@tanstack/react-router";
+] as const;
 
 export function LibraryModuleView() {
   const location = useLocation();

@@ -92,6 +92,7 @@ import {
 
 import { useLocation } from "@tanstack/react-router";
 
+export function TransportModuleView() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const tabFromUrl = searchParams.get("tab");
