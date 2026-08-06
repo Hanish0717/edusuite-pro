@@ -141,6 +141,26 @@ export function LoginPage() {
     // Dynamically resolve role context from mock service
     const resolved = resolveRoleContextFromSelection(step1CoreRole, step2Designation, step3Branch);
 
+    if (resolved.role === "external-user" && resolved.externalPersona === "recruiter") {
+      if (email && email.trim()) {
+        const emailHandle = email.split("@")[0] || email;
+        const formattedName = emailHandle.charAt(0).toUpperCase() + emailHandle.slice(1);
+        const comp = email.includes("info")
+          ? "Infosys Limited"
+          : email.includes("tcs")
+          ? "TCS (Tata Consultancy Services)"
+          : email.includes("microsoft")
+          ? "Microsoft India"
+          : email.includes("google")
+          ? "Google Cloud"
+          : "Corporate HR";
+
+        localStorage.setItem("loggedInRecruiterName", formattedName);
+        localStorage.setItem("loggedInRecruiterEmail", email);
+        localStorage.setItem("loggedInRecruiterCompany", comp);
+      }
+    }
+
     setRole(resolved.role);
     setFlags(resolved.flags);
     if (resolved.department) setDepartment(resolved.department);

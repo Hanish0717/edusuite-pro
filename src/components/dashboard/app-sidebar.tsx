@@ -86,14 +86,13 @@ export function AppSidebar() {
                   if (hasQueryParam) {
                     isItemActive =
                       href.includes(item.url) ||
-                      (!href.includes("?module=") && item.url.includes("module=dashboard"));
+                      (!href.includes("?module=") && item.url.includes("module=dashboard") && href.endsWith("/dashboard"));
                   } else if (itemCleanPath === "/dashboard" || itemCleanPath === "/") {
                     isItemActive = currentCleanPath === "/dashboard" || currentCleanPath === "/";
                   } else {
                     isItemActive =
                       currentCleanPath === itemCleanPath ||
-                      (itemCleanPath !== "/" && currentCleanPath.startsWith(itemCleanPath)) ||
-                      (itemSlug !== "" && currentCleanPath.includes(`/${itemSlug}`)) ||
+                      (itemCleanPath !== "/" && itemCleanPath !== "/placement" && currentCleanPath.startsWith(itemCleanPath + "/")) ||
                       isChildActive;
                   }
 
@@ -109,7 +108,7 @@ export function AppSidebar() {
                             <SidebarMenuButton
                               isActive={isItemActive}
                               tooltip={item.title}
-                              className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
+                             className="h-8 px-3 rounded-[10px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
                             >
                               <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
                               <span className="truncate">{item.title}</span>
@@ -148,7 +147,7 @@ export function AppSidebar() {
                         asChild
                         isActive={isItemActive}
                         tooltip={item.title}
-                        className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
+                        className="h-8 px-3 rounded-[10px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
                       >
                         <Link to={item.url} className="flex items-center gap-3">
                           <item.icon className="size-5 shrink-0 text-[#4D78FF]" />

@@ -4,6 +4,10 @@ import {
   getAllStudentSubmissions,
   updateStudentSubmissionRecord,
   type StudentSubmissionRecord,
+  SHARED_DRIVE_APPLICATION_FORMS,
+  SHARED_STUDENT_DRIVE_APPLICATIONS,
+  type DriveApplicationForm,
+  type StudentDriveApplication,
 } from "@/lib/shared-assessment-store";
 
 import {
@@ -324,6 +328,9 @@ const PIPELINE_STAGES: RequestStatus[] = [
 
 export function AssessmentRequestsApprovalWorkspace() {
   const [requests, setRequests] = useState<AssessmentRequestRecord[]>(SHARED_ASSESSMENT_REQUESTS);
+  const [appForms, setAppForms] = useState<DriveApplicationForm[]>(SHARED_DRIVE_APPLICATION_FORMS);
+  const [viewingApplicantsForm, setViewingApplicantsForm] = useState<DriveApplicationForm | null>(null);
+  const [isViewApplicantsModalOpen, setIsViewApplicantsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [companyFilter, setCompanyFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
@@ -707,6 +714,96 @@ export function AssessmentRequestsApprovalWorkspace() {
         </div>
       </div>
 
+      {/* 4.5 RECRUITER DRIVE APPLICATION FORMS QUEUE */}
+      <Panel title="Student Application Forms Queue (Recruiter Placement Registrations)">
+        <div className="overflow-x-auto pt-1">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-border bg-muted/30 text-muted-foreground font-mono uppercase text-[0.65rem]">
+                <th className="p-3">Drive Title & ID</th>
+                <th className="p-3">Company & Role</th>
+                <th className="p-3">CTC</th>
+                <th className="p-3">Registration Deadline</th>
+                <th className="p-3 text-center">Applicants Registered</th>
+                <th className="p-3">Status</th>
+                <th className="p-3 text-right">TPO Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/50 font-medium">
+              {appForms.map((form) => {
+                const filledApps = SHARED_STUDENT_DRIVE_APPLICATIONS.filter((a) => a.formId === form.id);
+                return (
+                  <tr key={form.id} className="hover:bg-muted/30 transition-colors">
+                    <td className="p-3">
+                      <p className="font-bold text-foreground text-xs">{form.title}</p>
+                      <span className="text-[0.65rem] font-mono text-primary font-bold">{form.id}</span>
+                    </td>
+                    <td className="p-3">
+                      <p className="font-bold text-foreground">{form.company}</p>
+                      <span className="text-[0.68rem] text-muted-foreground">{form.role}</span>
+                    </td>
+                    <td className="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                      {form.ctc}
+                    </td>
+                    <td className="p-3 font-mono text-[0.68rem] text-slate-500">
+                      {form.deadlineDate}
+                    </td>
+                    <td className="p-3 text-center">
+                      <Badge variant="outline" className="bg-blue-500/10 text-blue-700 dark:text-blue-400 font-mono font-bold text-xs">
+                        {filledApps.length} Students
+                      </Badge>
+                    </td>
+                    <td className="p-3">
+                      <Badge className={form.status === "Dispatched to Students" ? "bg-emerald-600 text-white" : "bg-amber-600 text-white"}>
+                        {form.status}
+                      </Badge>
+                    </td>
+                    <td className="p-3 text-right space-x-1.5">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          const origin = typeof window !== "undefined" ? window.location.origin : "";
+                          copyToClipboard(`${origin}/drive/apply?id=${form.id}`, "Student Registration Form Link");
+                        }}
+                        className="h-7 text-[0.65rem] rounded-lg cursor-pointer border-blue-300 text-blue-600 font-bold"
+                      >
+                        <Copy className="size-3 mr-1" /> Copy Form Link
+                      </Button>
+
+                      {form.status !== "Dispatched to Students" && (
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setAppForms((prev) => prev.map((f) => f.id === form.id ? { ...f, status: "Dispatched to Students" } : f));
+                            toast.success(`Dispatched application link /drive/apply?id=${form.id} to all eligible students!`);
+                          }}
+                          className="h-7 text-[0.65rem] rounded-lg cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
+                        >
+                          <Send className="size-3 mr-1" /> Dispatch Link to Students
+                        </Button>
+                      )}
+
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => {
+                          setViewingApplicantsForm(form);
+                          setIsViewApplicantsModalOpen(true);
+                        }}
+                        className="h-7 text-[0.65rem] rounded-lg cursor-pointer font-bold"
+                      >
+                        <Eye className="size-3 mr-1" /> View Applicants ({filledApps.length})
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+
       {/* 5. REQUEST DIRECTORY TABLE */}
       <Panel title="Recruiter Assessment Requests Queue">
         <div className="overflow-x-auto pt-1">
@@ -816,8 +913,9 @@ export function AssessmentRequestsApprovalWorkspace() {
                         size="sm"
                         variant="outline"
                         onClick={() => {
+                          const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
                           copyToClipboard(
-                            `http://192.168.1.122:8082/exam/take?id=${req.assessmentId}`,
+                            `${origin}/exam/take?id=${req.assessmentId}`,
                             `exam link for ${req.name}`
                           );
                         }}
@@ -1065,13 +1163,16 @@ export function AssessmentRequestsApprovalWorkspace() {
                       <Badge className="bg-emerald-600 text-white text-[0.62rem]">Active Test Link</Badge>
                     </div>
                     <div className="flex items-center gap-2 p-2 rounded-xl bg-background border font-mono text-xs text-blue-600">
-                      <span className="truncate">http://192.168.1.122:8082/exam/take?id={selectedReq.assessmentId}</span>
+                      <a href={`/exam/take?id=${selectedReq.assessmentId}`} target="_blank" rel="noreferrer" className="truncate underline hover:text-blue-800">
+                        {(typeof window !== "undefined" ? window.location.origin : "") + `/exam/take?id=${selectedReq.assessmentId}`}
+                      </a>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => {
+                          const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
                           copyToClipboard(
-                            `http://192.168.1.122:8082/exam/take?id=${selectedReq.assessmentId}`,
+                            `${origin}/exam/take?id=${selectedReq.assessmentId}`,
                             "Student Exam URL"
                           );
                         }}
@@ -1261,7 +1362,9 @@ export function AssessmentRequestsApprovalWorkspace() {
               <div className="p-3.5 rounded-xl bg-white dark:bg-card border border-border/80 text-foreground font-mono text-[0.68rem] space-y-2 shadow-2xs">
                 <p className="font-bold text-emerald-600 dark:text-emerald-400">📨 Email Preview Dispatched to Students:</p>
                 <p className="text-muted-foreground font-sans">"Dear Student (e.g. 23341a4229@college.edu.in), you are invited to attempt the official online assessment '{dispatchReq.name}'. Please use your student college email ID to log in."</p>
-                <p className="text-blue-600 dark:text-blue-400 underline font-bold">http://192.168.1.122:8082/exam/take?id={dispatchReq.assessmentId}</p>
+                <a href={`/exam/take?id=${dispatchReq.assessmentId}`} target="_blank" rel="noreferrer" className="text-blue-600 dark:text-blue-400 underline font-bold block truncate">
+                  {(typeof window !== "undefined" ? window.location.origin : "") + `/exam/take?id=${dispatchReq.assessmentId}`}
+                </a>
               </div>
 
               <DialogFooter className="pt-2 gap-2">
@@ -1607,6 +1710,101 @@ export function AssessmentRequestsApprovalWorkspace() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* VIEW REGISTERED APPLICANTS MODAL */}
+      <Dialog open={isViewApplicantsModalOpen} onOpenChange={setIsViewApplicantsModalOpen}>
+        <DialogContent className="sm:max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl">
+          <DialogHeader className="pb-3 border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className="size-11 rounded-2xl bg-blue-600 text-white grid place-items-center shadow-md">
+                <Users className="size-6" />
+              </div>
+              <div>
+                <DialogTitle className="font-extrabold text-base">
+                  Registered Applicants ({viewingApplicantsForm ? SHARED_STUDENT_DRIVE_APPLICATIONS.filter(a => a.formId === viewingApplicantsForm.id).length : 0})
+                </DialogTitle>
+                <DialogDescription className="text-xs font-mono">
+                  {viewingApplicantsForm?.title} • {viewingApplicantsForm?.company}
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2">
+            {viewingApplicantsForm && (
+              <div className="p-3 rounded-2xl bg-blue-50 border border-blue-200 text-xs font-mono text-blue-900 flex items-center justify-between">
+                <span>Registration Link: <strong>{typeof window !== "undefined" ? window.location.origin : ""}/drive/apply?id={viewingApplicantsForm.id}</strong></span>
+                <Badge className="bg-blue-600 text-white text-[0.65rem]">Active Link</Badge>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              {viewingApplicantsForm &&
+                SHARED_STUDENT_DRIVE_APPLICATIONS.filter((a) => a.formId === viewingApplicantsForm.id).map((app) => (
+                  <div key={app.id} className="p-4 rounded-2xl bg-card border border-border/80 space-y-3 shadow-2xs">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <img src={app.passportPhotoUrl} alt={app.studentName} className="size-12 rounded-full object-cover border-2 border-blue-500 shadow-xs" />
+                        <div>
+                          <p className="font-bold text-sm text-foreground">{app.studentName}</p>
+                          <p className="text-xs font-mono text-primary font-semibold">{app.rollNo} ({app.department}) • {app.studentEmail}</p>
+                          <p className="text-[0.68rem] text-muted-foreground font-mono">Phone: {app.phone} • Submitted: {app.submittedAt}</p>
+                        </div>
+                      </div>
+
+                      <Badge className="bg-emerald-600 text-white font-mono text-[0.65rem]">
+                        ✓ {app.qualificationStream}
+                      </Badge>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono bg-muted/40 p-3 rounded-xl">
+                      {/* 10TH DETAILS */}
+                      <div className="space-y-1">
+                        <span className="text-muted-foreground block text-[0.65rem] uppercase tracking-wider font-bold text-blue-600">10th (High School)</span>
+                        <p className="font-bold text-foreground">{app.tenthSchoolName}</p>
+                        <p className="text-[0.68rem] text-muted-foreground">Board: {app.tenthBoard} • Marks: <strong className="text-emerald-600">{app.tenthPercentage}%</strong> ({app.tenthYearOfPassing})</p>
+                      </div>
+
+                      {/* INTER OR DIPLOMA DETAILS */}
+                      <div className="space-y-1">
+                        <span className="text-muted-foreground block text-[0.65rem] uppercase tracking-wider font-bold text-purple-600">{app.qualificationStream} Record</span>
+                        {app.qualificationStream === "Intermediate" ? (
+                          <>
+                            <p className="font-bold text-foreground">{app.interCollegeName}</p>
+                            <p className="text-[0.68rem] text-muted-foreground">Board: {app.interBoard} • Marks: <strong className="text-purple-600">{app.interPercentage}%</strong> ({app.interYearOfPassing})</p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-bold text-foreground">{app.diplomaCollegeName}</p>
+                            <p className="text-[0.68rem] text-muted-foreground">Branch: {app.diplomaBranch} • Marks: <strong className="text-purple-600">{app.diplomaPercentage}%</strong> ({app.diplomaYearOfPassing})</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1 border-t text-xs font-mono">
+                      <span className="text-muted-foreground">Attached Document: <strong>{app.resumeFileName}</strong></span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => toast.info(`Viewing PDF Resume: ${app.resumeFileName}`)}
+                        className="h-7 text-xs rounded-lg cursor-pointer gap-1"
+                      >
+                        <FileText className="size-3 text-blue-600" /> View Resume PDF
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          <DialogFooter className="pt-3 border-t border-border">
+            <Button type="button" variant="outline" onClick={() => setIsViewApplicantsModalOpen(false)} className="rounded-xl text-xs">
+              Close Applicants Window
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

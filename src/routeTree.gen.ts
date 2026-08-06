@@ -70,6 +70,7 @@ import { Route as AiAnalyticsStudentRiskRouteImport } from './routes/ai-analytic
 import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
 import { Route as DeanSubjectAllocationRouteImport } from './routes/dean.subject-allocation'
+import { Route as DriveApplyRouteImport } from './routes/drive.apply'
 import { Route as ExamTakeRouteImport } from './routes/exam.take'
 import { Route as ExaminationIndexRouteImport } from './routes/examination.index'
 import { Route as ExaminationDashboardRouteImport } from './routes/examination.dashboard'
@@ -489,6 +490,11 @@ const DeanSubjectAllocationRoute = DeanSubjectAllocationRouteImport.update({
   id: '/subject-allocation',
   path: '/subject-allocation',
   getParentRoute: () => DeanRoute,
+} as any)
+const DriveApplyRoute = DriveApplyRouteImport.update({
+  id: '/drive/apply',
+  path: '/drive/apply',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ExamTakeRoute = ExamTakeRouteImport.update({
   id: '/exam/take',
@@ -1119,6 +1125,7 @@ export interface FileRoutesByFullPath {
   '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
+  '/drive/apply': typeof DriveApplyRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -1278,6 +1285,7 @@ export interface FileRoutesByTo {
   '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
+  '/drive/apply': typeof DriveApplyRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -1453,6 +1461,7 @@ export interface FileRoutesById {
   '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
+  '/drive/apply': typeof DriveApplyRoute
   '/exam/take': typeof ExamTakeRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
@@ -1629,6 +1638,7 @@ export interface FileRouteTypes {
     | '/ai-analytics/student-risk'
     | '/dean/dashboard'
     | '/dean/subject-allocation'
+    | '/drive/apply'
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -1788,6 +1798,7 @@ export interface FileRouteTypes {
     | '/ai-analytics/student-risk'
     | '/dean/dashboard'
     | '/dean/subject-allocation'
+    | '/drive/apply'
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -1962,6 +1973,7 @@ export interface FileRouteTypes {
     | '/ai-analytics/student-risk'
     | '/dean/dashboard'
     | '/dean/subject-allocation'
+    | '/drive/apply'
     | '/exam/take'
     | '/examination/dashboard'
     | '/external-user/dashboard'
@@ -2127,6 +2139,7 @@ export interface RootRouteChildren {
   TimetableRoute: typeof TimetableRoute
   TransportRoute: typeof TransportRouteWithChildren
   VerifyEmailRoute: typeof VerifyEmailRoute
+  DriveApplyRoute: typeof DriveApplyRoute
   ExamTakeRoute: typeof ExamTakeRoute
 }
 
@@ -2558,6 +2571,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dean/subject-allocation'
       preLoaderRoute: typeof DeanSubjectAllocationRouteImport
       parentRoute: typeof DeanRoute
+    }
+    '/drive/apply': {
+      id: '/drive/apply'
+      path: '/drive/apply'
+      fullPath: '/drive/apply'
+      preLoaderRoute: typeof DriveApplyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/exam/take': {
       id: '/exam/take'
@@ -3793,6 +3813,7 @@ const rootRouteChildren: RootRouteChildren = {
   TimetableRoute: TimetableRoute,
   TransportRoute: TransportRouteWithChildren,
   VerifyEmailRoute: VerifyEmailRoute,
+  DriveApplyRoute: DriveApplyRoute,
   ExamTakeRoute: ExamTakeRoute,
 }
 export const routeTree = rootRouteImport

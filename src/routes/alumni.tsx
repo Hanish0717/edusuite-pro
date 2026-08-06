@@ -12,6 +12,7 @@ import {
   TopContributorItem,
   InvitationItem,
   VerificationQueueItem,
+  PlacementDriveRequest,
 } from "@/types/alumni";
 import {
   INITIAL_ALUMNI_PROFILES,
@@ -87,7 +88,7 @@ export function AlumniPage() {
   const [verificationQueue, setVerificationQueue] = useState<VerificationQueueItem[]>(INITIAL_VERIFICATION_QUEUE);
 
   // Phase 2 State
-  const [drivesList] = useState(INITIAL_PLACEMENT_DRIVES);
+  const [drivesList, setDrivesList] = useState<PlacementDriveRequest[]>(INITIAL_PLACEMENT_DRIVES);
   const [sessionsList] = useState(INITIAL_GUEST_LECTURES);
   const [questionsList] = useState(INITIAL_STUDENT_QUESTIONS);
   const [articlesList] = useState(INITIAL_NEWS_ARTICLES);
@@ -157,6 +158,7 @@ export function AlumniPage() {
           <AlumniPlacementCollaborationView
             drivesList={drivesList}
             jobListings={jobListings}
+            onUpdateDrives={setDrivesList}
             onOpenMessagingCenter={() => setIsMessagingCenterOpen(true)}
           />
         )}

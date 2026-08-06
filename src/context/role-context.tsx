@@ -169,7 +169,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       personaName:
         role === "external-user" && externalPersona
           ? externalPersona === "recruiter"
-            ? "David Miller"
+            ? (typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterName") ? localStorage.getItem("loggedInRecruiterName")! : "David Miller")
             : externalPersona === "applicant"
               ? "John Doe"
               : externalPersona === "alumni"
@@ -181,7 +181,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       personaMeta:
         role === "external-user" && externalPersona
           ? externalPersona === "recruiter"
-            ? "Campus Recruiter (Google)"
+            ? `Campus Recruiter (${(typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterCompany")) || "Google"})`
             : externalPersona === "applicant"
               ? "B.Tech Admissions Applicant"
               : externalPersona === "alumni"
@@ -189,8 +189,8 @@ export function RoleProvider({ children }: { children: ReactNode }) {
                 : externalPersona === "vendor"
                   ? "Cafeteria Services Vendor"
                   : "Guest Speaker / Professor"
-          : role === "staff" && department
-            ? `Faculty - ${department} Department`
+          : role === "staff"
+            ? "Placement Officer - Training & Placement Cell"
             : baseProfile.personaMeta,
     };
   }, [role, flags, department, externalPersona, featureFlags]);

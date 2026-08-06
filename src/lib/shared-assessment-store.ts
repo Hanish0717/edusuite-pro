@@ -27,6 +27,299 @@ export interface StudentSubmissionRecord {
   submissionTime: string;
 }
 
+export interface StudentDriveApplication {
+  id: string;
+  formId: string;
+  driveTitle: string;
+  companyName: string;
+  studentName: string;
+  studentEmail: string;
+  phone: string;
+  rollNo: string;
+  department: string;
+  
+  // 10th Standard Details
+  tenthSchoolName: string;
+  tenthBoard: string;
+  tenthPercentage: number;
+  tenthYearOfPassing: string;
+  
+  // Stream Toggle: Intermediate vs Diploma
+  qualificationStream: "Intermediate" | "Diploma";
+  
+  // Inter details
+  interCollegeName?: string | undefined;
+  interBoard?: string | undefined;
+  interPercentage?: number | undefined;
+  interYearOfPassing?: string | undefined;
+  
+  // Diploma details
+  diplomaCollegeName?: string | undefined;
+  diplomaBranch?: string | undefined;
+  diplomaPercentage?: number | undefined;
+  diplomaYearOfPassing?: string | undefined;
+
+  // Upload Metadata
+  resumeFileName: string;
+  passportPhotoUrl: string;
+  
+  submittedAt: string;
+}
+
+export interface DriveApplicationForm {
+  id: string;
+  driveId: string;
+  title: string;
+  company: string;
+  role: string;
+  ctc: string;
+  deadlineDate: string;
+  instructions: string;
+  googleFormUrl?: string | undefined;
+  status: "Draft" | "Sent to TPO" | "Dispatched to Students" | "Expired";
+  createdDate: string;
+  applicantCount: number;
+}
+
+export const SHARED_DRIVE_APPLICATION_FORMS: DriveApplicationForm[] = [
+  {
+    id: "APP-FORM-2026-GGL",
+    driveId: "DRV-GGL-01",
+    title: "Google Cloud SDE Placement Drive Registration 2026",
+    company: "Google Cloud India",
+    role: "Software Engineer I (Cloud Solutions)",
+    ctc: "₹32.0 LPA",
+    deadlineDate: "2026-08-10 23:59",
+    instructions: "Please submit this registration form using your official college email address. Eligible applicants will receive the assessment link automatically after the registration deadline expires.",
+    googleFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSc-GoogleCloudPlacementForm2026/viewform",
+    status: "Dispatched to Students",
+    createdDate: "2026-08-01",
+    applicantCount: 9,
+  },
+];
+
+export const SHARED_STUDENT_DRIVE_APPLICATIONS: StudentDriveApplication[] = [
+  {
+    id: "APP-REC-005",
+    formId: "APP-FORM-2026-GGL",
+    driveTitle: "Google Cloud SDE Placement Drive Registration 2026",
+    companyName: "Google Cloud India",
+    studentName: "Rohan Verma",
+    studentEmail: "rohan.2022cse054@college.edu.in",
+    phone: "+91 98450 11223",
+    rollNo: "2022CSE054",
+    department: "CSE",
+    tenthSchoolName: "Little Flower High School, Abids",
+    tenthBoard: "SSC Telangana",
+    tenthPercentage: 92.5,
+    tenthYearOfPassing: "2020",
+    qualificationStream: "Intermediate",
+    interCollegeName: "Sri Chaitanya Junior College",
+    interBoard: "TS BIE",
+    interPercentage: 94.2,
+    interYearOfPassing: "2022",
+    resumeFileName: "Rohan_Verma_Resume_SDE.pdf",
+    passportPhotoUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80",
+    submittedAt: "2026-08-04 11:30",
+  },
+  {
+    id: "APP-REC-006",
+    formId: "APP-FORM-2026-GGL",
+    driveTitle: "Google Cloud SDE Placement Drive Registration 2026",
+    companyName: "Google Cloud India",
+    studentName: "Pooja Hegde",
+    studentEmail: "pooja.2022csm022@college.edu.in",
+    phone: "+91 97011 22334",
+    rollNo: "2022CSM022",
+    department: "CSM",
+    tenthSchoolName: "St. Ann's High School, Secunderabad",
+    tenthBoard: "CBSE",
+    tenthPercentage: 96.0,
+    tenthYearOfPassing: "2020",
+    qualificationStream: "Intermediate",
+    interCollegeName: "Narayana Junior College, Madhapur",
+    interBoard: "TS BIE",
+    interPercentage: 98.1,
+    interYearOfPassing: "2022",
+    resumeFileName: "Pooja_Hegde_AIML_CV.pdf",
+    passportPhotoUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80",
+    submittedAt: "2026-08-04 12:15",
+  },
+  {
+    id: "APP-REC-007",
+    formId: "APP-FORM-2026-GGL",
+    driveTitle: "Google Cloud SDE Placement Drive Registration 2026",
+    companyName: "Google Cloud India",
+    studentName: "Karthik Rao",
+    studentEmail: "karthik.2022ece088@college.edu.in",
+    phone: "+91 99633 44556",
+    rollNo: "2022ECE088",
+    department: "ECE",
+    tenthSchoolName: "Gowtham Model School, Koti",
+    tenthBoard: "SSC Telangana",
+    tenthPercentage: 91.0,
+    tenthYearOfPassing: "2020",
+    qualificationStream: "Diploma",
+    diplomaCollegeName: "Govt Polytechnic Masab Tank",
+    diplomaBranch: "Electronics & Communication",
+    diplomaPercentage: 90.4,
+    diplomaYearOfPassing: "2023",
+    resumeFileName: "Karthik_Rao_ECE_Resume.pdf",
+    passportPhotoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+    submittedAt: "2026-08-04 13:00",
+  },
+  {
+    id: "APP-REC-008",
+    formId: "APP-FORM-2026-GGL",
+    driveTitle: "Google Cloud SDE Placement Drive Registration 2026",
+    companyName: "Google Cloud India",
+    studentName: "Divya Sree",
+    studentEmail: "divya.2022inf012@college.edu.in",
+    phone: "+91 96522 77889",
+    rollNo: "2022INF012",
+    department: "IT",
+    tenthSchoolName: "Kendriya Vidyalaya Begumpet",
+    tenthBoard: "CBSE",
+    tenthPercentage: 93.8,
+    tenthYearOfPassing: "2020",
+    qualificationStream: "Intermediate",
+    interCollegeName: "Narayana Junior College, Kukatpally",
+    interBoard: "TS BIE",
+    interPercentage: 95.5,
+    interYearOfPassing: "2022",
+    resumeFileName: "Divya_Sree_IT_Resume.pdf",
+    passportPhotoUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&auto=format&fit=crop&q=80",
+    submittedAt: "2026-08-04 13:45",
+  },
+  {
+    id: "APP-REC-009",
+    formId: "APP-FORM-2026-GGL",
+    driveTitle: "Google Cloud SDE Placement Drive Registration 2026",
+    companyName: "Google Cloud India",
+    studentName: "Manish Kumar",
+    studentEmail: "manish.2022csd031@college.edu.in",
+    phone: "+91 98855 66778",
+    rollNo: "2022CSD031",
+    department: "CSD",
+    tenthSchoolName: "Hyderabad Public School (HPS), Begumpet",
+    tenthBoard: "ICSE",
+    tenthPercentage: 97.2,
+    tenthYearOfPassing: "2020",
+    qualificationStream: "Intermediate",
+    interCollegeName: "FIITJEE World School, Jubilee Hills",
+    interBoard: "TS BIE",
+    interPercentage: 96.4,
+    interYearOfPassing: "2022",
+    resumeFileName: "Manish_Kumar_DataScience.pdf",
+    passportPhotoUrl: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80",
+    submittedAt: "2026-08-04 14:20",
+  },
+  {
+    id: "APP-REC-004",
+    formId: "APP-FORM-2026-GGL",
+    driveTitle: "Google Cloud SDE Placement Drive Registration 2026",
+    companyName: "Google Cloud India",
+    studentName: "Ananya Sharma",
+    studentEmail: "ananya.2022cse099@college.edu.in",
+    phone: "+91 97766 55443",
+    rollNo: "2022CSE099",
+    department: "CSE",
+    tenthSchoolName: "Delhi Public School, Nacharam",
+    tenthBoard: "CBSE",
+    tenthPercentage: 95.2,
+    tenthYearOfPassing: "2020",
+    qualificationStream: "Intermediate",
+    interCollegeName: "FIITJEE Junior College, Hyderabad",
+    interBoard: "TS BIE",
+    interPercentage: 96.8,
+    interYearOfPassing: "2022",
+    resumeFileName: "Ananya_Sharma_SDE_Resume.pdf",
+    passportPhotoUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
+    submittedAt: "2026-08-04 10:15",
+  },
+  {
+    id: "APP-REC-001",
+    formId: "APP-FORM-2026-GGL",
+    driveTitle: "Google Cloud SDE Placement Drive Registration 2026",
+    companyName: "Google Cloud India",
+    studentName: "K. Sai Teja",
+    studentEmail: "23341a4229@college.edu.in",
+    phone: "+91 98765 43210",
+    rollNo: "23341A4229",
+    department: "CSM",
+    tenthSchoolName: "St. Johns High School, Hyderabad",
+    tenthBoard: "SSC Telangana",
+    tenthPercentage: 94.5,
+    tenthYearOfPassing: "2020",
+    qualificationStream: "Intermediate",
+    interCollegeName: "Narayana Junior College",
+    interBoard: "TS BIE",
+    interPercentage: 96.2,
+    interYearOfPassing: "2022",
+    resumeFileName: "Sai_Teja_Resume_2026.pdf",
+    passportPhotoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    submittedAt: "2026-08-02 11:30",
+  },
+  {
+    id: "APP-REC-002",
+    formId: "APP-FORM-2026-GGL",
+    driveTitle: "Google Cloud SDE Placement Drive Registration 2026",
+    companyName: "Google Cloud India",
+    studentName: "Sneha Reddy",
+    studentEmail: "sneha.2022ece042@college.edu.in",
+    phone: "+91 98123 45678",
+    rollNo: "2022ECE042",
+    department: "ECE",
+    tenthSchoolName: "Kendriya Vidyalaya, Uppal",
+    tenthBoard: "CBSE",
+    tenthPercentage: 92.0,
+    tenthYearOfPassing: "2020",
+    qualificationStream: "Diploma",
+    diplomaCollegeName: "Govt Polytechnic Hyderabad",
+    diplomaBranch: "Electronics & Communication",
+    diplomaPercentage: 89.5,
+    diplomaYearOfPassing: "2023",
+    resumeFileName: "Sneha_Reddy_Resume.pdf",
+    passportPhotoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+    submittedAt: "2026-08-02 14:15",
+  },
+  {
+    id: "APP-REC-003",
+    formId: "APP-FORM-2026-GGL",
+    driveTitle: "Google Cloud SDE Placement Drive Registration 2026",
+    companyName: "Google Cloud India",
+    studentName: "Vikram Malhotra",
+    studentEmail: "vikram.2022cse015@college.edu.in",
+    phone: "+91 99887 76655",
+    rollNo: "2022CSE015",
+    department: "CSE",
+    tenthSchoolName: "Chaitanya Techno School",
+    tenthBoard: "CBSE",
+    tenthPercentage: 96.8,
+    tenthYearOfPassing: "2020",
+    qualificationStream: "Intermediate",
+    interCollegeName: "Sri Chaitanya Junior College",
+    interBoard: "TS BIE",
+    interPercentage: 97.4,
+    interYearOfPassing: "2022",
+    resumeFileName: "Vikram_Malhotra_CV.pdf",
+    passportPhotoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+    submittedAt: "2026-08-03 09:45",
+  },
+];
+
+export function saveStudentDriveApplication(app: StudentDriveApplication) {
+  SHARED_STUDENT_DRIVE_APPLICATIONS.unshift(app);
+  const form = SHARED_DRIVE_APPLICATION_FORMS.find((f) => f.id === app.formId);
+  if (form) {
+    form.applicantCount += 1;
+  }
+}
+
+export function createDriveApplicationForm(form: DriveApplicationForm) {
+  SHARED_DRIVE_APPLICATION_FORMS.unshift(form);
+}
+
 /**
  * Shared live queue — contains all assessment requests visible to the TPO.
  */

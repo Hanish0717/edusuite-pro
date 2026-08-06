@@ -325,11 +325,11 @@ export const RECRUITER_NAVIGATION: NavSection[] = [
     label: "Recruiter Portal",
     items: [
       { title: "Dashboard", url: "/external-user/dashboard?module=dashboard", icon: LayoutDashboard },
+      { title: "Drive Applications", url: "/external-user/dashboard?module=drive-applications", icon: FileText },
       { title: "Company Profile", url: "/external-user/dashboard?module=company-profile", icon: Building2 },
       { title: "Placement Drives", url: "/external-user/dashboard?module=placement-drives", icon: Briefcase },
       { title: "Assessments", url: "/external-user/dashboard?module=assessments", icon: FileCheck2 },
       { title: "Question Bank", url: "/external-user/dashboard?module=question-bank", icon: Database },
-      { title: "Assessment Requests", url: "/external-user/dashboard?module=assessment-requests", icon: Send },
       { title: "Interview Management", url: "/external-user/dashboard?module=interviews", icon: Video },
       { title: "Offer Management", url: "/external-user/dashboard?module=offers", icon: Award },
       { title: "Reports", url: "/external-user/dashboard?module=reports", icon: BarChart3 },

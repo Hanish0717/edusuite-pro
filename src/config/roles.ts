@@ -347,11 +347,11 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
   },
   staff: {
     id: "staff",
-    label: "Staff (Faculty)",
-    personaName: "Dr. Ravi Kumar",
-    personaMeta: "Faculty - Computer Science & Engineering",
-    initials: "RK",
-    flags: ["isMentor", "isClassAdvisor"],
+    label: "Staff (Placement Officer)",
+    personaName: "Mr. Karthik Nair",
+    personaMeta: "Placement Officer - Training & Placement Cell",
+    initials: "KN",
+    flags: ["isPlacementOfficer"],
     department: "CSE",
   },
   "external-user": {
