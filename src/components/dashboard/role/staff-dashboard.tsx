@@ -37,6 +37,7 @@ import {
   type FacultyDashboardData,
 } from "@/data/faculty-mock-data";
 import { toast } from "sonner";
+import { FacultyModuleView } from "@/modules/faculty";
 
 export function StaffDashboard() {
   const { hasFlag, profile } = useRole();
@@ -114,6 +115,18 @@ export function StaffDashboard() {
       </div>
 
       {/* 2. DYNAMIC COMPOSABLE SECTIONS FOR ADMINISTRATIVE OVERLAYS */}
+      {(hasFlag("isSuperAdmin") || profile.role === "super-admin" || profile.role === "super_admin") && (
+        <div className="space-y-4 border-b border-border/60 pb-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-primary flex items-center gap-2">
+              <UserCog className="size-4" /> Super Admin Faculty Governance Portal
+            </h3>
+            <Badge variant="secondary">Super Admin Privileges</Badge>
+          </div>
+          <FacultyModuleView initialTab="faculty-status" />
+        </div>
+      )}
+
       {hasFlag("isHod") && (
         <div className="space-y-4 border-b border-border/60 pb-6">
           <div className="flex items-center justify-between">

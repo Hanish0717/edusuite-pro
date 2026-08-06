@@ -92,13 +92,29 @@ function getCurrentDay(): WeeklySlot["day"] | null {
   return dayMap[new Date().getDay()] ?? null;
 }
 
+function parseToMins(tStr: string): number {
+  const match = tStr.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+  if (!match) {
+    const parts = tStr.split(":");
+    return parseInt(parts[0] || "0") * 60 + parseInt(parts[1] || "0");
+  }
+  let hrs = parseInt(match[1] || "0");
+  const mins = parseInt(match[2] || "0");
+  const ampm = match[3];
+  if (ampm) {
+    if (ampm.toUpperCase() === "PM" && hrs < 12) hrs += 12;
+    if (ampm.toUpperCase() === "AM" && hrs === 12) hrs = 0;
+  }
+  return hrs * 60 + mins;
+}
+
 function isSlotOngoing(slot: WeeklySlot): boolean {
   const now = new Date();
-  const [startH, startM] = slot.startTime.split(":").map(Number);
-  const [endH, endM] = slot.endTime.split(":").map(Number);
+  const [startPart, endPart] = slot.timeSlot.split(" - ");
+  if (!startPart || !endPart) return false;
   const nowMins = now.getHours() * 60 + now.getMinutes();
-  const startMins = (startH ?? 0) * 60 + (startM ?? 0);
-  const endMins = (endH ?? 0) * 60 + (endM ?? 0);
+  const startMins = parseToMins(startPart);
+  const endMins = parseToMins(endPart);
   return nowMins >= startMins && nowMins < endMins;
 }
 
@@ -111,21 +127,32 @@ function isLunchOngoing(): boolean {
   return nowMins >= (startH ?? 0) * 60 + (startM ?? 0) && nowMins < (endH ?? 0) * 60 + (endM ?? 0);
 }
 
+function isTimeSlotActive(timeSlot: string): boolean {
+  const [start, end] = timeSlot.split(" - ");
+  if (!start || !end) return false;
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  const startMins = parseToMins(start);
+  const endMins = parseToMins(end);
+  return nowMins >= startMins && nowMins < endMins;
+}
+
 // ─── Class card inside a cell ─────────────────────────────────────────────────
-function ClassCard({ cell, ongoing }: { cell: WeeklySlot; ongoing: boolean }) {
+function ClassCard({ cell, ongoing, isUpcoming }: { cell: WeeklySlot; ongoing: boolean; isUpcoming: boolean }) {
   const cfg = TYPE_CONFIG[cell.type] ?? TYPE_CONFIG.Theory;
   const Icon = cfg.icon;
 
   return (
     <div
       className={cn(
-        "rounded-xl p-2.5 h-full flex flex-col gap-1 transition-all duration-300 cursor-default select-none",
+        "rounded-xl p-2.5 h-full flex flex-col gap-1 transition-all duration-300 cursor-default select-none border",
         cfg.bg,
         cfg.border,
-        ongoing && "ring-2 ring-offset-1 ring-primary/60 shadow-glow"
+        ongoing && "ring-2 ring-offset-1 ring-primary/60 shadow-glow",
+        isUpcoming && "ring-2 ring-offset-1 ring-blue-500/40 shadow-glow"
       )}
     >
-      {/* Top row: type badge + ongoing pill */}
+      {/* Top row: type badge + ongoing / upcoming pill */}
       <div className="flex items-center justify-between gap-1 flex-wrap">
         <Badge
           variant="outline"
@@ -137,6 +164,11 @@ function ClassCard({ cell, ongoing }: { cell: WeeklySlot; ongoing: boolean }) {
         {ongoing && (
           <span className="text-[0.48rem] font-black uppercase tracking-widest bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full animate-pulse">
             LIVE
+          </span>
+        )}
+        {isUpcoming && (
+          <span className="text-[0.48rem] font-black uppercase tracking-widest bg-blue-600 text-white px-1.5 py-0.5 rounded-full">
+            UPCOMING
           </span>
         )}
       </div>
@@ -196,10 +228,28 @@ function LunchCell({ isCurrentDay, isOngoing }: { isCurrentDay: boolean; isOngoi
 }
 
 // ─── Free period cell ─────────────────────────────────────────────────────────
-function FreePeriodCell() {
+function FreePeriodCell({ day, timeSlot }: { day: string; timeSlot: string }) {
+  const subtitles = [
+    "Research",
+    "Student Mentoring",
+    "Paper Evaluation",
+    "Preparation",
+    "Department Work",
+  ];
+  const hash = (day.length + timeSlot.length) % subtitles.length;
+  const subtitle = subtitles[hash] || "Research";
+
   return (
-    <div className="h-full flex items-center justify-center text-muted-foreground/25 text-[0.52rem] font-bold italic border border-dashed border-border/15 rounded-xl bg-muted/5 hover:bg-muted/10 transition-colors">
-      Free
+    <div className="rounded-xl p-2.5 h-full flex flex-col gap-1 border border-dashed border-border/30 bg-muted/5 hover:bg-muted/10 transition-all select-none justify-center">
+      <div className="flex items-center gap-1.5">
+        <Clock className="size-3 text-muted-foreground/40 shrink-0" />
+        <span className="text-[0.55rem] font-extrabold text-muted-foreground/60 uppercase tracking-wider">
+          Free Period
+        </span>
+      </div>
+      <p className="text-[0.62rem] font-semibold text-muted-foreground/45">
+        {subtitle}
+      </p>
     </div>
   );
 }
@@ -221,7 +271,24 @@ export function WeeklyGrid({ slots }: WeeklyGridProps) {
   const getSlot = (day: WeeklySlot["day"], timeSlot: string) =>
     slots.find((s) => s.day === day && s.timeSlot === timeSlot);
 
-  const todayIdx = days.indexOf(currentDay as WeeklySlot["day"]);
+  // Find the upcoming class on the current day
+  const upcomingClass = (() => {
+    if (!currentDay) return null;
+    const todayClasses = slots.filter((s) => s.day === currentDay);
+    const now = new Date();
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+
+    const sortedToday = [...todayClasses].sort((a, b) => {
+      const [aStart] = a.timeSlot.split(" - ");
+      const [bStart] = b.timeSlot.split(" - ");
+      return parseToMins(aStart || "") - parseToMins(bStart || "");
+    });
+
+    return sortedToday.find((s) => {
+      const [start] = s.timeSlot.split(" - ");
+      return parseToMins(start || "") > nowMins;
+    }) || null;
+  })();
 
   return (
     <Panel
@@ -264,7 +331,7 @@ export function WeeklyGrid({ slots }: WeeklyGridProps) {
           >
             {/* empty corner */}
             <div />
-            {days.map((day, i) => {
+            {days.map((day) => {
               const isToday = day === currentDay;
               return (
                 <div
@@ -292,6 +359,7 @@ export function WeeklyGrid({ slots }: WeeklyGridProps) {
             {TIME_SLOTS.map((timeSlot) => {
               const isLunch = timeSlot === LUNCH_SLOT;
               const [start, end] = timeSlot.split(" - ");
+              const isSlotActive = isTimeSlotActive(timeSlot);
 
               return (
                 <div
@@ -302,20 +370,20 @@ export function WeeklyGrid({ slots }: WeeklyGridProps) {
                   {/* Time label */}
                   <div
                     className={cn(
-                      "flex flex-col items-center justify-center text-center rounded-xl px-1 py-1.5",
-                      isLunch ? "bg-amber-500/10" : "bg-muted/20"
+                      "flex flex-col items-center justify-center text-center rounded-xl px-1 py-1.5 transition-colors border",
+                      isLunch ? "bg-amber-500/10 border-amber-500/20" : isSlotActive ? "bg-primary/10 border-primary/20" : "bg-muted/20 border-transparent"
                     )}
                   >
                     <Clock
                       className={cn(
                         "size-3 mb-0.5",
-                        isLunch ? "text-amber-500" : "text-muted-foreground"
+                        isLunch ? "text-amber-500" : isSlotActive ? "text-primary" : "text-muted-foreground"
                       )}
                     />
                     <span
                       className={cn(
                         "font-mono font-bold leading-tight",
-                        isLunch ? "text-amber-600 text-[0.55rem]" : "text-muted-foreground text-[0.52rem]"
+                        isLunch ? "text-amber-600 text-[0.55rem]" : isSlotActive ? "text-primary text-[0.55rem]" : "text-muted-foreground text-[0.52rem]"
                       )}
                     >
                       {start}
@@ -323,7 +391,7 @@ export function WeeklyGrid({ slots }: WeeklyGridProps) {
                     <span
                       className={cn(
                         "font-mono leading-tight",
-                        isLunch ? "text-amber-500/70 text-[0.45rem]" : "text-muted-foreground/50 text-[0.45rem]"
+                        isLunch ? "text-amber-500/70 text-[0.45rem]" : isSlotActive ? "text-primary/70 text-[0.45rem]" : "text-muted-foreground/50 text-[0.45rem]"
                       )}
                     >
                       {end}
@@ -335,6 +403,7 @@ export function WeeklyGrid({ slots }: WeeklyGridProps) {
                     const isToday = day === currentDay;
                     const cell = getSlot(day, timeSlot);
                     const ongoing = !!cell && isToday && isSlotOngoing(cell);
+                    const isUpcoming = !!cell && isToday && upcomingClass?.timeSlot === cell.timeSlot;
 
                     return (
                       <div
@@ -351,9 +420,9 @@ export function WeeklyGrid({ slots }: WeeklyGridProps) {
                             isOngoing={lunchOngoing}
                           />
                         ) : cell ? (
-                          <ClassCard cell={cell} ongoing={ongoing} />
+                          <ClassCard cell={cell} ongoing={ongoing} isUpcoming={isUpcoming} />
                         ) : (
-                          <FreePeriodCell />
+                          <FreePeriodCell day={day} timeSlot={timeSlot} />
                         )}
                       </div>
                     );
