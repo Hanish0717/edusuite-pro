@@ -72,7 +72,7 @@ export function AlumniPage() {
   const isAlumniUser = role === "external-user" || externalPersona === "alumni";
 
   const searchObj = (location.search || {}) as Record<string, string | undefined>;
-  const activeModule = (searchObj["tab"] as string) || "directory";
+  const activeModule = (searchObj["tab"] as string) || "dashboard";
   const activeSubTab: string = searchObj["sub"] || "";
 
   // Shared State
