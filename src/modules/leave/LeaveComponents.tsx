@@ -872,7 +872,7 @@ export function LeaveModuleView() {
                                     setIsViewDialogOpen(true);
                                   }}
                                   className="size-7 rounded-lg text-muted-foreground hover:text-foreground cursor-pointer"
-                                  title="View Dossier"
+                                  title="View Details"
                                 >
                                   <Eye className="size-3.5" />
                                 </Button>

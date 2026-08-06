@@ -502,7 +502,7 @@ export function StudentsModuleView({
                           size="sm"
                           onClick={() => handleOpenView(s)}
                           className="h-7 text-xs font-medium gap-1 text-muted-foreground hover:text-foreground"
-                          title="View Dossier"
+                          title="View Profile"
                         >
                           <Eye className="size-3.5" /> Details
                         </Button>
@@ -800,7 +800,7 @@ export function StudentsModuleView({
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <GraduationCap className="size-5 text-primary" /> Student Profile Dossier
+              <GraduationCap className="size-5 text-primary" /> Student Profile
             </DialogTitle>
           </DialogHeader>
 
@@ -855,7 +855,7 @@ export function StudentsModuleView({
                   onClick={() => setIsViewOpen(false)}
                   className="w-full text-xs"
                 >
-                  Close Dossier
+                  Close Profile
                 </Button>
               </DialogFooter>
             </div>

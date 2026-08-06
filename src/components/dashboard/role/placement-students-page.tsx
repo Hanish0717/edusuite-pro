@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   GraduationCap,
   Search,
@@ -18,6 +18,10 @@ import {
   ShieldCheck,
   Check,
   Zap,
+  RotateCcw,
+  UserCheck,
+  X,
+  BadgeAlert,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -33,7 +37,6 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export interface StudentPlacementRecord {
   id: string;
@@ -74,9 +77,9 @@ const INITIAL_STUDENTS_LIST: StudentPlacementRecord[] = [
     backlogs: 0,
     atsScore: 91,
     eligibilityStatus: "Eligible",
-    placementStatus: "Placed",
+    placementStatus: "In Interview Stage",
     companyName: "Google Cloud India",
-    ctcPackage: "₹32.0 LPA",
+    ctcPackage: "₹24.0 LPA",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
   },
   {
@@ -89,6 +92,8 @@ const INITIAL_STUDENTS_LIST: StudentPlacementRecord[] = [
     atsScore: 88,
     eligibilityStatus: "Eligible",
     placementStatus: "In Interview Stage",
+    companyName: "Microsoft",
+    ctcPackage: "₹18.0 LPA",
     avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
   },
   {
@@ -134,41 +139,80 @@ export function PlacementStudentsWorkspace() {
   const [searchQuery, setSearchQuery] = useState("");
   const [deptFilter, setDeptFilter] = useState("All");
   const [eligibilityFilter, setEligibilityFilter] = useState("All");
+  const [placementFilter, setPlacementFilter] = useState("All");
+  const [cgpaCutoffFilter, setCgpaCutoffFilter] = useState<number>(0);
+  const [backlogFilter, setBacklogFilter] = useState<string>("All");
+
   const [selectedStudent, setSelectedStudent] = useState<StudentPlacementRecord | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const handleRefreshEligibility = () => {
-    toast.success("Refreshed placement eligibility rules across 1,250 student profiles.");
+    toast.success("Refreshed placement eligibility rules across student profiles.");
   };
 
-  const handleRecalculateRules = () => {
-    toast.info("Recalculated CGPA cutoffs and active backlog criteria.");
-  };
+  const filteredStudents = useMemo(() => {
+    return students.filter((s) => {
+      // 1. Search Query
+      const matchesSearch =
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.rollNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (s.companyName && s.companyName.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  const handleExportCSV = () => {
-    toast.success("Exported Student Placement Directory CSV.");
-  };
+      // 2. Department / Branch
+      const matchesDept = deptFilter === "All" || s.department === deptFilter;
 
-  const handleNotifyStudents = () => {
-    toast.info("Broadcasted placement updates to eligible student batch.");
-  };
+      // 3. Eligibility Status
+      const matchesElig = eligibilityFilter === "All" || s.eligibilityStatus === eligibilityFilter;
 
-  const filteredStudents = students.filter((s) => {
-    const matchesSearch =
-      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.rollNo.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDept = deptFilter === "All" || s.department === deptFilter;
-    const matchesElig = eligibilityFilter === "All" || s.eligibilityStatus === eligibilityFilter;
-    return matchesSearch && matchesDept && matchesElig;
-  });
+      // 4. Placement Status
+      const matchesPlacement = placementFilter === "All" || s.placementStatus === placementFilter;
+
+      // 5. CGPA Cutoff
+      const matchesCgpa = cgpaCutoffFilter === 0 || s.cgpa >= cgpaCutoffFilter;
+
+      // 6. Backlog Filter
+      const matchesBacklog =
+        backlogFilter === "All" ||
+        (backlogFilter === "ZERO" && s.backlogs === 0) ||
+        (backlogFilter === "MAX_1" && s.backlogs <= 1);
+
+      return matchesSearch && matchesDept && matchesElig && matchesPlacement && matchesCgpa && matchesBacklog;
+    });
+  }, [
+    students,
+    searchQuery,
+    deptFilter,
+    eligibilityFilter,
+    placementFilter,
+    cgpaCutoffFilter,
+    backlogFilter,
+  ]);
+
+  const hasActiveFilters =
+    searchQuery.trim().length > 0 ||
+    deptFilter !== "All" ||
+    eligibilityFilter !== "All" ||
+    placementFilter !== "All" ||
+    cgpaCutoffFilter > 0 ||
+    backlogFilter !== "All";
+
+  const resetFilters = () => {
+    setSearchQuery("");
+    setDeptFilter("All");
+    setEligibilityFilter("All");
+    setPlacementFilter("All");
+    setCgpaCutoffFilter(0);
+    setBacklogFilter("All");
+    toast.success("Reset student directory filters!");
+  };
 
   return (
-    <div className="space-y-6 animate-fade-up">
+    <div className="space-y-6 font-sans animate-fade-up">
       {/* HEADER BANNER */}
-      <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card p-6 shadow-sm sm:p-8 backdrop-blur-xl">
+      <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10">
           <div className="flex items-start gap-4">
-            <div className="size-16 rounded-2xl bg-brand-gradient text-white grid place-items-center font-extrabold text-2xl shadow-glow shrink-0">
+            <div className="size-16 rounded-2xl bg-blue-600 text-white grid place-items-center font-extrabold text-2xl shadow-md shrink-0">
               <GraduationCap className="size-8" />
             </div>
             <div className="space-y-1">
@@ -181,7 +225,7 @@ export function PlacementStudentsWorkspace() {
                 </Badge>
               </div>
               <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight">
-                Student Directory & Automated Eligibility Engine
+                Student Placement Directory &amp; Automated Eligibility Engine
               </h1>
               <p className="text-xs text-muted-foreground font-mono">
                 Manage candidate eligibility criteria, ATS resume scores, policy overrides, and branch placement status.
@@ -189,229 +233,300 @@ export function PlacementStudentsWorkspace() {
             </div>
           </div>
 
-          {/* ACTION BUTTONS — NO GENERIC "CREATE ITEM" MODAL */}
           <div className="flex flex-wrap items-center gap-2.5">
             <Button
               onClick={handleRefreshEligibility}
-              className="bg-brand-gradient shadow-glow font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-xs"
             >
               <RefreshCw className="size-4" /> Refresh Eligibility
             </Button>
             <Button
-              onClick={handleRecalculateRules}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5"
-            >
-              <Zap className="size-4" /> Recalculate Rules
-            </Button>
-            <Button
               variant="outline"
-              onClick={handleExportCSV}
+              onClick={() => toast.success("Exported Student Directory CSV")}
               className="text-xs rounded-xl h-10 px-3 cursor-pointer gap-1.5"
             >
-              <Download className="size-3.5" /> Export Ledger
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleNotifyStudents}
-              className="text-xs rounded-xl h-10 px-3 cursor-pointer gap-1.5"
-            >
-              <Bell className="size-3.5" /> Notify Students
+              <Download className="size-3.5" /> Export Directory CSV
             </Button>
           </div>
         </div>
       </div>
 
-      {/* KPI DASHBOARD */}
-      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
+      {/* KPI METRICS */}
+      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-5">
         {[
-          { label: "Total Registered", val: "1,250", desc: "Batch 2026", color: "text-blue-600 bg-blue-500/10" },
-          { label: "Eligible Candidates", val: "1,080", desc: "CGPA ≥7.5 & 0 Backlogs", color: "text-emerald-600 bg-emerald-500/10" },
-          { label: "Placed Students", val: "890", desc: "Confirmed Job Offers", color: "text-emerald-600 bg-emerald-500/10" },
-          { label: "Unplaced Candidates", val: "190", desc: "In Active Placement", color: "text-amber-600 bg-amber-500/10" },
-          { label: "Ineligible / Blocked", val: "170", desc: "Backlogs / Dues", color: "text-rose-600 bg-rose-500/10" },
-          { label: "Average CGPA", val: "8.2 / 10", desc: "Batch Merit Avg", color: "text-purple-600 bg-purple-500/10" },
-          { label: "Avg ATS Resume Score", val: "84.5%", desc: "Verified Resumes", color: "text-teal-600 bg-teal-500/10" },
+          { label: "Total Students", val: `${students.length}`, desc: "Batch 2026", color: "text-blue-600 bg-blue-500/10" },
+          { label: "Eligible Students", val: `${students.filter(s => s.eligibilityStatus === "Eligible").length}`, desc: "Qualified", color: "text-emerald-600 bg-emerald-500/10" },
+          { label: "Placed Candidates", val: `${students.filter(s => s.placementStatus === "Placed").length}`, desc: "Offers Secured", color: "text-purple-600 bg-purple-500/10" },
+          { label: "In Interview Stage", val: `${students.filter(s => s.placementStatus === "In Interview Stage").length}`, desc: "Active Drives", color: "text-amber-600 bg-amber-500/10" },
+          { label: "Blocked / Ineligible", val: `${students.filter(s => s.eligibilityStatus !== "Eligible").length}`, desc: "Policy Holds", color: "text-rose-600 bg-rose-500/10" },
         ].map((kpi) => (
-          <div key={kpi.label} className="p-3.5 rounded-2xl border border-border/70 bg-card space-y-1 shadow-xs">
-            <span className="text-[0.65rem] font-semibold text-muted-foreground block truncate">{kpi.label}</span>
-            <p className="font-display text-xl font-extrabold">{kpi.val}</p>
-            <span className={`text-[0.62rem] font-mono px-1.5 py-0.5 rounded-md ${kpi.color}`}>
+          <div key={kpi.label} className="p-4 rounded-2xl border border-border bg-card space-y-1 shadow-2xs">
+            <span className="text-xs font-semibold text-muted-foreground block truncate">{kpi.label}</span>
+            <p className="font-display text-2xl font-extrabold">{kpi.val}</p>
+            <span className={`text-[0.65rem] font-mono px-2 py-0.5 rounded-md ${kpi.color}`}>
               {kpi.desc}
             </span>
           </div>
         ))}
       </div>
 
-      {/* SEARCH & FILTERS BAR */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-xs space-y-3">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="relative flex-1 w-full">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search students by candidate name, roll number, or department..."
-              className="h-10 border-input bg-background/60 pl-9 text-xs focus-visible:ring-primary rounded-xl"
-            />
+      {/* MULTI-CRITERION STUDENT DIRECTORY SMART FILTER PANEL */}
+      <div className="bg-card rounded-3xl border border-border p-5 space-y-4 shadow-2xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="size-4 text-blue-600" />
+            <h3 className="font-extrabold text-xs uppercase tracking-wider text-foreground font-mono">
+              Placement Officer Student Filter Engine
+            </h3>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {hasActiveFilters && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={resetFilters}
+              className="h-7 text-[0.68rem] font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg gap-1 cursor-pointer"
+            >
+              <RotateCcw className="size-3" /> Reset All Filters
+            </Button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 font-sans text-xs">
+          {/* 1. Search */}
+          <div className="space-y-1">
+            <label className="text-[0.68rem] font-bold text-muted-foreground font-mono">Search Student / Roll No:</label>
+            <div className="relative">
+              <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Student Name, Roll No..."
+                className="h-9 text-xs pl-8 rounded-xl bg-background border-input font-sans"
+              />
+            </div>
+          </div>
+
+          {/* 2. Branch */}
+          <div className="space-y-1">
+            <label className="text-[0.68rem] font-bold text-muted-foreground font-mono">Branch / Department:</label>
             <select
               value={deptFilter}
               onChange={(e) => setDeptFilter(e.target.value)}
-              className="h-10 rounded-xl border border-input bg-card px-3 text-xs font-semibold text-foreground cursor-pointer"
+              className="w-full h-9 text-xs rounded-xl bg-background border border-input px-3 font-sans"
             >
-              <option value="All">All Departments</option>
+              <option value="All">All Branches</option>
               <option value="CSE">CSE</option>
               <option value="ECE">ECE</option>
               <option value="EEE">EEE</option>
               <option value="ME">ME</option>
             </select>
+          </div>
 
+          {/* 3. Eligibility */}
+          <div className="space-y-1">
+            <label className="text-[0.68rem] font-bold text-muted-foreground font-mono">Eligibility Status:</label>
             <select
               value={eligibilityFilter}
               onChange={(e) => setEligibilityFilter(e.target.value)}
-              className="h-10 rounded-xl border border-input bg-card px-3 text-xs font-semibold text-foreground cursor-pointer"
+              className="w-full h-9 text-xs rounded-xl bg-background border border-input px-3 font-sans"
             >
               <option value="All">All Eligibility Statuses</option>
-              <option value="Eligible">Eligible</option>
-              <option value="Ineligible">Ineligible</option>
+              <option value="Eligible">Eligible ✓</option>
+              <option value="Ineligible">Ineligible ✕</option>
               <option value="Blocked (Fee Dues)">Blocked (Fee Dues)</option>
             </select>
           </div>
+
+          {/* 4. Placement Status */}
+          <div className="space-y-1">
+            <label className="text-[0.68rem] font-bold text-muted-foreground font-mono">Placement Status:</label>
+            <select
+              value={placementFilter}
+              onChange={(e) => setPlacementFilter(e.target.value)}
+              className="w-full h-9 text-xs rounded-xl bg-background border border-input px-3 font-sans"
+            >
+              <option value="All">All Placement Statuses</option>
+              <option value="Placed">Placed 🎉</option>
+              <option value="In Interview Stage">In Interview Stage ⏳</option>
+              <option value="Unplaced">Unplaced</option>
+            </select>
+          </div>
+
+          {/* 5. CGPA Cutoff */}
+          <div className="space-y-1">
+            <label className="text-[0.68rem] font-bold text-muted-foreground font-mono">Min CGPA Threshold:</label>
+            <select
+              value={cgpaCutoffFilter}
+              onChange={(e) => setCgpaCutoffFilter(Number(e.target.value))}
+              className="w-full h-9 text-xs rounded-xl bg-background border border-input px-3 font-sans"
+            >
+              <option value={0}>All CGPA Scores</option>
+              <option value={8.5}>Top Tier (&ge; 8.5 CGPA)</option>
+              <option value={7.5}>Mid Tier (&ge; 7.5 CGPA)</option>
+              <option value={6.5}>Passing (&ge; 6.5 CGPA)</option>
+            </select>
+          </div>
         </div>
+
+        {/* ACTIVE FILTER CHIPS */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border text-xs font-mono">
+            <span className="text-[0.68rem] text-muted-foreground font-bold">Active Filters:</span>
+
+            {deptFilter !== "All" && (
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200 gap-1 rounded-lg">
+                Branch: {deptFilter}
+                <X className="size-3 cursor-pointer" onClick={() => setDeptFilter("All")} />
+              </Badge>
+            )}
+
+            {eligibilityFilter !== "All" && (
+              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 border-emerald-200 gap-1 rounded-lg">
+                Eligibility: {eligibilityFilter}
+                <X className="size-3 cursor-pointer" onClick={() => setEligibilityFilter("All")} />
+              </Badge>
+            )}
+
+            {placementFilter !== "All" && (
+              <Badge variant="secondary" className="bg-purple-100 text-purple-800 border-purple-200 gap-1 rounded-lg">
+                Placement: {placementFilter}
+                <X className="size-3 cursor-pointer" onClick={() => setPlacementFilter("All")} />
+              </Badge>
+            )}
+
+            {cgpaCutoffFilter > 0 && (
+              <Badge variant="secondary" className="bg-amber-100 text-amber-900 border-amber-200 gap-1 rounded-lg">
+                CGPA: &ge; {cgpaCutoffFilter}
+                <X className="size-3 cursor-pointer" onClick={() => setCgpaCutoffFilter(0)} />
+              </Badge>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* STUDENT TABLE DIRECTORY */}
-      <Panel
-        title="Student Placement Directory & Automated Rule Check"
-        description="Live eligibility statuses, CGPA cutoffs, active backlogs, and verified ATS resume scores."
-      >
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-border bg-muted/30 text-muted-foreground font-mono uppercase text-[0.65rem]">
-                <th className="p-3">Candidate Student</th>
-                <th className="p-3">Roll Number</th>
-                <th className="p-3">Dept</th>
-                <th className="p-3 text-center">CGPA</th>
-                <th className="p-3 text-center">Active Backlogs</th>
-                <th className="p-3 text-center">ATS Resume Score</th>
-                <th className="p-3">Eligibility Rule Status</th>
-                <th className="p-3">Placement Status</th>
-                <th className="p-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/50 font-medium">
-              {filteredStudents.map((s) => (
-                <tr key={s.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="p-3">
+      {/* STUDENT DIRECTORY ROSTER */}
+      <Panel title={`Student Directory Roster (${filteredStudents.length} Students)`}>
+        <div className="space-y-4 pt-1 font-mono text-xs">
+          {filteredStudents.length === 0 ? (
+            <div className="p-10 text-center bg-card rounded-2xl border border-dashed text-muted-foreground font-sans space-y-2">
+              <BadgeAlert className="size-8 mx-auto text-amber-500" />
+              <p className="font-bold text-sm">No student matches the active filter criteria.</p>
+              <Button size="sm" variant="outline" onClick={resetFilters} className="mt-2 text-xs font-bold rounded-xl">
+                Reset All Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredStudents.map((student) => (
+                <div
+                  key={student.id}
+                  className="p-4 rounded-2xl border border-border bg-card space-y-3 shadow-2xs hover:border-blue-400 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <Avatar className="size-8 border border-border">
-                        <AvatarImage src={s.avatar} />
-                        <AvatarFallback>{s.name.substring(0, 2)}</AvatarFallback>
-                      </Avatar>
+                      <img
+                        src={student.avatar}
+                        alt={student.name}
+                        className="size-12 rounded-full object-cover border-2 border-blue-500 shadow-2xs shrink-0"
+                      />
                       <div>
-                        <p className="font-bold text-foreground text-xs">{s.name}</p>
-                        <span className="text-[0.65rem] font-mono text-muted-foreground">{s.department}</span>
+                        <h4 className="font-bold text-sm text-foreground font-sans">{student.name}</h4>
+                        <p className="text-xs font-mono text-primary font-bold">
+                          {student.rollNo} ({student.department})
+                        </p>
+                        <p className="text-[0.68rem] text-muted-foreground font-mono">CGPA: {student.cgpa} • Backlogs: {student.backlogs}</p>
                       </div>
                     </div>
-                  </td>
-                  <td className="p-3 font-mono font-bold text-primary">{s.rollNo}</td>
-                  <td className="p-3 font-mono">{s.department}</td>
-                  <td className="p-3 text-center font-mono font-extrabold text-foreground">{s.cgpa}</td>
-                  <td className="p-3 text-center font-mono font-bold text-amber-600">{s.backlogs}</td>
-                  <td className="p-3 text-center font-mono font-bold text-purple-600">
-                    ⭐ {s.atsScore}%
-                  </td>
-                  <td className="p-3 font-mono">
-                    <Badge className={s.eligibilityStatus === "Eligible" ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"}>
-                      {s.eligibilityStatus}
+
+                    <Badge
+                      className={
+                        student.eligibilityStatus === "Eligible"
+                          ? "bg-emerald-600 text-white"
+                          : student.eligibilityStatus === "Ineligible"
+                          ? "bg-amber-600 text-white"
+                          : "bg-rose-600 text-white"
+                      }
+                    >
+                      {student.eligibilityStatus}
                     </Badge>
-                  </td>
-                  <td className="p-3 font-mono">
-                    <Badge variant="outline" className={s.placementStatus === "Placed" ? "text-emerald-600 border-emerald-500/30" : "text-muted-foreground"}>
-                      {s.placementStatus} {s.companyName ? `(${s.companyName})` : ""}
+                  </div>
+
+                  <div className="p-3 bg-muted/40 rounded-xl border border-border/70 flex items-center justify-between text-xs font-sans">
+                    <div>
+                      <span className="text-[0.68rem] text-muted-foreground block font-mono">Placement Status:</span>
+                      <p className="font-bold text-foreground">{student.placementStatus}</p>
+                      {student.companyName && (
+                        <p className="text-blue-600 font-bold text-[0.7rem]">{student.companyName} ({student.ctcPackage})</p>
+                      )}
+                    </div>
+
+                    <Badge variant="outline" className="font-mono text-[0.7rem] bg-background">
+                      ATS Score: {student.atsScore}%
                     </Badge>
-                  </td>
-                  <td className="p-3 text-right">
+                  </div>
+
+                  <div className="pt-2 border-t border-border/60 flex items-center justify-between text-[0.68rem] text-muted-foreground font-sans">
+                    <span>ID: {student.id}</span>
                     <Button
+                      size="sm"
                       variant="ghost"
-                      size="icon"
                       onClick={() => {
-                        setSelectedStudent(s);
+                        setSelectedStudent(student);
                         setIsDrawerOpen(true);
                       }}
-                      className="size-8 rounded-lg cursor-pointer text-muted-foreground hover:text-foreground"
-                      title="View Student Placement Profile"
+                      className="h-7 text-[0.68rem] font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/50 px-2 rounded-lg cursor-pointer gap-1"
                     >
-                      <Eye className="size-3.5" />
+                      <Eye className="size-3" /> View Credentials
                     </Button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          )}
         </div>
       </Panel>
 
-      {/* STUDENT PROFILE SLIDE-OVER DRAWER */}
+      {/* STUDENT DRAWER */}
       <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto space-y-4">
+        <SheetContent className="w-full sm:max-w-md font-sans">
+          <SheetHeader>
+            <SheetTitle>Student Credentials &amp; Verification</SheetTitle>
+            <SheetDescription>Detailed academic history &amp; placement status.</SheetDescription>
+          </SheetHeader>
+
           {selectedStudent && (
-            <>
-              <SheetHeader className="pb-2 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <Avatar className="size-12 border border-border">
-                    <AvatarImage src={selectedStudent.avatar} />
-                    <AvatarFallback>{selectedStudent.name.substring(0, 2)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <SheetTitle className="text-base font-extrabold">{selectedStudent.name}</SheetTitle>
-                    <SheetDescription className="text-xs font-semibold text-primary">
-                      {selectedStudent.rollNo} • {selectedStudent.department}
-                    </SheetDescription>
-                  </div>
+            <div className="mt-6 space-y-4 font-mono text-xs">
+              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-2xl border">
+                <img
+                  src={selectedStudent.avatar}
+                  alt={selectedStudent.name}
+                  className="size-14 rounded-full object-cover border-2 border-blue-500"
+                />
+                <div>
+                  <h3 className="font-bold text-base text-foreground font-sans">{selectedStudent.name}</h3>
+                  <p className="text-xs text-primary font-bold">{selectedStudent.rollNo} ({selectedStudent.department})</p>
+                  <p className="text-[0.68rem] text-muted-foreground">ID: {selectedStudent.id}</p>
                 </div>
-              </SheetHeader>
+              </div>
 
-              <Tabs defaultValue="overview" className="w-full">
-                <TabsList className="bg-muted/40 p-1 rounded-xl w-full grid grid-cols-3 text-[0.62rem] font-bold mb-4">
-                  <TabsTrigger value="overview" className="rounded-lg">Overview</TabsTrigger>
-                  <TabsTrigger value="resume" className="rounded-lg">Resume ATS</TabsTrigger>
-                  <TabsTrigger value="academics" className="rounded-lg">Academics</TabsTrigger>
-                </TabsList>
+              <div className="space-y-2 p-4 bg-card rounded-2xl border">
+                <p className="font-bold text-foreground font-sans">Academic Breakdown:</p>
+                <p className="text-muted-foreground">Cumulative CGPA: <strong className="text-emerald-600">{selectedStudent.cgpa}</strong></p>
+                <p className="text-muted-foreground">Active Backlogs: <strong className="text-foreground">{selectedStudent.backlogs}</strong></p>
+                <p className="text-muted-foreground">ATS Resume Match: <strong className="text-purple-600">{selectedStudent.atsScore}%</strong></p>
+                <p className="text-muted-foreground">Eligibility Status: <strong className="text-blue-600">{selectedStudent.eligibilityStatus}</strong></p>
+              </div>
 
-                <TabsContent value="overview" className="space-y-3 text-xs mt-0">
-                  <div className="p-4 bg-muted/30 rounded-xl space-y-2 border border-border/50 font-mono">
-                    <p><span className="font-sans text-muted-foreground">Cumulative CGPA:</span> {selectedStudent.cgpa} / 10</p>
-                    <p><span className="font-sans text-muted-foreground">Active Backlogs:</span> {selectedStudent.backlogs}</p>
-                    <p><span className="font-sans text-muted-foreground">Eligibility Status:</span> {selectedStudent.eligibilityStatus}</p>
-                    <p><span className="font-sans text-muted-foreground">Placement Verdict:</span> {selectedStudent.placementStatus}</p>
-                    {selectedStudent.companyName && (
-                      <p><span className="font-sans text-muted-foreground">Offered Company:</span> <span className="font-bold text-emerald-600">{selectedStudent.companyName} ({selectedStudent.ctcPackage})</span></p>
-                    )}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="resume" className="space-y-3 text-xs mt-0">
-                  <div className="p-4 bg-muted/30 rounded-xl space-y-2 border border-border/50 font-mono">
-                    <p className="font-bold font-sans text-purple-600">Verified ATS Resume Breakdown</p>
-                    <p>• ATS Match Score: {selectedStudent.atsScore}%</p>
-                    <p>• Skills Highlighted: Data Structures, C++, Python, SQL, Cloud Architecture</p>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="academics" className="space-y-3 text-xs mt-0">
-                  <div className="p-4 bg-muted/30 rounded-xl space-y-1 font-mono text-muted-foreground">
-                    <p>• Semester 1: 9.0 CGPA</p>
-                    <p>• Semester 2: 9.2 CGPA</p>
-                    <p>• Semester 3: 9.4 CGPA</p>
-                    <p>• Semester 4: 9.2 CGPA</p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </>
+              {selectedStudent.companyName && (
+                <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-1 font-sans">
+                  <p className="font-bold text-emerald-900 dark:text-emerald-200 text-xs">Placed Corporate Record:</p>
+                  <p className="text-xs text-emerald-800 dark:text-emerald-300">
+                    Company: <strong>{selectedStudent.companyName}</strong> ({selectedStudent.ctcPackage})
+                  </p>
+                </div>
+              )}
+            </div>
           )}
         </SheetContent>
       </Sheet>

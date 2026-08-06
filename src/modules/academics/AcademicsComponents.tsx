@@ -600,6 +600,104 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
           ))}
         </div>
       )}
+
+      {/* Add Department Dialog */}
+      <Dialog open={isAddDeptOpen} onOpenChange={setIsAddDeptOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Department</DialogTitle>
+            <DialogDescription>
+              Create a new academic department profile.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleAddDeptSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="dept-code">Department Code</Label>
+                <Input
+                  id="dept-code"
+                  placeholder="e.g. CSE"
+                  value={deptForm.code || ""}
+                  onChange={(e) => setDeptForm({ ...deptForm, code: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dept-name">Department Name</Label>
+                <Input
+                  id="dept-name"
+                  placeholder="e.g. Computer Science"
+                  value={deptForm.name || ""}
+                  onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="hod-name">HOD Name</Label>
+              <Input
+                id="hod-name"
+                placeholder="e.g. Dr. Sarah Smith"
+                value={deptForm.hodName || ""}
+                onChange={(e) => setDeptForm({ ...deptForm, hodName: e.target.value })}
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="faculty-count">Faculty Count</Label>
+                <Input
+                  id="faculty-count"
+                  type="number"
+                  value={deptForm.facultyCount || ""}
+                  onChange={(e) => setDeptForm({ ...deptForm, facultyCount: parseInt(e.target.value) || 0 })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="student-capacity">Student Capacity</Label>
+                <Input
+                  id="student-capacity"
+                  type="number"
+                  value={deptForm.studentCapacity || ""}
+                  onChange={(e) => setDeptForm({ ...deptForm, studentCapacity: parseInt(e.target.value) || 0 })}
+                  required
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="labs-count">Laboratories Count</Label>
+                <Input
+                  id="labs-count"
+                  type="number"
+                  value={deptForm.laboratoriesCount || ""}
+                  onChange={(e) => setDeptForm({ ...deptForm, laboratoriesCount: parseInt(e.target.value) || 0 })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="accreditation">Accreditation</Label>
+                <Input
+                  id="accreditation"
+                  placeholder="e.g. NAAC A+"
+                  value={deptForm.accreditation || ""}
+                  onChange={(e) => setDeptForm({ ...deptForm, accreditation: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsAddDeptOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-brand-gradient text-white">
+                Add Department
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

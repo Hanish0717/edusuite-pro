@@ -644,14 +644,13 @@ export function AppSidebar() {
                   if (hasQueryParam) {
                     isItemActive =
                       href.includes(item.url) ||
-                      (!href.includes("?module=") && item.url.includes("module=dashboard"));
+                      (!href.includes("?module=") && item.url.includes("module=dashboard") && href.endsWith("/dashboard"));
                   } else if (itemCleanPath === "/dashboard" || itemCleanPath === "/") {
                     isItemActive = currentCleanPath === "/dashboard" || currentCleanPath === "/";
                   } else {
                     isItemActive =
                       currentCleanPath === itemCleanPath ||
-                      (itemCleanPath !== "/" && currentCleanPath.startsWith(itemCleanPath)) ||
-                      (itemSlug !== "" && currentCleanPath.includes(`/${itemSlug}`)) ||
+                      (itemCleanPath !== "/" && itemCleanPath !== "/placement" && currentCleanPath.startsWith(itemCleanPath + "/")) ||
                       isChildActive;
                   }
 
@@ -659,7 +658,7 @@ export function AppSidebar() {
                     return (
                       <Collapsible
                         key={item.title}
-                        defaultOpen={true}
+                        defaultOpen={isItemActive}
                         className="group/collapsible"
                       >
                         <SidebarMenuItem>
@@ -667,10 +666,11 @@ export function AppSidebar() {
                             <SidebarMenuButton
                               isActive={isItemActive}
                               tooltip={item.title}
-                              className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
+                             className="h-8 px-3 rounded-[10px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
                             >
                               <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
                               <span className="truncate">{item.title}</span>
+                              <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90 text-[#7F8DB5]" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent className="transition-all duration-200 ease-in-out data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
@@ -678,9 +678,20 @@ export function AppSidebar() {
                               {item.children.map((child) => {
                                 const childCleanPath = (child.url || "").split("?")[0] || "";
                                 const hasSubParam = child.url.includes("?");
-                                const isSubActive = hasSubParam
-                                  ? href.includes(child.url) || (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard"))
-                                  : currentCleanPath === childCleanPath || (childCleanPath !== "/" && currentCleanPath.startsWith(childCleanPath));
+                                let isSubActive = false;
+
+                                if (hasSubParam) {
+                                  if (href.includes("?tab=")) {
+                                    isSubActive = href.includes(child.url);
+                                  } else {
+                                     isSubActive =
+                                       (href.includes("/examinations") && child.url.includes("tab=schedule")) ||
+                                       (href.includes("/alumni") && child.url.includes("tab=dashboard")) ||
+                                       (href.includes("/settings") && child.url.includes("tab=rbac"));
+                                  }
+                                } else {
+                                  isSubActive = currentCleanPath === childCleanPath;
+                                }
                                 return (
                                   <SidebarMenuSubItem key={child.title}>
                                     <SidebarMenuSubButton
@@ -706,7 +717,7 @@ export function AppSidebar() {
                         asChild
                         isActive={isItemActive}
                         tooltip={item.title}
-                        className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
+                        className="h-8 px-3 rounded-[10px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
                       >
                         <Link to={item.url} className="flex items-center gap-3">
                           <item.icon className="size-5 shrink-0 text-[#4D78FF]" />
