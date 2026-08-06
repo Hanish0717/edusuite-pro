@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   SHARED_ASSESSMENT_REQUESTS,
   getAllStudentSubmissions,
@@ -333,8 +333,34 @@ export function AssessmentRequestsApprovalWorkspace() {
   const [isViewApplicantsModalOpen, setIsViewApplicantsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [companyFilter, setCompanyFilter] = useState("All");
+  const [roleFilter, setRoleFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [stageFilter, setStageFilter] = useState<string>("All");
+
+  // Dynamic list of all Companies across requests, application forms & stored scorecards
+  const allAvailableCompanies = useMemo(() => {
+    const set = new Set<string>();
+    requests.forEach((r) => r.company && set.add(r.company));
+    appForms.forEach((f) => f.company && set.add(f.company));
+    ["Google Cloud India", "Infosys Limited", "TCS (Tata Consultancy Services)", "Microsoft India", "Accenture Solutions", "Wipro Technologies", "Qualcomm India", "Amazon AWS"].forEach((c) => set.add(c));
+    return Array.from(set).sort();
+  }, [requests, appForms]);
+
+  // Dynamic list of all Job Roles across requests, application forms & stored scorecards
+  const allAvailableRoles = useMemo(() => {
+    const set = new Set<string>();
+    appForms.forEach((f) => f.role && set.add(f.role));
+    requests.forEach((r) => r.name && set.add(r.name));
+    set.add("Software Engineer I (Cloud Solutions)");
+    set.add("Specialist Programmer (SP)");
+    set.add("Digital Systems Engineer (DSE)");
+    set.add("Systems Engineer (SE)");
+    set.add("TCS Ninja");
+    set.add("TCS Digital");
+    set.add("Cloud Data Engineer");
+    set.add("DevOps Engineer");
+    return Array.from(set).sort();
+  }, [requests, appForms]);
 
   // Selected Request Drawer
   const [selectedReq, setSelectedReq] = useState<AssessmentRequestRecord | null>(null);
@@ -392,8 +418,58 @@ export function AssessmentRequestsApprovalWorkspace() {
   const [dispatchMinCgpa, setDispatchMinCgpa] = useState("7.5");
   const [sharedAssessmentIds, setSharedAssessmentIds] = useState<Record<string, boolean>>({});
 
-  // Student Submissions State & Edit Modal State
   const [studentSubmissionsList, setStudentSubmissionsList] = useState<StudentSubmissionRecord[]>(() => getAllStudentSubmissions());
+
+  const filteredAppForms = useMemo(() => {
+    return appForms.filter((form) => {
+      const q = searchQuery.toLowerCase();
+      const matchesSearch =
+        !searchQuery ||
+        form.title.toLowerCase().includes(q) ||
+        form.id.toLowerCase().includes(q) ||
+        form.company.toLowerCase().includes(q) ||
+        form.role.toLowerCase().includes(q);
+      const matchesCompany = companyFilter === "All" || form.company === companyFilter;
+      const matchesRole = roleFilter === "All" || form.role === roleFilter;
+      return matchesSearch && matchesCompany && matchesRole;
+    });
+  }, [appForms, searchQuery, companyFilter, roleFilter]);
+
+  const filteredRequests = useMemo(() => {
+    return requests.filter((r) => {
+      const q = searchQuery.toLowerCase();
+      const matchesSearch =
+        !searchQuery ||
+        r.name.toLowerCase().includes(q) ||
+        r.assessmentId.toLowerCase().includes(q) ||
+        r.company.toLowerCase().includes(q) ||
+        r.recruiterName.toLowerCase().includes(q);
+      const matchesCompany = companyFilter === "All" || r.company === companyFilter;
+      const matchesRole = roleFilter === "All" || r.name.toLowerCase().includes(roleFilter.toLowerCase());
+      const matchesPriority = priorityFilter === "All" || r.priority === priorityFilter;
+      const matchesStage = stageFilter === "All" || r.status === stageFilter;
+      return matchesSearch && matchesCompany && matchesRole && matchesPriority && matchesStage;
+    });
+  }, [requests, searchQuery, companyFilter, roleFilter, priorityFilter, stageFilter]);
+
+  const filteredStudentSubmissions = useMemo(() => {
+    return studentSubmissionsList.filter((sub) => {
+      const q = searchQuery.toLowerCase();
+      const comp = sub.company || (sub.assessmentTitle.includes("Infosys") ? "Infosys Limited" : sub.assessmentTitle.includes("Microsoft") ? "Microsoft India" : "Google Cloud India");
+      const role = sub.role || (sub.assessmentTitle.includes("SP") ? "Specialist Programmer (SP)" : sub.assessmentTitle.includes("DSE") ? "Digital Systems Engineer (DSE)" : "Software Engineer I (Cloud Solutions)");
+      const matchesSearch =
+        !searchQuery ||
+        sub.studentName.toLowerCase().includes(q) ||
+        sub.rollNo.toLowerCase().includes(q) ||
+        sub.studentEmail.toLowerCase().includes(q) ||
+        sub.assessmentTitle.toLowerCase().includes(q) ||
+        comp.toLowerCase().includes(q) ||
+        role.toLowerCase().includes(q);
+      const matchesCompany = companyFilter === "All" || comp === companyFilter;
+      const matchesRole = roleFilter === "All" || role === roleFilter || sub.assessmentTitle.toLowerCase().includes(roleFilter.toLowerCase());
+      return matchesSearch && matchesCompany && matchesRole;
+    });
+  }, [studentSubmissionsList, searchQuery, companyFilter, roleFilter]);
   const [editingSub, setEditingSub] = useState<StudentSubmissionRecord | null>(null);
   const [isEditSubModalOpen, setIsEditSubModalOpen] = useState(false);
   const [editPassStatus, setEditPassStatus] = useState<boolean>(true);
@@ -688,18 +764,31 @@ export function AssessmentRequestsApprovalWorkspace() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            {/* Company Filter Dropdown */}
             <select
               value={companyFilter}
               onChange={(e) => setCompanyFilter(e.target.value)}
-              className="h-10 rounded-xl border border-input bg-card px-3 text-xs font-semibold text-foreground cursor-pointer"
+              className="h-10 rounded-xl border border-input bg-card px-3 text-xs font-bold text-foreground cursor-pointer"
             >
-              <option value="All">All Companies</option>
-              <option value="Google Cloud India">Google Cloud India</option>
-              <option value="Microsoft India">Microsoft India</option>
-              <option value="Amazon AWS">Amazon AWS</option>
-              <option value="Qualcomm India">Qualcomm India</option>
+              <option value="All">All Companies ({allAvailableCompanies.length})</option>
+              {allAvailableCompanies.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
             </select>
 
+            {/* Job Role Filter Dropdown */}
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="h-10 rounded-xl border border-input bg-card px-3 text-xs font-bold text-foreground cursor-pointer max-w-[200px] truncate"
+            >
+              <option value="All">All Job Roles ({allAvailableRoles.length})</option>
+              {allAvailableRoles.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+
+            {/* Priority Filter Dropdown */}
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
@@ -710,6 +799,24 @@ export function AssessmentRequestsApprovalWorkspace() {
               <option value="Medium">Medium</option>
               <option value="Standard">Standard</option>
             </select>
+
+            {(companyFilter !== "All" || roleFilter !== "All" || priorityFilter !== "All" || searchQuery) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setCompanyFilter("All");
+                  setRoleFilter("All");
+                  setPriorityFilter("All");
+                  setSearchQuery("");
+                  setStageFilter("All");
+                  toast.info("Reset all company, role & search filters!");
+                }}
+                className="h-10 text-xs rounded-xl text-blue-600 font-bold cursor-pointer hover:bg-blue-50"
+              >
+                <RotateCcw className="size-3.5 mr-1" /> Reset Filters
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -730,7 +837,7 @@ export function AssessmentRequestsApprovalWorkspace() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50 font-medium">
-              {appForms.map((form) => {
+              {filteredAppForms.map((form) => {
                 const filledApps = SHARED_STUDENT_DRIVE_APPLICATIONS.filter((a) => a.formId === form.id);
                 return (
                   <tr key={form.id} className="hover:bg-muted/30 transition-colors">
@@ -1003,6 +1110,7 @@ export function AssessmentRequestsApprovalWorkspace() {
               <thead>
                 <tr className="border-b border-border bg-muted/40 text-muted-foreground font-mono uppercase text-[0.65rem]">
                   <th className="p-3">Candidate / Roll No</th>
+                  <th className="p-3">Company & Job Role</th>
                   <th className="p-3">College Email</th>
                   <th className="p-3">Dept</th>
                   <th className="p-3">Assessment Title</th>
@@ -1014,15 +1122,22 @@ export function AssessmentRequestsApprovalWorkspace() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/50 font-mono text-[0.72rem]">
-                {studentSubmissionsList.map((sub) => (
-                  <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="p-3 font-sans font-bold text-foreground">{sub.studentName} ({sub.rollNo})</td>
-                    <td className="p-3 text-blue-600">{sub.studentEmail}</td>
-                    <td className="p-3 text-muted-foreground font-bold">{sub.department}</td>
-                    <td className="p-3 font-sans max-w-xs truncate">{sub.assessmentTitle}</td>
-                    <td className="p-3 font-bold text-foreground">{sub.mcqScore} / {sub.mcqTotal}</td>
-                    <td className="p-3 font-bold text-purple-600">{sub.codingScore} / {sub.codingTotal}</td>
-                    <td className="p-3 font-bold text-emerald-600">{sub.totalPercentage}%</td>
+                {filteredStudentSubmissions.map((sub) => {
+                  const compName = sub.company || (sub.assessmentTitle.includes("Infosys") ? "Infosys Limited" : sub.assessmentTitle.includes("Microsoft") ? "Microsoft India" : "Google Cloud India");
+                  const roleName = sub.role || (sub.assessmentTitle.includes("SP") ? "Specialist Programmer (SP)" : sub.assessmentTitle.includes("DSE") ? "Digital Systems Engineer (DSE)" : "Software Engineer I (Cloud Solutions)");
+                  return (
+                    <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="p-3 font-sans font-bold text-foreground">{sub.studentName} ({sub.rollNo})</td>
+                      <td className="p-3 font-sans">
+                        <p className="font-bold text-foreground text-xs">{compName}</p>
+                        <span className="text-[0.68rem] text-muted-foreground font-mono">{roleName}</span>
+                      </td>
+                      <td className="p-3 text-blue-600">{sub.studentEmail}</td>
+                      <td className="p-3 text-muted-foreground font-bold">{sub.department}</td>
+                      <td className="p-3 font-sans max-w-xs truncate">{sub.assessmentTitle}</td>
+                      <td className="p-3 font-bold text-foreground">{sub.mcqScore} / {sub.mcqTotal}</td>
+                      <td className="p-3 font-bold text-blue-600">{sub.codingScore} / {sub.codingTotal}</td>
+                      <td className="p-3 font-bold text-emerald-600">{sub.totalPercentage}%</td>
                     <td className="p-3">
                       <div className="space-y-1">
                         <button
@@ -1082,7 +1197,8 @@ export function AssessmentRequestsApprovalWorkspace() {
                       </div>
                     </td>
                   </tr>
-                ))}
+                );
+              })}
               </tbody>
             </table>
           </div>

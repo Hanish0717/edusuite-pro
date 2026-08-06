@@ -24,6 +24,8 @@ export interface StudentSubmissionRecord {
   passStatus: boolean;
   violationsLogged: number;
   isAutoSubmitted: boolean;
+  company?: string;
+  role?: string;
   submissionTime: string;
 }
 
