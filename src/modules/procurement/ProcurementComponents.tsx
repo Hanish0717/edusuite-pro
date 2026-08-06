@@ -552,7 +552,7 @@ export function ProcurementModuleView() {
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold">Department</Label>
                 <Select
-                  value={formData.department}
+                  value={formData.department || ""}
                   onValueChange={(val) => setFormData({ ...formData, department: val })}
                 >
                   <SelectTrigger className="h-9 text-xs">

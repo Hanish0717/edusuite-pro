@@ -136,6 +136,8 @@ export function generateInitialSchedule(branch: string = "CSE", semester: number
       });
     });
   });
+    });
+  });
 
   return periods;
 }

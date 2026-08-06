@@ -113,7 +113,14 @@ const DEPARTMENTS_LIST = [
   "MBA",
 ];
 
-export type AcademicsSubpart = "departments" | "courses" | "curriculum";
+export type AcademicsSubpart =
+  | "departments"
+  | "courses"
+  | "curriculum"
+  | "faculty-status"
+  | "attendance-mark"
+  | "syllabus-tracker"
+  | "all-classes-attendance";
 
 export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubpart }) {
   const { selectedDepartment, setSelectedDepartment } = useAcademic();
