@@ -93,7 +93,7 @@ export const MASTER_ELIGIBILITY_COMPANIES: CompanyEligibilityData[] = [
         minCgpaOrPercent: 82,
         eligibleBranches: ["CSE", "CSM", "CSD"],
         description: "Machine Learning model training, PyTorch pipelines, and Vertex AI enterprise deployments.",
-        tierBadgeColor: "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950 dark:text-purple-300",
+        tierBadgeColor: "bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300",
         icon: "sparkles",
       },
     ],
@@ -123,7 +123,7 @@ export const MASTER_ELIGIBILITY_COMPANIES: CompanyEligibilityData[] = [
         minCgpaOrPercent: 75,
         eligibleBranches: ["CSE", "CSM", "CSD", "ECE", "IT"],
         description: "Advanced role focused on Cloud Native Development, Full Stack JS, DevOps & Data Pipelines.",
-        tierBadgeColor: "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950 dark:text-purple-300",
+        tierBadgeColor: "bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300",
         icon: "sparkles",
       },
       {
@@ -184,7 +184,7 @@ export const MASTER_ELIGIBILITY_COMPANIES: CompanyEligibilityData[] = [
     headquarters: "Dublin / Hyderabad",
     minGeneralCgpa: 6.5,
     driveDate: "2026-08-28",
-    badgeColor: "from-purple-600 to-indigo-800",
+    badgeColor: "from-blue-600 to-indigo-800",
     roles: [
       {
         roleName: "Associate Software Engineer (ASE)",
@@ -201,7 +201,7 @@ export const MASTER_ELIGIBILITY_COMPANIES: CompanyEligibilityData[] = [
         minCgpaOrPercent: 75,
         eligibleBranches: ["CSE", "CSM", "CSD", "ECE", "IT"],
         description: "Advanced coding track focused on cloud integration, API gateways, and data engineering.",
-        tierBadgeColor: "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950 dark:text-purple-300",
+        tierBadgeColor: "bg-indigo-100 text-indigo-800 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300",
         icon: "sparkles",
       },
       {
