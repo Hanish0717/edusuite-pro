@@ -558,6 +558,29 @@ export const DEAN_NAVIGATION: NavSection[] = [
 ];
 
 export function navigationForUser(user: UserPermissionContext, currentPath?: string): NavSection[] {
+  const isStaff = user.role === "staff";
+  const isExamAssistant = isStaff && user.flags.includes("isExamAssistant");
+
+  // If user has isExamController (Officer), return the exact sidebar configurations
+  if (isStaff && user.flags.includes("isExamController")) {
+    return [
+      {
+        label: "Exam Officer Portal",
+        items: [
+          { title: "dashboard", url: "/examcell/dashboard", icon: LayoutDashboard },
+          { title: "examcell updates", url: "/examcell/updates", icon: CalendarCheck },
+          { title: "Hall ticket controll", url: "/examcell/hall-tickets", icon: UserCog },
+          { title: "Correction Analysis", url: "/examcell/correction-analysis", icon: FileText },
+          { title: "Results publisher", url: "/examcell/results", icon: Award },
+          { title: "Exam analytics", url: "/examcell/analytics", icon: BarChart3 },
+          { title: "bloomstick analayis", url: "/examcell/bloomstick", icon: Brain },
+          { title: "notification", url: "/examcell/notifications", icon: Bell },
+          { title: "Profile", url: "/faculty/profile", icon: Settings }
+        ]
+      }
+    ];
+  }
+
   // Path-based Dean portfolio navigation matching (guarantees ONLY that dean's sidebar is shown)
   if (currentPath) {
     if (currentPath.startsWith("/staff/academic-dean")) return ACADEMIC_DEAN_NAVIGATION;
@@ -610,7 +633,7 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
      "isTransportOfficer", "isHostelWarden", "isHRManager", "isFinanceOfficer"].includes(flag)
   );
 
-  if (user.role === "staff" && !isAdminStaff) {
+  if (user.role === "staff" && !isAdminStaff && !isExamAssistant) {
     return [
       {
         label: "Faculty Workspace",
@@ -639,7 +662,7 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
 
   return navigation
     .map((section) => {
-      const items = section.items
+      let items = section.items
         .filter((item) => {
           // 1. Role level filtering (optional explicit block)
           if (item.roles && !item.roles.includes(user.role)) {
@@ -662,10 +685,31 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
         })
         .map((item) => {
           const newUrl = resolveUrlForUser(item.url, user, item.title);
-          const newChildren = item.children?.map((child) => ({
+          let newChildren = item.children?.map((child) => ({
             ...child,
             url: resolveUrlForUser(child.url, user, child.title),
           }));
+
+          // If the user is an Exam Assistant / Faculty, inject the exact assistant modules into the "Examinations" children dropdown!
+          if (item.title === "Examinations" && isStaff && isExamAssistant) {
+            newChildren = [
+              { title: "Dashboard", url: "/examcell/dashboard" },
+              { title: "Course & Exam Enroll", url: "/examcell/course-enroll" },
+              { title: "Schedule Exam", url: "/examcell/schedule" },
+              { title: "Timetable Builder", url: "/examcell/timetable" },
+              { title: "Hall Tickets", url: "/examcell/hall-tickets" },
+              { title: "Correction Requests", url: "/examcell/correction-requests" },
+              { title: "Question Bank", url: "/examcell/questions" },
+              { title: "Results", url: "/examcell/results" },
+              { title: "Exam Analytics", url: "/examcell/analytics" },
+              { title: "Supplementary Students", url: "/examcell/supplementary" },
+              { title: "Notifications", url: "/examcell/notifications" }
+            ].map(c => ({
+              ...c,
+              moduleId: "examination",
+              url: resolveUrlForUser(c.url, user, c.title)
+            }));
+          }
 
           let title = item.title;
           let icon = item.icon;
@@ -682,6 +726,18 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
             children: newChildren,
           };
         });
+
+      // For standard staff, append Evaluations & Marks link inside Academics section
+      if (section.label === "Academics" && isStaff && !isExamAssistant) {
+        items = [
+          ...items,
+          {
+            title: "Evaluations & Marks",
+            url: resolveUrlForUser("/faculty/evaluation-and-marks", user, "Evaluations & Marks"),
+            icon: FileSpreadsheet,
+          }
+        ];
+      }
 
       return {
         ...section,
