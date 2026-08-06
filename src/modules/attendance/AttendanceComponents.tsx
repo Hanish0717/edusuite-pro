@@ -1017,7 +1017,7 @@ export function AttendanceModuleView({ initialTab = "all-classes-attendance" }: 
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <CalendarCheck className="size-5 text-primary" /> Attendance Session Dossier
+              <CalendarCheck className="size-5 text-primary" /> Attendance Session Details
             </DialogTitle>
           </DialogHeader>
 
@@ -1070,7 +1070,7 @@ export function AttendanceModuleView({ initialTab = "all-classes-attendance" }: 
                   onClick={() => setIsViewOpen(false)}
                   className="w-full text-xs"
                 >
-                  Close Dossier
+                  Close Details
                 </Button>
               </DialogFooter>
             </div>

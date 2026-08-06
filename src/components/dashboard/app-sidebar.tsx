@@ -120,9 +120,20 @@ export function AppSidebar() {
                               {item.children.map((child) => {
                                 const childCleanPath = (child.url || "").split("?")[0] || "";
                                 const hasSubParam = child.url.includes("?");
-                                const isSubActive = hasSubParam
-                                  ? href.includes(child.url) || (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard"))
-                                  : currentCleanPath === childCleanPath || (childCleanPath !== "/" && currentCleanPath.startsWith(childCleanPath));
+                                let isSubActive = false;
+
+                                if (hasSubParam) {
+                                  if (href.includes("?tab=")) {
+                                    isSubActive = href.includes(child.url);
+                                  } else {
+                                     isSubActive =
+                                       (href.includes("/examinations") && child.url.includes("tab=schedule")) ||
+                                       (href.includes("/alumni") && child.url.includes("tab=dashboard")) ||
+                                       (href.includes("/settings") && child.url.includes("tab=rbac"));
+                                  }
+                                } else {
+                                  isSubActive = currentCleanPath === childCleanPath;
+                                }
                                 return (
                                   <SidebarMenuSubItem key={child.title}>
                                     <SidebarMenuSubButton

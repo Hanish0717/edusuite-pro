@@ -333,7 +333,7 @@ export function ResultsModuleView() {
 
       <Dialog open={isDossierOpen} onOpenChange={setIsDossierOpen}>
         <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle className="text-lg font-bold flex items-center justify-between pr-6">Official Transcript <Badge className="bg-emerald-500/10 text-emerald-600 ml-2">Verified</Badge></DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-lg font-bold flex items-center justify-between pr-6">Official Grade Transcript <Badge className="bg-emerald-500/10 text-emerald-600 ml-2">Verified</Badge></DialogTitle></DialogHeader>
           {selectedStudent && (
             <div className="space-y-4 pt-1 text-xs">
               <div className="p-5 rounded-xl bg-muted/40 border border-border space-y-2">

@@ -625,7 +625,7 @@ export function ProcurementModuleView() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <FileText className="size-5 text-primary" /> Purchase Order Dossier
+              <FileText className="size-5 text-primary" /> Purchase Order Details
             </DialogTitle>
           </DialogHeader>
 
@@ -683,7 +683,7 @@ export function ProcurementModuleView() {
                   onClick={() => setIsViewDialogOpen(false)}
                   className="w-full text-xs"
                 >
-                  Close Dossier
+                  Close Details
                 </Button>
               </DialogFooter>
             </div>

@@ -101,12 +101,25 @@ import {
   type PolicyComplianceStatus,
 } from "./HostelService";
 
+import { useLocation } from "@tanstack/react-router";
+
 export function HostelModuleView() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const tabFromUrl = searchParams.get("tab");
+
   const [blocks] = useState<HostelBlockInfo[]>(INITIAL_BLOCKS);
   const [rooms, setRooms] = useState<HostelRoom[]>(INITIAL_ROOMS);
   const [residents, setResidents] = useState<EnhancedResidentStudent[]>(ENHANCED_RESIDENTS);
   const [passes, setPasses] = useState<GatePassRequest[]>(INITIAL_PASSES);
   const [activeTab, setActiveTab] = useState<"blocks" | "residents" | "compliance" | "analytics">("blocks");
+
+  useEffect(() => {
+    if (tabFromUrl === "rooms" || tabFromUrl === "blocks") setActiveTab("blocks");
+    else if (tabFromUrl === "residents") setActiveTab("residents");
+    else if (tabFromUrl === "compliance" || tabFromUrl === "passes") setActiveTab("compliance");
+    else if (tabFromUrl === "analytics") setActiveTab("analytics");
+  }, [tabFromUrl]);
 
   const [loading, setLoading] = useState(false);
 

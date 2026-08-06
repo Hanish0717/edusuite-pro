@@ -126,8 +126,38 @@ export const navigation: NavSection[] = [
     label: "Menu",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      {
+        title: "System Administration",
+        url: "/super-admin/settings?tab=rbac",
+        icon: Settings,
+        roles: ["super-admin", "staff"],
+        children: [
+          { title: "Roles & Access Matrix", url: "/super-admin/settings?tab=rbac" },
+          { title: "Licensing & Feature Flags", url: "/super-admin/settings?tab=features" },
+          { title: "Approval Workflows", url: "/super-admin/settings?tab=workflows" },
+          { title: "Institution Settings", url: "/super-admin/settings?tab=institution" },
+          { title: "Security & Session", url: "/super-admin/settings?tab=security" },
+          { title: "Branding & Theme", url: "/super-admin/settings?tab=preferences" },
+          { title: "System Audit Logs", url: "/super-admin/settings?tab=audit" },
+        ],
+      },
       { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
-      { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
+      {
+        title: "AI & Analytics",
+        url: "/ai-analytics/dashboard",
+        icon: BarChart3,
+        roles: ["super-admin", "staff", "student", "parent"],
+        children: [
+          { title: "AI Dashboard", url: "/ai-analytics/dashboard" },
+          { title: "Attendance Forecasts", url: "/ai-analytics/attendance-prediction" },
+          { title: "Student Risk Analysis", url: "/ai-analytics/student-risk" },
+          { title: "AI Campus Chatbot", url: "/ai-analytics/chatbot" },
+          { title: "AI Audit Reports", url: "/ai-analytics/reports" },
+          { title: "AI Trigger Warning Logs", url: "/ai-analytics/notifications" },
+          { title: "Model Insights", url: "/ai-analytics/model-insights" },
+          { title: "Engine Configuration", url: "/ai-analytics/settings" },
+        ],
+      },
       { title: "Emergency Broadcast", url: "/emergency", icon: Siren, roles: ["super-admin", "staff"], badge: "Instant" },
     ],
   },
@@ -153,14 +183,11 @@ export const navigation: NavSection[] = [
         moduleId: "examination",
         roles: ["super-admin", "staff"],
         children: [
-          { title: "Dashboard", url: "/examinations", moduleId: "examination" },
-          { title: "Exam Schedule", url: "/examinations/schedule", moduleId: "examination" },
-          { title: "Hall Tickets", url: "/examinations/hall-tickets", moduleId: "examination" },
-          { title: "Internal Marks", url: "/examinations/internal-marks", moduleId: "examination" },
-          { title: "Revaluation", url: "/examinations/revaluation", moduleId: "examination" },
-          { title: "Exam Analytics", url: "/examinations/analytics", moduleId: "examination" },
-          { title: "Reports", url: "/examinations/reports", moduleId: "examination" },
-          { title: "Notifications", url: "/examinations/notifications", moduleId: "examination" },
+          { title: "Exam Schedule", url: "/examinations?tab=schedule", moduleId: "examination" },
+          { title: "Hall Tickets", url: "/examinations?tab=hall-tickets", moduleId: "examination" },
+          { title: "Internal Marks", url: "/examinations?tab=marks", moduleId: "examination" },
+          { title: "Results & Grades", url: "/examinations?tab=results", moduleId: "examination" },
+          { title: "Reevaluations", url: "/examinations?tab=revaluations", moduleId: "examination" },
         ],
       },
       { title: "Results", url: "/results", icon: Award, moduleId: "examination" },
@@ -207,6 +234,10 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
   if (
     url.startsWith("/staff") ||
     url.startsWith("/alumni") ||
+    url.startsWith("/ai-analytics") ||
+    url.startsWith("/library") ||
+    url.startsWith("/hostel") ||
+    url.startsWith("/transport") ||
     [
       "/employee-management",
       "/leave",
@@ -221,6 +252,7 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/approval-workflows",
       "/emergency",
       "/super-admin/emergency",
+      "/super-admin/settings",
     ].includes(url)
   ) {
     return url;
@@ -323,11 +355,20 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     }
 
     if (url === "/dashboard") return "/faculty/dashboard";
-    if (url === "/attendance") return "/faculty/attendance";
+    if (url.startsWith("/attendance")) {
+      const search = url.includes("?") ? url.substring(url.indexOf("?")) : "";
+      return `/faculty/attendance${search}`;
+    }
     if (url === "/lms") return "/faculty/lms";
-    if (url === "/examinations") return "/faculty/examinations";
-    if (url === "/results") return "/faculty/results";
-    if (url === "/settings") return "/faculty/profile";
+    if (url.startsWith("/examinations")) {
+      const search = url.includes("?") ? url.substring(url.indexOf("?")) : "";
+      return `/faculty/examinations${search}`;
+    }
+    if (url.startsWith("/results")) {
+      const search = url.includes("?") ? url.substring(url.indexOf("?")) : "";
+      return `/faculty/results${search}`;
+    }
+    if (url.startsWith("/settings")) return "/faculty/profile";
   }
 
   if (role === "external-user") {

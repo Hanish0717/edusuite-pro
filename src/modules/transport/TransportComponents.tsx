@@ -90,10 +90,23 @@ import {
   type TransportStaffSummary,
 } from "./TransportService";
 
-export function TransportModuleView() {
+import { useLocation } from "@tanstack/react-router";
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const tabFromUrl = searchParams.get("tab");
+
   const [routes, setRoutes] = useState<EnhancedBusRoute[]>(INITIAL_ENHANCED_ROUTES);
   const [passes, setPasses] = useState<EnhancedTransportPass[]>(INITIAL_ENHANCED_PASSES);
   const [activeTab, setActiveTab] = useState<"routes" | "passes" | "health" | "analytics" | "governance">("routes");
+
+  useEffect(() => {
+    if (tabFromUrl === "routes") setActiveTab("routes");
+    else if (tabFromUrl === "passes") setActiveTab("passes");
+    else if (tabFromUrl === "health") setActiveTab("health");
+    else if (tabFromUrl === "analytics") setActiveTab("analytics");
+    else if (tabFromUrl === "governance") setActiveTab("governance");
+  }, [tabFromUrl]);
 
   const [loading, setLoading] = useState(false);
   const [downloadingReport, setDownloadingReport] = useState(false);

@@ -93,12 +93,24 @@ const DEPARTMENTS = [
   "Mechanical",
   "Civil Engineering",
   "AI & Data Science",
-] as const;
+import { useLocation } from "@tanstack/react-router";
 
 export function LibraryModuleView() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const tabFromUrl = searchParams.get("tab");
+
   const [books, setBooks] = useState<LibraryBook[]>(INITIAL_BOOKS);
   const [issues, setIssues] = useState<BookIssueRecord[]>(INITIAL_ISSUES);
   const [activeTab, setActiveTab] = useState<"catalog" | "issues" | "ejournals" | "overdue" | "staff">("catalog");
+
+  useEffect(() => {
+    if (tabFromUrl === "catalog") setActiveTab("catalog");
+    else if (tabFromUrl === "issues") setActiveTab("issues");
+    else if (tabFromUrl === "ejournals") setActiveTab("ejournals");
+    else if (tabFromUrl === "overdue") setActiveTab("overdue");
+    else if (tabFromUrl === "staff") setActiveTab("staff");
+  }, [tabFromUrl]);
 
   const [search, setSearch] = useState("");
   const [selectedCat, setSelectedCat] = useState<string>("All Categories");

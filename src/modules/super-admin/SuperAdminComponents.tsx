@@ -16,11 +16,8 @@ import {
   Eye,
   Database,
   Brain,
-  Shield,
   FileSpreadsheet,
   CheckCircle,
-  AlertTriangle,
-  Lock,
   Server,
   Terminal,
   ArrowUpDown,
@@ -29,7 +26,6 @@ import {
   ChevronLeft,
   ChevronRight,
   SlidersHorizontal,
-  LockKeyhole,
   Siren,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
@@ -87,7 +83,6 @@ export function SuperAdminModuleView() {
     users,
     departments,
     auditLogs,
-    rolePermissions,
     delegationRules,
     search,
     setSearch,
@@ -137,7 +132,6 @@ export function SuperAdminModuleView() {
     handleBulkUpdateStatus,
     handleOpenAddDept,
     handleAddDeptSubmit,
-    handleTogglePermission,
     handleTriggerBackup,
     handleExportCSV,
   } = useSuperAdmin();
@@ -304,16 +298,7 @@ export function SuperAdminModuleView() {
         >
           Departments ({departments.length})
         </button>
-        <button
-          onClick={() => setActiveTab("rbac")}
-          className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
-            activeTab === "rbac"
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-muted"
-          }`}
-        >
-          Role & Permission Matrix
-        </button>
+
         <button
           onClick={() => setActiveTab("delegation")}
           className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
@@ -417,12 +402,7 @@ export function SuperAdminModuleView() {
                   <Database className="size-4" /> Trigger Database Backup
                 </Button>
 
-                <Button
-                  onClick={() => setActiveTab("rbac")}
-                  className="w-full justify-start text-xs font-semibold gap-2 bg-muted text-foreground hover:bg-muted/80 border border-border h-10"
-                >
-                  <LockKeyhole className="size-4 text-amber-500" /> Manage Role Privileges
-                </Button>
+
 
                 <Button
                   onClick={() => setActiveTab("audit")}
@@ -684,7 +664,7 @@ export function SuperAdminModuleView() {
                                 size="icon"
                                 onClick={() => handleOpenViewUser(u)}
                                 className="size-7 text-muted-foreground hover:text-foreground"
-                                title="View User Dossier"
+                                title="View User Details"
                               >
                                 <Eye className="size-3.5" />
                               </Button>
@@ -827,100 +807,7 @@ export function SuperAdminModuleView() {
         </div>
       )}
 
-      {/* TAB 4: ROLE & PERMISSION MATRIX (RBAC) */}
-      {activeTab === "rbac" && (
-        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
-          <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <div>
-              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <LockKeyhole className="size-5 text-amber-500" /> Role-Based Access Control (RBAC) Matrix
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Configure module privilege flags dynamically across institution user personas.
-              </p>
-            </div>
-            <Badge variant="outline" className="font-mono text-xs text-amber-600 border-amber-500/30">
-              Live Enforcement
-            </Badge>
-          </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
-                <tr>
-                  <th className="py-3 px-3">Role Persona</th>
-                  <th className="py-3 px-3 text-center">System Admin</th>
-                  <th className="py-3 px-3 text-center">Principal</th>
-                  <th className="py-3 px-3 text-center">Academic Dean</th>
-                  <th className="py-3 px-3 text-center">HOD</th>
-                  <th className="py-3 px-3 text-center">Faculty</th>
-                  <th className="py-3 px-3 text-center">Finance</th>
-                  <th className="py-3 px-3 text-center">User Mgmt</th>
-                  <th className="py-3 px-3 text-center">Export Data</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/60">
-                {rolePermissions.map((item) => (
-                  <tr key={item.role} className="hover:bg-muted/20 transition-colors">
-                    <td className="py-3 px-3 font-bold text-foreground">
-                      <div>{item.label}</div>
-                      <div className="text-[0.68rem] text-muted-foreground font-mono uppercase">{item.role}</div>
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <Switch
-                        checked={item.isSystemAdmin}
-                        onCheckedChange={() => handleTogglePermission(item.role, "isSystemAdmin", item.isSystemAdmin)}
-                      />
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <Switch
-                        checked={item.isPrincipal}
-                        onCheckedChange={() => handleTogglePermission(item.role, "isPrincipal", item.isPrincipal)}
-                      />
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <Switch
-                        checked={item.isDean}
-                        onCheckedChange={() => handleTogglePermission(item.role, "isDean", item.isDean)}
-                      />
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <Switch
-                        checked={item.isHod}
-                        onCheckedChange={() => handleTogglePermission(item.role, "isHod", item.isHod)}
-                      />
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <Switch
-                        checked={item.isFaculty}
-                        onCheckedChange={() => handleTogglePermission(item.role, "isFaculty", item.isFaculty)}
-                      />
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <Switch
-                        checked={item.isFinance}
-                        onCheckedChange={() => handleTogglePermission(item.role, "isFinance", item.isFinance)}
-                      />
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <Switch
-                        checked={item.canManageUsers}
-                        onCheckedChange={() => handleTogglePermission(item.role, "canManageUsers", item.canManageUsers)}
-                      />
-                    </td>
-                    <td className="py-3 px-3 text-center">
-                      <Switch
-                        checked={item.canExportData}
-                        onCheckedChange={() => handleTogglePermission(item.role, "canExportData", item.canExportData)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       {/* TAB 5: AUDIT LOGS */}
       {activeTab === "audit" && (
@@ -979,7 +866,7 @@ export function SuperAdminModuleView() {
 
       {/* TAB 6: AI ANOMALY ENGINE */}
       {activeTab === "ai" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-4 shadow-sm">
             <h3 className="font-bold text-base text-foreground flex items-center gap-2">
               <Brain className="size-5 text-purple-500" /> Student Retention & Dropout Risk
@@ -1009,52 +896,6 @@ export function SuperAdminModuleView() {
                   <Progress value={item.val} className="h-2" />
                 </div>
               ))}
-            </div>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-4 shadow-sm">
-            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-              <Shield className="size-5 text-amber-500" /> Security Anomaly Alarms
-            </h3>
-
-            <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1">
-                <div className="font-bold text-amber-700 dark:text-amber-300 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <AlertTriangle className="size-4 text-amber-500" /> Concurrent Request Surge
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => toast.success("Mitigation rule applied to SIT-HYD API Gateway.")}
-                    className="h-6 text-[0.65rem] px-2"
-                  >
-                    Mitigate
-                  </Button>
-                </div>
-                <p className="text-muted-foreground">
-                  Spike of 800+ concurrent requests detected on SIT-HYD API gateway node.
-                </p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 space-y-1">
-                <div className="font-bold text-red-700 dark:text-red-300 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <Lock className="size-4 text-red-500" /> Brute Force IP Block
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => toast.info("IP 192.168.1.145 moved to permanent block list.")}
-                    className="h-6 text-[0.65rem] px-2"
-                  >
-                    Details
-                  </Button>
-                </div>
-                <p className="text-muted-foreground">
-                  IP 192.168.1.145 blocked after 15 failed password attempts on staff account.
-                </p>
-              </div>
             </div>
           </div>
         </div>
@@ -1299,7 +1140,7 @@ export function SuperAdminModuleView() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <UserCog className="size-5 text-primary" /> User Dossier & Role Matrix
+              <UserCog className="size-5 text-primary" /> User Profile & Role Matrix
             </DialogTitle>
           </DialogHeader>
 
@@ -1348,7 +1189,7 @@ export function SuperAdminModuleView() {
                   onClick={() => setIsViewUserOpen(false)}
                   className="w-full text-xs"
                 >
-                  Close Dossier
+                  Close Details
                 </Button>
               </DialogFooter>
             </div>
