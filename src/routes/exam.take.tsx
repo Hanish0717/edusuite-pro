@@ -21,11 +21,20 @@ import {
   Key,
   Building,
   Check,
+  ShieldAlert,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { SAMPLE_20_MCQS, SAMPLE_2_CODING_CHALLENGES } from "@/components/dashboard/role/recruiter-portal-workspace";
 import {
   saveStudentSubmission,
@@ -125,6 +134,10 @@ function StudentLiveExamPage() {
   const [savedSubmissionId, setSavedSubmissionId] = useState("");
   const [violationWarning, setViolationWarning] = useState<{ visible: boolean; count: number }>({ visible: false, count: 0 });
   const [unregisteredError, setUnregisteredError] = useState(false);
+
+  // Submit Confirmation Modal State
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [confirmCodeInput, setConfirmCodeInput] = useState("");
 
   // NOTE: Prior-submission check is done inside the login form's onSubmit, not reactively,
   // so the submitted screen is never shown before the student actually logs in.
@@ -570,6 +583,94 @@ function StudentLiveExamPage() {
         </div>
       )}
 
+      {/* 4. CONFIRMATION DIALOG MODAL (REQUIRE TYPING "END" BEFORE SUBMITTING EXAM) */}
+      <Dialog open={isSubmitModalOpen} onOpenChange={setIsSubmitModalOpen}>
+        <DialogContent className="sm:max-w-md bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl">
+          <DialogHeader className="space-y-2 text-center sm:text-left">
+            <div className="size-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 grid place-items-center mb-1">
+              <AlertTriangle className="size-6" />
+            </div>
+            <DialogTitle className="text-xl font-extrabold text-slate-900 font-sans">
+              Confirm Exam Submission
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-600 font-sans leading-relaxed">
+              Are you sure you want to finish and submit your assessment? Once submitted, your answers will be locked and sent to the TPO &amp; Recruiter evaluation queue.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* EXAM ATTEMPT SUMMARY */}
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5 text-xs font-mono">
+            <p className="font-bold text-slate-800 text-[0.7rem] uppercase tracking-wider flex items-center justify-between">
+              <span>📊 Attempt Summary Check:</span>
+              <span className="text-[0.62rem] text-slate-500 font-sans">Student: {studentName}</span>
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-[0.72rem]">
+              <div className="p-2.5 rounded-xl bg-white border border-slate-200">
+                <span className="text-slate-500 block text-[0.62rem]">Technical MCQs</span>
+                <strong className="text-blue-600 font-bold">{answeredMcqCount} / 20 Answered</strong>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white border border-slate-200">
+                <span className="text-slate-500 block text-[0.62rem]">Coding Challenges</span>
+                <strong className="text-purple-600 font-bold">{Object.keys(userCode).length} / 2 Attempted</strong>
+              </div>
+            </div>
+            {20 - answeredMcqCount > 0 && (
+              <p className="text-[0.68rem] text-amber-700 font-sans font-semibold pt-1 flex items-center gap-1">
+                <AlertTriangle className="size-3.5 shrink-0 text-amber-600" />
+                Warning: You have {20 - answeredMcqCount} unanswered MCQ questions remaining.
+              </p>
+            )}
+          </div>
+
+          {/* TYPE 'END' CONFIRMATION INPUT */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (confirmCodeInput.trim().toUpperCase() !== "END") {
+                toast.error('Please type "END" to confirm exam submission.');
+                return;
+              }
+              setIsSubmitModalOpen(false);
+              handleSubmitExam();
+            }}
+            className="space-y-4 pt-1"
+          >
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-800 flex items-center justify-between font-sans">
+                <span>Type <span className="font-mono bg-rose-50 border border-rose-200 text-rose-600 px-1.5 py-0.5 rounded font-extrabold text-xs">END</span> to confirm submission:</span>
+                <span className="text-[0.65rem] font-mono text-slate-400">Required</span>
+              </label>
+              <Input
+                type="text"
+                value={confirmCodeInput}
+                onChange={(e) => setConfirmCodeInput(e.target.value)}
+                placeholder='Type "END" here...'
+                autoFocus
+                className="h-11 text-sm font-mono font-extrabold border-slate-300 rounded-xl tracking-widest text-center uppercase focus-visible:ring-emerald-500"
+              />
+            </div>
+
+            <DialogFooter className="gap-2 sm:gap-0 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsSubmitModalOpen(false)}
+                className="rounded-xl h-10 text-xs font-bold text-slate-600 cursor-pointer"
+              >
+                Cancel / Return to Exam
+              </Button>
+              <Button
+                type="submit"
+                disabled={confirmCodeInput.trim().toUpperCase() !== "END"}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl h-10 px-5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              >
+                <CheckCircle className="size-4 mr-1.5" /> Confirm &amp; Submit Exam
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       {/* EXAM TOP NAVIGATION HEADER */}
       <header className="h-16 border-b border-slate-200 bg-white px-6 flex items-center justify-between sticky top-0 z-50 shadow-xs">
         <div className="flex items-center gap-3">
@@ -618,7 +719,10 @@ function StudentLiveExamPage() {
           {!isExamSubmitted && (
             <Button
               size="sm"
-              onClick={handleSubmitExam}
+              onClick={() => {
+                setConfirmCodeInput("");
+                setIsSubmitModalOpen(true);
+              }}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-9 px-4 gap-1.5 shadow-md shadow-emerald-600/20 cursor-pointer"
             >
               <Send className="size-3.5" /> Submit Exam
