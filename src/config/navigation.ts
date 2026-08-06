@@ -268,13 +268,6 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     if (flags.includes("isDean")) {
       if (url === "/dashboard") return "/staff";
       if (url === "/settings") return "/faculty/profile";
-      if (url === "/attendance") return "/attendance";
-      if (url === "/timetable") return "/timetable";
-      if (url === "/examinations") return "/examinations";
-      if (url === "/results") return "/results";
-      if (url === "/faculty") return "/faculty";
-      if (url === "/students") return "/students";
-      if (url === "/academics") return "/academics";
       if (url === "/subject-allocation" || title === "Subject Allocation" || title === "Workload") return "/dean/subject-allocation";
       return url;
     }
@@ -545,8 +538,9 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
     examination_dean: EXAMINATION_NAVIGATION,
     placement_dean: PLACEMENT_NAVIGATION,
   };
-  if (user.role in deanNavMap) {
-    return deanNavMap[user.role] as NavSection[];
+  const deanKey = (user.externalPersona || user.role) as string;
+  if (deanKey && deanKey in deanNavMap) {
+    return deanNavMap[deanKey] as NavSection[];
   }
   // Legacy generic dean flag fallback (isDean without specific role)
   if (user.role !== "super-admin" && user.flags.includes("isDean")) {

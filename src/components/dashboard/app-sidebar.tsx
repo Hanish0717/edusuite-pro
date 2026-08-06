@@ -34,7 +34,7 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const href = useRouterState({ select: (r) => r.location.href });
 
-  const sections = navigationForUser({ role, flags, department, externalPersona, featureFlags })
+  const sections = navigationForUser({ role, flags, department, externalPersona, featureFlags }, pathname)
     .map((section) => ({
       ...section,
       items: section.items.filter((item) =>
