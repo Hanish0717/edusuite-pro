@@ -129,15 +129,26 @@ import { Route as HodFacultyRouteImport } from './routes/hod.faculty'
 import { Route as HodReportsRouteImport } from './routes/hod.reports'
 import { Route as HostelIndexRouteImport } from './routes/hostel.index'
 import { Route as HostelAttendanceRouteImport } from './routes/hostel.attendance'
+import { Route as HostelBlocksRouteImport } from './routes/hostel.blocks'
 import { Route as HostelComplaintsRouteImport } from './routes/hostel.complaints'
 import { Route as HostelDashboardRouteImport } from './routes/hostel.dashboard'
+import { Route as HostelDeviceManagementRouteImport } from './routes/hostel.device-management'
 import { Route as HostelFeesRouteImport } from './routes/hostel.fees'
+import { Route as HostelGuestBillingRouteImport } from './routes/hostel.guest-billing'
+import { Route as HostelLeavesSuspensionRouteImport } from './routes/hostel.leaves-suspension'
+import { Route as HostelLogHistoryRouteImport } from './routes/hostel.log-history'
+import { Route as HostelMaintenanceRouteImport } from './routes/hostel.maintenance'
 import { Route as HostelMessFeesRouteImport } from './routes/hostel.mess-fees'
+import { Route as HostelMessManagementRouteImport } from './routes/hostel.mess-management'
 import { Route as HostelMessMenusRouteImport } from './routes/hostel.mess-menus'
 import { Route as HostelNotificationsRouteImport } from './routes/hostel.notifications'
+import { Route as HostelOutingApprovalsRouteImport } from './routes/hostel.outing-approvals'
+import { Route as HostelOutingLogHistoryRouteImport } from './routes/hostel.outing-log-history'
+import { Route as HostelRoomAllocationRouteImport } from './routes/hostel.room-allocation'
 import { Route as HostelRoomsRouteImport } from './routes/hostel.rooms'
 import { Route as HostelSettingsRouteImport } from './routes/hostel.settings'
 import { Route as HostelStudentsRouteImport } from './routes/hostel.students'
+import { Route as HostelUserManagementRouteImport } from './routes/hostel.user-management'
 import { Route as HostelVisitorsRouteImport } from './routes/hostel.visitors'
 import { Route as HrIndexRouteImport } from './routes/hr.index'
 import { Route as HrDashboardRouteImport } from './routes/hr.dashboard'
@@ -855,6 +866,11 @@ const HostelAttendanceRoute = HostelAttendanceRouteImport.update({
   path: '/attendance',
   getParentRoute: () => HostelRoute,
 } as any)
+const HostelBlocksRoute = HostelBlocksRouteImport.update({
+  id: '/blocks',
+  path: '/blocks',
+  getParentRoute: () => HostelRoute,
+} as any)
 const HostelComplaintsRoute = HostelComplaintsRouteImport.update({
   id: '/complaints',
   path: '/complaints',
@@ -865,14 +881,44 @@ const HostelDashboardRoute = HostelDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => HostelRoute,
 } as any)
+const HostelDeviceManagementRoute = HostelDeviceManagementRouteImport.update({
+  id: '/device-management',
+  path: '/device-management',
+  getParentRoute: () => HostelRoute,
+} as any)
 const HostelFeesRoute = HostelFeesRouteImport.update({
   id: '/fees',
   path: '/fees',
   getParentRoute: () => HostelRoute,
 } as any)
+const HostelGuestBillingRoute = HostelGuestBillingRouteImport.update({
+  id: '/guest-billing',
+  path: '/guest-billing',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelLeavesSuspensionRoute = HostelLeavesSuspensionRouteImport.update({
+  id: '/leaves-suspension',
+  path: '/leaves-suspension',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelLogHistoryRoute = HostelLogHistoryRouteImport.update({
+  id: '/log-history',
+  path: '/log-history',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelMaintenanceRoute = HostelMaintenanceRouteImport.update({
+  id: '/maintenance',
+  path: '/maintenance',
+  getParentRoute: () => HostelRoute,
+} as any)
 const HostelMessFeesRoute = HostelMessFeesRouteImport.update({
   id: '/mess-fees',
   path: '/mess-fees',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelMessManagementRoute = HostelMessManagementRouteImport.update({
+  id: '/mess-management',
+  path: '/mess-management',
   getParentRoute: () => HostelRoute,
 } as any)
 const HostelMessMenusRoute = HostelMessMenusRouteImport.update({
@@ -883,6 +929,21 @@ const HostelMessMenusRoute = HostelMessMenusRouteImport.update({
 const HostelNotificationsRoute = HostelNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelOutingApprovalsRoute = HostelOutingApprovalsRouteImport.update({
+  id: '/outing-approvals',
+  path: '/outing-approvals',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelOutingLogHistoryRoute = HostelOutingLogHistoryRouteImport.update({
+  id: '/outing-log-history',
+  path: '/outing-log-history',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelRoomAllocationRoute = HostelRoomAllocationRouteImport.update({
+  id: '/room-allocation',
+  path: '/room-allocation',
   getParentRoute: () => HostelRoute,
 } as any)
 const HostelRoomsRoute = HostelRoomsRouteImport.update({
@@ -898,6 +959,11 @@ const HostelSettingsRoute = HostelSettingsRouteImport.update({
 const HostelStudentsRoute = HostelStudentsRouteImport.update({
   id: '/students',
   path: '/students',
+  getParentRoute: () => HostelRoute,
+} as any)
+const HostelUserManagementRoute = HostelUserManagementRouteImport.update({
+  id: '/user-management',
+  path: '/user-management',
   getParentRoute: () => HostelRoute,
 } as any)
 const HostelVisitorsRoute = HostelVisitorsRouteImport.update({
@@ -1584,15 +1650,26 @@ export interface FileRoutesByFullPath {
   '/hod/faculty': typeof HodFacultyRoute
   '/hod/reports': typeof HodReportsRoute
   '/hostel/attendance': typeof HostelAttendanceRoute
+  '/hostel/blocks': typeof HostelBlocksRoute
   '/hostel/complaints': typeof HostelComplaintsRoute
   '/hostel/dashboard': typeof HostelDashboardRoute
+  '/hostel/device-management': typeof HostelDeviceManagementRoute
   '/hostel/fees': typeof HostelFeesRoute
+  '/hostel/guest-billing': typeof HostelGuestBillingRoute
+  '/hostel/leaves-suspension': typeof HostelLeavesSuspensionRoute
+  '/hostel/log-history': typeof HostelLogHistoryRoute
+  '/hostel/maintenance': typeof HostelMaintenanceRoute
   '/hostel/mess-fees': typeof HostelMessFeesRoute
+  '/hostel/mess-management': typeof HostelMessManagementRoute
   '/hostel/mess-menus': typeof HostelMessMenusRoute
   '/hostel/notifications': typeof HostelNotificationsRoute
+  '/hostel/outing-approvals': typeof HostelOutingApprovalsRoute
+  '/hostel/outing-log-history': typeof HostelOutingLogHistoryRoute
+  '/hostel/room-allocation': typeof HostelRoomAllocationRoute
   '/hostel/rooms': typeof HostelRoomsRoute
   '/hostel/settings': typeof HostelSettingsRoute
   '/hostel/students': typeof HostelStudentsRoute
+  '/hostel/user-management': typeof HostelUserManagementRoute
   '/hostel/visitors': typeof HostelVisitorsRoute
   '/hr/dashboard': typeof HrDashboardRoute
   '/hr/employees': typeof HrEmployeesRoute
@@ -1807,15 +1884,26 @@ export interface FileRoutesByTo {
   '/hod/faculty': typeof HodFacultyRoute
   '/hod/reports': typeof HodReportsRoute
   '/hostel/attendance': typeof HostelAttendanceRoute
+  '/hostel/blocks': typeof HostelBlocksRoute
   '/hostel/complaints': typeof HostelComplaintsRoute
   '/hostel/dashboard': typeof HostelDashboardRoute
+  '/hostel/device-management': typeof HostelDeviceManagementRoute
   '/hostel/fees': typeof HostelFeesRoute
+  '/hostel/guest-billing': typeof HostelGuestBillingRoute
+  '/hostel/leaves-suspension': typeof HostelLeavesSuspensionRoute
+  '/hostel/log-history': typeof HostelLogHistoryRoute
+  '/hostel/maintenance': typeof HostelMaintenanceRoute
   '/hostel/mess-fees': typeof HostelMessFeesRoute
+  '/hostel/mess-management': typeof HostelMessManagementRoute
   '/hostel/mess-menus': typeof HostelMessMenusRoute
   '/hostel/notifications': typeof HostelNotificationsRoute
+  '/hostel/outing-approvals': typeof HostelOutingApprovalsRoute
+  '/hostel/outing-log-history': typeof HostelOutingLogHistoryRoute
+  '/hostel/room-allocation': typeof HostelRoomAllocationRoute
   '/hostel/rooms': typeof HostelRoomsRoute
   '/hostel/settings': typeof HostelSettingsRoute
   '/hostel/students': typeof HostelStudentsRoute
+  '/hostel/user-management': typeof HostelUserManagementRoute
   '/hostel/visitors': typeof HostelVisitorsRoute
   '/hr/dashboard': typeof HrDashboardRoute
   '/hr/employees': typeof HrEmployeesRoute
@@ -2049,15 +2137,26 @@ export interface FileRoutesById {
   '/hod/faculty': typeof HodFacultyRoute
   '/hod/reports': typeof HodReportsRoute
   '/hostel/attendance': typeof HostelAttendanceRoute
+  '/hostel/blocks': typeof HostelBlocksRoute
   '/hostel/complaints': typeof HostelComplaintsRoute
   '/hostel/dashboard': typeof HostelDashboardRoute
+  '/hostel/device-management': typeof HostelDeviceManagementRoute
   '/hostel/fees': typeof HostelFeesRoute
+  '/hostel/guest-billing': typeof HostelGuestBillingRoute
+  '/hostel/leaves-suspension': typeof HostelLeavesSuspensionRoute
+  '/hostel/log-history': typeof HostelLogHistoryRoute
+  '/hostel/maintenance': typeof HostelMaintenanceRoute
   '/hostel/mess-fees': typeof HostelMessFeesRoute
+  '/hostel/mess-management': typeof HostelMessManagementRoute
   '/hostel/mess-menus': typeof HostelMessMenusRoute
   '/hostel/notifications': typeof HostelNotificationsRoute
+  '/hostel/outing-approvals': typeof HostelOutingApprovalsRoute
+  '/hostel/outing-log-history': typeof HostelOutingLogHistoryRoute
+  '/hostel/room-allocation': typeof HostelRoomAllocationRoute
   '/hostel/rooms': typeof HostelRoomsRoute
   '/hostel/settings': typeof HostelSettingsRoute
   '/hostel/students': typeof HostelStudentsRoute
+  '/hostel/user-management': typeof HostelUserManagementRoute
   '/hostel/visitors': typeof HostelVisitorsRoute
   '/hr/dashboard': typeof HrDashboardRoute
   '/hr/employees': typeof HrEmployeesRoute
@@ -2292,15 +2391,26 @@ export interface FileRouteTypes {
     | '/hod/faculty'
     | '/hod/reports'
     | '/hostel/attendance'
+    | '/hostel/blocks'
     | '/hostel/complaints'
     | '/hostel/dashboard'
+    | '/hostel/device-management'
     | '/hostel/fees'
+    | '/hostel/guest-billing'
+    | '/hostel/leaves-suspension'
+    | '/hostel/log-history'
+    | '/hostel/maintenance'
     | '/hostel/mess-fees'
+    | '/hostel/mess-management'
     | '/hostel/mess-menus'
     | '/hostel/notifications'
+    | '/hostel/outing-approvals'
+    | '/hostel/outing-log-history'
+    | '/hostel/room-allocation'
     | '/hostel/rooms'
     | '/hostel/settings'
     | '/hostel/students'
+    | '/hostel/user-management'
     | '/hostel/visitors'
     | '/hr/dashboard'
     | '/hr/employees'
@@ -2515,15 +2625,26 @@ export interface FileRouteTypes {
     | '/hod/faculty'
     | '/hod/reports'
     | '/hostel/attendance'
+    | '/hostel/blocks'
     | '/hostel/complaints'
     | '/hostel/dashboard'
+    | '/hostel/device-management'
     | '/hostel/fees'
+    | '/hostel/guest-billing'
+    | '/hostel/leaves-suspension'
+    | '/hostel/log-history'
+    | '/hostel/maintenance'
     | '/hostel/mess-fees'
+    | '/hostel/mess-management'
     | '/hostel/mess-menus'
     | '/hostel/notifications'
+    | '/hostel/outing-approvals'
+    | '/hostel/outing-log-history'
+    | '/hostel/room-allocation'
     | '/hostel/rooms'
     | '/hostel/settings'
     | '/hostel/students'
+    | '/hostel/user-management'
     | '/hostel/visitors'
     | '/hr/dashboard'
     | '/hr/employees'
@@ -2756,15 +2877,26 @@ export interface FileRouteTypes {
     | '/hod/faculty'
     | '/hod/reports'
     | '/hostel/attendance'
+    | '/hostel/blocks'
     | '/hostel/complaints'
     | '/hostel/dashboard'
+    | '/hostel/device-management'
     | '/hostel/fees'
+    | '/hostel/guest-billing'
+    | '/hostel/leaves-suspension'
+    | '/hostel/log-history'
+    | '/hostel/maintenance'
     | '/hostel/mess-fees'
+    | '/hostel/mess-management'
     | '/hostel/mess-menus'
     | '/hostel/notifications'
+    | '/hostel/outing-approvals'
+    | '/hostel/outing-log-history'
+    | '/hostel/room-allocation'
     | '/hostel/rooms'
     | '/hostel/settings'
     | '/hostel/students'
+    | '/hostel/user-management'
     | '/hostel/visitors'
     | '/hr/dashboard'
     | '/hr/employees'
@@ -3783,6 +3915,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HostelAttendanceRouteImport
       parentRoute: typeof HostelRoute
     }
+    '/hostel/blocks': {
+      id: '/hostel/blocks'
+      path: '/blocks'
+      fullPath: '/hostel/blocks'
+      preLoaderRoute: typeof HostelBlocksRouteImport
+      parentRoute: typeof HostelRoute
+    }
     '/hostel/complaints': {
       id: '/hostel/complaints'
       path: '/complaints'
@@ -3797,6 +3936,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HostelDashboardRouteImport
       parentRoute: typeof HostelRoute
     }
+    '/hostel/device-management': {
+      id: '/hostel/device-management'
+      path: '/device-management'
+      fullPath: '/hostel/device-management'
+      preLoaderRoute: typeof HostelDeviceManagementRouteImport
+      parentRoute: typeof HostelRoute
+    }
     '/hostel/fees': {
       id: '/hostel/fees'
       path: '/fees'
@@ -3804,11 +3950,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HostelFeesRouteImport
       parentRoute: typeof HostelRoute
     }
+    '/hostel/guest-billing': {
+      id: '/hostel/guest-billing'
+      path: '/guest-billing'
+      fullPath: '/hostel/guest-billing'
+      preLoaderRoute: typeof HostelGuestBillingRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/leaves-suspension': {
+      id: '/hostel/leaves-suspension'
+      path: '/leaves-suspension'
+      fullPath: '/hostel/leaves-suspension'
+      preLoaderRoute: typeof HostelLeavesSuspensionRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/log-history': {
+      id: '/hostel/log-history'
+      path: '/log-history'
+      fullPath: '/hostel/log-history'
+      preLoaderRoute: typeof HostelLogHistoryRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/maintenance': {
+      id: '/hostel/maintenance'
+      path: '/maintenance'
+      fullPath: '/hostel/maintenance'
+      preLoaderRoute: typeof HostelMaintenanceRouteImport
+      parentRoute: typeof HostelRoute
+    }
     '/hostel/mess-fees': {
       id: '/hostel/mess-fees'
       path: '/mess-fees'
       fullPath: '/hostel/mess-fees'
       preLoaderRoute: typeof HostelMessFeesRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/mess-management': {
+      id: '/hostel/mess-management'
+      path: '/mess-management'
+      fullPath: '/hostel/mess-management'
+      preLoaderRoute: typeof HostelMessManagementRouteImport
       parentRoute: typeof HostelRoute
     }
     '/hostel/mess-menus': {
@@ -3823,6 +4004,27 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/hostel/notifications'
       preLoaderRoute: typeof HostelNotificationsRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/outing-approvals': {
+      id: '/hostel/outing-approvals'
+      path: '/outing-approvals'
+      fullPath: '/hostel/outing-approvals'
+      preLoaderRoute: typeof HostelOutingApprovalsRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/outing-log-history': {
+      id: '/hostel/outing-log-history'
+      path: '/outing-log-history'
+      fullPath: '/hostel/outing-log-history'
+      preLoaderRoute: typeof HostelOutingLogHistoryRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/room-allocation': {
+      id: '/hostel/room-allocation'
+      path: '/room-allocation'
+      fullPath: '/hostel/room-allocation'
+      preLoaderRoute: typeof HostelRoomAllocationRouteImport
       parentRoute: typeof HostelRoute
     }
     '/hostel/rooms': {
@@ -3844,6 +4046,13 @@ declare module '@tanstack/react-router' {
       path: '/students'
       fullPath: '/hostel/students'
       preLoaderRoute: typeof HostelStudentsRouteImport
+      parentRoute: typeof HostelRoute
+    }
+    '/hostel/user-management': {
+      id: '/hostel/user-management'
+      path: '/user-management'
+      fullPath: '/hostel/user-management'
+      preLoaderRoute: typeof HostelUserManagementRouteImport
       parentRoute: typeof HostelRoute
     }
     '/hostel/visitors': {
@@ -4877,30 +5086,52 @@ const HodRouteWithChildren = HodRoute._addFileChildren(HodRouteChildren)
 
 interface HostelRouteChildren {
   HostelAttendanceRoute: typeof HostelAttendanceRoute
+  HostelBlocksRoute: typeof HostelBlocksRoute
   HostelComplaintsRoute: typeof HostelComplaintsRoute
   HostelDashboardRoute: typeof HostelDashboardRoute
+  HostelDeviceManagementRoute: typeof HostelDeviceManagementRoute
   HostelFeesRoute: typeof HostelFeesRoute
+  HostelGuestBillingRoute: typeof HostelGuestBillingRoute
+  HostelLeavesSuspensionRoute: typeof HostelLeavesSuspensionRoute
+  HostelLogHistoryRoute: typeof HostelLogHistoryRoute
+  HostelMaintenanceRoute: typeof HostelMaintenanceRoute
   HostelMessFeesRoute: typeof HostelMessFeesRoute
+  HostelMessManagementRoute: typeof HostelMessManagementRoute
   HostelMessMenusRoute: typeof HostelMessMenusRoute
   HostelNotificationsRoute: typeof HostelNotificationsRoute
+  HostelOutingApprovalsRoute: typeof HostelOutingApprovalsRoute
+  HostelOutingLogHistoryRoute: typeof HostelOutingLogHistoryRoute
+  HostelRoomAllocationRoute: typeof HostelRoomAllocationRoute
   HostelRoomsRoute: typeof HostelRoomsRoute
   HostelSettingsRoute: typeof HostelSettingsRoute
   HostelStudentsRoute: typeof HostelStudentsRoute
+  HostelUserManagementRoute: typeof HostelUserManagementRoute
   HostelVisitorsRoute: typeof HostelVisitorsRoute
   HostelIndexRoute: typeof HostelIndexRoute
 }
 
 const HostelRouteChildren: HostelRouteChildren = {
   HostelAttendanceRoute: HostelAttendanceRoute,
+  HostelBlocksRoute: HostelBlocksRoute,
   HostelComplaintsRoute: HostelComplaintsRoute,
   HostelDashboardRoute: HostelDashboardRoute,
+  HostelDeviceManagementRoute: HostelDeviceManagementRoute,
   HostelFeesRoute: HostelFeesRoute,
+  HostelGuestBillingRoute: HostelGuestBillingRoute,
+  HostelLeavesSuspensionRoute: HostelLeavesSuspensionRoute,
+  HostelLogHistoryRoute: HostelLogHistoryRoute,
+  HostelMaintenanceRoute: HostelMaintenanceRoute,
   HostelMessFeesRoute: HostelMessFeesRoute,
+  HostelMessManagementRoute: HostelMessManagementRoute,
   HostelMessMenusRoute: HostelMessMenusRoute,
   HostelNotificationsRoute: HostelNotificationsRoute,
+  HostelOutingApprovalsRoute: HostelOutingApprovalsRoute,
+  HostelOutingLogHistoryRoute: HostelOutingLogHistoryRoute,
+  HostelRoomAllocationRoute: HostelRoomAllocationRoute,
   HostelRoomsRoute: HostelRoomsRoute,
   HostelSettingsRoute: HostelSettingsRoute,
   HostelStudentsRoute: HostelStudentsRoute,
+  HostelUserManagementRoute: HostelUserManagementRoute,
   HostelVisitorsRoute: HostelVisitorsRoute,
   HostelIndexRoute: HostelIndexRoute,
 }
