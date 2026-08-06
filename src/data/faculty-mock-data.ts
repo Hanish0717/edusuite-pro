@@ -938,191 +938,137 @@ export function generateWeeklyGrid(subjects: SubjectItem[]): WeeklySlot[] {
   const days: WeeklySlot["day"][] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const teachingSlots = TIME_SLOTS.filter((s) => s !== LUNCH_SLOT);
 
-  // Extract theory and lab subjects
-  const theorySubjects = subjects.filter((s) => s.type === "Theory");
-  const labSubjects = subjects.filter((s) => s.type === "Lab");
-
   const slots: WeeklySlot[] = [];
-  // Tracks which (day, timeSlot) cells are occupied
   const occupied = new Set<string>();
-
-  const key = (day: string, slot: string) => `${day}|${slot}`;
 
   const parseTime = (slot: string): { startTime: string; endTime: string } => {
     const parts = slot.split(" - ");
     return { startTime: parts[0] ?? slot, endTime: parts[1] ?? slot };
   };
 
-  // â”€â”€â”€ 1. Theory Classes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  // Distribute each theory subject across the week avoiding repeating same subject twice on one day
-  const daySubjectCount: Record<string, string[]> = {};
-  days.forEach((d) => (daySubjectCount[d] = []));
+  const theorySubjects = subjects.filter((s) => s.type === "Theory");
+  const labSubjects = subjects.filter((s) => s.type === "Lab");
 
-  theorySubjects.forEach((sub, subIdx) => {
-    // Each theory subject needs 3â€“4 slots spread across the week
-    const weeklySlotCount = Math.min(sub.weeklyHours, 4);
-    let placed = 0;
-    let dayIdx = subIdx % days.length; // stagger start day per subject
+  const canPlaceTeaching = (day: string, slotIdx: number): boolean => {
+    const key = (sIdx: number) => `${day}|${TIME_SLOTS[sIdx]}`;
+    if (occupied.has(key(slotIdx))) return false;
 
-    for (let attempt = 0; attempt < 30 && placed < weeklySlotCount; attempt++) {
-      const day = days[dayIdx % days.length];
-      if (!day) { dayIdx++; continue; }
-      // Pick a time slot not yet occupied on this day and not already used for this subject today
-      const availableSlot = teachingSlots.find(
-        (ts) =>
-          !occupied.has(key(day, ts)) &&
-          !(daySubjectCount[day] ?? []).includes(sub.code) &&
-          (day !== "Saturday" || teachingSlots.indexOf(ts) < 3) // Saturday: max 3 periods
-      );
-      if (availableSlot) {
-        const { startTime, endTime } = parseTime(availableSlot);
-        const classroom = sub.sectionsDetails[0]?.classroom ?? `Room ${sub.code.slice(-3)}`;
-        const building = classroom.startsWith("Room")
-          ? `Block ${classroom.split("-")[0]?.replace("Room ", "") ?? "A"}`
-          : "Main Block";
-        slots.push({
-          day,
-          timeSlot: availableSlot,
-          startTime,
-          endTime,
-          subject: sub.name,
-          code: sub.code,
-          section: sub.assignedSections[0] ?? "A",
-          room: classroom,
-          building,
-          type: "Theory",
-          role: "Faculty",
-        });
-        occupied.add(key(day, availableSlot));
-        (daySubjectCount[day] = daySubjectCount[day] ?? []).push(sub.code);
-        placed++;
-      }
-      dayIdx++;
+    // Strict Gap Check: if previous slot had a class, this slot must be free
+    if (slotIdx > 0 && TIME_SLOTS[slotIdx - 1] !== LUNCH_SLOT) {
+      const hasPrevClass = slots.some((s) => s.day === day && s.timeSlot === TIME_SLOTS[slotIdx - 1]);
+      if (hasPrevClass) return false;
+    }
+
+    // Strict Gap Check: if next slot has a class, this slot must be free
+    if (slotIdx < TIME_SLOTS.length - 1 && TIME_SLOTS[slotIdx + 1] !== LUNCH_SLOT) {
+      const hasNextClass = slots.some((s) => s.day === day && s.timeSlot === TIME_SLOTS[slotIdx + 1]);
+      if (hasNextClass) return false;
+    }
+
+    return true;
+  };
+
+  const placeSlot = (
+    day: WeeklySlot["day"],
+    timeSlot: string,
+    subjectName: string,
+    code: string,
+    section: string,
+    room: string,
+    building: string,
+    type: WeeklySlotType
+  ) => {
+    const { startTime, endTime } = parseTime(timeSlot);
+    slots.push({
+      day,
+      timeSlot,
+      startTime,
+      endTime,
+      subject: subjectName,
+      code,
+      section,
+      room,
+      building,
+      type,
+      role: type === "Lab" ? "Lab Instructor" : "Faculty",
+      isLab: type === "Lab",
+    });
+    occupied.add(`${day}|${timeSlot}`);
+  };
+
+  // 1. SCHEDULE LABS (Occupies two consecutive slots, then followed by gap)
+  labSubjects.forEach((lab, labIdx) => {
+    const labDays: WeeklySlot["day"][] = ["Tuesday", "Thursday", "Friday"];
+    const day = labDays[labIdx % labDays.length] || "Tuesday";
+
+    const s1Idx = 5; // 13:30 - 14:30
+    const s2Idx = 6; // 14:30 - 15:30
+    const s1 = TIME_SLOTS[s1Idx];
+    const s2 = TIME_SLOTS[s2Idx];
+
+    if (s1 && s2 && !occupied.has(`${day}|${s1}`) && !occupied.has(`${day}|${s2}`)) {
+      placeSlot(day, s1, `${lab.name} Lab`, lab.code, lab.assignedSections[0] || "A", lab.labDetails?.labName || "Lab 2", "Lab Block", "Lab");
+      placeSlot(day, s2, `${lab.name} Lab`, lab.code, lab.assignedSections[0] || "A", lab.labDetails?.labName || "Lab 2", "Lab Block", "Lab");
     }
   });
 
-  // â”€â”€â”€ 2. Lab Sessions (2-consecutive-slot blocks) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  labSubjects.forEach((sub, labIdx) => {
-    const labDay = days[(labIdx * 2 + 2) % days.length];
-    if (!labDay) return;
-    // Find two consecutive free slots on that day
-    for (let i = 0; i < teachingSlots.length - 1; i++) {
-      const s1 = teachingSlots[i];
-      const s2 = teachingSlots[i + 1];
-      if (!s1 || !s2) continue;
-      if (!occupied.has(key(labDay, s1)) && !occupied.has(key(labDay, s2))) {
-        for (const slotTime of [s1, s2]) {
-          const { startTime, endTime } = parseTime(slotTime);
-          slots.push({
-            day: labDay,
-            timeSlot: slotTime,
-            startTime,
-            endTime,
-            subject: sub.name.replace(" Lab", "") + " Lab",
-            code: sub.code,
-            section: sub.assignedSections[0] ?? "A",
-            room: sub.labDetails?.labName ?? `Lab ${sub.code.slice(-2)}`,
-            building: "Lab Block",
-            type: "Lab",
-            role: "Lab Instructor",
-            isLab: true,
-          });
-          occupied.add(key(labDay, slotTime));
+  // 2. SCHEDULE THEORY
+  theorySubjects.forEach((sub, subIdx) => {
+    const targetDays: WeeklySlot["day"][] = [
+      ["Monday", "Wednesday", "Friday"],
+      ["Tuesday", "Thursday", "Saturday"],
+    ][subIdx % 2] as WeeklySlot["day"][];
+
+    targetDays.forEach((day) => {
+      for (let slotIdx = 0; slotIdx < TIME_SLOTS.length; slotIdx++) {
+        const timeSlot = TIME_SLOTS[slotIdx];
+        if (!timeSlot || timeSlot === LUNCH_SLOT) continue;
+        if (day === "Saturday" && slotIdx > 2) continue; // Saturday: max 2 periods in morning
+
+        if (canPlaceTeaching(day, slotIdx)) {
+          const classroom = sub.sectionsDetails[0]?.classroom ?? `Room ${sub.code.slice(-3)}`;
+          placeSlot(day, timeSlot, sub.name, sub.code, sub.assignedSections[0] || "A", classroom, "Academic Block A", "Theory");
+          break;
         }
+      }
+    });
+  });
+
+  // 3. SCHEDULE TUTORIALS (1 session per theory subject)
+  theorySubjects.slice(0, 2).forEach((sub, subIdx) => {
+    const day = ["Tuesday", "Thursday"][subIdx % 2] as WeeklySlot["day"];
+    for (let slotIdx = 0; slotIdx < TIME_SLOTS.length; slotIdx++) {
+      const timeSlot = TIME_SLOTS[slotIdx];
+      if (!timeSlot || timeSlot === LUNCH_SLOT) continue;
+
+      if (canPlaceTeaching(day, slotIdx)) {
+        const classroom = sub.sectionsDetails[0]?.classroom ?? `Room ${sub.code.slice(-3)}`;
+        placeSlot(day, timeSlot, `${sub.name} (Tutorial)`, sub.code, sub.assignedSections[0] || "A", classroom, "Academic Block A", "Tutorial");
         break;
       }
     }
   });
 
-  // â”€â”€â”€ 3. Tutorial Sessions (one per theory subject) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  theorySubjects.slice(0, 2).forEach((sub, idx) => {
-    const tutDay = days[(idx + 4) % days.length];
-    if (!tutDay) return;
-    const tutSlot = teachingSlots.find(
-      (ts) => !occupied.has(key(tutDay, ts)) && tutDay !== "Saturday"
-    );
-    if (tutSlot) {
-      const { startTime, endTime } = parseTime(tutSlot);
-      slots.push({
-        day: tutDay,
-        timeSlot: tutSlot,
-        startTime,
-        endTime,
-        subject: sub.name,
-        code: sub.code,
-        section: sub.assignedSections[0] ?? "A",
-        room: sub.sectionsDetails[0]?.classroom ?? "Room T-01",
-        building: "Tutorial Block",
-        type: "Tutorial",
-        role: "Faculty",
-      });
-      occupied.add(key(tutDay, tutSlot));
-    }
-  });
-
-  // â”€â”€â”€ 4. Project Guidance (Wednesday afternoon) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const projDay: WeeklySlot["day"] = "Wednesday";
-  const projSlot = teachingSlots.find((ts) => !occupied.has(key(projDay, ts)));
-  if (projSlot) {
-    const { startTime, endTime } = parseTime(projSlot);
-    const firstSub = theorySubjects[0] ?? subjects[0];
-    slots.push({
-      day: projDay,
-      timeSlot: projSlot,
-      startTime,
-      endTime,
-      subject: "Project Guidance",
-      code: firstSub?.code ?? "PRJ",
-      section: firstSub?.assignedSections[0] ?? "A",
-      room: "Seminar Hall",
-      building: "PG Block",
-      type: "Project",
-      role: "Project Mentor",
-    });
-    occupied.add(key(projDay, projSlot));
+  // 4. SCHEDULE SPECIAL SLOTS
+  // Mentoring: Friday period 7
+  const mentoringDay = "Friday";
+  const mentoringSlotIdx = 7;
+  if (canPlaceTeaching(mentoringDay, mentoringSlotIdx)) {
+    placeSlot(mentoringDay, TIME_SLOTS[mentoringSlotIdx]!, "Mentoring Hour", "MNTR", "Mentees", "Staff Room", "Faculty Block", "Mentoring");
   }
 
-  // â”€â”€â”€ 5. Mentoring Hour (Friday last period) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  const mentorDay: WeeklySlot["day"] = "Friday";
-  const mentorSlot = teachingSlots[teachingSlots.length - 1];
-  if (mentorSlot && !occupied.has(key(mentorDay, mentorSlot))) {
-    const { startTime, endTime } = parseTime(mentorSlot);
-    const mentorSection = subjects[0]?.assignedSections[0]?.replace(/^[^-]+-/, "") ?? "";
-    slots.push({
-      day: mentorDay,
-      timeSlot: mentorSlot,
-      startTime,
-      endTime,
-      subject: "Mentoring Hour",
-      code: "MNTR",
-      section: mentorSection ? `${mentorSection} Students` : "Mentees",
-      room: "Staff Room",
-      building: "Faculty Block",
-      type: "Mentoring",
-      role: "Class Mentor",
-    });
-    occupied.add(key(mentorDay, mentorSlot));
+  // Project Guidance: Wednesday period 5
+  const projectDay = "Wednesday";
+  const projectSlotIdx = 5;
+  if (canPlaceTeaching(projectDay, projectSlotIdx)) {
+    placeSlot(projectDay, TIME_SLOTS[projectSlotIdx]!, "Project Guidance", "PRJ", "Batch-1", "Seminar Hall", "PG Block", "Project");
   }
 
-  // â”€â”€â”€ 6. Department Meeting (Monday 08:45 slot or first free Monday slot) â”€â”€â”€â”€â”€
-  const deptDay: WeeklySlot["day"] = "Monday";
-  const deptSlot = teachingSlots[teachingSlots.length - 1];
-  if (deptSlot && !occupied.has(key(deptDay, deptSlot))) {
-    const { startTime, endTime } = parseTime(deptSlot);
-    slots.push({
-      day: deptDay,
-      timeSlot: deptSlot,
-      startTime,
-      endTime,
-      subject: "Dept. Team Meeting",
-      code: "DEPT",
-      section: "Faculty",
-      room: "Conference Room",
-      building: "Admin Block",
-      type: "Dept. Meeting",
-      role: "Faculty",
-    });
-    occupied.add(key(deptDay, deptSlot));
+  // Dept Meeting: Monday period 7
+  const deptDay = "Monday";
+  const deptSlotIdx = 7;
+  if (canPlaceTeaching(deptDay, deptSlotIdx)) {
+    placeSlot(deptDay, TIME_SLOTS[deptSlotIdx]!, "Dept. Team Meeting", "DEPT", "Faculty", "Conference Room", "Admin Block", "Dept. Meeting");
   }
 
   return slots;

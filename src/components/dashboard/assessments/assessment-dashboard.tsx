@@ -9,12 +9,12 @@ interface AssessmentDashboardProps {
 const TYPE_CONFIG: Record<AssessmentType, { icon: React.ElementType; color: string; bg: string }> = {
   "Internal 1":        { icon: BookOpen,         color: "text-blue-600 dark:text-blue-400",   bg: "bg-blue-500/10 border-blue-500/20" },
   "Internal 2":        { icon: BookOpen,         color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10 border-indigo-500/20" },
-  "Quiz":              { icon: HelpCircle,       color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-500/10 border-violet-500/20" },
-  "Assignment":        { icon: ClipboardList,    color: "text-amber-600 dark:text-amber-400",  bg: "bg-amber-500/10 border-amber-500/20" },
-  "Lab Assessment":    { icon: FlaskConical,     color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
-  "Viva":              { icon: Mic,              color: "text-rose-600 dark:text-rose-400",   bg: "bg-rose-500/10 border-rose-500/20" },
-  "Seminar":           { icon: PresentationIcon, color: "text-teal-600 dark:text-teal-400",   bg: "bg-teal-500/10 border-teal-500/20" },
-  "Project Evaluation":{ icon: FolderGit2,       color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-500/10 border-orange-500/20" },
+  "Quiz":              { icon: HelpCircle,       color: "text-sky-600 dark:text-sky-400",     bg: "bg-sky-500/10 border-sky-500/20" },
+  "Assignment":        { icon: ClipboardList,    color: "text-blue-700 dark:text-blue-300",   bg: "bg-blue-600/10 border-blue-600/20" },
+  "Lab Assessment":    { icon: FlaskConical,     color: "text-indigo-700 dark:text-indigo-300", bg: "bg-indigo-600/10 border-indigo-600/20" },
+  "Viva":              { icon: Mic,              color: "text-sky-700 dark:text-sky-300",     bg: "bg-sky-600/10 border-sky-600/20" },
+  "Seminar":           { icon: PresentationIcon, color: "text-blue-800 dark:text-blue-200",   bg: "bg-blue-700/10 border-blue-700/20" },
+  "Project Evaluation":{ icon: FolderGit2,       color: "text-indigo-800 dark:text-indigo-200", bg: "bg-indigo-700/10 border-indigo-700/20" },
 };
 
 const ALL_TYPES: AssessmentType[] = [

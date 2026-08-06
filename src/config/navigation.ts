@@ -128,6 +128,7 @@ export const navigation: NavSection[] = [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
       { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
       { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
+      { title: "Emergency Broadcast", url: "/emergency", icon: Siren, roles: ["super-admin", "staff"], badge: "Instant" },
     ],
   },
   {
@@ -152,9 +153,14 @@ export const navigation: NavSection[] = [
         moduleId: "examination",
         roles: ["super-admin", "staff"],
         children: [
-          { title: "Exam Schedule", url: "/examinations", moduleId: "examination" },
-          { title: "Hall Tickets", url: "/examinations", moduleId: "examination" },
-          { title: "Internal Marks", url: "/examinations", moduleId: "examination" },
+          { title: "Dashboard", url: "/examinations", moduleId: "examination" },
+          { title: "Exam Schedule", url: "/examinations/schedule", moduleId: "examination" },
+          { title: "Hall Tickets", url: "/examinations/hall-tickets", moduleId: "examination" },
+          { title: "Internal Marks", url: "/examinations/internal-marks", moduleId: "examination" },
+          { title: "Revaluation", url: "/examinations/revaluation", moduleId: "examination" },
+          { title: "Exam Analytics", url: "/examinations/analytics", moduleId: "examination" },
+          { title: "Reports", url: "/examinations/reports", moduleId: "examination" },
+          { title: "Notifications", url: "/examinations/notifications", moduleId: "examination" },
         ],
       },
       { title: "Results", url: "/results", icon: Award, moduleId: "examination" },
@@ -178,7 +184,17 @@ export const navigation: NavSection[] = [
         moduleId: "alumni",
         children: [
           { title: "Dashboard", url: "/alumni?tab=dashboard" },
-          { title: "Directory", url: "/alumni?tab=directory" },
+          { title: "Alumni Directory", url: "/alumni?tab=directory" },
+          { title: "Placement Portal", url: "/alumni?tab=placement-collaboration" },
+          { title: "Career Services", url: "/alumni?tab=career" },
+          { title: "Mentorship Hub", url: "/alumni?tab=mentorship" },
+          { title: "Guest Lectures", url: "/alumni?tab=guest-lectures" },
+          { title: "Student Networking", url: "/alumni?tab=student-networking" },
+          { title: "Events & Reunions", url: "/alumni?tab=events" },
+          { title: "News & Articles", url: "/alumni?tab=news-announcements" },
+          { title: "Invitations Hub", url: "/alumni?tab=invitations" },
+          { title: "Verification Queue", url: "/alumni?tab=verification-queue" },
+          { title: "Donations & Giving", url: "/alumni?tab=donations" },
           { title: "Analytics", url: "/alumni?tab=analytics" },
         ],
       },
@@ -190,6 +206,7 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
   // Preserve standalone module URLs without rewriting
   if (
     url.startsWith("/staff") ||
+    url.startsWith("/alumni") ||
     [
       "/employee-management",
       "/leave",
@@ -202,6 +219,8 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/grievance",
       "/alumni",
       "/approval-workflows",
+      "/emergency",
+      "/super-admin/emergency",
     ].includes(url)
   ) {
     return url;
@@ -249,6 +268,15 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     if (flags.includes("isDean")) {
       if (url === "/dashboard") return "/staff";
       if (url === "/settings") return "/faculty/profile";
+      if (url === "/attendance") return "/attendance";
+      if (url === "/timetable") return "/timetable";
+      if (url === "/examinations") return "/examinations";
+      if (url === "/results") return "/results";
+      if (url === "/faculty") return "/faculty";
+      if (url === "/students") return "/students";
+      if (url === "/academics") return "/academics";
+      if (url === "/subject-allocation" || title === "Subject Allocation" || title === "Workload") return "/dean/subject-allocation";
+      return url;
     }
     if (flags.includes("isExamController")) {
       if (url === "/dashboard") return "/examination/dashboard";

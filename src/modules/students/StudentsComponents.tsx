@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useAcademic } from "@/context/academic-context";
 import {
   Users,
   Plus,
@@ -48,6 +49,7 @@ import {
   createStudentRecord,
   updateStudentRecord,
   deleteStudentRecord,
+  getStudents,
   INITIAL_STUDENTS,
   type StudentRecord,
 } from "./StudentsService";
@@ -72,9 +74,10 @@ const YEARS = [
 const FEE_STATUSES = ["All Fee Status", "Paid", "Pending", "Partial"] as const;
 
 export function StudentsModuleView() {
+  const { selectedDepartment, setSelectedDepartment } = useAcademic();
   const [students, setStudents] = useState<StudentRecord[]>(INITIAL_STUDENTS);
   const [search, setSearch] = useState("");
-  const [selectedDept, setSelectedDept] = useState("All Departments");
+  const [selectedDept, setSelectedDept] = useState(selectedDepartment);
   const [selectedYear, setSelectedYear] = useState("All Years");
   const [selectedFee, setSelectedFee] = useState<string>("All Fee Status");
   const [loading, setLoading] = useState(false);
@@ -103,30 +106,33 @@ export function StudentsModuleView() {
 
   const loadData = async () => {
     setLoading(true);
-    const data = await fetchStudentRecords();
-    setStudents(data);
-    setLoading(false);
+    try {
+      const response = await getStudents({
+        department: selectedDepartment,
+        search: search,
+        filters: {
+          feeStatus: selectedFee,
+          academicYear: selectedYear,
+        }
+      });
+      setStudents(response.students);
+    } catch (err) {
+      toast.error("Failed to load department student roster.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [selectedDepartment, search, selectedYear, selectedFee]);
 
-  // Filtered Students Roster
-  const filtered = students.filter((s) => {
-    const matchesSearch =
-      s.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      s.rollNo.toLowerCase().includes(search.toLowerCase()) ||
-      s.email.toLowerCase().includes(search.toLowerCase()) ||
-      s.department.toLowerCase().includes(search.toLowerCase()) ||
-      s.guardianName.toLowerCase().includes(search.toLowerCase());
+  useEffect(() => {
+    setSelectedDept(selectedDepartment);
+  }, [selectedDepartment]);
 
-    const matchesDept = selectedDept === "All Departments" || s.department === selectedDept;
-    const matchesYear = selectedYear === "All Years" || s.academicYear.includes(selectedYear);
-    const matchesFee = selectedFee === "All Fee Status" || s.feeStatus === selectedFee;
-
-    return matchesSearch && matchesDept && matchesYear && matchesFee;
-  });
+  // Filtered Students Roster (handled by service layer, mapped directly)
+  const filtered = students;
 
   // KPI Metrics
   const totalStudents = students.length;
@@ -356,7 +362,15 @@ export function StudentsModuleView() {
           </div>
 
           {/* Department Filter */}
-          <Select value={selectedDept} onValueChange={setSelectedDept}>
+          <Select
+            value={selectedDept}
+            onValueChange={(val) => {
+              setSelectedDept(val);
+              if (val !== "All Departments") {
+                setSelectedDepartment(val);
+              }
+            }}
+          >
             <SelectTrigger className="h-9 w-full sm:w-[150px] text-xs">
               <Building2 className="size-3.5 mr-1.5 text-muted-foreground" />
               <SelectValue placeholder="Department" />
@@ -572,7 +586,7 @@ export function StudentsModuleView() {
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold">Department</Label>
                 <Select
-                  value={formData.department}
+                  value={formData.department || "CSE"}
                   onValueChange={(val) => setFormData({ ...formData, department: val })}
                 >
                   <SelectTrigger className="h-9 text-xs">
@@ -629,7 +643,7 @@ export function StudentsModuleView() {
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold">Fee Status</Label>
                 <Select
-                  value={formData.feeStatus}
+                  value={formData.feeStatus || "Paid"}
                   onValueChange={(val: any) => setFormData({ ...formData, feeStatus: val })}
                 >
                   <SelectTrigger className="h-9 text-xs">
@@ -735,7 +749,7 @@ export function StudentsModuleView() {
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold">Fee Status</Label>
                 <Select
-                  value={formData.feeStatus}
+                  value={formData.feeStatus || "Paid"}
                   onValueChange={(val: any) => setFormData({ ...formData, feeStatus: val })}
                 >
                   <SelectTrigger className="h-9 text-xs">
