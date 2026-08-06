@@ -45,6 +45,7 @@ export interface MockStudent {
   attendance_percentage?: number;
   fee_balance?: number;
   hall_ticket_status?: 'Not Generated' | 'Generated';
+  is_overridden?: boolean;
 }
 
 const DEFAULT_COURSES: MockCourseOffering[] = [

@@ -53,13 +53,16 @@ function HallTicketControlPage() {
   // Officer-specific states
   const [officerTab, setOfficerTab] = useState<'eligible' | 'blocked'>('blocked');
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
+  const [checkedStudentIds, setCheckedStudentIds] = useState<string[]>([]);
 
   // Sync state with logged-in user's department once loaded
   useEffect(() => {
-    if (userDept) {
+    if (!isOfficer && userDept) {
       setDepartment(userDept);
+    } else if (isOfficer) {
+      setDepartment("All Branches");
     }
-  }, [userDept]);
+  }, [userDept, isOfficer]);
 
   useEffect(() => {
     setStudents(getMockStudents());
@@ -70,18 +73,19 @@ function HallTicketControlPage() {
   
   // Check if active exam schedule exists
   const activeExam = exams.find(e => 
-    e.department === department && 
+    (department === "All Branches" || e.department === department) && 
     e.semester === semesterNumber &&
     (e.status === 'Upcoming' || e.status === 'Completed')
   );
 
   // Filter students
-  const filteredStudents = students.filter(s => 
-    s.department === department && 
-    s.semester === semesterNumber &&
-    (s.full_name.toLowerCase().includes(search.toLowerCase()) ||
-     s.roll_number.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filteredStudents = students.filter(s => {
+    const matchDept = department === "All Branches" || s.department === department;
+    const matchSem = s.semester === semesterNumber;
+    const matchSearch = s.full_name.toLowerCase().includes(search.toLowerCase()) ||
+                        s.roll_number.toLowerCase().includes(search.toLowerCase());
+    return matchDept && matchSem && matchSearch;
+  });
 
   // Eligibility criteria check
   const isStudentEligible = (s: MockStudent) => {
@@ -128,9 +132,64 @@ function HallTicketControlPage() {
     toast.success(`Successfully generated hall tickets for ${count} eligible students!`);
   };
 
+  const handleToggleStudentChecked = (studentId: string) => {
+    setCheckedStudentIds(prev => 
+      prev.includes(studentId) 
+        ? prev.filter(id => id !== studentId) 
+        : [...prev, studentId]
+    );
+  };
+
+  const handleApproveSelected = () => {
+    if (checkedStudentIds.length === 0) {
+      toast.error("No students selected.");
+      return;
+    }
+
+    const updated = students.map(s => 
+      checkedStudentIds.includes(s.id) ? { ...s, hall_ticket_status: 'Generated' as const } : s
+    );
+    setStudents(updated);
+    saveMockStudents(updated);
+    
+    toast.success(`Successfully generated hall tickets for ${checkedStudentIds.length} students!`);
+    setCheckedStudentIds([]);
+  };
+
+  const handlePassSingleToEligible = (studentId: string) => {
+    const updated = students.map(s => 
+      s.id === studentId ? { ...s, is_overridden: true } : s
+    );
+    setStudents(updated);
+    saveMockStudents(updated);
+    toast.success("Student approved and moved to eligible roster!");
+  };
+
+  const handlePassSelectedToEligible = () => {
+    if (checkedStudentIds.length === 0) {
+      toast.error("No students selected.");
+      return;
+    }
+
+    const updated = students.map(s => 
+      checkedStudentIds.includes(s.id) ? { ...s, is_overridden: true } : s
+    );
+    setStudents(updated);
+    saveMockStudents(updated);
+    
+    toast.success(`Successfully moved ${checkedStudentIds.length} students to eligible roster!`);
+    setCheckedStudentIds([]);
+  };
+
   // Officer-specific splits
-  const eligibleOfficerStudents = filteredStudents.filter(s => isStudentEligible(s) || s.hall_ticket_status === 'Generated');
-  const blockedOfficerStudents = filteredStudents.filter(s => !isStudentEligible(s) && s.hall_ticket_status !== 'Generated');
+  const eligibleOfficerStudents = filteredStudents
+    .filter(s => isStudentEligible(s) || s.is_overridden || s.hall_ticket_status === 'Generated')
+    .sort((a, b) => {
+      const aGen = a.hall_ticket_status === 'Generated' ? 1 : 0;
+      const bGen = b.hall_ticket_status === 'Generated' ? 1 : 0;
+      return aGen - bGen;
+    });
+  const blockedOfficerStudents = filteredStudents.filter(s => !isStudentEligible(s) && !s.is_overridden && s.hall_ticket_status !== 'Generated');
 
   const selectedStudent = students.find(s => s.id === selectedStudentId);
 
@@ -165,14 +224,15 @@ function HallTicketControlPage() {
               <label className="text-xs font-bold text-muted-foreground block mb-1">Department</label>
               <select
                 value={department}
-                disabled={!!userDept}
+                disabled={!isOfficer && !!userDept}
                 onChange={e => setDepartment(e.target.value)}
                 className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
               >
-                {userDept ? (
+                {!isOfficer && userDept ? (
                   <option value={userDept}>{userDept}</option>
                 ) : (
                   <>
+                    <option value="All Branches">All Branches</option>
                     <option value="AIML">AIML</option>
                     <option value="CSE">CSE</option>
                     <option value="AIDS">AIDS</option>
@@ -221,27 +281,47 @@ function HallTicketControlPage() {
           {/* Left Column: Tabbed Lists */}
           <div className="lg:col-span-2 space-y-4">
             {/* Custom Tab Headers */}
-            <div className="flex border-b border-border/80">
-              <button
-                onClick={() => setOfficerTab('blocked')}
-                className={`px-5 py-3 text-xs font-black border-b-2 transition-all duration-200 cursor-pointer ${
-                  officerTab === 'blocked'
-                    ? 'border-rose-500 text-rose-700 font-extrabold'
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Blocked / Dues Pending ({blockedOfficerStudents.length})
-              </button>
-              <button
-                onClick={() => setOfficerTab('eligible')}
-                className={`px-5 py-3 text-xs font-black border-b-2 transition-all duration-200 cursor-pointer ${
-                  officerTab === 'eligible'
-                    ? 'border-indigo-650 text-indigo-700 font-extrabold'
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Eligible / Cleared ({eligibleOfficerStudents.length})
-              </button>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-border/80 gap-3">
+              <div className="flex">
+                <button
+                  onClick={() => setOfficerTab('blocked')}
+                  className={`px-5 py-3 text-xs font-black border-b-2 transition-all duration-200 cursor-pointer ${
+                    officerTab === 'blocked'
+                      ? 'border-rose-500 text-rose-700 font-extrabold'
+                      : 'border-transparent text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Blocked / Dues Pending ({blockedOfficerStudents.length})
+                </button>
+                <button
+                  onClick={() => setOfficerTab('eligible')}
+                  className={`px-5 py-3 text-xs font-black border-b-2 transition-all duration-200 cursor-pointer ${
+                    officerTab === 'eligible'
+                      ? 'border-indigo-650 text-indigo-700 font-extrabold'
+                      : 'border-transparent text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Eligible / Cleared ({eligibleOfficerStudents.length})
+                </button>
+              </div>
+
+              {checkedStudentIds.length > 0 && (
+                officerTab === 'blocked' ? (
+                  <Button
+                    onClick={handlePassSelectedToEligible}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-wider h-8 rounded-lg flex items-center gap-1.5 px-4 shadow-sm mb-2 sm:mb-0 cursor-pointer"
+                  >
+                    Pass to Eligible ({checkedStudentIds.length})
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleApproveSelected}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-wider h-8 rounded-lg flex items-center gap-1.5 px-4 shadow-sm mb-2 sm:mb-0 cursor-pointer"
+                  >
+                    Generate Hall Tickets ({checkedStudentIds.length})
+                  </Button>
+                )
+              )}
             </div>
 
             {/* Content Roster */}
@@ -257,6 +337,25 @@ function HallTicketControlPage() {
                     <table className="w-full text-left text-xs">
                       <thead className="bg-slate-50 text-slate-600 font-extrabold border-b border-border/60 uppercase tracking-wider">
                         <tr>
+                          <th className="px-4 py-3 text-[10px] text-center w-12">
+                            <input 
+                              type="checkbox"
+                              checked={blockedOfficerStudents.length > 0 && blockedOfficerStudents.every(s => checkedStudentIds.includes(s.id))}
+                              onChange={() => {
+                                const allChecked = blockedOfficerStudents.every(s => checkedStudentIds.includes(s.id));
+                                if (allChecked) {
+                                  setCheckedStudentIds(prev => prev.filter(id => !blockedOfficerStudents.some(s => s.id === id)));
+                                } else {
+                                  const newIds = [...checkedStudentIds];
+                                  blockedOfficerStudents.forEach(s => {
+                                    if (!newIds.includes(s.id)) newIds.push(s.id);
+                                  });
+                                  setCheckedStudentIds(newIds);
+                                }
+                              }}
+                              className="size-3.5 accent-indigo-600 rounded cursor-pointer"
+                            />
+                          </th>
                           <th className="px-4 py-3 text-[10px]">Student</th>
                           <th className="px-4 py-3 text-[10px] text-center">Registered</th>
                           <th className="px-4 py-3 text-[10px] text-center">Block Reason / Audit Indicators</th>
@@ -277,6 +376,14 @@ function HallTicketControlPage() {
                                 isSelected ? 'bg-indigo-50/30 ring-1 ring-inset ring-indigo-500/10' : ''
                               }`}
                             >
+                              <td className="px-4 py-3.5 text-center" onClick={e => e.stopPropagation()}>
+                                <input 
+                                  type="checkbox"
+                                  checked={checkedStudentIds.includes(s.id)}
+                                  onChange={() => handleToggleStudentChecked(s.id)}
+                                  className="size-3.5 accent-indigo-600 rounded cursor-pointer"
+                                />
+                              </td>
                               <td className="px-4 py-3.5">
                                 <div className="font-extrabold text-slate-900">{s.full_name}</div>
                                 <div className="text-[10px] font-bold text-slate-455 font-mono mt-0.5">{s.roll_number}</div>
@@ -310,11 +417,11 @@ function HallTicketControlPage() {
                                   size="sm"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    handleApproveSingle(s.id);
+                                    handlePassSingleToEligible(s.id);
                                   }}
                                   className="h-8 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black rounded-lg cursor-pointer px-4 shadow-xs"
                                 >
-                                  Generate
+                                  Pass to Eligible
                                 </Button>
                               </td>
                             </tr>
@@ -334,6 +441,28 @@ function HallTicketControlPage() {
                     <table className="w-full text-left text-xs">
                       <thead className="bg-slate-55 text-slate-650 font-extrabold border-b border-border/60 uppercase tracking-wider">
                         <tr>
+                          <th className="px-4 py-3 text-[10px] text-center w-12">
+                            {eligibleOfficerStudents.some(s => s.hall_ticket_status !== 'Generated') && (
+                              <input 
+                                type="checkbox"
+                                checked={eligibleOfficerStudents.filter(s => s.hall_ticket_status !== 'Generated').length > 0 && eligibleOfficerStudents.filter(s => s.hall_ticket_status !== 'Generated').every(s => checkedStudentIds.includes(s.id))}
+                                onChange={() => {
+                                  const pending = eligibleOfficerStudents.filter(s => s.hall_ticket_status !== 'Generated');
+                                  const allChecked = pending.every(s => checkedStudentIds.includes(s.id));
+                                  if (allChecked) {
+                                    setCheckedStudentIds(prev => prev.filter(id => !pending.some(s => s.id === id)));
+                                  } else {
+                                    const newIds = [...checkedStudentIds];
+                                    pending.forEach(s => {
+                                      if (!newIds.includes(s.id)) newIds.push(s.id);
+                                    });
+                                    setCheckedStudentIds(newIds);
+                                  }
+                                }}
+                                className="size-3.5 accent-indigo-600 rounded cursor-pointer"
+                              />
+                            )}
+                          </th>
                           <th className="px-4 py-3 text-[10px]">Student</th>
                           <th className="px-4 py-3 text-[10px] text-center">Attendance</th>
                           <th className="px-4 py-3 text-[10px] text-center">Fee Balance</th>
@@ -344,6 +473,18 @@ function HallTicketControlPage() {
                       <tbody className="divide-y divide-border/50 font-semibold text-slate-700">
                         {eligibleOfficerStudents.map(s => (
                           <tr key={s.id} className="hover:bg-slate-50/30 transition">
+                            <td className="px-4 py-3.5 text-center" onClick={e => e.stopPropagation()}>
+                              {s.hall_ticket_status !== 'Generated' ? (
+                                <input 
+                                  type="checkbox"
+                                  checked={checkedStudentIds.includes(s.id)}
+                                  onChange={() => handleToggleStudentChecked(s.id)}
+                                  className="size-3.5 accent-indigo-600 rounded cursor-pointer"
+                                />
+                              ) : (
+                                <span className="text-emerald-600 text-xs font-bold font-mono">✓</span>
+                              )}
+                            </td>
                             <td className="px-4 py-3.5">
                               <div className="font-extrabold text-slate-900">{s.full_name}</div>
                               <div className="text-[10px] font-bold text-slate-455 font-mono mt-0.5">{s.roll_number}</div>
@@ -360,16 +501,22 @@ function HallTicketControlPage() {
                               </Badge>
                             </td>
                             <td className="px-4 py-3.5 text-right">
-                              <Button
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleApproveSingle(s.id);
-                                }}
-                                className="h-8 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black rounded-lg cursor-pointer px-4 shadow-xs"
-                              >
-                                {s.hall_ticket_status === 'Generated' ? 'Regenerate' : 'Generate'}
-                              </Button>
+                              {s.hall_ticket_status === 'Generated' ? (
+                                <span className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-black border border-emerald-200 rounded-lg">
+                                  Published
+                                </span>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleApproveSingle(s.id);
+                                  }}
+                                  className="h-8 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black rounded-lg cursor-pointer px-4 shadow-xs"
+                                >
+                                  Generate
+                                </Button>
+                              )}
                             </td>
                           </tr>
                         ))}
@@ -512,14 +659,15 @@ function HallTicketControlPage() {
             <label className="text-xs font-bold text-muted-foreground block mb-1">Department</label>
             <select
               value={department}
-              disabled={!!userDept}
+              disabled={!isOfficer && !!userDept}
               onChange={e => setDepartment(e.target.value)}
               className="w-full bg-card border border-border text-foreground rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
             >
-              {userDept ? (
+              {!isOfficer && userDept ? (
                 <option value={userDept}>{userDept}</option>
               ) : (
                 <>
+                  <option value="All Branches">All Branches</option>
                   <option value="AIML">AIML</option>
                   <option value="CSE">CSE</option>
                   <option value="AIDS">AIDS</option>

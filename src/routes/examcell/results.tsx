@@ -97,7 +97,7 @@ function ResultsConsolidationPage() {
       saveMockExams(updatedExams);
 
       setIsConsolidating(false);
-      toast.success("Results consolidated and grades calculated successfully!");
+      toast.success("Results published successfully!");
     }, 1500);
   };
 
@@ -172,11 +172,11 @@ function ResultsConsolidationPage() {
               >
                 {isConsolidating ? (
                   <>
-                    <RefreshCw className="size-4 animate-spin" /> Consolidating...
+                    <RefreshCw className="size-4 animate-spin" /> Publishing...
                   </>
                 ) : (
                   <>
-                    <Sparkles className="size-4" /> Run Grade Consolidation
+                    <Sparkles className="size-4" /> Publish Results
                   </>
                 )}
               </Button>
@@ -200,8 +200,6 @@ function ResultsConsolidationPage() {
                       <th className="px-4 py-3">Roll No.</th>
                       <th className="px-4 py-3">Student Name</th>
                       <th className="px-4 py-3 text-center">Reg. Status</th>
-                      <th className="px-4 py-3 text-center">Internal (30M)</th>
-                      <th className="px-4 py-3 text-center">External (70M)</th>
                       <th className="px-4 py-3 text-center">Total (100M)</th>
                       <th className="px-4 py-3 text-center">Grade Letter</th>
                     </tr>
@@ -221,10 +219,6 @@ function ResultsConsolidationPage() {
                             ) : (
                               <Badge variant="destructive" className="text-[9px] font-black">Not Enrolled</Badge>
                             )}
-                          </td>
-                          <td className="px-4 py-3 text-center">{s.is_registered ? `${totalInternal}M` : '-'}</td>
-                          <td className="px-4 py-3 text-center font-mono">
-                            {s.is_registered && s.external_marks !== undefined ? `${s.external_marks}M` : '-'}
                           </td>
                           <td className="px-4 py-3 text-center font-black text-sm text-indigo-900 bg-indigo-50/10">
                             {s.is_registered && totalCombined !== null ? `${totalCombined}M` : '-'}

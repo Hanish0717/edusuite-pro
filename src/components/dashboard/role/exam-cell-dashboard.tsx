@@ -9,10 +9,13 @@ import {
   Layers,
   GraduationCap,
   Bell,
-  Volume2
+  Volume2,
+  RotateCcw
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { 
   BarChart, 
   Bar, 
@@ -60,6 +63,18 @@ const DEFAULT_NOTIFICATIONS = [
 export function ExamCellDashboard() {
   const [notifications] = useState(DEFAULT_NOTIFICATIONS);
   const { role, flags, department } = useRole();
+
+  const handleResetDemoData = () => {
+    localStorage.removeItem("mock_students_db_v3");
+    localStorage.removeItem("mock_answer_copy_roster_v3");
+    localStorage.removeItem("mock_scheduled_exams_v3");
+    localStorage.removeItem("mock_timetables_v3");
+    localStorage.removeItem("mock_offered_courses_v3");
+    toast.success("Exam cell demo data reset successfully! Reloading page...");
+    setTimeout(() => {
+      window.location.reload();
+    }, 1200);
+  };
   const isOfficer = flags.includes("isExamController") || role === "super-admin";
   const activeDeptCode = department || "CSE";
 
@@ -87,9 +102,19 @@ export function ExamCellDashboard() {
               : `Real-time metrics for ${activeDeptCode} department, gender pass demographics, and officer notifications.`}
           </p>
         </div>
-        <Badge className="bg-brand-gradient text-white w-fit font-mono text-[10px] px-2.5 py-1">
-          {isOfficer ? "EXAM CONTROLLER CONSOLE" : `EXAM ASSISTANT CONSOLE - ${activeDeptCode}`}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleResetDemoData}
+            className="h-8 text-[10px] font-black border-rose-250 text-rose-700 hover:bg-rose-50 flex items-center gap-1 cursor-pointer rounded-xl"
+          >
+            <RotateCcw className="size-3" /> Reset Demo Data
+          </Button>
+          <Badge className="bg-brand-gradient text-white w-fit font-mono text-[10px] px-2.5 py-1">
+            {isOfficer ? "EXAM CONTROLLER CONSOLE" : `EXAM ASSISTANT CONSOLE - ${activeDeptCode}`}
+          </Badge>
+        </div>
       </div>
 
       {/* KPI Cards Grid */}

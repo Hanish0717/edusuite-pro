@@ -460,15 +460,15 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
           if (item.title === "Examinations" && isStaff && isExamAssistant) {
             newChildren = [
               { title: "Dashboard", url: "/examcell/dashboard" },
-              { title: "Schedule Exam", url: "/examcell/schedule" },
               { title: "Course & Exam Enroll", url: "/examcell/course-enroll" },
+              { title: "Schedule Exam", url: "/examcell/schedule" },
               { title: "Timetable Builder", url: "/examcell/timetable" },
-              { title: "Question Bank", url: "/examcell/questions" },
               { title: "Hall Tickets", url: "/examcell/hall-tickets" },
               { title: "Correction Requests", url: "/examcell/correction-requests" },
-              { title: "Supplementary Exams", url: "/examcell/supplementary" },
+              { title: "Question Bank", url: "/examcell/questions" },
               { title: "Results", url: "/examcell/results" },
               { title: "Exam Analytics", url: "/examcell/analytics" },
+              { title: "Supplementary Students", url: "/examcell/supplementary" },
               { title: "Notifications", url: "/examcell/notifications" }
             ].map(c => ({
               ...c,
