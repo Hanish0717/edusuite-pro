@@ -35,6 +35,7 @@ interface RoleContextValue {
     featureFlags: Record<string, boolean>;
     personaName: string;
     personaMeta: string;
+    email?: string;
   };
   flags: string[];
   setFlags: (flags: string[]) => void;

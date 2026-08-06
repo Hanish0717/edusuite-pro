@@ -711,3 +711,5 @@ export function PlacementDriveWorkspace() {
     </div>
   );
 }
+
+export { PlacementDriveWorkspace as DriveManagementWorkspace };
