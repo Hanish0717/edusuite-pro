@@ -633,19 +633,7 @@ export function AssessmentRequestsApprovalWorkspace() {
     toast.success("Bulk approved all pending recruiter assessment requests!");
   };
 
-  const filteredRequests = requests.filter((r) => {
-    const matchesSearch =
-      r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.assessmentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.recruiterName.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesCompany = companyFilter === "All" || r.company === companyFilter;
-    const matchesPriority = priorityFilter === "All" || r.priority === priorityFilter;
-    const matchesStage = stageFilter === "All" || r.status === stageFilter;
-
-    return matchesSearch && matchesCompany && matchesPriority && matchesStage;
-  });
 
   return (
     <div className="space-y-6 animate-fade-up">
