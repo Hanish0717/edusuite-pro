@@ -982,7 +982,7 @@ export function InventoryModuleView() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <Package className="size-5 text-primary" /> Asset Specification Dossier
+              <Package className="size-5 text-primary" /> Asset Specification Details
             </DialogTitle>
           </DialogHeader>
 
@@ -1055,7 +1055,7 @@ export function InventoryModuleView() {
                   onClick={() => setIsViewDialogOpen(false)}
                   className="w-full text-xs"
                 >
-                  Close Dossier
+                  Close Details
                 </Button>
               </DialogFooter>
             </div>

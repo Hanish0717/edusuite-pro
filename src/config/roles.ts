@@ -13,7 +13,8 @@ export type LoginRole =
   | "admin"
   | "principal"
   | "vice_principal"
-  | "dean"
+  // Core staff roles
+  | "staff"
   | "hod"
   | "faculty"
   | "student"
@@ -28,12 +29,20 @@ export type LoginRole =
   | "alumni_coordinator"
   | "alumni"
   | "super-admin"
-  | "staff"
-  | "external-user";
+  | "external-user"
+  // Specific dean roles
+  | "academic_dean"
+  | "student_dean"
+  | "iqac_dean"
+  | "ima_dean"
+  | "research_dean"
+  | "finance_dean"
+  | "examination_dean"
+  | "placement_dean";
 
 export type CoreRoleKey = "super-admin" | "staff" | "student" | "parent" | "external-user";
 
-export type ExternalPersona = "applicant" | "alumni" | "recruiter" | "vendor" | "guest-faculty";
+export type ExternalPersona = "applicant" | "alumni" | "recruiter" | "vendor" | "guest-faculty" | "parent-portal";
 
 export type DepartmentCode = "CSE" | "ECE" | "EEE" | "ME" | "Civil" | "MBA";
 
@@ -140,7 +149,6 @@ export const RESPONSIBILITY_FLAGS = [
   { id: "isDean", label: "Dean", category: "Academic Privileges" },
   { id: "isHod", label: "HOD (Department Head)", category: "Academic Privileges" },
   { id: "isExamController", label: "Exam Controller", category: "Academic Privileges" },
-  { id: "isExamAssistant", label: "Exam Assistant", category: "Academic Privileges" },
   { id: "isAcademicCoordinator", label: "Academic Coordinator", category: "Academic Privileges" },
   { id: "isClassAdvisor", label: "Class Advisor", category: "Academic Privileges" },
   { id: "isMentor", label: "Mentor", category: "Academic Privileges" },
@@ -229,6 +237,70 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     personaName: "Prof. Anand Kumar",
     personaMeta: "Academic Leadership & Curriculum",
     initials: "DN",
+    flags: ["isDean"],
+  },
+  academic_dean: {
+    id: "academic_dean",
+    label: "Academic Dean",
+    personaName: "Prof. Anand Kumar",
+    personaMeta: "Academic Leadership & Curriculum",
+    initials: "AD",
+    flags: ["isDean"],
+  },
+  student_dean: {
+    id: "student_dean",
+    label: "Student Dean",
+    personaName: "Prof. Student Dean",
+    personaMeta: "Student Affairs & Services",
+    initials: "SD",
+    flags: ["isDean"],
+  },
+  iqac_dean: {
+    id: "iqac_dean",
+    label: "IQAC Dean",
+    personaName: "Prof. IQAC Dean",
+    personaMeta: "Quality Assurance",
+    initials: "ID",
+    flags: ["isDean"],
+  },
+  ima_dean: {
+    id: "ima_dean",
+    label: "IMA Dean",
+    personaName: "Prof. IMA Dean",
+    personaMeta: "Industry & Alumni Relations",
+    initials: "IMAD",
+    flags: ["isDean"],
+  },
+  research_dean: {
+    id: "research_dean",
+    label: "Research & Development Dean",
+    personaName: "Prof. Research Dean",
+    personaMeta: "Research & Innovation",
+    initials: "RD",
+    flags: ["isDean"],
+  },
+  finance_dean: {
+    id: "finance_dean",
+    label: "Finance Dean",
+    personaName: "Prof. Finance Dean",
+    personaMeta: "Financial Management",
+    initials: "FD",
+    flags: ["isDean"],
+  },
+  examination_dean: {
+    id: "examination_dean",
+    label: "Examination Dean",
+    personaName: "Prof. Examination Dean",
+    personaMeta: "Exam Administration",
+    initials: "ED",
+    flags: ["isDean"],
+  },
+  placement_dean: {
+    id: "placement_dean",
+    label: "Placement Dean",
+    personaName: "Prof. Placement Dean",
+    personaMeta: "Career Services",
+    initials: "PD",
     flags: ["isDean"],
   },
   hod: {
@@ -348,11 +420,11 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
   },
   staff: {
     id: "staff",
-    label: "Staff (Faculty)",
-    personaName: "Dr. Ravi Kumar",
-    personaMeta: "Faculty - Computer Science & Engineering",
-    initials: "RK",
-    flags: ["isMentor", "isClassAdvisor"],
+    label: "Staff (Placement Officer)",
+    personaName: "Mr. Karthik Nair",
+    personaMeta: "Placement Officer - Training & Placement Cell",
+    initials: "KN",
+    flags: ["isPlacementOfficer"],
     department: "CSE",
   },
   "external-user": {
@@ -371,7 +443,15 @@ export const roleOrder: LoginRole[] = [
   "admin",
   "principal",
   "vice_principal",
-  "dean",
+  // Specific dean roles
+  "academic_dean",
+  "student_dean",
+  "iqac_dean",
+  "ima_dean",
+  "research_dean",
+  "finance_dean",
+  "examination_dean",
+  "placement_dean",
   "hod",
   "faculty",
   "student",
@@ -462,7 +542,7 @@ export function getDefaultRouteForUser(role: LoginRole, flags: string[]): string
 
   if (flags.includes("isHod")) return "/hod/dashboard";
   if (flags.includes("isDean")) return "/dean/dashboard";
-  if (flags.includes("isExamController") || flags.includes("isExamAssistant")) return "/examcell/dashboard";
+  if (flags.includes("isExamController")) return "/examination/dashboard";
   if (flags.includes("isPlacementOfficer")) return "/placement/dashboard";
   if (flags.includes("isLibraryAdmin")) return "/library/dashboard";
   if (flags.includes("isTransportOfficer")) return "/transport/dashboard";
@@ -563,16 +643,6 @@ export const DEMO_USERS: DemoUser[] = [
     category: "Academic Roles",
     avatarInitials: "RR",
     flags: ["isExamController"],
-  },
-  {
-    id: "exam-assistant",
-    name: "Sri. P. Venkatesh",
-    email: "venkatesh.assistant@edusuite.edu",
-    role: "staff",
-    title: "Exam Assistant",
-    category: "Academic Roles",
-    avatarInitials: "PV",
-    flags: ["isExamAssistant"],
   },
 
   // Administrative Officers

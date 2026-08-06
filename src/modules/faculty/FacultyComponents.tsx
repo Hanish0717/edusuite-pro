@@ -38,8 +38,10 @@ import {
   Coffee,
   X,
   FlaskConical,
+  ShieldAlert,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useRole } from "@/context/role-context";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -136,6 +138,8 @@ const STATUS_LIST = ["All Status", "Active", "On Leave", "Sabbatical"] as const;
 
 export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTab?: FacultySubpart }) {
   const { selectedDepartment } = useAcademic();
+  const { role } = useRole();
+  const isSuperAdmin = role === "super-admin" || role === "super_admin";
   const [activeSubpart, setActiveSubpart] = useState<FacultySubpart>(initialTab);
 
   useEffect(() => {
@@ -455,6 +459,17 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
       return matchesSearch && matchesDept;
     });
   }, [allClassesAttendance, search, selectedDeptFilter]);
+
+  const filteredSyllabusList = useMemo(() => {
+    return syllabusList.filter((syl) => {
+      const matchesSearch =
+        syl.courseCode.toLowerCase().includes(search.toLowerCase()) ||
+        syl.courseName.toLowerCase().includes(search.toLowerCase()) ||
+        syl.facultyName.toLowerCase().includes(search.toLowerCase());
+      const matchesDept = selectedDeptFilter === "All Departments" || syl.department === selectedDeptFilter;
+      return matchesSearch && matchesDept;
+    });
+  }, [syllabusList, search, selectedDeptFilter]);
 
   return (
     <div className="space-y-6">
@@ -776,7 +791,7 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
                             size="sm"
                             onClick={() => handleOpenView(f)}
                             className="h-7 text-xs font-medium gap-1 text-muted-foreground hover:text-foreground"
-                            title="View Dossier"
+                            title="View Profile"
                           >
                             <Eye className="size-3.5" /> Details
                           </Button>
@@ -943,57 +958,123 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
       {/* FEATURE 3: FACULTY ACADEMIC CALENDAR & SYLLABUS TRACKER */}
       {activeSubpart === "syllabus-tracker" && (
         <div className="space-y-6">
-          {syllabusList.map((syl) => (
-            <div key={syl.id} className="rounded-2xl border border-border/80 bg-card p-5 space-y-5 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+          {/* Super Admin Read-Only Oversight Banner */}
+          {isSuperAdmin && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-300 shrink-0">
+                  <ShieldAlert className="size-5" />
+                </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">{syl.courseCode}</Badge>
-                    <h2 className="text-base font-bold text-foreground">{syl.courseName}</h2>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">Faculty: {syl.facultyName} • Dept: {syl.department}</p>
-                </div>
-
-                <div className="flex items-center gap-3 font-mono text-xs">
-                  <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 font-bold">
-                    {syl.classesCompleted} / {syl.totalClassesScheduled} Classes Completed
-                  </div>
-                  <div className="px-3 py-1.5 rounded-xl bg-primary/10 text-primary font-bold">
-                    {syl.overallProgressPct}% Syllabus Progress
-                  </div>
+                  <h3 className="font-bold text-xs uppercase tracking-wider">Super Admin Real-Time Syllabus Monitor</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Super Admin <strong className="text-foreground">Monitoring Mode</strong> active. Assigned course faculty update unit completions, which reflect live across institutional reporting.
+                  </p>
                 </div>
               </div>
-
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase">
-                  <span>Syllabus Unit Completion Ledger</span>
-                  <span>{syl.units.filter((u) => u.completed).length} / {syl.units.length} Units Done</span>
-                </div>
-                <Progress value={syl.overallProgressPct} className="h-2.5 rounded-full" />
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-3">
-                {syl.units.map((unit) => (
-                  <div
-                    key={unit.id}
-                    onClick={() => handleToggleSyllabusUnit(syl.id, unit.id)}
-                    className={`p-3.5 rounded-xl border text-xs space-y-2 cursor-pointer transition-all ${
-                      unit.completed ? "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-900/50" : "bg-card border-border/80 hover:border-primary/40"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-bold font-mono text-primary">Unit {unit.unitNo}: {unit.title}</span>
-                      <Badge className={unit.completed ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"}>
-                        {unit.completed ? "Completed" : "Pending"}
-                      </Badge>
-                    </div>
-                    <p className="text-muted-foreground text-[0.75rem]">{unit.topicsCovered}</p>
-                    <p className="text-[0.68rem] font-mono text-muted-foreground">Target Hours: {unit.estimatedHours} hrs</p>
-                  </div>
-                ))}
-              </div>
+              <Badge variant="outline" className="border-amber-500/40 text-amber-700 dark:text-amber-300 font-mono text-xs px-3 py-1 shrink-0">
+                👁️ Monitoring Mode (Read-Only)
+              </Badge>
             </div>
-          ))}
+          )}
+
+          {/* Department & Course Search Control Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-muted-foreground uppercase shrink-0">Department:</span>
+              <Select value={selectedDeptFilter} onValueChange={setSelectedDeptFilter}>
+                <SelectTrigger className="h-9 text-xs w-[180px] rounded-xl"><SelectValue placeholder="All Departments" /></SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS_LIST.map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+              <Input
+                placeholder="Search course code, subject name or faculty..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-8 h-9 text-xs rounded-xl"
+              />
+            </div>
+          </div>
+
+          {filteredSyllabusList.length === 0 ? (
+            <div className="p-8 text-center text-xs text-muted-foreground bg-card border border-border/80 rounded-2xl">
+              No syllabus progress logs found matching criteria.
+            </div>
+          ) : (
+            filteredSyllabusList.map((syl) => (
+              <div key={syl.id} className="rounded-2xl border border-border/80 bg-card p-5 space-y-5 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">{syl.courseCode}</Badge>
+                      <h2 className="text-base font-bold text-foreground">{syl.courseName}</h2>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">Faculty: <strong className="text-foreground">{syl.facultyName}</strong> &bull; Dept: {syl.department}</p>
+                  </div>
+
+                  <div className="flex items-center gap-3 font-mono text-xs">
+                    <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 font-bold">
+                      {syl.classesCompleted} / {syl.totalClassesScheduled} Classes Completed
+                    </div>
+                    <div className="px-3 py-1.5 rounded-xl bg-primary/10 text-primary font-bold">
+                      {syl.overallProgressPct}% Syllabus Progress
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase">
+                    <span>Syllabus Unit Completion Ledger</span>
+                    <span>{syl.units.filter((u) => u.completed).length} / {syl.units.length} Units Done</span>
+                  </div>
+                  <Progress value={syl.overallProgressPct} className="h-2.5 rounded-full" />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-3">
+                  {syl.units.map((unit) => (
+                    <div
+                      key={unit.id}
+                      onClick={() => {
+                        if (isSuperAdmin) {
+                          toast.info("Super Admin Monitoring Mode Active", {
+                            description: `Only assigned course faculty (${syl.facultyName}) can update unit completion status. Live status is synced automatically.`,
+                          });
+                        } else {
+                          handleToggleSyllabusUnit(syl.id, unit.id);
+                        }
+                      }}
+                      className={`p-3.5 rounded-xl border text-xs space-y-2 transition-all ${
+                        isSuperAdmin ? "cursor-default opacity-95" : "cursor-pointer hover:border-primary/40"
+                      } ${
+                        unit.completed ? "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-900/50" : "bg-card border-border/80"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold font-mono text-primary">Unit {unit.unitNo}: {unit.title}</span>
+                        <div className="flex items-center gap-1.5">
+                          {isSuperAdmin && (
+                            <span className="text-[0.65rem] text-muted-foreground font-mono">
+                              {unit.completed ? "Updated by Faculty" : "Faculty Pending"}
+                            </span>
+                          )}
+                          <Badge className={unit.completed ? "bg-emerald-600 text-white" : "bg-muted text-muted-foreground"}>
+                            {unit.completed ? "Completed" : "Pending"}
+                          </Badge>
+                        </div>
+                      </div>
+                      <p className="text-muted-foreground text-[0.75rem]">{unit.topicsCovered}</p>
+                      <p className="text-[0.68rem] font-mono text-muted-foreground">Target Hours: {unit.estimatedHours} hrs</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
 
@@ -1488,7 +1569,7 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <UserCog className="size-5 text-primary" /> Faculty Dossier & Profile
+              <UserCog className="size-5 text-primary" /> Faculty Profile & Details
             </DialogTitle>
           </DialogHeader>
 
@@ -1625,7 +1706,7 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
                   onClick={() => setIsViewOpen(false)}
                   className="w-full text-xs"
                 >
-                  Close Dossier
+                  Close Profile
                 </Button>
               </DialogFooter>
             </div>
