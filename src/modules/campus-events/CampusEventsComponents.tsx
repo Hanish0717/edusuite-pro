@@ -743,7 +743,7 @@ export function CampusEventsModuleView() {
                   onClick={() => setIsViewDialogOpen(false)}
                   className="w-full text-xs"
                 >
-                  Close Details
+                  Close Dossier
                 </Button>
               </DialogFooter>
             </div>

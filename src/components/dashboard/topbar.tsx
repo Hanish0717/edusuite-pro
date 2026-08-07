@@ -166,7 +166,7 @@ export function Topbar() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="super-admin">1. Super Admin</SelectItem>
-              <SelectItem value="staff">2. Staff (Placement Officer)</SelectItem>
+              <SelectItem value="staff">2. Staff (Faculty)</SelectItem>
               <SelectItem value="student">3. Student</SelectItem>
               <SelectItem value="parent">4. Parent</SelectItem>
               <SelectItem value="external-user">5. External User</SelectItem>
@@ -174,18 +174,49 @@ export function Topbar() {
           </Select>
 
           {role === "staff" && (
-            <Select value={department || "CSE"} onValueChange={(v) => setDepartment((v || undefined) as DepartmentCode)}>
-              <SelectTrigger className="h-9 w-[110px] text-xs font-mono bg-card" aria-label="Department Scope">
-                <SelectValue placeholder="Dept" />
-              </SelectTrigger>
-              <SelectContent>
-                {DEPARTMENTS.map((dept) => (
-                  <SelectItem key={dept.code} value={dept.code}>
-                    Dept: {dept.code}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <>
+              {/* Primary Staff Privilege Flag Dropdown */}
+              <Select
+                value={flags.find((f) => f.startsWith("is")) || "isMentor"}
+                onValueChange={(flagVal) => {
+                  const otherFlags = flags.filter((f) => !f.startsWith("is") || f === "isMentor");
+                  setFlags(Array.from(new Set([flagVal, ...otherFlags])));
+                }}
+              >
+                <SelectTrigger className="h-9 w-[150px] text-xs font-mono bg-card" aria-label="Staff Flag">
+                  <SelectValue placeholder="Privilege Flag" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="isHod">Flag: isHod (HOD)</SelectItem>
+                  <SelectItem value="isDean">Flag: isDean (Dean)</SelectItem>
+                  <SelectItem value="isExamController">Flag: Exam Officer</SelectItem>
+                  <SelectItem value="isExamAssistant">Flag: Exam Assistant</SelectItem>
+                  <SelectItem value="isPlacementOfficer">Flag: isPlacementOfficer</SelectItem>
+                  <SelectItem value="isTransportOfficer">Flag: isTransportOfficer</SelectItem>
+                  <SelectItem value="isHostelWarden">Flag: isHostelWarden</SelectItem>
+                  <SelectItem value="isFinanceOfficer">Flag: isFinanceOfficer</SelectItem>
+                  <SelectItem value="isLibraryAdmin">Flag: isLibraryAdmin</SelectItem>
+                  <SelectItem value="isHRManager">Flag: isHRManager</SelectItem>
+                  <SelectItem value="isPrincipal">Flag: isPrincipal</SelectItem>
+                  <SelectItem value="isVicePrincipal">Flag: isVicePrincipal</SelectItem>
+                  <SelectItem value="isMentor">Flag: isMentor (Default)</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Department Scope Dropdown */}
+              <Select value={department || "CSE"} onValueChange={(v) => setDepartment((v || undefined) as DepartmentCode)}>
+                <SelectTrigger className="h-9 w-[110px] text-xs font-mono bg-card" aria-label="Department Scope">
+                  <SelectValue placeholder="Dept" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS.map((dept) => (
+                    <SelectItem key={dept.code} value={dept.code}>
+                      Dept: {dept.code}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
           )}
 
           {role === "external-user" && (
@@ -382,7 +413,7 @@ export function Topbar() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/settings?tab=account-profile">Settings</Link>
+                <Link to="/settings">Settings</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/login">Sign out</Link>

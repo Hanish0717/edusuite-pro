@@ -30,7 +30,7 @@ import {
   MOCK_DELEGATION_RULES,
 } from "./SuperAdminService";
 
-export type SuperAdminTab = "overview" | "users" | "departments" | "delegation" | "audit" | "ai";
+export type SuperAdminTab = "overview" | "users" | "departments" | "rbac" | "delegation" | "audit" | "ai";
 
 export type SortField = "id" | "name" | "email" | "role" | "department" | "status" | "lastLogin" | "createdAt";
 export type SortOrder = "asc" | "desc";

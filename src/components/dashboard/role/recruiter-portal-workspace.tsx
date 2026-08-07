@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Briefcase,
   Users,
@@ -26,7 +26,6 @@ import {
   MessageSquare,
   Lock,
   Eye,
-  EyeOff,
   Edit,
   Trash2,
   Copy,
@@ -73,19 +72,9 @@ import {
   CartesianGrid,
 } from "recharts";
 import { toast } from "sonner";
-import {
-  pushToSharedQueue,
-  getAllStudentSubmissions,
-  type StudentSubmissionRecord,
-  SHARED_DRIVE_APPLICATION_FORMS,
-  SHARED_STUDENT_DRIVE_APPLICATIONS,
-  createDriveApplicationForm,
-  type DriveApplicationForm,
-  type StudentDriveApplication,
-} from "@/lib/shared-assessment-store";
+import { pushToSharedQueue, getAllStudentSubmissions, type StudentSubmissionRecord } from "@/lib/shared-assessment-store";
 
 import { Panel } from "@/components/dashboard/panel";
-import { CompanyRoleEligibilityCards } from "@/components/dashboard/placement/company-eligibility-cards";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,7 +97,6 @@ export type RecruiterPageModule =
   | "dashboard"
   | "company-profile"
   | "placement-drives"
-  | "drive-applications"
   | "assessments"
   | "question-bank"
   | "assessment-requests"
@@ -488,318 +476,11 @@ export const SAMPLE_2_CODING_CHALLENGES: CodingChallenge[] = [
   }
 ];
 
-export function getRecruiterCompanyInfo(companyName?: string, email?: string) {
-  const text = ((companyName || "") + " " + (email || "")).toLowerCase();
-  if (text.includes("info") || text.includes("sys")) {
-    return {
-      companyId: "COMP-INFOSYS",
-      companyName: "Infosys Limited",
-      drivesCount: "2 Drives",
-      driveName: "Infosys Campus Recruitment Drive 2026",
-      drivesDesc: "Infosys AY 2026",
-      rolesDesc: "SE (₹3.6L), DSE (₹6.5L), SP (₹9.5L)",
-      topPackage: "₹9.5 LPA",
-      applicationsCount: "640",
-      interviewsCount: "52 Slots",
-      offersCount: "18 Offers",
-      logoBg: "bg-sky-600",
-      logoText: "INF",
-    };
-  }
-  if (text.includes("tcs") || text.includes("tata")) {
-    return {
-      companyId: "COMP-TCS",
-      companyName: "TCS (Tata Consultancy Services)",
-      drivesCount: "3 Drives",
-      driveName: "TCS NQT & National Qualifier Drive 2026",
-      drivesDesc: "TCS AY 2026",
-      rolesDesc: "Ninja (₹3.36L), Digital (₹7.0L), Prime (₹11.5L)",
-      topPackage: "₹11.5 LPA",
-      applicationsCount: "780",
-      interviewsCount: "64 Slots",
-      offersCount: "28 Offers",
-      logoBg: "bg-blue-700",
-      logoText: "TCS",
-    };
-  }
-  if (text.includes("acc") || text.includes("accenture")) {
-    return {
-      companyId: "COMP-ACCN",
-      companyName: "Accenture Solutions",
-      drivesCount: "2 Drives",
-      driveName: "Accenture Innovation & ASE Campus Drive 2026",
-      drivesDesc: "Accenture AY 2026",
-      rolesDesc: "ASE (₹4.5L), Adv ASE (₹6.5L), FSE (₹8.5L)",
-      topPackage: "₹8.5 LPA",
-      applicationsCount: "490",
-      interviewsCount: "40 Slots",
-      offersCount: "16 Offers",
-      logoBg: "bg-purple-600",
-      logoText: "ACN",
-    };
-  }
-  if (text.includes("wipro")) {
-    return {
-      companyId: "COMP-WIPRO",
-      companyName: "Wipro Technologies",
-      drivesCount: "2 Drives",
-      driveName: "Wipro Elite NTH & Turbo Drive 2026",
-      drivesDesc: "Wipro AY 2026",
-      rolesDesc: "Elite (₹3.5L), Turbo (₹6.5L), Star (₹10.0L)",
-      topPackage: "₹10.0 LPA",
-      applicationsCount: "410",
-      interviewsCount: "32 Slots",
-      offersCount: "12 Offers",
-      logoBg: "bg-violet-600",
-      logoText: "WIP",
-    };
-  }
-
-  // Default to Google Cloud
-  return {
-    companyId: "COMP-GGL",
-    companyName: "Google Cloud India",
-    drivesCount: "2 Drives",
-    driveName: "Google Cloud Campus Hiring 2026",
-    drivesDesc: "Google Cloud 2026",
-    rolesDesc: "Cloud SDE (₹32L), DevOps (₹24L), AI/ML (₹28L)",
-    topPackage: "₹32.0 LPA",
-    applicationsCount: "580",
-    interviewsCount: "48 Slots",
-    offersCount: "14 Offers",
-    logoBg: "bg-blue-600",
-    logoText: "GGL",
-  };
-}
-
-const getCompanyDrives = (companyId: string, companyName: string): RecruiterDrive[] => {
-  if (companyId === "COMP-INFOSYS") {
-    return [
-      {
-        id: "DRV-INF-01",
-        driveCode: "DRV-2026-INF-01",
-        title: "Infosys Specialist Programmer (SP) Drive 2026",
-        role: "Specialist Programmer (Core Systems)",
-        ctc: "₹9.5 LPA",
-        location: "Bengaluru / Mysuru",
-        applicationsCount: 420,
-        shortlistedCount: 310,
-        interviewedCount: 45,
-        offersCount: 16,
-        status: "Interview Phase",
-        progressPct: 80,
-      },
-      {
-        id: "DRV-INF-02",
-        driveCode: "DRV-2026-INF-02",
-        title: "Infosys Digital Systems Engineer (DSE) Hiring 2026",
-        role: "Digital Systems Engineer",
-        ctc: "₹6.5 LPA",
-        location: "Pune / Hyderabad",
-        applicationsCount: 580,
-        shortlistedCount: 420,
-        interviewedCount: 85,
-        offersCount: 28,
-        status: "Assessment Phase",
-        progressPct: 60,
-      },
-      {
-        id: "DRV-INF-03",
-        driveCode: "DRV-2026-INF-03",
-        title: "Infosys Systems Engineer (SE) Campus Drive 2026",
-        role: "Systems Engineer",
-        ctc: "₹3.6 LPA",
-        location: "Pan India",
-        applicationsCount: 890,
-        shortlistedCount: 650,
-        interviewedCount: 0,
-        offersCount: 0,
-        status: "Active Registration",
-        progressPct: 35,
-      },
-    ];
-  }
-  if (companyId === "COMP-TCS") {
-    return [
-      {
-        id: "DRV-TCS-01",
-        driveCode: "DRV-2026-TCS-01",
-        title: "TCS Prime Campus Hiring Drive 2026",
-        role: "TCS Prime Software Engineer",
-        ctc: "₹9.0 LPA",
-        location: "Bengaluru / Hyderabad",
-        applicationsCount: 510,
-        shortlistedCount: 380,
-        interviewedCount: 60,
-        offersCount: 20,
-        status: "Interview Phase",
-        progressPct: 75,
-      },
-      {
-        id: "DRV-TCS-02",
-        driveCode: "DRV-2026-TCS-02",
-        title: "TCS Digital Hiring Drive 2026",
-        role: "TCS Digital Developer",
-        ctc: "₹7.0 LPA",
-        location: "Chennai / Mumbai",
-        applicationsCount: 720,
-        shortlistedCount: 540,
-        interviewedCount: 90,
-        offersCount: 35,
-        status: "Assessment Phase",
-        progressPct: 65,
-      },
-    ];
-  }
-  return MOCK_RECRUITER_DRIVES;
-};
-
-const getCompanyAssessments = (companyId: string, companyName: string): RecruiterAssessment[] => {
-  if (companyId === "COMP-INFOSYS") {
-    return [
-      {
-        id: "AST-INF-01",
-        title: "Infosys Specialist Programmer Coding & SQL Round",
-        type: "MCQ + Coding + SQL",
-        mcqCount: 30,
-        codingCount: 4,
-        sqlCount: 3,
-        duration: "120 Mins",
-        totalMarks: 100,
-        passingMarksPct: 75,
-        version: "v2.0",
-        requestStatus: "Approved",
-        reviewerNotes: "Approved by Placement Officer. Distributed to 310 shortlisted applicants.",
-        lastUpdated: "2026-08-02",
-      },
-      {
-        id: "AST-INF-02",
-        title: "Infosys DSE Aptitude & Reasoning Test",
-        type: "Aptitude & MCQ",
-        mcqCount: 50,
-        codingCount: 0,
-        sqlCount: 0,
-        duration: "60 Mins",
-        totalMarks: 100,
-        passingMarksPct: 70,
-        version: "v1.1",
-        requestStatus: "Submitted",
-        reviewerNotes: "Submitted to TPO for exam link dispatch.",
-        lastUpdated: "2026-08-04",
-      },
-    ];
-  }
-  if (companyId === "COMP-TCS") {
-    return [
-      {
-        id: "AST-TCS-01",
-        title: "TCS NQT Digital Advanced Coding Challenge",
-        type: "Coding Only",
-        mcqCount: 0,
-        codingCount: 5,
-        sqlCount: 0,
-        duration: "90 Mins",
-        totalMarks: 100,
-        passingMarksPct: 75,
-        version: "v1.5",
-        requestStatus: "Approved",
-        reviewerNotes: "TPO Verified. Exam live for registered applicants.",
-        lastUpdated: "2026-08-03",
-      },
-    ];
-  }
-  return MOCK_RECRUITER_ASSESSMENTS;
-};
-
-const getCompanyInterviews = (companyId: string, companyName: string, recruiterName: string): InterviewCandidate[] => {
-  if (companyId === "COMP-INFOSYS") {
-    return [
-      {
-        id: "INT-INF-01",
-        name: "Aditya Sharma",
-        rollNo: "2022CSE188",
-        department: "CSE",
-        cgpa: 9.2,
-        slotTime: "10:00 AM – 10:45 AM",
-        panelAssigned: "Infosys SP Technical Panel 1",
-        interviewer: `${recruiterName} (Campus HR)`,
-        status: "Recommended",
-        scorecardMarks: 92,
-        feedbackRemarks: "Excellent algorithms, data structure implementation, and system design clarity.",
-      },
-      {
-        id: "INT-INF-02",
-        name: "Rohan Varma",
-        rollNo: "2022CSE104",
-        department: "CSE",
-        cgpa: 8.9,
-        slotTime: "11:30 AM – 12:15 PM",
-        panelAssigned: "Infosys DSE Technical Panel 2",
-        interviewer: `${recruiterName} (Campus HR)`,
-        status: "Scheduled",
-      },
-      {
-        id: "INT-INF-03",
-        name: "Kavya Reddy",
-        rollNo: "2022ECE055",
-        department: "ECE",
-        cgpa: 8.7,
-        slotTime: "02:00 PM – 02:45 PM",
-        panelAssigned: "Infosys SE Technical Panel 1",
-        interviewer: `${recruiterName} (Campus HR)`,
-        status: "Completed",
-        scorecardMarks: 86,
-        feedbackRemarks: "Strong OOP fundamentals and analytical skills.",
-      },
-    ];
-  }
-  return MOCK_INTERVIEW_CANDIDATES;
-};
-
-const getCompanyOffers = (companyId: string, companyName: string): CandidateOffer[] => {
-  if (companyId === "COMP-INFOSYS") {
-    return [
-      {
-        id: "OFR-INF-01",
-        candidateName: "Aditya Sharma",
-        rollNo: "2022CSE188",
-        department: "CSE",
-        jobRole: "Specialist Programmer (SP)",
-        ctc: "₹9.5 LPA",
-        joiningDate: "2026-09-15",
-        location: "Bengaluru, KA",
-        offerStatus: "Accepted",
-        acceptanceDate: "2026-08-02",
-      },
-      {
-        id: "OFR-INF-02",
-        candidateName: "Kavya Reddy",
-        rollNo: "2022ECE055",
-        department: "ECE",
-        jobRole: "Digital Systems Engineer (DSE)",
-        ctc: "₹6.5 LPA",
-        joiningDate: "2026-09-15",
-        location: "Hyderabad, TS",
-        offerStatus: "Verification Pending",
-      },
-    ];
-  }
-  return MOCK_CANDIDATE_OFFERS;
-};
-
 import { useLocation, useNavigate } from "@tanstack/react-router";
 
 export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { initialModule?: RecruiterPageModule }) {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const activeRecruiterName = (typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterName")) || "David Miller";
-  const activeRecruiterEmail = (typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterEmail")) || "david.miller@google.com";
-  const activeRecruiterCompany = (typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterCompany")) || "Google Cloud India";
-
-  const activeCompInfo = useMemo(() => {
-    return getRecruiterCompanyInfo(activeRecruiterCompany, activeRecruiterEmail);
-  }, [activeRecruiterCompany, activeRecruiterEmail]);
 
   const searchObj = (location.search || {}) as Record<string, string | undefined>;
   const currentModuleFromUrl = (searchObj["module"] as RecruiterPageModule) || initialModule;
@@ -852,12 +533,6 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   // Password reset alert state
   const [isFirstLoginPasswordResetRequired, setIsFirstLoginPasswordResetRequired] = useState(false);
 
-  // Password reset modal state
-  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
-  const [newPasswordInput, setNewPasswordInput] = useState("");
-  const [confirmPasswordInput, setConfirmPasswordInput] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-
   // Recruiter Profile State
   const [companyName, setCompanyName] = useState("Google Cloud India");
   const [website, setWebsite] = useState("https://cloud.google.com");
@@ -871,191 +546,16 @@ export function RecruiterPortalWorkspace({ initialModule = "dashboard" }: { init
   const [newAstPassingPct, setNewAstPassingPct] = useState("75");
 
   // Placement Drives State
-  const [drivesList, setDrivesList] = useState<RecruiterDrive[]>(() =>
-    getCompanyDrives(activeCompInfo.companyId, activeCompInfo.companyName)
-  );
-  const [assessmentsList, setAssessmentsList] = useState<RecruiterAssessment[]>(() =>
-    getCompanyAssessments(activeCompInfo.companyId, activeCompInfo.companyName)
-  );
+  const [drivesList, setDrivesList] = useState<RecruiterDrive[]>(MOCK_RECRUITER_DRIVES);
   const [isCreateDriveModalOpen, setIsCreateDriveModalOpen] = useState(false);
   const [driveTitle, setDriveTitle] = useState("");
-  const [driveRole, setDriveRole] = useState(`${activeCompInfo.companyName} Core Software Engineer`);
-  const [driveCtc, setDriveCtc] = useState(activeCompInfo.topPackage);
+  const [driveRole, setDriveRole] = useState("Software Engineer I (Cloud Solutions)");
+  const [driveCtc, setDriveCtc] = useState("₹32.0 LPA");
   const [driveLocation, setDriveLocation] = useState("Bengaluru / Hyderabad");
-
-  useEffect(() => {
-    setDrivesList(getCompanyDrives(activeCompInfo.companyId, activeCompInfo.companyName));
-    setAssessmentsList(getCompanyAssessments(activeCompInfo.companyId, activeCompInfo.companyName));
-    setInterviewList(getCompanyInterviews(activeCompInfo.companyId, activeCompInfo.companyName, activeRecruiterName));
-    setOfferList(getCompanyOffers(activeCompInfo.companyId, activeCompInfo.companyName));
-
-    setAppFormDriveTitle(`${activeCompInfo.companyName} Campus Hiring Registration 2026`);
-    setAppFormExternalUrl(`https://forms.${activeCompInfo.companyName.toLowerCase().replace(/[^a-z0-9]/g, "")}.com/register-2026`);
-    setSchedInterviewer(`${activeRecruiterName} (${activeCompInfo.companyName} HR)`);
-    setDriveRole(`${activeCompInfo.companyName} Software Engineer`);
-  }, [activeCompInfo.companyId, activeCompInfo.companyName, activeRecruiterName]);
 
   // View Drive Applicants Modal State
   const [selectedDriveForApplicants, setSelectedDriveForApplicants] = useState<RecruiterDrive | null>(null);
   const [isApplicantsModalOpen, setIsApplicantsModalOpen] = useState(false);
-
-  // Application Form Builder State
-  const [isCreateAppFormModalOpen, setIsCreateAppFormModalOpen] = useState(false);
-  const [appFormDriveTitle, setAppFormDriveTitle] = useState("Google Cloud SDE Placement Drive Registration 2026");
-  const [appFormDeadline, setAppFormDeadline] = useState("2026-08-10 23:59");
-  const [appFormExternalUrl, setAppFormExternalUrl] = useState(
-    "https://docs.google.com/forms/d/e/1FAIpQLSc-GoogleCloudPlacementForm2026/viewform"
-  );
-  const [appFormInstructions, setAppFormInstructions] = useState(
-    "Please submit this registration form using your official college email address where you received this invitation. The assessment link will be dispatched automatically to all verified applicants after the expiry deadline."
-  );
-
-  const handleCreateAppFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newFormId = `APP-FORM-2026-${Date.now().toString().slice(-4)}`;
-    createDriveApplicationForm({
-      id: newFormId,
-      driveId: "DRV-GGL-01",
-      title: appFormDriveTitle,
-      company: "Google Cloud India",
-      role: "Software Engineer I (Cloud Solutions)",
-      ctc: "₹32.0 LPA",
-      deadlineDate: appFormDeadline,
-      instructions: appFormInstructions,
-      googleFormUrl: appFormExternalUrl,
-      status: "Sent to TPO",
-      createdDate: new Date().toISOString().split("T")[0]!,
-      applicantCount: 0,
-    });
-
-    setIsCreateAppFormModalOpen(false);
-    toast.success(`Sent Application Form "${appFormDriveTitle}" to TPO for distribution! Form ID: ${newFormId}`);
-  };
-
-  // Question Paper Preview & Editing State
-  const [editableQuestions, setEditableQuestions] = useState<Array<{
-    q: string;
-    opt: string[];
-    ans: number;
-    diff: string;
-  }>>([
-    { q: "What is the time complexity of searching an element in a balanced AVL Binary Search Tree?", opt: ["O(N)", "O(log N)", "O(N log N)", "O(1)"], ans: 1, diff: "Easy" },
-    { q: "Which graph traversal algorithm uses a Queue data structure to explore vertices level by level?", opt: ["Breadth-First Search (BFS)", "Depth-First Search (DFS)", "Dijkstra Algorithm", "Topological Sort"], ans: 0, diff: "Easy" },
-    { q: "In relational database indexing, what prevents B+ Tree leaves from becoming unbalanced during random inserts?", opt: ["Table locking", "Automatic hashing", "Node splitting & redistribution", "Compaction"], ans: 2, diff: "Hard" },
-    { q: "What algorithm is used to detect deadlocks in an operating system resource allocation graph?", opt: ["Banker's Algorithm", "Round Robin", "SJF Scheduling", "Peterson's Algorithm"], ans: 0, diff: "Medium" }
-  ]);
-
-  const [editingQuestionIndex, setEditingQuestionIndex] = useState<number | null>(null);
-  const [editQText, setEditQText] = useState("");
-  const [editQOpt0, setEditQOpt0] = useState("");
-  const [editQOpt1, setEditQOpt1] = useState("");
-  const [editQOpt2, setEditQOpt2] = useState("");
-  const [editQOpt3, setEditQOpt3] = useState("");
-  const [editQAnsIdx, setEditQAnsIdx] = useState(0);
-
-  const handleOpenQuestionEdit = (idx: number) => {
-    const item = editableQuestions[idx];
-    if (!item) return;
-    setEditingQuestionIndex(idx);
-    setEditQText(item.q);
-    setEditQOpt0(item.opt[0] || "");
-    setEditQOpt1(item.opt[1] || "");
-    setEditQOpt2(item.opt[2] || "");
-    setEditQOpt3(item.opt[3] || "");
-    setEditQAnsIdx(item.ans);
-  };
-
-  const handleSaveQuestionEdit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingQuestionIndex === null) return;
-    setEditableQuestions((prev) => {
-      const copy = [...prev];
-      copy[editingQuestionIndex] = {
-        ...copy[editingQuestionIndex]!,
-        q: editQText,
-        opt: [editQOpt0, editQOpt1, editQOpt2, editQOpt3],
-        ans: editQAnsIdx,
-      };
-      return copy;
-    });
-    toast.success(`Updated Question Q${editingQuestionIndex + 1} successfully!`);
-    setEditingQuestionIndex(null);
-  };
-
-  // Dispatch Assessment Link Modal State
-  const [isDispatchAssessmentModalOpen, setIsDispatchAssessmentModalOpen] = useState(false);
-  const [cutoffTenthPct, setCutoffTenthPct] = useState("60");
-  const [cutoffInterPct, setCutoffInterPct] = useState("60");
-  const [selectedFormForDispatch, setSelectedFormForDispatch] = useState<DriveApplicationForm | null>(null);
-  const [dispatchedAppFormIds, setDispatchedAppFormIds] = useState<Record<string, boolean>>({});
-
-  const handleDispatchAssessmentToApplicants = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedFormForDispatch) return;
-
-    const min10 = parseFloat(cutoffTenthPct) || 60;
-    const minInter = parseFloat(cutoffInterPct) || 60;
-
-    const registeredApps = SHARED_STUDENT_DRIVE_APPLICATIONS.filter((a) => a.formId === selectedFormForDispatch.id);
-    const eligibleApps = registeredApps.filter((a) => {
-      const passes10th = a.tenthPercentage >= min10;
-      const passesInterOrDiploma = a.qualificationStream === "Intermediate"
-        ? (a.interPercentage ?? 0) >= minInter
-        : (a.diplomaPercentage ?? 0) >= minInter;
-      return passes10th && passesInterOrDiploma;
-    });
-
-    const newReqId = `REQ-2026-${Date.now().toString().slice(-4)}`;
-    pushToSharedQueue({
-      id: newReqId,
-      assessmentId: `AST-${Date.now().toString().slice(-4)}`,
-      name: `${selectedFormForDispatch.title} — Online Coding & Systems Assessment`,
-      recruiterName: activeRecruiterName,
-      recruiterEmail: activeRecruiterEmail,
-      company: selectedFormForDispatch.company,
-      companyLogoBg: "bg-blue-600",
-      assessmentType: "MCQ + Coding + SQL",
-      mcqCount: 20,
-      codingCount: 2,
-      sqlCount: 1,
-      totalQuestions: 23,
-      duration: "90 Mins",
-      totalMarks: 100,
-      passingMarksPct: 70,
-      submittedDate: new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
-      priority: "High",
-      status: "Submitted",
-      version: "v1.0",
-      expectedCandidates: eligibleApps.length,
-      programmingLanguages: ["Java", "Python", "C++", "SQL"],
-      recruiterNotes: `Dispatched by ${activeRecruiterName} for ${eligibleApps.length} registered candidates (Min 10th: ${min10}%, Min Inter: ${minInter}%).`,
-      mcqQuestions: [],
-      codingQuestions: [],
-      sqlQuestions: [],
-      auditTrail: [
-        {
-          timestamp: new Date().toLocaleString(),
-          action: "Submitted for TPO Approval",
-          actor: activeRecruiterName,
-          notes: "Initial dispatch from Recruiter Application Forms workspace.",
-        },
-      ],
-      versionHistory: [
-        {
-          version: "v1.0",
-          date: new Date().toISOString().split("T")[0]!,
-          status: "Submitted",
-          author: activeRecruiterName,
-        },
-      ],
-    });
-
-    setDispatchedAppFormIds((prev) => ({ ...prev, [selectedFormForDispatch.id]: true }));
-    setIsDispatchAssessmentModalOpen(false);
-    toast.success(
-      `🚀 Sent Assessment Request (${newReqId}) to Placement Officer (TPO)! The TPO will verify candidate eligibility and dispatch the exam link to ${eligibleApps.length} registered students.`
-    );
-  };
 
   const handleCreateDriveSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -2047,15 +1547,11 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
       <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-xs flex flex-wrap items-center justify-between gap-3 backdrop-blur-xl">
         <div className="flex items-center gap-3">
           <div className="size-10 rounded-xl bg-blue-600 text-white grid place-items-center font-extrabold text-sm shadow-xs">
-            {((typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterCompany")) || "Google Cloud")[0]}
+            G
           </div>
           <div>
-            <h2 className="font-display text-sm font-extrabold text-foreground">
-              {(typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterCompany")) || "Google Cloud"} Recruiter Portal
-            </h2>
-            <span className="text-[0.68rem] font-mono text-muted-foreground">
-              Corporate HR Partner • {(typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterName")) || "David Miller"} ({(typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterEmail")) || "david.miller@google.com"})
-            </span>
+            <h2 className="font-display text-sm font-extrabold text-foreground">Google Cloud Recruiter Portal</h2>
+            <span className="text-[0.68rem] font-mono text-muted-foreground">Corporate HR Partner • David Miller (Staff Recruiter)</span>
           </div>
         </div>
 
@@ -2076,12 +1572,12 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
         <div className="space-y-6">
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
             {[
-              { label: "Active Drives", val: activeCompInfo.drivesCount, desc: activeCompInfo.drivesDesc, color: "text-blue-600 bg-blue-500/10" },
-              { label: "Total Applications", val: activeCompInfo.applicationsCount, desc: "Registered Students", color: "text-purple-600 bg-purple-500/10" },
+              { label: "Active Drives", val: "2 Drives", desc: "Google Cloud 2026", color: "text-blue-600 bg-blue-500/10" },
+              { label: "Total Applications", val: "580", desc: "Registered Students", color: "text-purple-600 bg-purple-500/10" },
               { label: "Approved Tests", val: "1 Test", desc: "Ready for Session", color: "text-emerald-600 bg-emerald-500/10" },
               { label: "Pending Requests", val: "1 Test", desc: "Awaiting TPO", color: "text-amber-600 bg-amber-500/10" },
-              { label: "Interviews Booked", val: activeCompInfo.interviewsCount, desc: "Panels Assigned", color: "text-indigo-600 bg-indigo-500/10" },
-              { label: "Offers Released", val: activeCompInfo.offersCount, desc: activeCompInfo.topPackage, color: "text-emerald-600 bg-emerald-500/10" },
+              { label: "Interviews Booked", val: "48 Slots", desc: "Panels Assigned", color: "text-indigo-600 bg-indigo-500/10" },
+              { label: "Offers Released", val: "14 Offers", desc: "₹32.0 LPA Package", color: "text-emerald-600 bg-emerald-500/10" },
             ].map((kpi) => (
               <div key={kpi.label} className="p-4 rounded-2xl border border-border/70 bg-card space-y-1 shadow-xs">
                 <span className="text-[0.68rem] font-semibold text-muted-foreground block truncate">{kpi.label}</span>
@@ -2129,12 +1625,6 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                 <div className="space-y-2 pt-1">
                   <Button onClick={() => setIsCreateAssessmentModalOpen(true)} className="w-full justify-start h-9 text-xs rounded-xl bg-brand-gradient shadow-glow cursor-pointer gap-2 font-bold">
                     <Plus className="size-4" /> + Create New Assessment
-                  </Button>
-                  <Button onClick={() => setIsCreateAppFormModalOpen(true)} variant="outline" className="w-full justify-start h-9 text-xs rounded-xl cursor-pointer gap-2 border-blue-300 text-blue-700 font-bold">
-                    <FileText className="size-4 text-blue-600" /> Send Student Application Form
-                  </Button>
-                  <Button onClick={() => setActiveModule("drive-applications")} variant="outline" className="w-full justify-start h-9 text-xs rounded-xl cursor-pointer gap-2">
-                    <Users className="size-4 text-purple-600" /> View Drive Applicants
                   </Button>
                   <Button onClick={() => setActiveModule("question-bank")} variant="outline" className="w-full justify-start h-9 text-xs rounded-xl cursor-pointer gap-2">
                     <Database className="size-4 text-purple-600" /> Open Question Bank
@@ -2191,7 +1681,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                       </div>
                       <div>
                         <span className="text-muted-foreground text-[0.62rem] block">Shortlisted</span>
-                        <strong className="text-indigo-600 text-sm font-sans font-extrabold">{drv.shortlistedCount}</strong>
+                        <strong className="text-purple-600 text-sm font-sans font-extrabold">{drv.shortlistedCount}</strong>
                       </div>
                       <div>
                         <span className="text-muted-foreground text-[0.62rem] block">Interviewed</span>
@@ -2210,7 +1700,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                         <span className="font-bold text-foreground">{drv.progressPct}%</span>
                       </div>
                       <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-600 rounded-full" style={{ width: `${drv.progressPct}%` }} />
+                        <div className="h-full bg-brand-gradient rounded-full" style={{ width: `${drv.progressPct}%` }} />
                       </div>
                     </div>
 
@@ -2225,237 +1715,15 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                         }}
                         className="h-8 text-xs rounded-xl cursor-pointer gap-1"
                       >
-                        <Users className="size-3.5 text-blue-600" /> View Applicants ({drv.applicationsCount})
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setIsCreateAppFormModalOpen(true)}
-                        className="h-8 text-xs rounded-xl cursor-pointer border-blue-300 text-blue-600 font-bold gap-1"
-                      >
-                        <FileText className="size-3.5" /> Send App Form to TPO
+                        <Users className="size-3.5 text-purple-600" /> View Applicants ({drv.applicationsCount})
                       </Button>
                       <Button
                         size="sm"
                         onClick={() => setIsCreateAssessmentModalOpen(true)}
-                        className="h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl cursor-pointer gap-1 shadow-xs"
+                        className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl cursor-pointer gap-1"
                       >
                         <Plus className="size-3.5" /> Create Assessment
                       </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Panel>
-        </div>
-      )}
-
-      {/* ===================================================================== */}
-      {/* 2.5 DRIVE APPLICATION FORMS WORKSPACE                                */}
-      {/* ===================================================================== */}
-      {activeModule === "drive-applications" && (
-        <div className="space-y-6">
-          {/* Corporate Company & Multi-Role Student Segregation Cards (Scoped to Active Recruiter's Assigned Company) */}
-          <CompanyRoleEligibilityCards defaultCompanyId={activeCompInfo.companyId} allowCompanySwitching={false} />
-
-          <div className="flex items-center justify-between pt-4 border-t border-border">
-            <div>
-              <h2 className="text-lg font-bold text-foreground">Drive Application Forms &amp; Student Registrations</h2>
-              <p className="text-xs font-mono text-muted-foreground">
-                Build application forms, collect student 10th &amp; Inter/Diploma marks, and lock assessment eligibility.
-              </p>
-            </div>
-            <Button
-              onClick={() => setIsCreateAppFormModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl h-9 text-xs gap-1.5 cursor-pointer shadow-md"
-            >
-              <Plus className="size-4" /> Create New Application Form
-            </Button>
-          </div>
-
-          <Panel title="Active Drive Application Forms Sent to TPO">
-            <div className="space-y-4 pt-1 font-mono text-xs">
-              {SHARED_DRIVE_APPLICATION_FORMS.map((form) => {
-                const filledApps = SHARED_STUDENT_DRIVE_APPLICATIONS.filter((a) => a.formId === form.id);
-                return (
-                  <div key={form.id} className="p-4 rounded-2xl border border-border bg-card space-y-3 shadow-2xs">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <Badge className="bg-blue-600 text-white font-mono text-[0.65rem] mb-1">
-                          Form ID: {form.id}
-                        </Badge>
-                        <h3 className="font-bold text-sm text-foreground font-sans">{form.title}</h3>
-                        <p className="text-[0.68rem] text-muted-foreground">
-                          Role: {form.role} • CTC: <strong className="text-emerald-600">{form.ctc}</strong>
-                        </p>
-                      </div>
-                      <Badge className={form.status === "Dispatched to Students" ? "bg-emerald-600 text-white" : "bg-amber-600 text-white"}>
-                        {form.status}
-                      </Badge>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-muted/40 border text-[0.68rem] space-y-1">
-                      <p className="font-bold text-foreground font-sans">Instructions Dispatched to Students:</p>
-                      <p className="text-muted-foreground">{form.instructions}</p>
-                      <p className="text-blue-600 font-bold">Expiry Deadline: {form.deadlineDate}</p>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1 border-t">
-                      <div className="flex items-center gap-2">
-                        <Users className="size-4 text-purple-600" />
-                        <span className="font-bold text-foreground">
-                          {filledApps.length} Registered Applicants (Form Filled Data Available)
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            const origin = typeof window !== "undefined" ? window.location.origin : "";
-                            const targetUrl = form.googleFormUrl || `${origin}/drive/apply?id=${form.id}`;
-                            navigator.clipboard.writeText(targetUrl);
-                            toast.success(`Copied Application Form URL to clipboard!`);
-                          }}
-                          className="h-8 text-[0.68rem] rounded-xl cursor-pointer border-blue-300 text-blue-600 font-bold"
-                        >
-                          <Copy className="size-3.5 mr-1" /> Copy Form URL
-                        </Button>
-
-                        {dispatchedAppFormIds[form.id] ? (
-                          <Button
-                            size="sm"
-                            disabled
-                            className="h-8 text-[0.68rem] bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 font-bold rounded-xl gap-1.5 opacity-100 cursor-default"
-                          >
-                            <CheckCircle className="size-3.5 text-emerald-600" /> Assessment Request Submitted to TPO ✓
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              setSelectedFormForDispatch(form);
-                              setIsDispatchAssessmentModalOpen(true);
-                            }}
-                            className="h-8 text-[0.68rem] bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl cursor-pointer shadow-sm gap-1"
-                          >
-                            <Send className="size-3.5" /> Submit Assessment Request to TPO for Approval ({filledApps.length} Applicants)
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </Panel>
-
-          {/* SUBMITTED STUDENT APPLICATIONS & ACADEMIC DATA PANEL AT BOTTOM */}
-          <Panel
-            title={`Submitted Student Applications & Academic Data (${SHARED_STUDENT_DRIVE_APPLICATIONS.length} Total Applicants Registered)`}
-            description="Live feed of student responses, 10th marks, Inter/Diploma details, resume attachments, and passport photos."
-          >
-            <div className="space-y-4 pt-1 font-mono text-xs">
-              <div className="flex flex-wrap items-center justify-between gap-3 bg-muted/30 p-3 rounded-2xl border border-border">
-                <div className="flex items-center gap-2 flex-1 min-w-[240px]">
-                  <Search className="size-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search applicants by student name, roll number, department, or email..."
-                    className="h-9 text-xs rounded-xl bg-background border-input font-sans"
-                  />
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    const headers = "Student Name,Roll No,Department,Email,Phone,10th School,10th Board,10th %,10th Year,Stream,Inter/Diploma Institution,Inter/Diploma %,Resume File,Submitted Timestamp\n";
-                    const rows = SHARED_STUDENT_DRIVE_APPLICATIONS.map((a) =>
-                      `"${a.studentName}","${a.rollNo}","${a.department}","${a.studentEmail}","${a.phone}","${a.tenthSchoolName}","${a.tenthBoard}","${a.tenthPercentage}%","${a.tenthYearOfPassing}","${a.qualificationStream}","${a.qualificationStream === "Intermediate" ? a.interCollegeName : a.diplomaCollegeName}","${a.qualificationStream === "Intermediate" ? a.interPercentage : a.diplomaPercentage}%","${a.resumeFileName}","${a.submittedAt}"`
-                    ).join("\n");
-                    const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement("a");
-                    link.setAttribute("href", url);
-                    link.setAttribute("download", "recruiter_drive_applications_master_sheet_2026.csv");
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    toast.success("Downloaded registered student applications Excel CSV!");
-                  }}
-                  className="h-9 text-xs font-bold rounded-xl cursor-pointer gap-1.5 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
-                >
-                  <Download className="size-3.5" /> Export Applicant Master Sheet (.CSV)
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {SHARED_STUDENT_DRIVE_APPLICATIONS.map((app) => (
-                  <div key={app.id} className="p-4 rounded-2xl border border-border bg-card space-y-3 shadow-2xs hover:border-blue-300 transition-colors">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={app.passportPhotoUrl}
-                          alt={app.studentName}
-                          className="size-12 rounded-full object-cover border-2 border-blue-500 shadow-xs"
-                        />
-                        <div>
-                          <h4 className="font-bold text-sm text-foreground font-sans">{app.studentName}</h4>
-                          <p className="text-xs font-mono text-primary font-bold">{app.rollNo} ({app.department})</p>
-                          <p className="text-[0.68rem] text-muted-foreground font-mono">{app.studentEmail} • {app.phone}</p>
-                        </div>
-                      </div>
-                      <Badge className="bg-emerald-600 text-white font-mono text-[0.65rem]">
-                        ✓ {app.qualificationStream}
-                      </Badge>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[0.7rem] bg-muted/40 p-3 rounded-xl border border-border/60">
-                      {/* 10th Record */}
-                      <div className="space-y-0.5">
-                        <span className="text-blue-600 font-bold uppercase text-[0.62rem] block font-sans">10th Class (SSC/CBSE)</span>
-                        <p className="font-bold text-foreground truncate font-sans">{app.tenthSchoolName}</p>
-                        <p className="text-muted-foreground">Board: {app.tenthBoard} | Year: {app.tenthYearOfPassing}</p>
-                        <p className="font-bold text-emerald-600">Marks: {app.tenthPercentage}%</p>
-                      </div>
-
-                      {/* Inter or Diploma Record */}
-                      <div className="space-y-0.5">
-                        <span className="text-purple-600 font-bold uppercase text-[0.62rem] block font-sans">{app.qualificationStream} Record</span>
-                        {app.qualificationStream === "Intermediate" ? (
-                          <>
-                            <p className="font-bold text-foreground truncate font-sans">{app.interCollegeName}</p>
-                            <p className="text-muted-foreground">Board: {app.interBoard} | Year: {app.interYearOfPassing}</p>
-                            <p className="font-bold text-purple-600">Marks: {app.interPercentage}%</p>
-                          </>
-                        ) : (
-                          <>
-                            <p className="font-bold text-foreground truncate font-sans">{app.diplomaCollegeName}</p>
-                            <p className="text-muted-foreground">Branch: {app.diplomaBranch} | Year: {app.diplomaYearOfPassing}</p>
-                            <p className="font-bold text-purple-600">Marks: {app.diplomaPercentage}%</p>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1 border-t text-[0.68rem]">
-                      <span className="text-muted-foreground font-mono truncate max-w-[200px]">
-                        Resume: <strong className="text-foreground">{app.resumeFileName}</strong>
-                      </span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => toast.info(`Viewing Candidate PDF Resume: ${app.resumeFileName}`)}
-                        className="h-7 text-[0.65rem] rounded-lg cursor-pointer font-bold gap-1 border-blue-300 text-blue-600"
-                      >
-                        <FileText className="size-3" /> View Resume PDF
-                      </Button>
-                    </div>
-
-                    <div className="text-[0.62rem] text-slate-400 font-mono flex items-center justify-between pt-0.5">
-                      <span>Submitted: {app.submittedAt}</span>
-                      <span className="text-emerald-600 font-bold">● Ref: {app.id}</span>
                     </div>
                   </div>
                 ))}
@@ -2473,31 +1741,27 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
           <Panel title="Corporate Company Workspace & Verification Status">
             <div className="space-y-4 pt-1 text-xs font-mono">
               <div className="flex items-center gap-4 border-b border-border pb-4">
-                <div className={`size-16 rounded-2xl ${activeCompInfo.logoBg} text-white grid place-items-center font-black text-2xl shadow-md`}>
-                  {activeCompInfo.logoText}
+                <div className="size-16 rounded-2xl bg-blue-600 text-white grid place-items-center font-extrabold text-2xl shadow-glow">
+                  G
                 </div>
                 <div>
-                  <h3 className="font-display text-lg font-extrabold text-foreground">{activeCompInfo.companyName}</h3>
+                  <h3 className="font-display text-lg font-extrabold text-foreground">{companyName}</h3>
                   <Badge className="bg-emerald-600 text-white text-[0.65rem]">● Verified MoU Corporate Partner</Badge>
                 </div>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <label className="font-sans font-semibold text-foreground">Company Website</label>
-                  <Input
-                    value={`https://${activeCompInfo.companyName.toLowerCase().replace(/[^a-z0-9]/g, "")}.com`}
-                    onChange={(e) => setWebsite(e.target.value)}
-                    className="h-9 text-xs font-mono rounded-xl"
-                  />
+                  <label className="font-sans font-semibold">Company Website</label>
+                  <Input value={website} onChange={(e) => setWebsite(e.target.value)} className="h-9 text-xs font-mono rounded-xl" />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-sans font-semibold text-foreground">Head Office Location</label>
+                  <label className="font-sans font-semibold">Head Office Location</label>
                   <Input value={headOffice} onChange={(e) => setHeadOffice(e.target.value)} className="h-9 text-xs font-mono rounded-xl" />
                 </div>
               </div>
 
-              <Button onClick={() => toast.success(`Saved corporate profile updates for ${activeCompInfo.companyName}!`)} className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl h-9 cursor-pointer shadow-xs">
+              <Button onClick={() => toast.success("Updated company profile information")} className="bg-brand-gradient shadow-glow font-bold text-xs rounded-xl h-9 cursor-pointer">
                 Save Allowed Profile Updates
               </Button>
             </div>
@@ -2519,7 +1783,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
             }
           >
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 pt-1">
-              {assessmentsList.map((ast) => (
+              {MOCK_RECRUITER_ASSESSMENTS.map((ast) => (
                 <div key={ast.id} className="p-5 rounded-2xl border border-border/80 bg-card space-y-3 font-mono text-xs shadow-xs hover:border-primary/50 transition-all">
                   <div className="flex items-center justify-between">
                     <span className="text-[0.65rem] text-primary font-bold">{ast.version}</span>
@@ -2688,7 +1952,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
                 <div className="p-4 rounded-2xl border bg-card space-y-1">
                   <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">Total Indexed</p>
-                  <p className="text-2xl font-extrabold text-blue-600 font-sans">{qbCounts.total}</p>
+                  <p className="text-2xl font-extrabold text-purple-600 font-sans">{qbCounts.total}</p>
                   <p className="text-[0.62rem] text-muted-foreground">Active in Bank</p>
                 </div>
                 <div className="p-4 rounded-2xl border bg-card space-y-1">
@@ -2698,12 +1962,12 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                 </div>
                 <div className="p-4 rounded-2xl border bg-card space-y-1">
                   <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">Coding Challenges</p>
-                  <p className="text-2xl font-extrabold text-blue-600 font-sans">{qbCounts.coding}</p>
+                  <p className="text-2xl font-extrabold text-purple-600 font-sans">{qbCounts.coding}</p>
                   <p className="text-[0.62rem] text-muted-foreground">Multi-Compiler</p>
                 </div>
                 <div className="p-4 rounded-2xl border bg-card space-y-1">
                   <p className="text-muted-foreground text-[0.65rem] uppercase font-bold">SQL Queries</p>
-                  <p className="text-2xl font-extrabold text-blue-600 font-sans">{qbCounts.sql}</p>
+                  <p className="text-2xl font-extrabold text-emerald-600 font-sans">{qbCounts.sql}</p>
                   <p className="text-[0.62rem] text-muted-foreground">Database Schema</p>
                 </div>
               </div>
@@ -2716,7 +1980,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                     <button
                       type="button"
                       onClick={() => setQbSubjectFilter("All")}
-                      className="text-[0.68rem] text-blue-600 font-bold hover:underline cursor-pointer"
+                      className="text-[0.68rem] text-purple-600 font-bold hover:underline cursor-pointer"
                     >
                       Reset Filter (Show All Subjects)
                     </button>
@@ -2729,20 +1993,20 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                     onClick={() => setQbSubjectFilter("Data Structures & Algorithms")}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                       qbSubjectFilter === "Data Structures & Algorithms"
-                        ? "bg-blue-500/10 border-blue-500 shadow-md ring-2 ring-blue-500/20"
+                        ? "bg-purple-500/10 border-purple-500 shadow-md ring-2 ring-purple-500/20"
                         : "bg-card hover:bg-muted/40 border-border"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="p-2 rounded-xl bg-blue-600/10 text-blue-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                      <span className="p-2 rounded-xl bg-purple-600/10 text-purple-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
                         <Code2 className="size-4" /> Data Structures &amp; Algorithms
                       </span>
-                      <Badge className="bg-blue-600 text-white text-[0.62rem]">Coding + MCQs</Badge>
+                      <Badge className="bg-purple-600 text-white text-[0.62rem]">Coding + MCQs</Badge>
                     </div>
                     <p className="text-[0.72rem] text-muted-foreground">Arrays, Trees, Dynamic Programming, Graphs &amp; Algorithms</p>
                     <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
                       <span className="text-muted-foreground font-bold">45 Questions Available</span>
-                      <span className="text-blue-600 font-bold">Click to filter →</span>
+                      <span className="text-purple-600 font-bold">Click to filter →</span>
                     </div>
                   </div>
 
@@ -2773,20 +2037,20 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                     onClick={() => setQbSubjectFilter("Logical Reasoning")}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                       qbSubjectFilter === "Logical Reasoning"
-                        ? "bg-blue-500/10 border-blue-500 shadow-md ring-2 ring-blue-500/20"
+                        ? "bg-amber-500/10 border-amber-500 shadow-md ring-2 ring-amber-500/20"
                         : "bg-card hover:bg-muted/40 border-border"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="p-2 rounded-xl bg-blue-600/10 text-blue-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                      <span className="p-2 rounded-xl bg-amber-600/10 text-amber-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
                         <BrainCircuit className="size-4" /> Logical Reasoning
                       </span>
-                      <Badge variant="outline" className="text-[0.62rem] border-blue-300 text-blue-700 bg-blue-50">MCQs Only</Badge>
+                      <Badge variant="outline" className="text-[0.62rem] border-amber-300 text-amber-700 bg-amber-50">MCQs Only</Badge>
                     </div>
                     <p className="text-[0.72rem] text-muted-foreground">Syllogisms, Puzzles, Sequences &amp; Pattern Identification</p>
                     <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
                       <span className="text-muted-foreground font-bold">25 Questions Available</span>
-                      <span className="text-blue-600 font-bold">Click to filter →</span>
+                      <span className="text-amber-600 font-bold">Click to filter →</span>
                     </div>
                   </div>
 
@@ -2795,20 +2059,20 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                     onClick={() => setQbSubjectFilter("Quantitative Aptitude")}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                       qbSubjectFilter === "Quantitative Aptitude"
-                        ? "bg-blue-500/10 border-blue-500 shadow-md ring-2 ring-blue-500/20"
+                        ? "bg-emerald-500/10 border-emerald-500 shadow-md ring-2 ring-emerald-500/20"
                         : "bg-card hover:bg-muted/40 border-border"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="p-2 rounded-xl bg-blue-600/10 text-blue-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                      <span className="p-2 rounded-xl bg-emerald-600/10 text-emerald-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
                         <Calculator className="size-4" /> Quantitative Aptitude
                       </span>
-                      <Badge variant="outline" className="text-[0.62rem] border-blue-300 text-blue-700 bg-blue-50">MCQs Only</Badge>
+                      <Badge variant="outline" className="text-[0.62rem] border-emerald-300 text-emerald-700 bg-emerald-50">MCQs Only</Badge>
                     </div>
                     <p className="text-[0.72rem] text-muted-foreground">Work &amp; Time, Speed &amp; Distance, Probability &amp; Combinatorics</p>
                     <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
                       <span className="text-muted-foreground font-bold">25 Questions Available</span>
-                      <span className="text-blue-600 font-bold">Click to filter →</span>
+                      <span className="text-emerald-600 font-bold">Click to filter →</span>
                     </div>
                   </div>
 
@@ -2817,20 +2081,20 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                     onClick={() => setQbSubjectFilter("Database Management Systems (DBMS)")}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                       qbSubjectFilter === "Database Management Systems (DBMS)"
-                        ? "bg-blue-500/10 border-blue-500 shadow-md ring-2 ring-blue-500/20"
+                        ? "bg-cyan-500/10 border-cyan-500 shadow-md ring-2 ring-cyan-500/20"
                         : "bg-card hover:bg-muted/40 border-border"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="p-2 rounded-xl bg-blue-600/10 text-blue-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                      <span className="p-2 rounded-xl bg-cyan-600/10 text-cyan-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
                         <Database className="size-4" /> Database Systems (DBMS)
                       </span>
-                      <Badge className="bg-blue-600 text-white text-[0.62rem]">SQL + MCQs</Badge>
+                      <Badge className="bg-emerald-600 text-white text-[0.62rem]">SQL + MCQs</Badge>
                     </div>
                     <p className="text-[0.72rem] text-muted-foreground">SQL Queries, Window Aggregations, CTEs, ACID &amp; Indexing</p>
                     <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
                       <span className="text-muted-foreground font-bold">20 Questions Available</span>
-                      <span className="text-blue-600 font-bold">Click to filter →</span>
+                      <span className="text-cyan-600 font-bold">Click to filter →</span>
                     </div>
                   </div>
 
@@ -2839,20 +2103,20 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                     onClick={() => setQbSubjectFilter("Core Systems (OS & Networks)")}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                       qbSubjectFilter === "Core Systems (OS & Networks)"
-                        ? "bg-blue-500/10 border-blue-500 shadow-md ring-2 ring-blue-500/20"
+                        ? "bg-indigo-500/10 border-indigo-500 shadow-md ring-2 ring-indigo-500/20"
                         : "bg-card hover:bg-muted/40 border-border"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="p-2 rounded-xl bg-blue-600/10 text-blue-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
+                      <span className="p-2 rounded-xl bg-indigo-600/10 text-indigo-600 font-extrabold text-sm font-sans flex items-center gap-1.5">
                         <Cpu className="size-4" /> Core Systems (OS &amp; Networks)
                       </span>
-                      <Badge variant="outline" className="text-[0.62rem] border-blue-300 text-blue-700 bg-blue-50">MCQs Only</Badge>
+                      <Badge variant="outline" className="text-[0.62rem] border-indigo-300 text-indigo-700 bg-indigo-50">MCQs Only</Badge>
                     </div>
                     <p className="text-[0.72rem] text-muted-foreground">Deadlocks, Virtual Memory, TCP 3-Way Handshake &amp; Subnetting</p>
                     <div className="flex items-center justify-between font-mono text-[0.65rem] pt-1">
                       <span className="text-muted-foreground font-bold">17 Questions Available</span>
-                      <span className="text-blue-600 font-bold">Click to filter →</span>
+                      <span className="text-indigo-600 font-bold">Click to filter →</span>
                     </div>
                   </div>
                 </div>
@@ -2930,13 +2194,31 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                           <td className="p-3">
                             <Badge
                               variant="outline"
-                              className="text-[0.62rem] border-blue-300 text-blue-700 dark:text-blue-300 bg-blue-500/10 font-mono font-bold"
+                              className={`text-[0.62rem] ${
+                                item.subject.includes("Data Structures")
+                                  ? "border-purple-300 text-purple-700 dark:text-purple-300 bg-purple-500/10"
+                                  : item.subject.includes("Database")
+                                  ? "border-emerald-300 text-emerald-700 dark:text-emerald-300 bg-emerald-500/10"
+                                  : item.subject.includes("Operating")
+                                  ? "border-amber-300 text-amber-700 dark:text-amber-300 bg-amber-500/10"
+                                  : item.subject.includes("Networks")
+                                  ? "border-cyan-300 text-cyan-700 dark:text-cyan-300 bg-cyan-500/10"
+                                  : "border-blue-300 text-blue-700 dark:text-blue-300 bg-blue-500/10"
+                              }`}
                             >
                               {item.subject.split("(")[0] || item.subject}
                             </Badge>
                           </td>
                           <td className="p-3">
-                            <Badge className="bg-blue-600 text-white text-[0.62rem] font-mono">
+                            <Badge
+                              className={
+                                item.type === "Coding"
+                                  ? "bg-purple-600 text-white text-[0.62rem]"
+                                  : item.type === "SQL"
+                                  ? "bg-emerald-600 text-white text-[0.62rem]"
+                                  : "bg-blue-600 text-white text-[0.62rem]"
+                              }
+                            >
                               {item.type}
                             </Badge>
                           </td>
@@ -3508,19 +2790,15 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
           <Panel title="Corporate Recruiter Profile & Security Settings">
             <div className="space-y-6 pt-1 font-sans">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-2xl bg-muted/30 border">
-                <div className="size-16 rounded-2xl bg-blue-600 text-white font-black text-2xl grid place-items-center shadow-md">
-                  {activeRecruiterName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)}
+                <div className="size-16 rounded-2xl bg-brand-gradient text-white font-black text-2xl grid place-items-center shadow-glow">
+                  DM
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-base font-extrabold text-foreground">{activeRecruiterName}</h3>
-                  <p className="text-xs text-muted-foreground font-mono">
-                    Campus HR Recruiter • {activeCompInfo.companyName}
-                  </p>
+                  <h3 className="text-base font-extrabold text-foreground">David Miller</h3>
+                  <p className="text-xs text-muted-foreground font-mono">Staff Recruiter • Google Cloud Systems India</p>
                   <div className="flex items-center gap-2 pt-1">
                     <Badge className="bg-emerald-600 text-white text-[0.62rem]">Verified Corporate HR</Badge>
-                    <Badge variant="outline" className="text-[0.62rem] font-mono">
-                      Email: {activeRecruiterEmail}
-                    </Badge>
+                    <Badge variant="outline" className="text-[0.62rem] font-mono">ID: HR-GGL-8842</Badge>
                   </div>
                 </div>
               </div>
@@ -3531,15 +2809,15 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                   <div className="space-y-2">
                     <div>
                       <p className="text-muted-foreground text-[0.65rem]">Company Name</p>
-                      <p className="font-bold text-foreground">{activeCompInfo.companyName}</p>
+                      <p className="font-bold text-foreground">{companyName}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-[0.65rem]">Official Website</p>
-                      <p className="font-bold text-blue-600">https://{activeCompInfo.companyName.toLowerCase().replace(/[^a-z0-9]/g, "")}.com</p>
+                      <p className="font-bold text-blue-600">{website}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-[0.65rem]">Head Office Location</p>
-                      <p className="font-bold text-foreground">Bengaluru / Hyderabad</p>
+                      <p className="font-bold text-foreground">{headOffice}</p>
                     </div>
                   </div>
                 </div>
@@ -3549,24 +2827,20 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                   <div className="space-y-2">
                     <div>
                       <p className="text-muted-foreground text-[0.65rem]">Primary Email</p>
-                      <p className="font-bold text-foreground">{activeRecruiterEmail}</p>
+                      <p className="font-bold text-foreground">david.miller@google.com</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground text-[0.65rem]">Two-Factor Authentication (2FA)</p>
-                      <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.62rem] mt-0.5">● Enabled (Corporate Authenticator)</Badge>
+                      <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.62rem] mt-0.5">● Enabled (Google Authenticator)</Badge>
                     </div>
                     <div className="pt-1">
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => {
-                          setNewPasswordInput("");
-                          setConfirmPasswordInput("");
-                          setIsResetPasswordModalOpen(true);
-                        }}
-                        className="h-8 text-xs rounded-xl cursor-pointer gap-1.5 font-bold border-blue-200 text-blue-700 hover:bg-blue-50"
+                        onClick={() => toast.success("Password reset link sent to david.miller@google.com!")}
+                        className="h-8 text-xs rounded-xl cursor-pointer gap-1.5"
                       >
-                        <Lock className="size-3.5 text-blue-600" /> Reset Recruiter Password
+                        <Lock className="size-3.5" /> Reset Recruiter Password
                       </Button>
                     </div>
                   </div>
@@ -4357,18 +3631,15 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                   <div className="space-y-1">
                     <span className="font-bold text-foreground font-sans text-xs block">4. Live Exam Conducting Link</span>
                     <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 font-mono text-[0.68rem] flex items-center justify-between">
-                      <a href={`/exam/take?id=${selectedAuditAst.id}`} target="_blank" rel="noreferrer" className="text-purple-700 dark:text-purple-300 truncate underline hover:text-purple-900">
-                        {(typeof window !== "undefined" ? window.location.origin : "") + `/exam/take?id=${selectedAuditAst.id}`}
-                      </a>
+                      <span className="text-purple-700 dark:text-purple-300 truncate">http://192.168.1.122:8082/exam/take?id={selectedAuditAst.id}</span>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
-                          navigator.clipboard.writeText(`${origin}/exam/take?id=${selectedAuditAst.id}`);
+                          navigator.clipboard.writeText(`http://192.168.1.122:8082/exam/take?id=${selectedAuditAst.id}`);
                           toast.success("Exam URL copied to clipboard!");
                         }}
-                        className="h-6 text-[0.62rem] rounded-lg shrink-0 cursor-pointer ml-2 font-sans font-bold"
+                        className="h-6 text-[0.62rem] rounded-lg shrink-0 cursor-pointer ml-2"
                       >
                         Copy Link
                       </Button>
@@ -5709,7 +4980,12 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                 </div>
 
                 <div className="w-full space-y-4 font-mono">
-                  {editableQuestions.map((item, idx) => (
+                  {[
+                    { q: "What is the time complexity of searching an element in a balanced AVL Binary Search Tree?", opt: ["O(N)", "O(log N)", "O(N log N)", "O(1)"], ans: 1, diff: "Easy" },
+                    { q: "Which graph traversal algorithm uses a Queue data structure to explore vertices level by level?", opt: ["Breadth-First Search (BFS)", "Depth-First Search (DFS)", "Dijkstra Algorithm", "Topological Sort"], ans: 0, diff: "Easy" },
+                    { q: "In relational database indexing, what prevents B+ Tree leaves from becoming unbalanced during random inserts?", opt: ["Table locking", "Automatic hashing", "Node splitting & redistribution", "Compaction"], ans: 2, diff: "Hard" },
+                    { q: "What algorithm is used to detect deadlocks in an operating system resource allocation graph?", opt: ["Banker's Algorithm", "Round Robin", "SJF Scheduling", "Peterson's Algorithm"], ans: 0, diff: "Medium" }
+                  ].map((item, idx) => (
                     <div key={idx} id={`existing-card-q-${idx + 1}`} className="p-6 rounded-2xl bg-card border border-border/80 space-y-4 shadow-2xs w-full hover:border-primary/40 transition-all">
                       <div className="flex items-center justify-between border-b border-border/60 pb-3 font-mono">
                         <div className="flex items-center gap-3">
@@ -5718,17 +4994,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                           </span>
                           <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-700 border-purple-300">Technical MCQs</Badge>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-300 text-xs font-bold">🟢 {item.diff}</Badge>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleOpenQuestionEdit(idx)}
-                            className="h-7 text-[0.68rem] rounded-lg font-bold border-blue-300 text-blue-600 hover:bg-blue-50 cursor-pointer gap-1"
-                          >
-                            <Edit className="size-3" /> Edit Question
-                          </Button>
-                        </div>
+                        <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-300 text-xs font-bold">🟢 Easy</Badge>
                       </div>
 
                       <p className="text-sm font-bold text-foreground leading-relaxed font-sans">{item.q}</p>
@@ -5742,7 +5008,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                             }`}
                           >
                             <span>{String.fromCharCode(65 + oIdx)}) {optText}</span>
-                            {oIdx === item.ans && <span className="text-[0.65rem] text-emerald-700 font-extrabold">✓ Correct Answer</span>}
+                            {oIdx === item.ans && <span className="text-[0.65rem] text-emerald-700 font-extrabold">✓ Correct</span>}
                           </div>
                         ))}
                       </div>
@@ -5770,17 +5036,7 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
                           </span>
                           <Badge className="bg-purple-600 text-white text-xs font-bold">Live Coding</Badge>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge className="bg-purple-500/10 text-purple-700 border-purple-300 text-xs font-bold">20 Marks • 🟢 Easy</Badge>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => toast.info("Coding challenge problem statement unlocked for editing.")}
-                            className="h-7 text-[0.68rem] rounded-lg font-bold border-blue-300 text-blue-600 hover:bg-blue-50 cursor-pointer gap-1"
-                          >
-                            <Edit className="size-3" /> Edit Problem
-                          </Button>
-                        </div>
+                        <Badge className="bg-purple-500/10 text-purple-700 border-purple-300 text-xs font-bold">20 Marks • 🟢 Easy</Badge>
                       </div>
 
                       <h4 className="font-bold text-foreground text-base font-sans">Problem 1: Distributed Cache Eviction (LRU-K Policy)</h4>
@@ -5796,20 +5052,9 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
             <Button variant="outline" onClick={() => setIsPreviewModalOpen(false)} className="h-10 px-5 rounded-xl text-xs font-bold border-border cursor-pointer bg-card hover:bg-muted">
               ← Back to Assessments
             </Button>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => {
-                  setIsPreviewModalOpen(false);
-                  handleOpenEditModal(selectedPreviewAst);
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl h-10 px-5 text-xs cursor-pointer gap-1.5 shadow-sm"
-              >
-                <Edit className="size-4" /> Edit Assessment Settings
-              </Button>
-              <Button onClick={() => setIsPreviewModalOpen(false)} className="bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl h-10 px-6 shadow-sm text-xs cursor-pointer">
-                Close Preview
-              </Button>
-            </div>
+            <Button onClick={() => setIsPreviewModalOpen(false)} className="bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl h-10 px-6 shadow-sm text-xs cursor-pointer">
+              Close Preview
+            </Button>
           </footer>
         </div>
       )}
@@ -5912,353 +5157,6 @@ END OF QUESTION PAPER - EDUSUITE PRO ENTERPRISE ATS
               </DialogFooter>
             </form>
           )}
-        </DialogContent>
-      </Dialog>
-
-      {/* QUICK EDIT QUESTION MODAL DIALOG */}
-      <Dialog open={editingQuestionIndex !== null} onOpenChange={(open) => { if (!open) setEditingQuestionIndex(null); }}>
-        <DialogContent className="sm:max-w-lg rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Edit className="size-5 text-blue-600" /> Edit Question {editingQuestionIndex !== null ? `Q${editingQuestionIndex + 1}` : ""}
-            </DialogTitle>
-            <DialogDescription className="font-mono text-[0.7rem]">
-              Modify question text, options, and correct answer choice for this assessment paper.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleSaveQuestionEdit} className="space-y-4 pt-2 text-xs">
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">Question Statement / Problem Text</label>
-              <textarea
-                value={editQText}
-                onChange={(e) => setEditQText(e.target.value)}
-                rows={3}
-                required
-                className="w-full rounded-xl border border-input bg-card p-2.5 text-xs font-sans font-semibold"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="font-semibold text-foreground font-sans">Option Choices &amp; Correct Answer Selection</label>
-              
-              <div className="space-y-2 font-mono">
-                {[
-                  { label: "Option A", val: editQOpt0, setVal: setEditQOpt0, idx: 0 },
-                  { label: "Option B", val: editQOpt1, setVal: setEditQOpt1, idx: 1 },
-                  { label: "Option C", val: editQOpt2, setVal: setEditQOpt2, idx: 2 },
-                  { label: "Option D", val: editQOpt3, setVal: setEditQOpt3, idx: 3 },
-                ].map((opt) => (
-                  <div key={opt.idx} className={`p-2 rounded-xl border flex items-center gap-2 ${editQAnsIdx === opt.idx ? "bg-emerald-50 border-emerald-300" : "bg-card border-border"}`}>
-                    <input
-                      type="radio"
-                      name="correctOption"
-                      checked={editQAnsIdx === opt.idx}
-                      onChange={() => setEditQAnsIdx(opt.idx)}
-                      className="size-4 text-emerald-600 cursor-pointer"
-                    />
-                    <span className="font-bold text-slate-700 w-16">{opt.label}:</span>
-                    <Input
-                      value={opt.val}
-                      onChange={(e) => opt.setVal(e.target.value)}
-                      required
-                      className="h-8 text-xs rounded-lg font-mono flex-1 bg-white"
-                    />
-                    {editQAnsIdx === opt.idx && (
-                      <span className="text-[0.65rem] text-emerald-700 font-extrabold px-2 py-0.5 bg-emerald-100 rounded-md">✓ Correct</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <DialogFooter className="pt-2 gap-2">
-              <Button type="button" variant="outline" onClick={() => setEditingQuestionIndex(null)} className="rounded-xl text-xs">
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1">
-                <Check className="size-3.5" /> Save Question Changes
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* CREATE APPLICATION FORM DIALOG */}
-      <Dialog open={isCreateAppFormModalOpen} onOpenChange={setIsCreateAppFormModalOpen}>
-        <DialogContent className="sm:max-w-lg rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FileText className="size-5 text-blue-600" /> Build &amp; Send Student Application Form to TPO
-            </DialogTitle>
-            <DialogDescription className="font-mono text-[0.7rem]">
-              Students must submit this application before the deadline to become eligible for the assessment.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleCreateAppFormSubmit} className="space-y-4 pt-2 text-xs">
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">Drive Application Title</label>
-              <Input
-                value={appFormDriveTitle}
-                onChange={(e) => setAppFormDriveTitle(e.target.value)}
-                placeholder="e.g. Google Cloud SDE Placement Drive Registration 2026"
-                required
-                className="h-9 text-xs rounded-xl font-sans"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground flex items-center justify-between">
-                <span>Google Form / Application Form URL</span>
-                <span className="text-[0.65rem] text-muted-foreground font-normal">(Google Forms, Microsoft Forms, or Internal Portal URL)</span>
-              </label>
-              <Input
-                value={appFormExternalUrl}
-                onChange={(e) => setAppFormExternalUrl(e.target.value)}
-                placeholder="https://docs.google.com/forms/d/e/.../viewform"
-                required
-                className="h-9 text-xs rounded-xl font-mono text-blue-600 font-semibold"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">Registration Expiry Deadline Date &amp; Time</label>
-              <Input
-                value={appFormDeadline}
-                onChange={(e) => setAppFormDeadline(e.target.value)}
-                placeholder="e.g. 2026-08-10 23:59"
-                required
-                className="h-9 text-xs rounded-xl font-mono"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="font-semibold text-foreground">Instructions for Students (Email Notice)</label>
-              <textarea
-                value={appFormInstructions}
-                onChange={(e) => setAppFormInstructions(e.target.value)}
-                rows={3}
-                required
-                className="w-full rounded-xl border border-input bg-card p-2.5 text-xs font-mono"
-              />
-            </div>
-
-            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-[0.7rem] font-mono space-y-1">
-              <p className="font-bold">Included Form Fields Collected from Students:</p>
-              <p>• Full Name, College Email, Phone Number, Roll No, Branch</p>
-              <p>• 10th Standard: School Name, Board, Aggregate % / CGPA, Passing Year</p>
-              <p>• Qualification Stream Toggle: Intermediate vs Diploma (Marks &amp; College)</p>
-              <p>• PDF Resume &amp; Passport Photo Upload</p>
-            </div>
-
-            <DialogFooter className="pt-2 gap-2">
-              <Button type="button" variant="outline" onClick={() => setIsCreateAppFormModalOpen(false)} className="rounded-xl text-xs">
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1">
-                <Send className="size-3.5" /> Submit Form to TPO
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* DISPATCH ASSESSMENT TO ELIGIBLE APPLICANTS MODAL */}
-      <Dialog open={isDispatchAssessmentModalOpen} onOpenChange={setIsDispatchAssessmentModalOpen}>
-        <DialogContent className="sm:max-w-lg rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Send className="size-5 text-emerald-600" /> Shortlist &amp; Send Assessment Request to TPO for Approval
-            </DialogTitle>
-            <DialogDescription className="font-mono text-[0.7rem]">
-              Set academic cutoff percentage criteria based on 10th &amp; Inter/Diploma marks submitted by students.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleDispatchAssessmentToApplicants} className="space-y-4 pt-2 text-xs">
-            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 font-mono text-[0.7rem] space-y-1">
-              <p className="font-bold font-sans text-xs">Target Drive: {selectedFormForDispatch?.title}</p>
-              <p>• Company: <strong>{selectedFormForDispatch?.company}</strong> • Role: <strong>{selectedFormForDispatch?.role}</strong></p>
-              <p>• Total Form Registrations: <strong className="text-blue-700">{selectedFormForDispatch ? SHARED_STUDENT_DRIVE_APPLICATIONS.filter(a => a.formId === selectedFormForDispatch.id).length : 0} Candidates</strong></p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 font-mono">
-              <div className="space-y-1.5">
-                <label className="font-semibold text-foreground font-sans">Min 10th Aggregate (%)</label>
-                <Input
-                  type="number"
-                  step="1"
-                  min="0"
-                  max="100"
-                  value={cutoffTenthPct}
-                  onChange={(e) => setCutoffTenthPct(e.target.value)}
-                  placeholder="60"
-                  required
-                  className="h-9 text-xs rounded-xl font-mono"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="font-semibold text-foreground font-sans">Min Higher Sec (%)</label>
-                <Input
-                  type="number"
-                  step="1"
-                  min="0"
-                  max="100"
-                  value={cutoffInterPct}
-                  onChange={(e) => setCutoffInterPct(e.target.value)}
-                  placeholder="60"
-                  required
-                  className="h-9 text-xs rounded-xl font-mono"
-                />
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-[0.7rem] font-mono space-y-1">
-              <p className="font-bold text-emerald-950 font-sans">⚡ Placement Officer (TPO) Distribution Protocol:</p>
-              <p>• Assessment Request will be sent to the Placement Officer (TPO) for final approval.</p>
-              <p>• The TPO will verify candidate eligibility and dispatch the exam link to registered applicants.</p>
-            </div>
-
-            <DialogFooter className="pt-2 gap-2">
-              <Button type="button" variant="outline" onClick={() => setIsDispatchAssessmentModalOpen(false)} className="rounded-xl text-xs">
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs cursor-pointer gap-1">
-                <Send className="size-3.5" /> Confirm &amp; Submit Request to TPO 🚀
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* RESET RECRUITER PASSWORD DIALOG MODAL */}
-      <Dialog open={isResetPasswordModalOpen} onOpenChange={setIsResetPasswordModalOpen}>
-        <DialogContent className="sm:max-w-md rounded-2xl font-sans">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base font-bold">
-              <Lock className="size-5 text-blue-600" /> Reset Recruiter Account Password
-            </DialogTitle>
-            <DialogDescription className="font-mono text-[0.7rem]">
-              Update passkey for corporate recruiter account <strong>{activeRecruiterEmail}</strong> ({activeRecruiterName}).
-            </DialogDescription>
-          </DialogHeader>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!newPasswordInput) {
-                toast.error("Please enter a new password.");
-                return;
-              }
-              if (newPasswordInput.length < 6) {
-                toast.error("Password must be at least 6 characters long.");
-                return;
-              }
-              if (newPasswordInput !== confirmPasswordInput) {
-                toast.error("Passwords do not match. Please ensure both fields match exactly.");
-                return;
-              }
-
-              localStorage.setItem("loggedInRecruiterPasskey", newPasswordInput);
-              setNewPasswordInput("");
-              setConfirmPasswordInput("");
-              setIsResetPasswordModalOpen(false);
-              toast.success(
-                `🔐 Successfully updated password for recruiter ${activeRecruiterName} (${activeRecruiterEmail})! Use your new password on next login.`
-              );
-            }}
-            className="space-y-4 pt-2 text-xs font-mono"
-          >
-            <div className="p-3 bg-muted/40 rounded-xl border space-y-1">
-              <p className="text-[0.68rem] text-muted-foreground uppercase font-bold font-sans">Corporate Account:</p>
-              <p className="font-bold text-foreground font-sans">{activeRecruiterName}</p>
-              <p className="text-xs text-blue-600 font-mono">{activeRecruiterEmail}</p>
-            </div>
-
-            {/* New Password Input */}
-            <div className="space-y-1.5 font-sans">
-              <label className="font-semibold text-foreground">New Password (Min 6 Chars)</label>
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={newPasswordInput}
-                  onChange={(e) => setNewPasswordInput(e.target.value)}
-                  placeholder="Enter new password..."
-                  className="h-10 text-xs rounded-xl font-mono pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Confirm New Password Input */}
-            <div className="space-y-1.5 font-sans">
-              <label className="font-semibold text-foreground">Confirm New Password</label>
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={confirmPasswordInput}
-                  onChange={(e) => setConfirmPasswordInput(e.target.value)}
-                  placeholder="Re-enter new password..."
-                  className={`h-10 text-xs rounded-xl font-mono pr-10 ${
-                    confirmPasswordInput && newPasswordInput !== confirmPasswordInput
-                      ? "border-rose-500 focus-visible:ring-rose-500"
-                      : confirmPasswordInput && newPasswordInput === confirmPasswordInput
-                      ? "border-emerald-500 focus-visible:ring-emerald-500"
-                      : ""
-                  }`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
-              </div>
-
-              {/* Live Match Feedback */}
-              {confirmPasswordInput.length > 0 && (
-                <div className="pt-1 font-sans">
-                  {newPasswordInput !== confirmPasswordInput ? (
-                    <p className="text-[0.68rem] font-bold text-rose-600 flex items-center gap-1">
-                      ✕ Passwords do not match. Please re-enter.
-                    </p>
-                  ) : newPasswordInput.length < 6 ? (
-                    <p className="text-[0.68rem] font-bold text-amber-600 flex items-center gap-1">
-                      ⚠️ Password must be at least 6 characters long.
-                    </p>
-                  ) : (
-                    <p className="text-[0.68rem] font-bold text-emerald-600 flex items-center gap-1">
-                      ✓ Passwords match! Click Update Password.
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <DialogFooter className="pt-2 gap-2 font-sans">
-              <Button type="button" variant="outline" onClick={() => setIsResetPasswordModalOpen(false)} className="rounded-xl text-xs">
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={newPasswordInput.length < 6 || newPasswordInput !== confirmPasswordInput}
-                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-xl text-xs cursor-pointer gap-1.5 shadow-md"
-              >
-                <Check className="size-4" /> Update Password
-              </Button>
-            </DialogFooter>
-          </form>
         </DialogContent>
       </Dialog>
     </div>
