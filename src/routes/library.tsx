@@ -1,6 +1,8 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 
+import { LibraryStoreProvider } from "@/modules/library/LibraryStore";
+
 export const Route = createFileRoute("/library")({
   head: () => ({ meta: [{ title: "Library Management — EduSuite Pro" }] }),
   component: LibraryPage,
@@ -8,8 +10,10 @@ export const Route = createFileRoute("/library")({
 
 export function LibraryPage() {
   return (
-    <DashboardLayout>
-      <Outlet />
-    </DashboardLayout>
+    <LibraryStoreProvider>
+      <DashboardLayout>
+        <Outlet />
+      </DashboardLayout>
+    </LibraryStoreProvider>
   );
 }

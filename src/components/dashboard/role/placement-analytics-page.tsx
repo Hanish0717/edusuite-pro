@@ -481,8 +481,8 @@ export function PlacementAnalyticsWorkspace() {
 
                   <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
                     <span>Hiring Growth: <span className="text-emerald-600 font-bold">{comp.trend}</span></span>
-                    <Button size="sm" variant="ghost" onClick={() => toast.info(`Viewed complete hiring dossier for ${comp.name}`)} className="h-7 text-xs rounded-lg cursor-pointer">
-                      Dossier <ChevronRight className="size-3" />
+                    <Button size="sm" variant="ghost" onClick={() => toast.info(`Viewed complete hiring record for ${comp.name}`)} className="h-7 text-xs rounded-lg cursor-pointer">
+                      Details <ChevronRight className="size-3" />
                     </Button>
                   </div>
                 </div>
@@ -493,7 +493,7 @@ export function PlacementAnalyticsWorkspace() {
 
         {/* TAB 3: DEPARTMENT ANALYTICS */}
         <TabsContent value="departments" className="space-y-6 mt-0">
-          <Panel title="Academic Department Placement Dossier" description="Detailed placement coverage, average salary, and top package by branch.">
+          <Panel title="Academic Department Placement Report" description="Detailed placement coverage, average salary, and top package by branch.">
             <div className="overflow-x-auto pt-1">
               <table className="w-full text-left text-xs">
                 <thead>

@@ -42,6 +42,14 @@ const ROLE_NORMALIZATION_MAP: Record<string, RoleId> = {
   // Dean
   "dean": "dean",
   "DEAN": "dean",
+  "academic_dean": "academic_dean",
+  "student_dean": "student_dean",
+  "iqac_dean": "iqac_dean",
+  "ima_dean": "ima_dean",
+  "research_dean": "research_dean",
+  "finance_dean": "finance_dean",
+  "examination_dean": "examination_dean",
+  "placement_dean": "placement_dean",
 
   // HOD
   "hod": "hod",

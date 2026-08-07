@@ -29,7 +29,8 @@ export type LoginRole =
   | "alumni"
   | "super-admin"
   | "staff"
-  | "external-user";
+  | "external-user"
+  | "academic_management";
 
 export type CoreRoleKey = "super-admin" | "staff" | "student" | "parent" | "external-user";
 
@@ -363,6 +364,14 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     initials: "DM",
     flags: [],
     externalPersona: "recruiter",
+  },
+  academic_management: {
+    id: "academic_management",
+    label: "Academic Manager",
+    personaName: "Dr. S. R. Krishnan",
+    personaMeta: "Academic Management & Operations",
+    initials: "AM",
+    flags: ["isAcademicManagement"],
   },
 };
 

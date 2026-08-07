@@ -167,52 +167,9 @@ export const studentsTable = [
   },
 ];
 
-export interface NotificationItem {
-  id: string;
-  title: string;
-  meta: string;
-  unread: boolean;
-  type?: "placement_exam" | "academic" | "general";
-  noticeId?: string;
-}
-
-export const notifications: NotificationItem[] = [
-  {
-    id: "notif-001",
-    title: "🚨 TPO Urgent: TCS Placement Online Assessment Live!",
-    meta: "Training & Placement Cell • Click to open exam link",
-    unread: true,
-    type: "placement_exam",
-    noticeId: "not-003",
-  },
-  {
-    id: "notif-002",
-    title: "Internal Test - DBMS scheduled",
-    meta: "27 May 2024",
-    unread: true,
-    type: "academic",
-    noticeId: "not-002",
-  },
-  {
-    id: "notif-003",
-    title: "PTM meeting on 30 May 2024",
-    meta: "Communication",
-    unread: true,
-    type: "general",
-  },
-  {
-    id: "notif-004",
-    title: "Library book issued",
-    meta: "15 May 2024",
-    unread: false,
-    type: "general",
-  },
-  {
-    id: "notif-005",
-    title: "Bus route 3 timing changed",
-    meta: "Transport",
-    unread: false,
-    type: "general",
-  },
+export const notifications = [
+  { title: "Internal Test - DBMS scheduled", meta: "27 May 2024", unread: true },
+  { title: "PTM meeting on 30 May 2024", meta: "Communication", unread: true },
+  { title: "Library book issued", meta: "15 May 2024", unread: false },
+  { title: "Bus route 3 timing changed", meta: "Transport", unread: false },
 ];
-

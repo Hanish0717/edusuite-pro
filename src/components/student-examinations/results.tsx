@@ -18,13 +18,15 @@ import {
   Clock,
   Sparkles,
   History,
+  ChevronRight,
+  Layers,
+  Eye,
   Printer,
   RefreshCw,
   BookOpen,
   GraduationCap,
   FileText,
   BarChart2,
-  FileCheck,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -36,7 +38,6 @@ import {
   Legend,
 } from "recharts";
 import { toast } from "sonner";
-import { isCourseNptelExempted } from "./nptel-service";
 
 interface ResultsProps {
   profile: StudentExamProfile;
@@ -49,15 +50,14 @@ interface ResultsProps {
   onOpenGradeCardModal: (result: SemesterResultItem) => void;
   onApplyRevaluation?: () => void;
   onTogglePublishResults?: () => void;
-  nptelDeclarations?: Record<string, any>;
 }
 
 type ResultCategory = "regular" | "supplementary" | "improvement" | "revaluation";
 
 export function Results({
   profile,
-  semesterResults,
-  resultStatus,
+  semesterResults = [],
+  resultStatus = "Not Published",
   selectedYear,
   selectedSemester,
   onYearChange,
@@ -65,29 +65,29 @@ export function Results({
   onOpenGradeCardModal,
   onApplyRevaluation,
   onTogglePublishResults,
-  nptelDeclarations = {},
 }: ResultsProps) {
   const [selectedCategory, setSelectedCategory] = useState<ResultCategory | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<ResultCategory>("regular");
 
+  const safeResults = semesterResults || [];
   const isPublished = resultStatus === "Published" || selectedSemester < 5;
-  const currentResult = semesterResults.find((s) => s.semester === selectedSemester);
+  const currentResult = safeResults.find((s) => s.semester === selectedSemester);
 
-  const latestResult = [...semesterResults].sort((a, b) => b.semester - a.semester)[0];
+  const latestResult = [...safeResults].sort((a, b) => b.semester - a.semester)[0];
   const cgpaLatest = latestResult?.cgpa ?? profile.cgpa;
   const sgpaLatest = latestResult?.sgpa ?? profile.sgpa;
-  const completedSemesters = semesterResults.length;
-  const totalCreditsEarned = semesterResults.reduce((s, r) => s + r.creditsEarned, 0);
+  const completedSemesters = safeResults.length;
+  const totalCreditsEarned = safeResults.reduce((s, r) => s + (r?.creditsEarned || 0), 0);
   const backlogs = profile.activeBacklogs;
 
-  const cgpaTrend = semesterResults.map((s) => ({
+  const cgpaTrend = safeResults.map((s) => ({
     sem: `Sem ${s.semester}`,
     sgpa: s.sgpa,
     cgpa: s.cgpa,
   }));
 
-  const filteredResults = semesterResults.filter(
+  const filteredResults = safeResults.filter(
     (sem) =>
       `Semester ${sem.semester}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sem.academicYear.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -284,37 +284,20 @@ export function Results({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                      {currentResult.subjects.map((sub, idx) => {
-                        const isNptelExempt = isCourseNptelExempted(sub.code, nptelDeclarations);
-
-                        return (
-                          <tr key={idx} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
-                            <td className="p-3 font-mono font-bold text-blue-600">{sub.code}</td>
-                            <td className="p-3 font-semibold text-slate-900 dark:text-white">
-                              {sub.name}
-                              {isNptelExempt && (
-                                <Badge className="ml-2 bg-amber-500/10 text-amber-600 border-amber-500/20 text-[9px] font-mono">
-                                  NPTEL Credit Transfer
-                                </Badge>
-                              )}
-                            </td>
-                            <td className="p-3 font-mono">{isNptelExempt ? "N/A" : sub.internal}</td>
-                            <td className="p-3 font-mono">{isNptelExempt ? "N/A" : sub.external}</td>
-                            <td className="p-3 font-bold font-mono text-slate-900 dark:text-white">{isNptelExempt ? "N/A" : sub.total}</td>
-                            <td className="p-3 font-bold font-mono text-purple-600">{isNptelExempt ? "O (NPTEL)" : sub.grade}</td>
-                            <td className="p-3 font-mono">{sub.credits}</td>
-                            <td className="p-3">
-                              {isNptelExempt ? (
-                                <Badge className="bg-emerald-500/10 text-emerald-600 font-bold text-[9px]">
-                                  <FileCheck className="h-3 w-3 mr-1" /> NPTEL Passed
-                                </Badge>
-                              ) : (
-                                <Badge className={`text-[10px] ${sub.status === "Pass" ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"}`}>{sub.status}</Badge>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
+                      {currentResult.subjects.map((sub, idx) => (
+                        <tr key={idx} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                          <td className="p-3 font-mono font-bold text-blue-600">{sub.code}</td>
+                          <td className="p-3 font-semibold text-slate-900 dark:text-white">{sub.name}</td>
+                          <td className="p-3 font-mono">{sub.internal}</td>
+                          <td className="p-3 font-mono">{sub.external}</td>
+                          <td className="p-3 font-bold font-mono text-slate-900 dark:text-white">{sub.total}</td>
+                          <td className="p-3 font-bold font-mono text-purple-600">{sub.grade}</td>
+                          <td className="p-3 font-mono">{sub.credits}</td>
+                          <td className="p-3">
+                            <Badge className={`text-[10px] ${sub.status === "Pass" ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"}`}>{sub.status}</Badge>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -367,7 +350,7 @@ export function Results({
                 </div>
                 {onTogglePublishResults && (
                   <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                    <Button onClick={onTogglePublishResults} size="sm" className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-sm cursor-pointer font-bold">
+                    <Button onClick={onTogglePublishResults} size="sm" className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-sm cursor-pointer">
                       <Sparkles className="h-3.5 w-3.5" /> Publish Results (Demo)
                     </Button>
                   </div>
@@ -387,11 +370,34 @@ export function Results({
               <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-4">
                 <div className="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-800">
                   <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    Supplementary Exam Results
+                    <Layers className="h-4 w-4 text-purple-600" /> Supplementary Exam Results
                   </h4>
                   <Button size="sm" className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold gap-1.5 cursor-pointer">
                     <Download className="h-3.5 w-3.5" /> Download Supple Memo PDF
                   </Button>
+                </div>
+                <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-semibold">
+                        <th className="p-3">Code</th><th className="p-3">Subject</th><th className="p-3">Month</th>
+                        <th className="p-3">Internal</th><th className="p-3">External</th><th className="p-3">Total</th>
+                        <th className="p-3">Grade</th><th className="p-3">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                        <td className="p-3 font-mono font-bold text-purple-600">EE201</td>
+                        <td className="p-3 font-semibold text-slate-900 dark:text-white">Basic Electrical Engineering (Supple)</td>
+                        <td className="p-3 text-slate-500 font-mono">Dec 2024</td>
+                        <td className="p-3 font-mono">32</td>
+                        <td className="p-3 font-mono">48</td>
+                        <td className="p-3 font-bold font-mono text-slate-900 dark:text-white">80</td>
+                        <td className="p-3 font-bold font-mono text-emerald-600">A</td>
+                        <td className="p-3"><Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">Pass</Badge></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )
@@ -402,6 +408,11 @@ export function Results({
               <FileText className="h-10 w-10 text-slate-400 mx-auto" />
               <h3 className="text-sm font-bold text-slate-900 dark:text-white capitalize">{activeTab} Results</h3>
               <p className="text-xs text-slate-500">No {activeTab} results are available at this time.</p>
+              {activeTab === "revaluation" && (
+                <Button size="sm" onClick={() => onApplyRevaluation?.()} className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold gap-1.5 cursor-pointer shadow-sm mt-2">
+                  <RefreshCw className="h-3.5 w-3.5" /> Apply for Revaluation
+                </Button>
+              )}
             </div>
           )}
 
@@ -490,15 +501,17 @@ export function Results({
                     <td className="p-3 font-mono text-slate-500">{sem.downloadCount ?? 0}×</td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        {/* VIEW RESULT */}
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => onOpenGradeCardModal(sem)}
                           className="h-7 text-xs font-semibold gap-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-xl cursor-pointer"
                         >
-                          View
+                          <Eye className="h-3.5 w-3.5" /> View
                         </Button>
 
+                        {/* DOWNLOAD MEMO */}
                         <Button
                           size="sm"
                           variant="outline"
@@ -506,6 +519,26 @@ export function Results({
                           className="h-7 text-xs font-semibold gap-1 rounded-xl cursor-pointer border-slate-200 dark:border-slate-700"
                         >
                           <Download className="h-3.5 w-3.5 text-blue-600" /> PDF
+                        </Button>
+
+                        {/* PRINT MEMO */}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => { toast.info(`Printing Semester ${sem.semester} Memo...`); window.print(); }}
+                          className="h-7 text-xs font-semibold gap-1 rounded-xl cursor-pointer text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        >
+                          <Printer className="h-3.5 w-3.5" /> Print
+                        </Button>
+
+                        {/* APPLY REVALUATION */}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => onApplyRevaluation?.()}
+                          className="h-7 text-xs font-semibold gap-1 rounded-xl cursor-pointer text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/40"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5" /> Reval
                         </Button>
                       </div>
                     </td>
@@ -517,6 +550,58 @@ export function Results({
         </div>
       </div>
 
+      {/* 5. DOWNLOAD HISTORY */}
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm space-y-4">
+        <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <Clock className="h-4 w-4 text-blue-600" /> Recent Downloads
+        </h4>
+
+        <div className="space-y-2">
+          {downloadHistory.map((item) => (
+            <div
+              key={item.id}
+              className="flex items-center justify-between p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-xl ${item.type === "Memo" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600" : "bg-blue-50 dark:bg-blue-950/40 text-blue-600"}`}>
+                  {item.type === "Memo" ? <Award className="h-4 w-4" /> : <Ticket className="h-4 w-4" />}
+                </div>
+                <div>
+                  <p className="font-bold text-xs text-slate-900 dark:text-white">{item.title}</p>
+                  <p className="text-[11px] text-slate-400 font-mono">{item.downloadedDate} &middot; {item.fileSize}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <Badge className={`text-[10px] font-mono ${item.type === "Memo" ? "bg-emerald-500/10 text-emerald-600" : "bg-blue-500/10 text-blue-600"}`}>
+                  {item.type}
+                </Badge>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleRedownload(item)}
+                  className="h-7 text-xs gap-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-xl cursor-pointer font-bold"
+                >
+                  <Download className="h-3.5 w-3.5" /> Re-download
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
+  );
+}
+
+// Need this icon for download history
+function Ticket({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
+      <path d="M13 5v2"/>
+      <path d="M13 17v2"/>
+      <path d="M13 11v2"/>
+    </svg>
   );
 }

@@ -189,6 +189,8 @@ export const DESIGNATION_OPTIONS_MAP: Record<CoreRoleKey, DesignationOption[]> =
     { id: "hod", label: "HOD (Head of Department)" },
     { id: "dean", label: "Academic Dean" },
     { id: "faculty", label: "Faculty / Teacher (Default)" },
+    // ── Academic Management: institution-level, no branch/dept required ──
+    { id: "academic_management", label: "Academic Management" },
     { id: "exam_controller", label: "Exam Controller" },
     { id: "placement_officer", label: "Placement Officer" },
     { id: "transport_officer", label: "Transport Officer" },
@@ -313,6 +315,8 @@ export function getDefaultCredentialsForSelection(
     else if (designation === "hostel_warden") email = "warden@college.com";
     else if (designation === "finance_officer") email = "accounts@college.com";
     else if (designation === "library_admin") email = "librarian@college.com";
+    // Academic Management: institution-level, future backend integration point
+    else if (designation === "academic_management") email = "academic.mgmt@college.com";
   }
   return { email, password: "password123" };
 }
@@ -331,6 +335,17 @@ export function resolveRoleContextFromSelection(
   }
 
   if (coreRole === "staff") {
+    // ── Academic Management: institution-wide, no department scope required ──
+    // TODO (Backend): Replace this block with a dedicated API call when
+    //   the academic_management role is provisioned in the auth service.
+    if (designation === "academic_management") {
+      return {
+        role: "academic_management",
+        flags: ["isAcademicManagement"],
+        toastMessage: "Logged in as Academic Management — Institution Level",
+      };
+    }
+
     const deptCode = (branch as DepartmentCode) || "CSE";
     if (designation === "admin") {
       return {

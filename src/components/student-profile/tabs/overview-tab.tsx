@@ -112,7 +112,7 @@ export function OverviewTab({ student }: OverviewTabProps) {
 
           <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
             <div>
-              <span className="text-slate-400 block text-[11px]">Admission Number</span>
+              <span className="text-slate-400 block text-[11px]">Roll Number</span>
               <span className="font-semibold text-slate-800 dark:text-slate-200 font-mono">{student.rollNumber}</span>
             </div>
             <div>
@@ -186,6 +186,10 @@ export function OverviewTab({ student }: OverviewTabProps) {
               <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-semibold px-2 py-0.5 rounded-full">
                 {student.status}
               </Badge>
+            </div>
+            <div>
+              <span className="text-slate-400 block text-[11px]">Batch Rank</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">Rank #{student.rank} of {student.totalStudentsInBatch}</span>
             </div>
             <div>
               <span className="text-slate-400 block text-[11px]">Cumulative CGPA</span>

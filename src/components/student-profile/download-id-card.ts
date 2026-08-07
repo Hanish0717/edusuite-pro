@@ -213,8 +213,8 @@ export function downloadStudentIdCardPdf(student: {
       <div class="student-info">
         <h2>${student.name}</h2>
         <div class="student-dept">${student.department}</div>
-        <div class="student-meta">Adm No: <strong style="color:#ffffff;">${student.rollNumber}</strong></div>
-        <div class="student-meta">Reg No: <strong style="color:#ffffff;">${student.registrationNumber}</strong></div>
+        <div class="student-meta">Roll No: <strong style="color:#ffffff;">${student.rollNumber}</strong></div>
+        <div class="student-meta">Adm No: <strong style="color:#ffffff;">${student.admissionNumber || student.registrationNumber}</strong></div>
       </div>
     </div>
 

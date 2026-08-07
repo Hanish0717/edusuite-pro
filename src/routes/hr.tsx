@@ -1,18 +1,37 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link } from "@tanstack/react-router";
+import { ShieldAlert } from "lucide-react";
+import { useRole } from "@/context/role-context";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { HRModuleView } from "@/modules/hr";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/hr")({
-  head: () => ({
-    meta: [{ title: "Human Resources — EduSuite Pro" }],
-  }),
-  component: HrPage,
+  component: HrLayout,
 });
 
-export function HrPage() {
+function HrLayout() {
+  const { role, flags } = useRole();
+  const isSuperAdmin = role === "super-admin" || role === "super_admin";
+
+  if (!isSuperAdmin && (role !== "staff" || !flags.includes("isHRManager"))) {
+    return (
+      <div className="flex h-screen items-center justify-center p-4 bg-background">
+        <div className="text-center max-w-md border border-destructive/20 bg-destructive/5 rounded-2xl p-6">
+          <ShieldAlert className="size-10 text-destructive mx-auto mb-3" />
+          <h3 className="text-lg font-bold">Access Denied</h3>
+          <p className="text-xs text-muted-foreground mt-1 mb-4">
+            You need HR Manager privileges to view this section.
+          </p>
+          <Button asChild className="rounded-xl">
+            <Link to="/login">Go to Login</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DashboardLayout>
-      <HRModuleView />
+      <Outlet />
     </DashboardLayout>
   );
 }

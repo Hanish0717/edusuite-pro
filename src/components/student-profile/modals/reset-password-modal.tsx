@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Lock, Eye, EyeOff, Loader2, Check, X } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { KeyRound, Eye, EyeOff, CheckCircle2, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 interface ResetPasswordModalProps {
@@ -14,235 +22,182 @@ export function ResetPasswordModal({ open, onOpenChange }: ResetPasswordModalPro
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [touchedCurrent, setTouchedCurrent] = useState(false);
-  const [touchedNew, setTouchedNew] = useState(false);
-  const [touchedConfirm, setTouchedConfirm] = useState(false);
+  const handleResetAction = () => {
+    if (!currentPassword || currentPassword.trim() === "") {
+      toast.error("Please enter your current password.");
+      return;
+    }
 
-  const [isLoading, setIsLoading] = useState(false);
+    if (!newPassword || newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters long.");
+      return;
+    }
 
-  // Reset fields on modal close/open
-  useEffect(() => {
-    if (!open) {
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match. Please try again.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+      onOpenChange(false);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      setShowCurrent(false);
-      setShowNew(false);
-      setShowConfirm(false);
-      setTouchedCurrent(false);
-      setTouchedNew(false);
-      setTouchedConfirm(false);
-      setIsLoading(false);
-    }
-  }, [open]);
+      toast.success("Password reset successfully! Please use your new password next time you sign in.");
+    }, 400);
+  };
 
-  // Validation checks
-  const isMinLength = newPassword.length >= 8;
-  const hasUppercase = /[A-Z]/.test(newPassword);
-  const hasLowercase = /[a-z]/.test(newPassword);
-  const hasNumber = /[0-9]/.test(newPassword);
-  const hasSpecialChar = /[^A-Za-z0-9]/.test(newPassword);
-
-  const isNewPasswordValid = isMinLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
-  const passwordsMatch = newPassword === confirmPassword;
-  const isDifferentFromCurrent = currentPassword !== newPassword || currentPassword === "";
-  const allFilled = currentPassword.trim() !== "" && newPassword.trim() !== "" && confirmPassword.trim() !== "";
-
-  const canSubmit = allFilled && isNewPasswordValid && passwordsMatch && currentPassword !== newPassword;
-
-  const handleUpdatePassword = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSubmit) return;
+    e.stopPropagation();
+    handleResetAction();
+  };
 
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success("Password updated successfully.");
-      onOpenChange(false);
-    }, 1000);
+  const handleClose = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md rounded-2xl p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl">
-        <DialogHeader className="space-y-1 text-left border-b pb-3 border-slate-200 dark:border-slate-800">
-          <DialogTitle className="text-lg font-bold flex items-center gap-2">
-            <Lock className="h-5 w-5 text-blue-600" /> Reset Account Password
-          </DialogTitle>
-          <DialogDescription className="text-xs text-slate-500">
-            Set a secure password for your student ERP portal access.
-          </DialogDescription>
+      <DialogContent className="max-w-md rounded-2xl p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-xl z-50">
+        <DialogHeader className="space-y-1 text-left">
+          <div className="flex items-center gap-2">
+            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+              <KeyRound className="h-5 w-5" />
+            </div>
+            <div>
+              <DialogTitle className="text-base font-bold">Reset Account Password</DialogTitle>
+              <DialogDescription className="text-xs text-slate-500">
+                Update your student portal password to keep your account secure.
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
-        <form onSubmit={handleUpdatePassword} className="space-y-4 py-3">
-          
-          {/* Current Password Field */}
+        <form onSubmit={handleSubmit} className="space-y-4 pt-3 text-xs">
+          {/* CURRENT PASSWORD */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-350">
-              Current Password <span className="text-rose-500">*</span>
-            </label>
+            <Label className="font-semibold text-slate-700 dark:text-slate-300">Current Password</Label>
             <div className="relative">
               <Input
                 type={showCurrent ? "text" : "password"}
                 placeholder="Enter current password"
                 value={currentPassword}
-                onChange={(e) => setNewPassword(newPassword)} // Dummy reference to prevent unused warning if any, but we actually update setCurrentPassword
-                onChangeCapture={(e) => setCurrentPassword((e.target as HTMLInputElement).value)}
-                onBlur={() => setTouchedCurrent(true)}
-                className="pr-10 rounded-xl text-xs h-9 focus-visible:ring-1 focus-visible:ring-blue-500"
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="h-10 pr-10 rounded-xl text-xs bg-slate-50 dark:bg-slate-800/50"
               />
               <button
                 type="button"
-                onClick={() => setShowCurrent(!showCurrent)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowCurrent(!showCurrent);
+                }}
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none"
               >
                 {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {touchedCurrent && currentPassword.trim() === "" && (
-              <p className="text-[11px] text-rose-500 font-medium">Current password is required.</p>
-            )}
           </div>
 
-          {/* New Password Field */}
+          {/* NEW PASSWORD */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-350">
-              New Password <span className="text-rose-500">*</span>
-            </label>
+            <Label className="font-semibold text-slate-700 dark:text-slate-300">New Password</Label>
             <div className="relative">
               <Input
                 type={showNew ? "text" : "password"}
-                placeholder="Enter new password"
+                placeholder="Enter new password (min. 6 chars)"
                 value={newPassword}
-                onChangeCapture={(e) => setNewPassword((e.target as HTMLInputElement).value)}
-                onBlur={() => setTouchedNew(true)}
-                className="pr-10 rounded-xl text-xs h-9 focus-visible:ring-1 focus-visible:ring-blue-500"
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="h-10 pr-10 rounded-xl text-xs bg-slate-50 dark:bg-slate-800/50"
               />
               <button
                 type="button"
-                onClick={() => setShowNew(!showNew)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowNew(!showNew);
+                }}
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none"
               >
                 {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-
-            {/* Validation Checklist UI */}
-            {touchedNew && (
-              <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 space-y-1.5 mt-2">
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Password Requirements:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1">
-                  <div className="flex items-center gap-1.5 text-[11px]">
-                    {isMinLength ? (
-                      <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                    ) : (
-                      <X className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-                    )}
-                    <span className={isMinLength ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-slate-500"}>
-                      Min 8 characters
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px]">
-                    {hasUppercase ? (
-                      <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                    ) : (
-                      <X className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-                    )}
-                    <span className={hasUppercase ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-slate-500"}>
-                      One uppercase letter
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px]">
-                    {hasLowercase ? (
-                      <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                    ) : (
-                      <X className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-                    )}
-                    <span className={hasLowercase ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-slate-500"}>
-                      One lowercase letter
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px]">
-                    {hasNumber ? (
-                      <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                    ) : (
-                      <X className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-                    )}
-                    <span className={hasNumber ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-slate-500"}>
-                      One number
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] sm:col-span-2">
-                    {hasSpecialChar ? (
-                      <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                    ) : (
-                      <X className="h-3.5 w-3.5 text-rose-500 shrink-0" />
-                    )}
-                    <span className={hasSpecialChar ? "text-emerald-600 dark:text-emerald-400 font-medium" : "text-slate-500"}>
-                      One special character (e.g. @, #, $, %)
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {touchedNew && currentPassword !== "" && currentPassword === newPassword && (
-              <p className="text-[11px] text-rose-500 font-medium">New password must be different from current password.</p>
-            )}
           </div>
 
-          {/* Confirm New Password Field */}
+          {/* CONFIRM NEW PASSWORD */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-350">
-              Confirm New Password <span className="text-rose-500">*</span>
-            </label>
+            <Label className="font-semibold text-slate-700 dark:text-slate-300">Confirm New Password</Label>
             <div className="relative">
               <Input
                 type={showConfirm ? "text" : "password"}
-                placeholder="Confirm new password"
+                placeholder="Re-enter new password"
                 value={confirmPassword}
-                onChangeCapture={(e) => setConfirmPassword((e.target as HTMLInputElement).value)}
-                onBlur={() => setTouchedConfirm(true)}
-                className="pr-10 rounded-xl text-xs h-9 focus-visible:ring-1 focus-visible:ring-blue-500"
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="h-10 pr-10 rounded-xl text-xs bg-slate-50 dark:bg-slate-800/50"
               />
               <button
                 type="button"
-                onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowConfirm(!showConfirm);
+                }}
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 focus:outline-none"
               >
                 {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            {touchedConfirm && confirmPassword.trim() === "" && (
-              <p className="text-[11px] text-rose-500 font-medium">Confirm password is required.</p>
-            )}
-            {touchedConfirm && confirmPassword.trim() !== "" && !passwordsMatch && (
-              <p className="text-[11px] text-rose-500 font-medium">Confirm password does not match the new password.</p>
-            )}
           </div>
 
-          <DialogFooter className="gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+          {/* SECURITY HINT BOX */}
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 space-y-1">
+            <p className="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+              <Lock className="h-3.5 w-3.5 text-amber-500" /> Password Security Guidelines:
+            </p>
+            <ul className="list-disc list-inside space-y-0.5 text-slate-500 dark:text-slate-400">
+              <li>Must be at least 6 characters long</li>
+              <li>Include numbers or special characters for extra safety</li>
+            </ul>
+          </div>
+
+          <DialogFooter className="pt-2 flex justify-end gap-2">
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="rounded-xl text-xs"
-              disabled={isLoading}
+              onClick={handleClose}
+              className="h-9 px-4 text-xs font-semibold rounded-xl cursor-pointer"
             >
               Cancel
             </Button>
             <Button
-              type="submit"
-              disabled={!canSubmit || isLoading}
-              className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleResetAction();
+              }}
+              disabled={isSubmitting}
+              className="h-9 px-5 text-xs font-bold rounded-xl bg-amber-600 hover:bg-amber-700 text-white gap-1.5 shadow-sm cursor-pointer"
             >
-              {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-              Update Password
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              {isSubmitting ? "Updating..." : "Reset Password"}
             </Button>
           </DialogFooter>
         </form>

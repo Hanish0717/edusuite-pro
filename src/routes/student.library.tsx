@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { StudentLibraryModule } from "@/components/student-library";
 
+import { LibraryStoreProvider } from "@/modules/library/LibraryStore";
+
 export const Route = createFileRoute("/student/library")({
   head: () => ({
     meta: [{ title: "Library — EduSuite Pro" }],
@@ -9,5 +11,9 @@ export const Route = createFileRoute("/student/library")({
 });
 
 function StudentLibraryRoute() {
-  return <StudentLibraryModule />;
+  return (
+    <LibraryStoreProvider>
+      <StudentLibraryModule />
+    </LibraryStoreProvider>
+  );
 }

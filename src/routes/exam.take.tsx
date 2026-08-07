@@ -5,6 +5,7 @@ import {
   FileCheck2,
   Clock,
   Shield,
+  ShieldCheck,
   CheckCircle,
   AlertTriangle,
   Code2,
@@ -21,14 +22,15 @@ import {
   Key,
   Building,
   Check,
+  Zap,
+  Sparkles,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SAMPLE_20_MCQS, SAMPLE_2_CODING_CHALLENGES } from "@/components/dashboard/role/recruiter-portal-workspace";
-import { saveStudentSubmission, getStudentExamSubmission } from "@/lib/shared-assessment-store";
-
+import { saveStudentSubmission } from "@/lib/shared-assessment-store";
 
 function parseCollegeEmail(email: string) {
   const prefix = (email.split("@")[0] || "23341a4229").trim();
@@ -103,7 +105,6 @@ function StudentLiveExamPage() {
   const [userCode, setUserCode] = useState<Record<string, string>>({});
   const [testOutput, setTestOutput] = useState<Record<string, string>>({});
   const [isRunningCode, setIsRunningCode] = useState(false);
-  const [isSubmittingCode, setIsSubmittingCode] = useState(false);
 
   // Security / Proctoring states
   const [isExamStarted, setIsExamStarted] = useState(false);
@@ -114,19 +115,7 @@ function StudentLiveExamPage() {
   const [isFullscreenActive, setIsFullscreenActive] = useState(false);
   const [savedSubmissionId, setSavedSubmissionId] = useState("");
 
-  // Check if candidate has already submitted assessment (prevents re-attempting after page refresh)
-  useEffect(() => {
-    const existing = getStudentExamSubmission(studentRollNo) || getStudentExamSubmission(studentEmail);
-    if (existing) {
-      setIsExamSubmitted(true);
-      setIsExamStarted(true);
-      setSavedSubmissionId(existing.id);
-      setIsAutoSubmitted(existing.isAutoSubmitted);
-    }
-  }, [studentRollNo, studentEmail]);
-
   // Countdown timer
-
   useEffect(() => {
     if (!isExamStarted || isExamSubmitted) return;
     const interval = setInterval(() => {
@@ -302,19 +291,34 @@ function StudentLiveExamPage() {
     >
       {/* 1. INITIAL STUDENT COLLEGE LOGIN & ENTRY GATE MODAL */}
       {!isExamStarted && (
-        <div className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-6 overflow-y-auto">
-          <div className="w-full max-w-xl bg-white border border-slate-200 rounded-3xl p-8 space-y-6 text-center shadow-2xl animate-fade-up my-auto">
-            <div className="size-16 rounded-full bg-blue-50 border-2 border-blue-200 grid place-items-center mx-auto text-blue-600">
-              <User className="size-8" />
+        <div className="fixed inset-0 z-[100] bg-slate-50/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px]">
+          {/* Ambient Background Glow Blobs */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-indigo-400/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="w-full max-w-xl bg-white/95 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-6 sm:p-9 space-y-6 text-center shadow-2xl shadow-slate-300/50 animate-fade-up my-auto relative overflow-hidden">
+            {/* Top Accent Gradient Bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500 absolute top-0 left-0" />
+
+            {/* Shield Icon Badge */}
+            <div className="relative size-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 p-0.5 shadow-xl shadow-blue-500/20 mx-auto">
+              <div className="w-full h-full bg-white rounded-[14px] grid place-items-center text-blue-600">
+                <ShieldCheck className="size-8" />
+              </div>
+              <span className="size-3.5 bg-emerald-500 rounded-full ring-2 ring-white absolute -top-1 -right-1 animate-pulse" />
             </div>
 
-            <div className="space-y-1">
-              <Badge className="bg-blue-600 text-white font-mono">STUDENT COLLEGE AUTHENTICATION GATE</Badge>
-              <h2 className="text-2xl font-extrabold font-sans text-slate-900">
-                Official College Student Verification
+            <div className="space-y-1.5">
+              <Badge className="bg-blue-50 text-blue-700 border border-blue-200/80 font-mono text-[0.68rem] tracking-wider uppercase px-3 py-1 rounded-full shadow-2xs inline-flex items-center gap-1.5">
+                <Sparkles className="size-3 text-blue-600" />
+                STUDENT COLLEGE AUTHENTICATION GATE
+              </Badge>
+              <h2 className="text-2xl sm:text-3xl font-black font-sans text-slate-900 tracking-tight">
+                Official Student Verification
               </h2>
-              <p className="text-xs text-slate-500 font-mono">
-                Google Cloud Systems &amp; Coding Assessment 2026 • Placement Drive
+              <p className="text-xs sm:text-sm text-slate-500 font-medium flex items-center justify-center gap-1.5 pt-0.5">
+                <Building className="size-3.5 text-slate-400" />
+                Google Cloud Systems &amp; Coding Assessment 2026 &bull; Placement Drive
               </p>
             </div>
 
@@ -330,66 +334,94 @@ function StudentLiveExamPage() {
                 setIsExamStarted(true);
                 toast.success(`Welcome ${studentName}! Proctored security restrictions enabled.`);
               }}
-              className="space-y-4 text-left text-xs font-sans"
+              className="space-y-5 text-left text-xs font-sans"
             >
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-700 flex items-center gap-1">
-                    <Mail className="size-3.5 text-blue-600" /> Official College Email ID
-                  </label>
-                  <Input
-                    type="email"
-                    value={studentEmail}
-                    onChange={(e) => setStudentEmail(e.target.value)}
-                    required
-                    placeholder="e.g. alex.2022cse015@college.edu.in"
-                    className="h-10 text-xs rounded-xl font-mono"
-                  />
+                  <div className="flex items-center justify-between text-xs">
+                    <label className="font-bold text-slate-700 flex items-center gap-1.5">
+                      <Mail className="size-3.5 text-blue-600" /> Official College Email ID
+                    </label>
+                    <span className="text-[0.65rem] text-slate-400 font-medium">Required</span>
+                  </div>
+                  <div className="relative rounded-2xl border border-slate-200 bg-slate-50/50 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all shadow-2xs">
+                    <Input
+                      type="email"
+                      value={studentEmail}
+                      onChange={(e) => setStudentEmail(e.target.value)}
+                      required
+                      placeholder="e.g. alex.2022cse015@college.edu.in"
+                      className="h-11 border-none bg-transparent text-xs rounded-2xl font-mono text-slate-900 focus-visible:ring-0 focus-visible:ring-offset-0 px-3.5"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-700 flex items-center gap-1">
-                    <Key className="size-3.5 text-blue-600" /> Default Student Passkey / Password
-                  </label>
-                  <Input
-                    type="password"
-                    value={studentPassword}
-                    onChange={(e) => setStudentPassword(e.target.value)}
-                    required
-                    placeholder="EduSuite@2026#"
-                    className="h-10 text-xs rounded-xl font-mono"
-                  />
+                  <div className="flex items-center justify-between text-xs">
+                    <label className="font-bold text-slate-700 flex items-center gap-1.5">
+                      <Key className="size-3.5 text-blue-600" /> Default Student Passkey / Password
+                    </label>
+                    <span className="text-[0.65rem] text-slate-400 font-medium">Required</span>
+                  </div>
+                  <div className="relative rounded-2xl border border-slate-200 bg-slate-50/50 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all shadow-2xs">
+                    <Input
+                      type="password"
+                      value={studentPassword}
+                      onChange={(e) => setStudentPassword(e.target.value)}
+                      required
+                      placeholder="EduSuite@2026#"
+                      className="h-11 border-none bg-transparent text-xs rounded-2xl font-mono text-slate-900 focus-visible:ring-0 focus-visible:ring-offset-0 px-3.5"
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* LIVE AUTO-DERIVED STUDENT PROFILE CARD */}
-              <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 text-xs font-mono space-y-2 text-blue-950 shadow-xs">
-                <p className="font-bold text-blue-800 text-[0.7rem] uppercase tracking-wider flex items-center justify-between">
-                  <span>⚡ Auto-Detected Student Record</span>
-                  <span className="text-[0.62rem] bg-blue-600 text-white px-2 py-0.5 rounded-md font-sans">Verified ID</span>
-                </p>
-                <div className="grid grid-cols-3 gap-2 pt-1 text-[0.68rem]">
-                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
-                    <span className="text-slate-500 block text-[0.6rem]">Student Name</span>
-                    <strong className="text-slate-900 font-sans">{studentName}</strong>
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50/80 via-slate-50/60 to-indigo-50/50 border border-blue-200/80 text-xs font-mono space-y-3 text-slate-900 shadow-sm relative overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-blue-900 text-[0.72rem] tracking-wide uppercase flex items-center gap-1.5">
+                    <Zap className="size-3.5 text-blue-600 animate-bounce" /> Auto-Detected Student Record
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[0.63rem] bg-emerald-600 text-white px-2.5 py-0.5 rounded-full font-sans font-bold shadow-xs">
+                    <CheckCircle className="size-3" /> VERIFIED ID
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[0.68rem]">
+                  <div className="bg-white/90 p-2.5 rounded-xl border border-blue-100/90 shadow-2xs space-y-0.5">
+                    <span className="text-slate-400 block text-[0.6rem] font-sans uppercase tracking-wider font-semibold">Student Name</span>
+                    <strong className="text-slate-900 font-sans text-xs font-extrabold truncate block">{studentName}</strong>
                   </div>
-                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
-                    <span className="text-slate-500 block text-[0.6rem]">Roll / Hall Ticket</span>
-                    <strong className="text-blue-700 font-mono">{studentRollNo}</strong>
+                  <div className="bg-white/90 p-2.5 rounded-xl border border-blue-100/90 shadow-2xs space-y-0.5">
+                    <span className="text-slate-400 block text-[0.6rem] font-sans uppercase tracking-wider font-semibold">Hall Ticket / Roll</span>
+                    <strong className="text-blue-700 font-mono text-xs font-bold truncate block">{studentRollNo}</strong>
                   </div>
-                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
-                    <span className="text-slate-500 block text-[0.6rem]">Derived Department</span>
-                    <strong className="text-emerald-700 font-sans">{parsedInfo.dept}</strong>
+                  <div className="bg-white/90 p-2.5 rounded-xl border border-blue-100/90 shadow-2xs space-y-0.5">
+                    <span className="text-slate-400 block text-[0.6rem] font-sans uppercase tracking-wider font-semibold">Department</span>
+                    <strong className="text-emerald-700 font-sans text-xs font-bold truncate block">{parsedInfo.dept}</strong>
                   </div>
                 </div>
+              </div>
+
+              {/* SECURITY & PROCTORING READINESS BADGES */}
+              <div className="flex items-center justify-between gap-2 px-1 py-1 text-[0.65rem] text-slate-500 font-medium border-t border-slate-100 pt-3">
+                <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                  <Check className="size-3 text-emerald-500" /> Fullscreen Lock
+                </span>
+                <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                  <Check className="size-3 text-emerald-500" /> AI Proctor Active
+                </span>
+                <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                  <Check className="size-3 text-emerald-500" /> 256-Bit SSL Encrypted
+                </span>
               </div>
 
               <Button
                 type="submit"
                 size="lg"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl h-11 gap-2 shadow-xl shadow-emerald-600/30 cursor-pointer"
+                className="w-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs sm:text-sm rounded-2xl h-12 gap-2.5 shadow-xl shadow-emerald-600/25 hover:shadow-emerald-600/40 hover:scale-[1.005] active:scale-[0.995] transition-all cursor-pointer"
               >
-                <Play className="size-4" /> Verify Credentials, Start Exam &amp; Enter Fullscreen
+                <Play className="size-4 fill-white" /> Verify Credentials, Start Exam &amp; Enter Fullscreen
               </Button>
             </form>
           </div>
@@ -398,8 +430,8 @@ function StudentLiveExamPage() {
 
       {/* 2. FULLSCREEN ENFORCEMENT OVERLAY GUARD */}
       {isExamStarted && !isFullscreenActive && !isExamSubmitted && (
-        <div className="fixed inset-0 z-[90] bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-6">
-          <div className="w-full max-w-md bg-white border border-rose-200 rounded-3xl p-8 space-y-5 text-center shadow-2xl">
+        <div className="fixed inset-0 z-[90] bg-white flex items-center justify-center p-6">
+          <div className="w-full max-w-md bg-white border border-rose-200 rounded-3xl p-8 space-y-5 text-center shadow-2xl shadow-rose-100/50">
             <div className="size-20 rounded-full bg-rose-50 border-2 border-rose-200 grid place-items-center mx-auto text-rose-600">
               <AlertTriangle className="size-10" />
             </div>
@@ -562,62 +594,12 @@ function StudentLiveExamPage() {
               <p>• Proctoring Violations Logged: <strong>{tabViolations} / 3</strong></p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-2.5">
-              <Button
-                type="button"
-                onClick={() => {
-                  const headers = [
-                    "Submission ID",
-                    "Student Roll No",
-                    "Student Email",
-                    "Department",
-                    "Assessment Title",
-                    "MCQ Score",
-                    "Coding Score",
-                    "Total Score",
-                    "Percentage",
-                    "Proctoring Violations",
-                    "Submission Time",
-                  ];
-                  const row = [
-                    savedSubmissionId || "SUB-2026-6743",
-                    studentRollNo,
-                    studentEmail,
-                    studentDept,
-                    "Google Cloud Systems & Coding Assessment 2026",
-                    `${correctMcqCount}/20`,
-                    "45/50",
-                    `${totalScore}/70`,
-                    `${Math.round((totalScore / 70) * 100)}%`,
-                    `${tabViolations}/3`,
-                    new Date().toLocaleString(),
-                  ];
-                  const csv = [headers.join(","), row.map((cell) => `"${cell}"`).join(",")].join("\n");
-                  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-                  const url = URL.createObjectURL(blob);
-                  const link = document.createElement("a");
-                  link.href = url;
-                  link.download = `TPO_Placement_Score_${studentRollNo}_${new Date().toISOString().split("T")[0]}.csv`;
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                  URL.revokeObjectURL(url);
-                  toast.success(`Exported TPO Score Excel CSV for candidate ${studentRollNo}!`);
-                }}
-                className="w-full sm:w-1/2 bg-emerald-600 hover:bg-emerald-700 font-extrabold text-white rounded-xl h-11 text-xs shadow-md gap-1.5 cursor-pointer"
-              >
-                📊 Export Score to Excel CSV
-              </Button>
-
-              <Button
-                type="button"
-                onClick={() => (window.location.href = "/student/dashboard")}
-                className="w-full sm:w-1/2 bg-blue-600 hover:bg-blue-700 font-bold text-white rounded-xl h-11 text-xs shadow-md cursor-pointer"
-              >
-                Back to Student Portal
-              </Button>
-            </div>
-
+            <Button
+              onClick={() => (window.location.href = "/student/dashboard")}
+              className="w-full bg-blue-600 hover:bg-blue-700 font-bold text-white rounded-xl h-10 text-xs shadow-md"
+            >
+              Back to Student Portal
+            </Button>
           </div>
         </main>
       ) : (
@@ -865,47 +847,14 @@ function StudentLiveExamPage() {
                     <p className="text-slate-700 leading-relaxed text-xs">{currentCodingProb.statement}</p>
                   </div>
 
-                  <div className="space-y-4 pt-2">
-                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                      <h4 className="font-bold text-slate-900 uppercase font-mono text-[0.7rem] tracking-wider flex items-center gap-1.5">
-                        <CheckCircle className="size-3.5 text-emerald-600" /> 3 Normal Test Cases (Visible)
-                      </h4>
-                      <Badge className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-mono text-[0.62rem]">
-                        3 / 3 Passed
-                      </Badge>
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <span className="font-mono text-[0.65rem] font-bold text-slate-500 uppercase block">Sample Input</span>
+                      <pre className="font-mono text-xs text-slate-800 font-bold whitespace-pre-wrap">{currentCodingProb.sampleInput}</pre>
                     </div>
-
-                    <div className="space-y-3">
-                      {(currentCodingProb.normalTestCases || []).map((tc: any, index: number) => (
-                        <div key={tc.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                          <div className="flex items-center justify-between font-mono text-[0.68rem] font-bold text-purple-700">
-                            <span>Normal Test Case {index + 1}: {tc.name}</span>
-                            <span className="text-emerald-600 flex items-center gap-1">✓ Visible</span>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="p-2 rounded-lg bg-white border border-slate-200 space-y-1">
-                              <span className="font-mono text-[0.62rem] font-bold text-slate-400 uppercase block">Input</span>
-                              <pre className="font-mono text-[0.68rem] text-slate-800 font-semibold whitespace-pre-wrap">{tc.input}</pre>
-                            </div>
-                            <div className="p-2 rounded-lg bg-white border border-slate-200 space-y-1">
-                              <span className="font-mono text-[0.62rem] font-bold text-slate-400 uppercase block">Expected Output</span>
-                              <pre className="font-mono text-[0.68rem] text-emerald-700 font-bold whitespace-pre-wrap">{tc.output}</pre>
-                            </div>
-                          </div>
-                          {tc.explanation && (
-                            <p className="text-[0.68rem] text-slate-600 italic bg-purple-50/60 p-2 rounded-lg border border-purple-100">
-                              <strong>Explanation:</strong> {tc.explanation}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-purple-950/20 border border-purple-500/30 text-purple-900 dark:text-purple-300 flex items-center justify-between font-mono text-[0.68rem] font-bold">
-                      <span className="flex items-center gap-1.5 text-purple-800 dark:text-purple-300">
-                        <Lock className="size-3.5 text-purple-600" /> 12 Hidden Test Cases
-                      </span>
-                      <span className="text-slate-500 text-[0.62rem]">Evaluated upon pressing "Submit Code"</span>
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <span className="font-mono text-[0.65rem] font-bold text-slate-500 uppercase block">Sample Output</span>
+                      <pre className="font-mono text-xs text-slate-800 font-bold whitespace-pre-wrap">{currentCodingProb.sampleOutput}</pre>
                     </div>
                   </div>
 
@@ -968,102 +917,32 @@ function StudentLiveExamPage() {
                 </div>
 
                 <div className="p-4 bg-slate-950 border-t border-slate-800 space-y-3 font-mono">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={isRunningCode || isSubmittingCode}
-                        onClick={() => {
-                          setIsRunningCode(true);
-                          setTimeout(() => {
-                            setIsRunningCode(false);
+                  <div className="flex items-center justify-between">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setIsRunningCode(true);
+                        setTimeout(() => {
+                          setIsRunningCode(false);
+                          setTestOutput((prev) => ({
+                            ...prev,
+                            [currentCodingProb.id]: `✓ Compilation Successful (${activeCompilerLang})\n[Test Case 1/4] Passed (0.012s)\n[Test Case 2/4] Passed (0.018s)\n[Test Case 3/4] Passed (0.015s)\n[Test Case 4/4] Passed (0.021s)\nResult: ALL 4 TEST CASES PASSED (100% Score)\nStudent Response Stored: ${studentEmail}`,
+                          }));
+                          toast.success(`Passed all test cases for ${currentCodingProb.title}!`);
+                        }, 1000);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl h-9 gap-1.5 cursor-pointer shadow-md shadow-purple-600/20"
+                    >
+                      <Play className="size-3.5" /> Run Code (Compile &amp; Test)
+                    </Button>
 
-                            const normalLogs = (currentCodingProb.normalTestCases || []).map(
-                              (tc: any, idx: number) =>
-                                `  [Normal Case ${idx + 1}/3] PASSED (0.01${idx + 2}s) • ${tc.name}\n    Input: ${tc.input.replace(/\n/g, " | ")}\n    Expected Output: ${tc.output}\n    Candidate Output: ${tc.output}`
-                            ).join("\n\n");
-
-                            const consoleLog = `✓ Compilation Successful (${activeCompilerLang})
-================================================================================
-RUN CODE OUTPUT — 3 NORMAL TEST CASES (3 / 3 PASSED)
-================================================================================
-
-${normalLogs}
-
---------------------------------------------------------------------------------
-STATUS: 3 / 3 Normal Test Cases Passed!
-💡 Note: Hidden test cases are evaluated upon submission. Click "Submit Code" to test against all 15 cases.`;
-
-                            setTestOutput((prev) => ({
-                              ...prev,
-                              [currentCodingProb.id]: consoleLog,
-                            }));
-                            toast.success(`Passed 3/3 Normal Test Cases for ${currentCodingProb.title}!`);
-                          }, 800);
-                        }}
-                        className="bg-slate-900 border-slate-700 hover:bg-slate-800 text-purple-300 font-bold text-xs rounded-xl h-9 gap-1.5 cursor-pointer shadow-xs"
-                      >
-                        <Play className="size-3.5 text-purple-400" /> {isRunningCode ? "Running Sample Cases..." : "Run Code (3 Normal Cases)"}
-                      </Button>
-
-                      <Button
-                        size="sm"
-                        disabled={isRunningCode || isSubmittingCode}
-                        onClick={() => {
-                          setIsSubmittingCode(true);
-                          setTimeout(() => {
-                            setIsSubmittingCode(false);
-
-                            const normalLogs = (currentCodingProb.normalTestCases || []).map(
-                              (tc: any, idx: number) =>
-                                `  ✓ Normal Case ${idx + 1}: ${tc.name} — PASSED (0.01${idx + 2}s)`
-                            ).join("\n");
-
-                            const hiddenLogs = (currentCodingProb.hiddenTestCases || []).map(
-                              (htc: any, idx: number) =>
-                                `  ✓ Hidden TC #${String(idx + 1).padStart(2, "0")}: ${htc.category || htc.name} — PASSED (0.00${(idx % 8) + 3}s)`
-                            ).join("\n");
-
-                            const submitLog = `================================================================================
-STATUS: ACCEPTED (100% Score)
-================================================================================
-Runtime: 38 ms (Beats 95.4% of ${activeCompilerLang} submissions)
-Memory Usage: 14.2 MB (Beats 91.2% of submissions)
-Test Cases Passed: 15 / 15 (3 Normal + 12 Hidden)
-
---------------------------------------------------------------------------------
-EVALUATION BREAKDOWN:
---------------------------------------------------------------------------------
-[Normal Test Cases]: 3 / 3 Passed
-${normalLogs}
-
-[Hidden Test Cases]: 12 / 12 Passed (Evaluated & Verified)
-${hiddenLogs}
-
---------------------------------------------------------------------------------
-✓ Code Submission successfully stored & recorded for candidate: ${studentEmail}`;
-
-                            setTestOutput((prev) => ({
-                              ...prev,
-                              [currentCodingProb.id]: submitLog,
-                            }));
-                            toast.success(`🎉 Submission Accepted! All 15 Test Cases (3 Normal + 12 Hidden) Passed for ${currentCodingProb.title}!`);
-                          }, 1300);
-                        }}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl h-9 gap-1.5 cursor-pointer shadow-md shadow-emerald-600/20"
-                      >
-                        <Send className="size-3.5" /> {isSubmittingCode ? "Evaluating Submission..." : "Submit Code"}
-                      </Button>
-                    </div>
-
-                    <span className="text-[0.65rem] text-slate-400 font-mono">
-                      Auto-Saved • 3 Visible + 12 Hidden
+                    <span className="text-[0.65rem] text-slate-400">
+                      Auto-Saved • Ready to Submit
                     </span>
                   </div>
 
                   {testOutput[currentCodingProb.id] && (
-                    <div className="p-3 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-400 font-mono text-xs space-y-1 max-h-60 overflow-y-auto">
+                    <div className="p-3 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-400 font-mono text-xs space-y-1">
                       <p className="font-bold flex items-center gap-1 text-emerald-300">
                         <Terminal className="size-3.5" /> Execution Console Output:
                       </p>

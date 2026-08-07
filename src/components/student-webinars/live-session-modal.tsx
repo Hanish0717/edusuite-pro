@@ -55,7 +55,7 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
 
       setChatLog((prev) => [
         ...prev.slice(-15),
-        { id: String(Date.now()), user: randomName || "Student", text: randomMsg || "Interesting!", time: "16:08" },
+        { id: String(Date.now()), user: randomName, text: randomMsg, time: "16:08" },
       ]);
     }, 4000);
 
@@ -107,85 +107,74 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
         </div>
 
         {/* Content Layout: Left Video Stream (2/3), Right Chat & Polls (1/3) */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
+        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-3 overflow-hidden">
           {/* Video Stream Container */}
-          <div className="lg:col-span-2 relative bg-slate-900 flex flex-col justify-between p-6">
+          <div className="lg:col-span-2 relative bg-slate-950 flex flex-col justify-between p-4 sm:p-5 h-full min-h-0 overflow-hidden">
             {/* Simulated Live Video Graphic */}
-            <div className="absolute inset-0 bg-cover bg-center opacity-40" style={{ backgroundImage: `url(${webinar.bannerImage})` }} />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+            <div className="absolute inset-0 bg-cover bg-center opacity-35" style={{ backgroundImage: `url(${webinar.bannerImage})` }} />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-slate-950/70" />
 
             {/* Speaker Video Overlay */}
-            <div className="relative z-10 flex items-center justify-between">
+            <div className="relative z-10 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3 bg-slate-900/90 backdrop-blur-md border border-slate-700/60 p-2.5 rounded-2xl">
                 <img
                   src={webinar.speaker.avatar}
                   alt={webinar.speaker.name}
-                  className="size-10 rounded-full object-cover ring-2 ring-indigo-500"
+                  className="size-10 rounded-full object-cover ring-2 ring-indigo-500 shrink-0"
                 />
-                <div>
-                  <span className="text-xs font-bold text-white block">{webinar.speaker.name}</span>
-                  <span className="text-[10px] text-slate-300">{webinar.speaker.organization}</span>
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-white block truncate">{webinar.speaker.name}</span>
+                  <span className="text-[10px] text-slate-300 truncate">{webinar.speaker.organization}</span>
                 </div>
               </div>
 
-              <Badge className="bg-indigo-600/80 text-white backdrop-blur-md text-xs px-3 py-1">
+              <Badge className="bg-indigo-600/80 text-white backdrop-blur-md text-xs px-3 py-1 font-bold">
                 1080p HD 60fps
               </Badge>
             </div>
 
-            {/* Center Live Stream Overlay Text */}
-            <div className="relative z-10 my-auto text-center space-y-3 p-6 bg-slate-950/60 backdrop-blur-md rounded-2xl border border-white/10 max-w-lg mx-auto">
-              <div className="size-12 rounded-full bg-red-600/20 text-red-500 flex items-center justify-center mx-auto animate-pulse">
-                <Radio className="size-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white">{webinar.title}</h3>
-              <p className="text-xs text-slate-300">
-                Speaker is presenting slide deck: "Scalable Architecture Patterns 2026"
-              </p>
-            </div>
-
             {/* Bottom Stream Controls & Reactions */}
-            <div className="relative z-10 flex items-center justify-between bg-slate-900/90 backdrop-blur-md border border-slate-800 p-3 rounded-2xl">
+            <div className="relative z-10 flex items-center justify-between bg-slate-900/90 backdrop-blur-md border border-slate-800 p-3 rounded-2xl mt-auto shrink-0">
               <div className="flex items-center gap-2 text-xs text-slate-300">
                 <Volume2 className="size-4 text-indigo-400" />
-                <span>Audio Live</span>
+                <span className="font-semibold">Audio Live HD</span>
               </div>
 
               {/* Reaction Buttons */}
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleReaction("❤️")}
-                  className="p-2 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 transition-transform active:scale-125"
+                  className="p-2 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 transition-transform active:scale-125 cursor-pointer"
                   title="Send Heart"
                 >
                   <Heart className="size-4 fill-current" />
                 </button>
                 <button
                   onClick={() => handleReaction("👍")}
-                  className="p-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 transition-transform active:scale-125"
+                  className="p-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 transition-transform active:scale-125 cursor-pointer"
                   title="Thumbs Up"
                 >
                   <ThumbsUp className="size-4 fill-current" />
                 </button>
                 <button
                   onClick={() => handleReaction("🔥")}
-                  className="p-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 transition-transform active:scale-125"
+                  className="p-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 transition-transform active:scale-125 cursor-pointer"
                   title="Fire"
                 >
                   <Flame className="size-4 fill-current" />
                 </button>
               </div>
 
-              <button className="text-slate-400 hover:text-white p-1">
+              <button className="text-slate-400 hover:text-white p-1 cursor-pointer">
                 <Maximize2 className="size-4" />
               </button>
             </div>
           </div>
 
           {/* Right Live Chat & Poll Panel */}
-          <div className="bg-slate-900 border-l border-slate-800 flex flex-col h-full">
+          <div className="bg-slate-900 border-l border-slate-800 flex flex-col h-full min-h-0 overflow-hidden">
             {/* Chat Tabs */}
-            <div className="p-3 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+            <div className="p-3 border-b border-slate-800 bg-slate-950 flex items-center justify-between shrink-0">
               <span className="text-xs font-bold text-white flex items-center gap-2">
                 <MessageSquare className="size-4 text-indigo-400" /> Live Student Chat
               </span>
@@ -195,7 +184,7 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
             </div>
 
             {/* Poll Box */}
-            <div className="p-3 bg-indigo-950/40 border-b border-indigo-900/50 space-y-2">
+            <div className="p-3 bg-indigo-950/40 border-b border-indigo-900/50 space-y-2 shrink-0">
               <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1">
                 <BarChart2 className="size-3 text-indigo-400" /> Active Speaker Poll
               </span>
@@ -223,7 +212,7 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
             </div>
 
             {/* Chat Feed */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3 no-scrollbar text-xs">
+            <div className="flex-1 min-h-0 p-4 overflow-y-auto space-y-3 text-xs">
               {chatLog.map((msg) => (
                 <div key={msg.id} className="space-y-0.5">
                   <div className="flex items-center justify-between text-[10px] text-slate-400">
@@ -238,7 +227,7 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
             </div>
 
             {/* Chat Input */}
-            <form onSubmit={handleSendChat} className="p-3 bg-slate-950 border-t border-slate-800 flex gap-2">
+            <form onSubmit={handleSendChat} className="p-3 bg-slate-950 border-t border-slate-800 flex gap-2 shrink-0">
               <Input
                 type="text"
                 placeholder="Send a live message..."

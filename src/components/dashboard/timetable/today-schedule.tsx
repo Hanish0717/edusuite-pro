@@ -5,9 +5,10 @@ import type { TimetableSlot } from "@/data/faculty-mock-data";
 
 interface TodayScheduleProps {
   schedule: TimetableSlot[];
+  onCardClick?: (slot: TimetableSlot) => void;
 }
 
-export function TodaySchedule({ schedule }: TodayScheduleProps) {
+export function TodaySchedule({ schedule, onCardClick }: TodayScheduleProps) {
   const getBadgeStyle = (status: string) => {
     switch (status) {
       case "Completed":
@@ -22,13 +23,14 @@ export function TodaySchedule({ schedule }: TodayScheduleProps) {
   return (
     <div className="space-y-3">
       <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-        Today's Schedule Cards
+        Today's Schedule Cards (Click to View Section Timetable)
       </h3>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {schedule.map((slot, idx) => (
           <Card
             key={idx}
-            className="border border-border/70 py-0 shadow-card hover:shadow-elevated transition-all duration-300 relative overflow-hidden"
+            onClick={() => onCardClick && onCardClick(slot)}
+            className="border border-border/70 py-0 shadow-card hover:shadow-elevated transition-all duration-300 relative overflow-hidden cursor-pointer group hover:-translate-y-0.5"
           >
             <div className="absolute right-0 top-0 h-16 w-16 bg-muted/10 blur-xl" />
             <CardContent className="p-4 space-y-3.5 text-xs">
@@ -42,17 +44,17 @@ export function TodaySchedule({ schedule }: TodayScheduleProps) {
               </div>
 
               <div>
-                <h4 className="font-bold text-sm leading-snug truncate">{slot.subject}</h4>
-                <p className="text-[0.65rem] text-muted-foreground mt-0.5 font-medium flex items-center gap-1">
-                  <Layers className="size-3" /> Section {slot.section}
+                <h4 className="font-bold text-sm leading-snug truncate group-hover:text-primary transition-colors">{slot.subject}</h4>
+                <p className="text-[0.65rem] text-muted-foreground mt-0.5 font-medium flex items-center gap-1 font-mono">
+                  <Layers className="size-3 text-primary" /> Section {slot.section}
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-border/40 flex justify-between items-center text-muted-foreground text-[0.65rem] font-medium">
+              <div className="pt-2 border-t border-border/40 flex justify-between items-center text-muted-foreground text-[0.65rem] font-medium font-mono">
                 <span className="flex items-center gap-1">
                   <MapPin className="size-3 text-primary/60" /> Room {slot.room}
                 </span>
-                <span>Theory</span>
+                <span className="text-primary font-bold">View Section Timetable &rarr;</span>
               </div>
             </CardContent>
           </Card>
@@ -67,3 +69,4 @@ export function TodaySchedule({ schedule }: TodayScheduleProps) {
     </div>
   );
 }
+
