@@ -75,7 +75,7 @@ function SignupPage() {
   const handleRoleChange = (newRole: string) => {
     setRole(newRole);
     const newDesignations = getDesignationsForRole(newRole);
-    if (newDesignations.length > 0) {
+    if (newDesignations.length > 0 && newDesignations[0]?.value) {
       setDesignation(newDesignations[0].value);
     }
   };

@@ -447,8 +447,13 @@ export function RecruiterManagementWorkspace() {
     };
 
     setRecruiters([newRec, ...recruiters]);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("loggedInRecruiterName", newRec.name);
+      localStorage.setItem("loggedInRecruiterEmail", newRec.email);
+      localStorage.setItem("loggedInRecruiterCompany", newRec.company);
+    }
     setWizardStep(5); // Move to Success Screen
-    toast.success(`Provisioned new recruiter account for ${newRec.name} (${newRec.recruiterId})!`);
+    toast.success(`Provisioned new recruiter account for ${newRec.name} (${newRec.recruiterId})! Passkey: ${newRec.tempPasswordMasked}`);
   };
 
   // Drawer Credentials Actions

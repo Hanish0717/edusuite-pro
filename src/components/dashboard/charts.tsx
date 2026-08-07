@@ -41,7 +41,7 @@ const palette = [
 ];
 
 interface SeriesChartProps {
-  data: Record<string, unknown>[];
+  data: object[];
   xKey: string;
   series: { key: string; label: string }[];
   height?: number;

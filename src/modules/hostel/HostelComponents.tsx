@@ -352,3 +352,24 @@ export function HostelModuleView() {
     </div>
   );
 }
+
+export const HostelRoomsView = HostelModuleView;
+export const HostelFeesView = HostelModuleView;
+export const HostelGuestBillingView = HostelModuleView;
+export const HostelLogHistoryView = HostelModuleView;
+export const HostelMaintenanceView = HostelModuleView;
+export const HostelSettingsView = HostelModuleView;
+export const HostelVisitorsView = HostelModuleView;
+export const HostelDeviceManagementView = HostelModuleView;
+export const HostelAttendanceView = HostelModuleView;
+export const HostelLeavesSuspensionView = HostelModuleView;
+export const HostelMessFeesView = HostelModuleView;
+export const HostelOutingLogHistoryView = HostelModuleView;
+export const HostelUserManagementView = HostelModuleView;
+export const HostelBlocksView = HostelModuleView;
+export const HostelComplaintsView = HostelModuleView;
+export const HostelOutingApprovalsView = HostelModuleView;
+export const HostelNotificationsView = HostelModuleView;
+export const HostelMessMenusView = HostelModuleView;
+export const HostelMessManagementView = HostelModuleView;
+export const HostelResidentsView = HostelModuleView;
