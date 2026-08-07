@@ -21,31 +21,12 @@ import { LmsDashboard } from "./lms-dashboard";
 import { AlumniCoordinatorDashboard } from "./alumni-coordinator-dashboard";
 import { AlumniDashboard } from "./alumni-dashboard";
 
-import {
-  AcademicDeanDashboard,
-  StudentDeanDashboard,
-  IQACDashboard,
-  IMADashboard,
-  ResearchDeanDashboard,
-  FinanceDeanDashboard,
-  ExaminationDeanDashboard,
-  PlacementDeanDashboard,
-} from "@/modules/deans";
-
 const DASHBOARD_MAP: Record<string, React.ComponentType> = {
   super_admin: SuperAdminDashboard,
   admin: AdminDashboard,
   principal: PrincipalDashboard,
   vice_principal: VicePrincipalDashboard,
   dean: DeanDashboard,
-  academic_dean: AcademicDeanDashboard,
-  student_dean: StudentDeanDashboard,
-  iqac_dean: IQACDashboard,
-  ima_dean: IMADashboard,
-  research_dean: ResearchDeanDashboard,
-  finance_dean: FinanceDeanDashboard,
-  examination_dean: ExaminationDeanDashboard,
-  placement_dean: PlacementDeanDashboard,
   hod: HodDashboard,
   staff: StaffDashboard,
   faculty: StaffDashboard,
@@ -66,7 +47,7 @@ export function RoleDashboardDispatcher() {
   const { role, flags, department, externalPersona } = useRole();
 
   const key = getDashboardKeyForUser({ role, flags, department, externalPersona });
-  const DashboardComponent = DASHBOARD_MAP[key] || DASHBOARD_MAP[role] || StaffDashboard;
+  const DashboardComponent = DASHBOARD_MAP[key] || StaffDashboard;
 
   return <DashboardComponent />;
 }

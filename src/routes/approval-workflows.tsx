@@ -1,260 +1,185 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   GitBranch,
-  LayoutDashboard,
-  Layers,
-  Wrench,
-  Zap,
+  CheckCircle2,
+  XCircle,
+  Building,
   UserCheck,
-  ShieldCheck,
-  ShieldAlert,
+  FileCheck,
+  Lock,
 } from "lucide-react";
 
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { Panel } from "@/components/dashboard/panel";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useRole } from "@/context/role-context";
 
 import {
   fetchWorkflows,
-  fetchDelegations,
-  fetchTemplates,
-  processStandardStep,
-  processEmergencyOverride,
-  processEscalation,
-  createDelegation,
-  revokeDelegation,
-  saveWorkflowTemplate,
+  processWorkflowStep,
+  type WorkflowItem,
 } from "@/lib/workflowService";
-
-import { ApprovalDashboard } from "@/components/approval/ApprovalDashboard";
-import { ApprovalCenter } from "@/components/approval/ApprovalCenter";
-import { WorkflowBuilder } from "@/components/approval/WorkflowBuilder";
-import { EscalationManager } from "@/components/approval/EscalationManager";
-import { DelegationManager } from "@/components/approval/DelegationManager";
-import { AuditLogViewer } from "@/components/approval/AuditLogViewer";
 
 export const Route = createFileRoute("/approval-workflows")({
   head: () => ({
-    meta: [{ title: "Enterprise Approval & Governance Suite — EduSuite Pro" }],
+    meta: [{ title: "Approval Workflows — EduSuite Pro" }],
   }),
   component: ApprovalWorkflowsPage,
 });
 
-type TabType =
-  | "dashboard"
-  | "approval-center"
-  | "workflow-builder"
-  | "escalations"
-  | "delegations"
-  | "audit-logs";
-
 export function ApprovalWorkflowsPage() {
-  const { role, flags, profile } = useRole();
-  const [activeTab, setActiveTab] = useState<TabType>("approval-center");
+  const { hasFlag, role } = useRole();
+  const [workflows, setWorkflows] = useState<WorkflowItem[]>(() => fetchWorkflows());
 
-  // Reactive State Holders
-  const [workflows, setWorkflows] = useState(() => fetchWorkflows());
-  const [delegations, setDelegations] = useState(() => fetchDelegations());
-  const [templates, setTemplates] = useState(() => fetchTemplates());
-
-  // Step Approval Action
-  const handleApproveStep = (id: string, comment?: string) => {
-    setWorkflows((prev) =>
-      processStandardStep(prev, id, "approve", profile.personaName, role, comment)
-    );
-    toast.success(`Workflow ${id} step approved successfully!`);
+  const canApproveStep = (stepFlag?: string) => {
+    if (role === "super-admin") return true;
+    if (!stepFlag) return true;
+    return hasFlag(stepFlag);
   };
 
-  // Step Rejection Action
-  const handleRejectStep = (id: string, comment?: string) => {
-    setWorkflows((prev) =>
-      processStandardStep(prev, id, "reject", profile.personaName, role, comment)
-    );
-    toast.error(`Workflow ${id} step rejected.`);
+  const handleApprove = (id: string) => {
+    setWorkflows((prev) => processWorkflowStep(prev, id, "approve", role));
+    toast.success(`Workflow step for ${id} approved successfully!`);
   };
 
-  // Super Admin Emergency Override Action
-  const handleEmergencyOverride = (
-    id: string,
-    actionType: "Emergency Approve" | "Force Reject" | "Force Reassign" | "Cancel Workflow",
-    reason: string
-  ) => {
-    setWorkflows((prev) =>
-      processEmergencyOverride(
-        prev,
-        id,
-        actionType,
-        reason,
-        profile.personaName,
-        "10.0.0.1 (Executive Vault)",
-        "Super Admin Terminal"
-      )
-    );
-  };
-
-  // Escalation Trigger Action
-  const handleEscalateWorkflow = (id: string, reason: string) => {
-    setWorkflows((prev) => processEscalation(prev, id, reason));
-    toast.warning(`Workflow ${id} escalated to higher authority level.`);
-  };
-
-  // Delegation Actions
-  const handleCreateDelegation = (newDel: any) => {
-    const updated = createDelegation(newDel);
-    setDelegations([...updated]);
-  };
-
-  const handleRevokeDelegation = (id: string) => {
-    const updated = revokeDelegation(id);
-    setDelegations([...updated]);
-  };
-
-  // Workflow Template Action
-  const handleSaveTemplate = (tmpl: any) => {
-    const updated = saveWorkflowTemplate(tmpl);
-    setTemplates([...updated]);
+  const handleReject = (id: string) => {
+    setWorkflows((prev) => processWorkflowStep(prev, id, "reject", role));
+    toast.error(`Workflow step for ${id} rejected.`);
   };
 
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* TOP HEADER */}
         <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
           <div className="flex items-center gap-3">
             <span className="grid size-12 place-items-center rounded-2xl bg-brand-gradient text-white shadow-glow">
               <GitBranch className="size-6" />
             </span>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-display text-xl font-extrabold sm:text-2xl">
-                  Enterprise Approval & Governance Suite
-                </h1>
-                {role === "super-admin" && (
-                  <Badge className="bg-destructive text-white font-mono text-[0.65rem]">
-                    <ShieldAlert className="size-3 mr-1" /> PLATFORM GOVERNANCE MODE
-                  </Badge>
-                )}
-              </div>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                Separation of duties engine • Operational sign-offs stay with HODs/Deans • Super Admin governance & Emergency Overrides
+              <h1 className="font-display text-xl font-extrabold sm:text-2xl">
+                Multi-Level Approval Workflows
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Sequential approval chains (Faculty → HOD → Dean → Principal) with role-based sign-off locks.
               </p>
             </div>
           </div>
-
-          <Badge className="bg-brand-gradient text-white font-mono text-xs px-3 py-1 self-start sm:self-auto">
-            ENTERPRISE ERP V4.2
+          <Badge className="bg-brand-gradient text-white font-mono">
+            ACTIVE WORKFLOW ENGINE
           </Badge>
         </header>
 
-        {/* TOP SUB-NAVIGATION TABS */}
-        <div className="flex items-center gap-2 overflow-x-auto border-b border-border/80 pb-3 no-scrollbar">
-          <button
-            onClick={() => setActiveTab("approval-center")}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeTab === "approval-center"
-                ? "bg-brand-gradient text-white shadow-md shadow-primary/20"
-                : "bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            <Layers className="size-4" /> Approval Center
-          </button>
+        <div className="space-y-6">
+          {workflows.map((wf) => {
+            const currentStep = wf.steps[wf.currentStepIndex];
+            const isCompleted = wf.currentStepIndex >= wf.steps.length;
 
-          <button
-            onClick={() => setActiveTab("dashboard")}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeTab === "dashboard"
-                ? "bg-brand-gradient text-white shadow-md shadow-primary/20"
-                : "bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            <LayoutDashboard className="size-4" /> Executive Dashboard
-          </button>
+            return (
+              <Panel
+                key={wf.id}
+                title={wf.title}
+                description={`Category: ${wf.category} | Requested by ${wf.requestor} (${wf.department}) on ${wf.dateSubmitted}`}
+                action={
+                  <Badge variant="outline" className="font-mono text-xs">
+                    {wf.id}
+                  </Badge>
+                }
+              >
+                <div className="space-y-6">
+                  {/* WORKFLOW DIAGRAM STEPS */}
+                  <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+                    {wf.steps.map((step, idx) => {
+                      const isPast = idx < wf.currentStepIndex;
+                      const isCurrent = idx === wf.currentStepIndex;
+                      const isFuture = idx > wf.currentStepIndex;
 
-          <button
-            onClick={() => setActiveTab("workflow-builder")}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeTab === "workflow-builder"
-                ? "bg-brand-gradient text-white shadow-md shadow-primary/20"
-                : "bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            <Wrench className="size-4" /> Workflow Builder
-          </button>
+                      return (
+                        <div
+                          key={idx}
+                          className={`p-4 rounded-xl border transition-all ${
+                            isPast
+                              ? "border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10"
+                              : isCurrent
+                              ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                              : "border-border/60 bg-muted/20 opacity-70"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[0.68rem] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                              Step {idx + 1}
+                            </span>
+                            {isPast && <CheckCircle2 className="size-4 text-emerald-600" />}
+                            {isCurrent && (
+                              <Badge className="bg-primary text-primary-foreground text-[0.65rem] px-1.5 py-0">
+                                ACTIVE
+                              </Badge>
+                            )}
+                            {isFuture && <Lock className="size-3.5 text-muted-foreground" />}
+                          </div>
 
-          <button
-            onClick={() => setActiveTab("escalations")}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeTab === "escalations"
-                ? "bg-brand-gradient text-white shadow-md shadow-primary/20"
-                : "bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            <Zap className="size-4" /> Escalation Manager
-          </button>
+                          <h4 className="font-display text-sm font-bold">{step.label}</h4>
+                          <p className="text-xs text-muted-foreground mt-1">{step.notes}</p>
 
-          <button
-            onClick={() => setActiveTab("delegations")}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeTab === "delegations"
-                ? "bg-brand-gradient text-white shadow-md shadow-primary/20"
-                : "bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            <UserCheck className="size-4" /> Delegations Manager
-          </button>
+                          {step.actor && (
+                            <p className="text-[0.68rem] font-mono text-emerald-600 dark:text-emerald-400 mt-2">
+                              Signed: {step.actor} ({step.timestamp})
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
 
-          <button
-            onClick={() => setActiveTab("audit-logs")}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
-              activeTab === "audit-logs"
-                ? "bg-brand-gradient text-white shadow-md shadow-primary/20"
-                : "bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            <ShieldCheck className="size-4" /> Immutable Audit Ledger
-          </button>
+                  {/* ACTION FOOTER */}
+                  {!isCompleted && currentStep && (
+                    <div className="p-4 rounded-xl bg-card border border-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-bold text-foreground">
+                          Current Action Required:{" "}
+                          <span className="text-primary">{currentStep.label}</span>
+                        </p>
+                        <p className="text-[0.72rem] text-muted-foreground mt-0.5">
+                          {currentStep.flagRequired
+                            ? `Requires staff privilege flag: [${currentStep.flagRequired}]`
+                            : "Open for role sign-off."}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {canApproveStep(currentStep.flagRequired) ? (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => handleApprove(wf.id)}
+                              className="bg-brand-gradient text-xs cursor-pointer gap-1.5"
+                            >
+                              <CheckCircle2 className="size-4" /> Approve Step
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleReject(wf.id)}
+                              className="text-xs cursor-pointer gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10"
+                            >
+                              <XCircle className="size-4" /> Reject
+                            </Button>
+                          </>
+                        ) : (
+                          <Badge variant="secondary" className="text-xs font-mono">
+                            Sign-off Locked (Insufficient Privilege Flag)
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Panel>
+            );
+          })}
         </div>
-
-        {/* ACTIVE TAB CONTENT RENDERER */}
-        {activeTab === "approval-center" && (
-          <ApprovalCenter
-            workflows={workflows}
-            delegations={delegations}
-            role={role}
-            flags={flags}
-            onApproveStep={handleApproveStep}
-            onRejectStep={handleRejectStep}
-            onEmergencyOverride={handleEmergencyOverride}
-            onEscalateWorkflow={handleEscalateWorkflow}
-          />
-        )}
-
-        {activeTab === "dashboard" && (
-          <ApprovalDashboard workflows={workflows} delegations={delegations} />
-        )}
-
-        {activeTab === "workflow-builder" && (
-          <WorkflowBuilder templates={templates} onSaveTemplate={handleSaveTemplate} />
-        )}
-
-        {activeTab === "escalations" && (
-          <EscalationManager
-            workflows={workflows}
-            onEscalateWorkflow={handleEscalateWorkflow}
-          />
-        )}
-
-        {activeTab === "delegations" && (
-          <DelegationManager
-            delegations={delegations}
-            onCreateDelegation={handleCreateDelegation}
-            onRevokeDelegation={handleRevokeDelegation}
-          />
-        )}
-
-        {activeTab === "audit-logs" && <AuditLogViewer workflows={workflows} />}
       </div>
     </DashboardLayout>
   );

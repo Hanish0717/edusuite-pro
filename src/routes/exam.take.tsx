@@ -21,27 +21,13 @@ import {
   Key,
   Building,
   Check,
-  ShieldAlert,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { SAMPLE_20_MCQS, SAMPLE_2_CODING_CHALLENGES } from "@/components/dashboard/role/recruiter-portal-workspace";
-import {
-  saveStudentSubmission,
-  getStudentExamSubmission,
-  SHARED_STUDENT_DRIVE_APPLICATIONS,
-  SHARED_DRIVE_APPLICATION_FORMS,
-} from "@/lib/shared-assessment-store";
+import { saveStudentSubmission, getStudentExamSubmission } from "@/lib/shared-assessment-store";
 
 
 function parseCollegeEmail(email: string) {
@@ -83,9 +69,6 @@ function parseCollegeEmail(email: string) {
 }
 
 export const Route = createFileRoute("/exam/take")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    id: (search["id"] as string) || "",
-  }),
   head: () => ({
     meta: [
       { title: "Live Assessment Examination Portal — EduSuite Pro" },
@@ -96,8 +79,6 @@ export const Route = createFileRoute("/exam/take")({
 });
 
 function StudentLiveExamPage() {
-  const search = Route.useSearch();
-  const examId = search.id;
   const [activeSection, setActiveSection] = useState<"mcq" | "coding">("mcq");
   const [currentMcqIdx, setCurrentMcqIdx] = useState(0);
   const [activeCodingIdx, setActiveCodingIdx] = useState(0);
@@ -105,7 +86,7 @@ function StudentLiveExamPage() {
   const [markedForReview, setMarkedForReview] = useState<Record<number, boolean>>({});
 
   // Student College Authentication State — Roll No Email ID
-  const [studentEmail, setStudentEmail] = useState("student.2026@college.edu.in");
+  const [studentEmail, setStudentEmail] = useState("23341a4229@college.edu.in");
   const [studentPassword, setStudentPassword] = useState("EduSuite@2026#");
 
   // Auto-derive Name, Roll No, Department from Email ID series
@@ -132,15 +113,17 @@ function StudentLiveExamPage() {
   const [secondsRemaining, setSecondsRemaining] = useState(5400); // 90 mins
   const [isFullscreenActive, setIsFullscreenActive] = useState(false);
   const [savedSubmissionId, setSavedSubmissionId] = useState("");
-  const [violationWarning, setViolationWarning] = useState<{ visible: boolean; count: number }>({ visible: false, count: 0 });
-  const [unregisteredError, setUnregisteredError] = useState(false);
 
-  // Submit Confirmation Modal State
-  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
-  const [confirmCodeInput, setConfirmCodeInput] = useState("");
-
-  // NOTE: Prior-submission check is done inside the login form's onSubmit, not reactively,
-  // so the submitted screen is never shown before the student actually logs in.
+  // Check if candidate has already submitted assessment (prevents re-attempting after page refresh)
+  useEffect(() => {
+    const existing = getStudentExamSubmission(studentRollNo) || getStudentExamSubmission(studentEmail);
+    if (existing) {
+      setIsExamSubmitted(true);
+      setIsExamStarted(true);
+      setSavedSubmissionId(existing.id);
+      setIsAutoSubmitted(existing.isAutoSubmitted);
+    }
+  }, [studentRollNo, studentEmail]);
 
   // Countdown timer
 
@@ -207,7 +190,9 @@ function StudentLiveExamPage() {
           if (next >= 3) {
             handleAutoSubmit("Exceeded 3 tab-switch proctoring violations.");
           } else {
-            setViolationWarning({ visible: true, count: next });
+            toast.error(`⚠️ Tab switch detected! Violation ${next}/3. Exam will auto-submit at 3 violations.`, {
+              duration: 5000,
+            });
           }
           return next;
         });
@@ -252,11 +237,10 @@ function StudentLiveExamPage() {
   const totalScore = mcqScore + 45;
   const passStatus = totalScore >= 50;
 
-  const handleAutoSubmit = (reason: string, finalViolationCount: number = 3) => {
-    setTabViolations(finalViolationCount);
+  const handleAutoSubmit = (reason: string) => {
     setIsAutoSubmitted(true);
     setIsExamSubmitted(true);
-    persistSubmissionToStore(true, reason, finalViolationCount);
+    persistSubmissionToStore(true, reason);
     toast.error(`🚨 EXAM AUTO-SUBMITTED: ${reason}`, { duration: 8000 });
   };
 
@@ -266,10 +250,9 @@ function StudentLiveExamPage() {
     toast.success("🎉 Exam Submitted & Saved Successfully!");
   };
 
-  const persistSubmissionToStore = (auto: boolean, reason: string, customViolationsCount?: number) => {
+  const persistSubmissionToStore = (auto: boolean, reason: string) => {
     const subId = `SUB-2026-${Date.now().toString().slice(-4)}`;
     setSavedSubmissionId(subId);
-    const finalViolations = customViolationsCount !== undefined ? customViolationsCount : tabViolations;
 
     saveStudentSubmission({
       id: subId,
@@ -285,7 +268,7 @@ function StudentLiveExamPage() {
       codingTotal: 50,
       totalPercentage: Math.round((totalScore / 70) * 100),
       passStatus: passStatus && !auto,
-      violationsLogged: finalViolations,
+      violationsLogged: tabViolations,
       isAutoSubmitted: auto,
       submissionTime: new Date().toLocaleString("en-IN", {
         day: "2-digit",
@@ -313,15 +296,9 @@ function StudentLiveExamPage() {
   return (
     <div
       className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans select-none relative"
-      onContextMenu={(e) => {
-        if (isExamStarted && !isExamSubmitted) e.preventDefault();
-      }}
-      onCopy={(e) => {
-        if (isExamStarted && !isExamSubmitted) e.preventDefault();
-      }}
-      onPaste={(e) => {
-        if (isExamStarted && !isExamSubmitted) e.preventDefault();
-      }}
+      onContextMenu={(e) => e.preventDefault()}
+      onCopy={(e) => e.preventDefault()}
+      onPaste={(e) => e.preventDefault()}
     >
       {/* 1. INITIAL STUDENT COLLEGE LOGIN & ENTRY GATE MODAL */}
       {!isExamStarted && (
@@ -341,335 +318,112 @@ function StudentLiveExamPage() {
               </p>
             </div>
 
-            {unregisteredError ? (
-              <div className="space-y-4 text-center animate-fade-in py-2">
-                <div className="size-16 rounded-full bg-rose-50 border-2 border-rose-200 grid place-items-center mx-auto text-rose-600">
-                  <Lock className="size-8" />
-                </div>
-                <div className="space-y-1">
-                  <Badge className="bg-rose-600 text-white font-mono">ACCESS DENIED — UNREGISTERED CANDIDATE</Badge>
-                  <h3 className="text-xl font-extrabold text-slate-900">
-                    Drive Application Required
-                  </h3>
-                  <p className="text-xs text-slate-500 font-mono">
-                    Only candidates who submitted the mandatory Placement Application Form before the deadline are authorized to write this assessment.
-                  </p>
+            {/* COLLEGE LOGIN FORM */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!studentEmail.includes("@") || !studentRollNo) {
+                  toast.error("Please provide a valid official college email ID and Roll Number.");
+                  return;
+                }
+                requestFullscreenMode();
+                setIsExamStarted(true);
+                toast.success(`Welcome ${studentName}! Proctored security restrictions enabled.`);
+              }}
+              className="space-y-4 text-left text-xs font-sans"
+            >
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <label className="font-semibold text-slate-700 flex items-center gap-1">
+                    <Mail className="size-3.5 text-blue-600" /> Official College Email ID
+                  </label>
+                  <Input
+                    type="email"
+                    value={studentEmail}
+                    onChange={(e) => setStudentEmail(e.target.value)}
+                    required
+                    placeholder="e.g. alex.2022cse015@college.edu.in"
+                    className="h-10 text-xs rounded-xl font-mono"
+                  />
                 </div>
 
-                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs font-mono text-amber-950 text-left space-y-1.5">
-                  <p className="font-bold text-amber-900">⚠️ Student Verification Result:</p>
-                  <p>• College Email: <strong>{studentEmail}</strong> ({studentRollNo})</p>
-                  <p>• Placement Drive Application Status: <strong className="text-rose-600">No Prior Submission Found</strong></p>
-                  <p className="text-[0.68rem] text-slate-600 pt-1">
-                    If you haven't filled out your 10th &amp; Inter/Diploma marks application form yet, please complete it below before the form deadline expires.
-                  </p>
-                </div>
-
-                <div className="pt-2 space-y-2">
-                  <a
-                    href="/drive/apply?id=APP-FORM-2026-GGL"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl h-11 text-xs grid place-items-center cursor-pointer shadow-md"
-                  >
-                    Submit Placement Drive Application Form Now →
-                  </a>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setUnregisteredError(false)}
-                    className="w-full rounded-2xl h-10 text-xs text-slate-600 cursor-pointer"
-                  >
-                    Try Re-entering Official Email Address
-                  </Button>
+                <div className="space-y-1.5">
+                  <label className="font-semibold text-slate-700 flex items-center gap-1">
+                    <Key className="size-3.5 text-blue-600" /> Default Student Passkey / Password
+                  </label>
+                  <Input
+                    type="password"
+                    value={studentPassword}
+                    onChange={(e) => setStudentPassword(e.target.value)}
+                    required
+                    placeholder="EduSuite@2026#"
+                    className="h-10 text-xs rounded-xl font-mono"
+                  />
                 </div>
               </div>
-            ) : (
-              /* COLLEGE LOGIN FORM */
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!studentEmail.includes("@") || !studentRollNo) {
-                    toast.error("Please provide a valid official college email ID and Roll Number.");
-                    return;
-                  }
-                  // Check if student submitted mandatory Placement Drive Application Form
-                  const driveApp = SHARED_STUDENT_DRIVE_APPLICATIONS.find(
-                    (app) =>
-                      app.studentEmail.toLowerCase() === studentEmail.toLowerCase() ||
-                      app.rollNo.toLowerCase() === studentRollNo.toLowerCase()
-                  );
 
-                  if (!driveApp) {
-                    setUnregisteredError(true);
-                    toast.error("Access Restricted: You have not submitted the mandatory Placement Drive Application Form prior to the deadline.");
-                    return;
-                  }
+              {/* LIVE AUTO-DERIVED STUDENT PROFILE CARD */}
+              <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 text-xs font-mono space-y-2 text-blue-950 shadow-xs">
+                <p className="font-bold text-blue-800 text-[0.7rem] uppercase tracking-wider flex items-center justify-between">
+                  <span>⚡ Auto-Detected Student Record</span>
+                  <span className="text-[0.62rem] bg-blue-600 text-white px-2 py-0.5 rounded-md font-sans">Verified ID</span>
+                </p>
+                <div className="grid grid-cols-3 gap-2 pt-1 text-[0.68rem]">
+                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
+                    <span className="text-slate-500 block text-[0.6rem]">Student Name</span>
+                    <strong className="text-slate-900 font-sans">{studentName}</strong>
+                  </div>
+                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
+                    <span className="text-slate-500 block text-[0.6rem]">Roll / Hall Ticket</span>
+                    <strong className="text-blue-700 font-mono">{studentRollNo}</strong>
+                  </div>
+                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
+                    <span className="text-slate-500 block text-[0.6rem]">Derived Department</span>
+                    <strong className="text-emerald-700 font-sans">{parsedInfo.dept}</strong>
+                  </div>
+                </div>
+              </div>
 
-                  // Check for prior submission only after login attempt
-                  const existing = getStudentExamSubmission(studentRollNo) || getStudentExamSubmission(studentEmail);
-                  if (existing) {
-                    setIsExamStarted(true);
-                    setIsExamSubmitted(true);
-                    setSavedSubmissionId(existing.id);
-                    setIsAutoSubmitted(existing.isAutoSubmitted);
-                    toast.warning(`⚠️ ${studentName}, you have already submitted this assessment. Showing your result.`);
-                    return;
-                  }
-                  requestFullscreenMode();
-                  setIsExamStarted(true);
-                  toast.success(`Welcome ${studentName}! Proctored security restrictions enabled.`);
-                }}
-                className="space-y-4 text-left text-xs font-sans"
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl h-11 gap-2 shadow-xl shadow-emerald-600/30 cursor-pointer"
               >
-                <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <label className="font-semibold text-slate-700 flex items-center gap-1">
-                      <Mail className="size-3.5 text-blue-600" /> Official College Email ID
-                    </label>
-                    <Input
-                      type="email"
-                      value={studentEmail}
-                      onChange={(e) => setStudentEmail(e.target.value)}
-                      required
-                      placeholder="e.g. alex.2022cse015@college.edu.in"
-                      className="h-10 text-xs rounded-xl font-mono"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="font-semibold text-slate-700 flex items-center gap-1">
-                      <Key className="size-3.5 text-blue-600" /> Default Student Passkey / Password
-                    </label>
-                    <Input
-                      type="password"
-                      value={studentPassword}
-                      onChange={(e) => setStudentPassword(e.target.value)}
-                      required
-                      placeholder="EduSuite@2026#"
-                      className="h-10 text-xs rounded-xl font-mono"
-                    />
-                  </div>
-                </div>
-
-                {/* LIVE AUTO-DERIVED STUDENT PROFILE CARD */}
-                <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 text-xs font-mono space-y-2 text-blue-950 shadow-xs">
-                  <p className="font-bold text-blue-800 text-[0.7rem] uppercase tracking-wider flex items-center justify-between">
-                    <span>⚡ Auto-Detected Student Record</span>
-                    <span className="text-[0.62rem] bg-blue-600 text-white px-2 py-0.5 rounded-md font-sans">Verified ID</span>
-                  </p>
-                  <div className="grid grid-cols-3 gap-2 pt-1 text-[0.68rem]">
-                    <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
-                      <span className="text-slate-500 block text-[0.6rem]">Student Name</span>
-                      <strong className="text-slate-900 font-sans">{studentName}</strong>
-                    </div>
-                    <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
-                      <span className="text-slate-500 block text-[0.6rem]">Roll / Hall Ticket</span>
-                      <strong className="text-blue-700 font-mono">{studentRollNo}</strong>
-                    </div>
-                    <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
-                      <span className="text-slate-500 block text-[0.6rem]">Derived Department</span>
-                      <strong className="text-emerald-700 font-sans">{parsedInfo.dept}</strong>
-                    </div>
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl h-11 gap-2 shadow-xl shadow-emerald-600/30 cursor-pointer"
-                >
-                  <Play className="size-4" /> Verify Credentials, Start Exam &amp; Enter Fullscreen
-                </Button>
-              </form>
-            )}
+                <Play className="size-4" /> Verify Credentials, Start Exam &amp; Enter Fullscreen
+              </Button>
+            </form>
           </div>
         </div>
       )}
 
       {/* 2. FULLSCREEN ENFORCEMENT OVERLAY GUARD */}
       {isExamStarted && !isFullscreenActive && !isExamSubmitted && (
-        <div className="fixed inset-0 z-[90] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-6">
-          <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-6 space-y-4 text-center shadow-xl">
-            <div className="size-12 rounded-full bg-amber-50 border border-amber-200 grid place-items-center mx-auto text-amber-600">
-              <AlertTriangle className="size-6" />
+        <div className="fixed inset-0 z-[90] bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-6">
+          <div className="w-full max-w-md bg-white border border-rose-200 rounded-3xl p-8 space-y-5 text-center shadow-2xl">
+            <div className="size-20 rounded-full bg-rose-50 border-2 border-rose-200 grid place-items-center mx-auto text-rose-600">
+              <AlertTriangle className="size-10" />
             </div>
 
-            <div className="space-y-1">
-              <Badge className="bg-amber-100 text-amber-900 border border-amber-300 font-mono text-[0.68rem] px-2 py-0.5">
-                PROCTORING REQUIREMENT
-              </Badge>
-              <h3 className="text-base font-bold font-sans text-slate-900">
-                Fullscreen Mode Required
+            <div className="space-y-1.5">
+              <Badge className="bg-rose-600 text-white font-mono">PROCTORING ALERT</Badge>
+              <h3 className="text-xl font-extrabold font-sans text-rose-600">
+                Fullscreen Mode Required!
               </h3>
-              <p className="text-xs text-slate-600 font-sans">
-                You exited fullscreen mode. Please re-enter fullscreen mode to continue your assessment.
+              <p className="text-xs text-slate-600 font-mono">
+                You exited fullscreen mode. You must return to fullscreen mode immediately to continue your assessment.
               </p>
             </div>
 
             <Button
               size="lg"
               onClick={requestFullscreenMode}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl h-10 gap-2 cursor-pointer shadow-xs"
+              className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-2xl h-11 gap-2 shadow-lg shadow-rose-600/30 cursor-pointer"
             >
               <Maximize2 className="size-4" /> Re-enter Fullscreen Mode
             </Button>
           </div>
         </div>
       )}
-
-      {/* 3. TAB SWITCH / PROCTORING VIOLATION WARNING OVERLAY */}
-      {violationWarning.visible && isExamStarted && !isExamSubmitted && (
-        <div className="fixed inset-0 z-[95] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-6">
-          <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-6 space-y-5 text-center shadow-xl">
-            <div className="size-12 rounded-full bg-amber-50 border border-amber-200 grid place-items-center mx-auto text-amber-600">
-              <AlertTriangle className="size-6" />
-            </div>
-
-            <div className="space-y-1">
-              <Badge className="bg-amber-100 text-amber-900 border border-amber-300 font-mono text-[0.68rem] px-2.5 py-0.5">
-                PROCTORING WARNING
-              </Badge>
-              <h2 className="text-lg font-bold text-slate-900 font-sans">
-                Tab Switch Detected
-              </h2>
-              <p className="text-xs text-slate-600 font-sans">
-                You switched tabs or minimized the exam window. This violation has been recorded.
-              </p>
-            </div>
-
-            {/* Violation count display */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-              <p className="text-[0.68rem] font-mono text-slate-500 font-semibold uppercase tracking-wider">
-                Recorded Violations: <strong className="text-slate-900 font-bold">{violationWarning.count} / 3</strong>
-              </p>
-
-              <div className="flex items-center justify-center gap-2 py-1">
-                {[1, 2, 3].map((dot) => (
-                  <div
-                    key={dot}
-                    className={`size-5 rounded-full text-[0.65rem] font-bold grid place-items-center ${
-                      dot <= violationWarning.count
-                        ? "bg-amber-600 text-white"
-                        : "bg-slate-200 text-slate-400"
-                    }`}
-                  >
-                    {dot <= violationWarning.count ? "✕" : dot}
-                  </div>
-                ))}
-              </div>
-
-              <p className="text-[0.7rem] font-medium text-slate-700 font-sans">
-                {violationWarning.count === 1
-                  ? "Warning: 2 more violations will auto-submit your assessment."
-                  : "Final Warning: 1 more violation will auto-submit your assessment."}
-              </p>
-            </div>
-
-            {/* Dismiss button */}
-            <Button
-              size="lg"
-              onClick={() => {
-                setViolationWarning({ visible: false, count: violationWarning.count });
-                requestFullscreenMode();
-              }}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl h-10 gap-2 cursor-pointer shadow-xs"
-            >
-              <ShieldAlert className="size-4" /> Return to Assessment
-            </Button>
-
-            <p className="text-[0.65rem] text-slate-400 font-mono">
-              This event has been logged for recruiter &amp; TPO audit.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* 4. CONFIRMATION DIALOG MODAL (REQUIRE TYPING "END" BEFORE SUBMITTING EXAM) */}
-      <Dialog open={isSubmitModalOpen} onOpenChange={setIsSubmitModalOpen}>
-        <DialogContent className="sm:max-w-md bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl">
-          <DialogHeader className="space-y-2 text-center sm:text-left">
-            <div className="size-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 grid place-items-center mb-1">
-              <AlertTriangle className="size-6" />
-            </div>
-            <DialogTitle className="text-xl font-extrabold text-slate-900 font-sans">
-              Confirm Exam Submission
-            </DialogTitle>
-            <DialogDescription className="text-xs text-slate-600 font-sans leading-relaxed">
-              Are you sure you want to finish and submit your assessment? Once submitted, your answers will be locked and sent to the TPO &amp; Recruiter evaluation queue.
-            </DialogDescription>
-          </DialogHeader>
-
-          {/* EXAM ATTEMPT SUMMARY */}
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5 text-xs font-mono">
-            <p className="font-bold text-slate-800 text-[0.7rem] uppercase tracking-wider flex items-center justify-between">
-              <span>📊 Attempt Summary Check:</span>
-              <span className="text-[0.62rem] text-slate-500 font-sans">Student: {studentName}</span>
-            </p>
-            <div className="grid grid-cols-2 gap-2 text-[0.72rem]">
-              <div className="p-2.5 rounded-xl bg-white border border-slate-200">
-                <span className="text-slate-500 block text-[0.62rem]">Technical MCQs</span>
-                <strong className="text-blue-600 font-bold">{answeredMcqCount} / 20 Answered</strong>
-              </div>
-              <div className="p-2.5 rounded-xl bg-white border border-slate-200">
-                <span className="text-slate-500 block text-[0.62rem]">Coding Challenges</span>
-                <strong className="text-purple-600 font-bold">{Object.keys(userCode).length} / 2 Attempted</strong>
-              </div>
-            </div>
-            {20 - answeredMcqCount > 0 && (
-              <p className="text-[0.68rem] text-amber-700 font-sans font-semibold pt-1 flex items-center gap-1">
-                <AlertTriangle className="size-3.5 shrink-0 text-amber-600" />
-                Warning: You have {20 - answeredMcqCount} unanswered MCQ questions remaining.
-              </p>
-            )}
-          </div>
-
-          {/* TYPE 'END' CONFIRMATION INPUT */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (confirmCodeInput.trim().toUpperCase() !== "END") {
-                toast.error('Please type "END" to confirm exam submission.');
-                return;
-              }
-              setIsSubmitModalOpen(false);
-              handleSubmitExam();
-            }}
-            className="space-y-4 pt-1"
-          >
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-800 flex items-center justify-between font-sans">
-                <span>Type <span className="font-mono bg-rose-50 border border-rose-200 text-rose-600 px-1.5 py-0.5 rounded font-extrabold text-xs">END</span> to confirm submission:</span>
-                <span className="text-[0.65rem] font-mono text-slate-400">Required</span>
-              </label>
-              <Input
-                type="text"
-                value={confirmCodeInput}
-                onChange={(e) => setConfirmCodeInput(e.target.value)}
-                placeholder='Type "END" here...'
-                autoFocus
-                className="h-11 text-sm font-mono font-extrabold border-slate-300 rounded-xl tracking-widest text-center uppercase focus-visible:ring-emerald-500"
-              />
-            </div>
-
-            <DialogFooter className="gap-2 sm:gap-0 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsSubmitModalOpen(false)}
-                className="rounded-xl h-10 text-xs font-bold text-slate-600 cursor-pointer"
-              >
-                Cancel / Return to Exam
-              </Button>
-              <Button
-                type="submit"
-                disabled={confirmCodeInput.trim().toUpperCase() !== "END"}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl h-10 px-5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-              >
-                <CheckCircle className="size-4 mr-1.5" /> Confirm &amp; Submit Exam
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
 
       {/* EXAM TOP NAVIGATION HEADER */}
       <header className="h-16 border-b border-slate-200 bg-white px-6 flex items-center justify-between sticky top-0 z-50 shadow-xs">
@@ -719,10 +473,7 @@ function StudentLiveExamPage() {
           {!isExamSubmitted && (
             <Button
               size="sm"
-              onClick={() => {
-                setConfirmCodeInput("");
-                setIsSubmitModalOpen(true);
-              }}
+              onClick={handleSubmitExam}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl h-9 px-4 gap-1.5 shadow-md shadow-emerald-600/20 cursor-pointer"
             >
               <Send className="size-3.5" /> Submit Exam
@@ -731,152 +482,142 @@ function StudentLiveExamPage() {
         </div>
       </header>
 
-      {/* EXAM SUBMITTED SCORECARD RESULT PAGE */}
+      {/* EXAM SUBMITTED SCORECARD RESULT OVERLAY */}
       {isExamSubmitted ? (
-        <main className="flex-1 overflow-y-auto bg-slate-100">
-          <div className="max-w-2xl mx-auto px-6 py-10 space-y-5">
-
-            {/* HERO STATUS HEADER */}
-            <div className="bg-slate-900 rounded-3xl p-8 text-center space-y-4 shadow-xl">
-              <div className="size-20 rounded-full mx-auto grid place-items-center border-2 border-white/10 bg-white/10">
-                {isAutoSubmitted
-                  ? <AlertTriangle className="size-10 text-white" />
-                  : <CheckCircle className="size-10 text-white" />}
-              </div>
-              <div>
-                <p className="text-white/50 text-[0.65rem] font-mono uppercase tracking-widest mb-1">
-                  {isAutoSubmitted ? "Proctoring Violation — Auto Terminated" : "Assessment Complete"}
-                </p>
-                <h2 className="text-3xl font-extrabold text-white font-sans">
-                  {isAutoSubmitted ? "Exam Terminated" : "Exam Submitted!"}
-                </h2>
-                <p className="text-white/50 text-xs mt-1 font-mono">
-                  {isAutoSubmitted ? "Your responses have been recorded & saved." : "Your submission has been saved successfully."}
-                </p>
-              </div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-mono border border-white/10 bg-white/5 text-white/70">
-                <User className="size-3.5" />
-                <span className="font-bold text-white">{studentName}</span>
-                <span className="opacity-40">•</span>
-                <span>{studentRollNo}</span>
-                <span className="opacity-40">•</span>
-                <span>{studentEmail}</span>
-              </div>
+        <main className="flex-1 flex items-center justify-center p-6 bg-slate-100">
+          <div className="w-full max-w-xl bg-white border border-slate-200 rounded-3xl p-8 space-y-6 text-center shadow-2xl">
+            <div
+              className={`size-24 rounded-full mx-auto grid place-items-center border-2 ${
+                isAutoSubmitted
+                  ? "bg-rose-50 border-rose-200 text-rose-600"
+                  : passStatus
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-600"
+                  : "bg-amber-50 border-amber-200 text-amber-600"
+              }`}
+            >
+              {isAutoSubmitted ? (
+                <AlertTriangle className="size-12" />
+              ) : (
+                <CheckCircle className="size-12" />
+              )}
             </div>
 
-            {/* SUBMISSION ID SAVED BANNER */}
+            <div className="space-y-2">
+              <Badge
+                className={
+                  isAutoSubmitted
+                    ? "bg-rose-600 text-white"
+                    : passStatus
+                    ? "bg-emerald-600 text-white"
+                    : "bg-amber-600 text-white"
+                }
+              >
+                {isAutoSubmitted ? "AUTO-SUBMITTED (PROCTORING VIOLATION)" : passStatus ? "PASSED CUTOFF" : "COMPLETED"}
+              </Badge>
+              <h2 className="text-2xl font-extrabold font-sans text-slate-900">
+                {isAutoSubmitted
+                  ? "Exam Terminated & Response Stored"
+                  : "Assessment Submitted & Saved!"}
+              </h2>
+              <p className="text-xs text-slate-500 font-mono">
+                Candidate: <strong>{studentName}</strong> ({studentRollNo}) • {studentEmail}
+              </p>
+            </div>
+
+            {/* SUBMISSION SAVED BADGE */}
             {savedSubmissionId && (
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="size-8 rounded-xl bg-slate-100 grid place-items-center">
-                    <Check className="size-4 text-slate-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-800">Stored in Shared Assessment Database</p>
-                    <p className="text-[0.65rem] text-slate-400 font-mono">Submission verified & saved to TPO records</p>
-                  </div>
-                </div>
-                <span className="text-xs font-extrabold text-slate-700 font-mono bg-slate-100 border border-slate-200 px-3 py-1 rounded-xl">{savedSubmissionId}</span>
+              <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-mono text-emerald-800 flex items-center justify-between">
+                <span className="flex items-center gap-1.5 font-bold">
+                  <Check className="size-4 text-emerald-600" /> Stored in Shared Assessment Database
+                </span>
+                <span className="font-bold text-emerald-700">{savedSubmissionId}</span>
               </div>
             )}
 
-            {/* SCORE CARDS */}
-            <div className="grid grid-cols-3 gap-4">
-              {[
-                { label: "MCQ Score", value: correctMcqCount, total: 20, display: `${correctMcqCount}`, sub: "out of 20" },
-                { label: "Coding Marks", value: 45, total: 50, display: "45", sub: "out of 50" },
-                { label: "Total Score", value: totalScore, total: 70, display: `${Math.round((totalScore / 70) * 100)}%`, sub: `${totalScore} / 70 marks` },
-              ].map(({ label, value, total, display, sub }) => (
-                <div key={label} className="bg-white rounded-2xl border border-slate-200 p-5 text-center space-y-2 shadow-sm">
-                  <p className="text-[0.62rem] text-slate-400 uppercase tracking-wider font-semibold">{label}</p>
-                  <p className="text-3xl font-extrabold text-slate-900">{display}</p>
-                  <p className="text-[0.65rem] text-slate-400 font-mono">{sub}</p>
-                  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-slate-700 rounded-full transition-all" style={{ width: `${Math.min((value / total) * 100, 100)}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* RESPONSE DETAIL TABLE */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="px-5 py-3.5 border-b border-slate-100 flex items-center gap-2 bg-slate-50">
-                <FileCheck2 className="size-4 text-slate-400" />
-                <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Assessment Response Record</h3>
+            {/* SCORE SUMMARY CARDS */}
+            <div className="grid grid-cols-3 gap-3 font-mono text-xs">
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[0.65rem]">MCQ Score</span>
+                <p className="text-xl font-extrabold text-slate-900">{correctMcqCount} / 20</p>
               </div>
-              <div className="divide-y divide-slate-100">
-                {[
-                  { label: "Student Name", value: studentName },
-                  { label: "Roll Number", value: `${studentRollNo} (${studentDept})` },
-                  { label: "College Email", value: studentEmail },
-                  { label: "MCQ Attempted", value: `${answeredMcqCount} / 20 questions` },
-                  { label: "MCQ Correct", value: `${correctMcqCount} / 20` },
-                  { label: "Coding Problems", value: "2 / 2 Submitted (All test cases passed)" },
-                  { label: "Proctoring Violations", value: `${isAutoSubmitted ? Math.max(tabViolations, 3) : tabViolations} / 3 violations logged` },
-                  { label: "Submission Status", value: isAutoSubmitted ? "Auto-Submitted (Proctoring Violation)" : "Manual Submission" },
-                ].map(({ label, value }) => (
-                  <div key={label} className="flex items-center justify-between px-5 py-3 hover:bg-slate-50 transition-colors">
-                    <span className="text-xs text-slate-400 font-medium">{label}</span>
-                    <span className="text-xs font-semibold text-slate-800 font-mono text-right max-w-[55%] truncate">{value}</span>
-                  </div>
-                ))}
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[0.65rem]">Coding Marks</span>
+                <p className="text-xl font-extrabold text-purple-600">45 / 50</p>
+              </div>
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
+                <span className="text-slate-500 text-[0.65rem]">Total Percentage</span>
+                <p className="text-xl font-extrabold text-emerald-600">
+                  {Math.round((totalScore / 70) * 100)}%
+                </p>
               </div>
             </div>
 
-            {/* ACTION BUTTONS */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-left text-xs font-mono space-y-1.5 text-slate-700">
+              <p className="font-bold text-slate-900 mb-2">📋 Assessment Response Record:</p>
+              <p>• Student Email: <strong>{studentEmail}</strong></p>
+              <p>• Roll Number: <strong>{studentRollNo}</strong> ({studentDept})</p>
+              <p>• MCQ Questions Attempted: <strong>{answeredMcqCount} / 20</strong></p>
+              <p>• Correct MCQ Answers: <strong>{correctMcqCount}</strong></p>
+              <p>• Coding Problems Submitted: <strong>2 / 2 (All test cases passed)</strong></p>
+              <p>• Proctoring Violations Logged: <strong>{tabViolations} / 3</strong></p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-2.5">
               <Button
                 type="button"
                 onClick={() => {
-                  const headers = ["Submission ID","Student Roll No","Student Email","Department","Assessment Title","MCQ Score","Coding Score","Total Score","Percentage","Proctoring Violations","Submission Time"];
-                  const row = [savedSubmissionId || "SUB-2026-6743", studentRollNo, studentEmail, studentDept, "Google Cloud Systems & Coding Assessment 2026", `${correctMcqCount}/20`, "45/50", `${totalScore}/70`, `${Math.round((totalScore / 70) * 100)}%`, `${tabViolations}/3`, new Date().toLocaleString()];
+                  const headers = [
+                    "Submission ID",
+                    "Student Roll No",
+                    "Student Email",
+                    "Department",
+                    "Assessment Title",
+                    "MCQ Score",
+                    "Coding Score",
+                    "Total Score",
+                    "Percentage",
+                    "Proctoring Violations",
+                    "Submission Time",
+                  ];
+                  const row = [
+                    savedSubmissionId || "SUB-2026-6743",
+                    studentRollNo,
+                    studentEmail,
+                    studentDept,
+                    "Google Cloud Systems & Coding Assessment 2026",
+                    `${correctMcqCount}/20`,
+                    "45/50",
+                    `${totalScore}/70`,
+                    `${Math.round((totalScore / 70) * 100)}%`,
+                    `${tabViolations}/3`,
+                    new Date().toLocaleString(),
+                  ];
                   const csv = [headers.join(","), row.map((cell) => `"${cell}"`).join(",")].join("\n");
                   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
                   const url = URL.createObjectURL(blob);
                   const link = document.createElement("a");
                   link.href = url;
-                  link.download = `TPO_Score_${studentRollNo}_${new Date().toISOString().split("T")[0]}.csv`;
+                  link.download = `TPO_Placement_Score_${studentRollNo}_${new Date().toISOString().split("T")[0]}.csv`;
                   document.body.appendChild(link);
                   link.click();
                   document.body.removeChild(link);
                   URL.revokeObjectURL(url);
-                  toast.success(`Exported score CSV for ${studentRollNo}!`);
+                  toast.success(`Exported TPO Score Excel CSV for candidate ${studentRollNo}!`);
                 }}
-                className="bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl h-12 text-xs shadow-md cursor-pointer gap-2"
+                className="w-full sm:w-1/2 bg-emerald-600 hover:bg-emerald-700 font-extrabold text-white rounded-xl h-11 text-xs shadow-md gap-1.5 cursor-pointer"
               >
-                <Send className="size-4" /> Export Score CSV
-              </Button>
-
-              <Button
-                type="button"
-                onClick={() => {
-                  setIsExamSubmitted(false);
-                  setIsExamStarted(false);
-                  setUserAnswers({});
-                  setUserCode({});
-                  setTestOutput({});
-                  setTabViolations(0);
-                  setViolationWarning({ visible: false, count: 0 });
-                  setSecondsRemaining(5400);
-                  toast.success("Exam reset! Enter credentials to preview.");
-                }}
-                className="bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold rounded-2xl h-12 text-xs shadow-sm cursor-pointer gap-2"
-              >
-                <RotateCcw className="size-4" /> Preview Exam Again
+                📊 Export Score to Excel CSV
               </Button>
 
               <Button
                 type="button"
                 onClick={() => (window.location.href = "/student/dashboard")}
-                className="bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold rounded-2xl h-12 text-xs shadow-sm cursor-pointer gap-2"
+                className="w-full sm:w-1/2 bg-blue-600 hover:bg-blue-700 font-bold text-white rounded-xl h-11 text-xs shadow-md cursor-pointer"
               >
-                <Building className="size-4" /> Student Portal
+                Back to Student Portal
               </Button>
             </div>
 
-            <p className="text-center text-[0.62rem] text-slate-400 font-mono pb-4">
-              EduSuite Pro — Assessment Engine v2.0 • {new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
-            </p>
           </div>
         </main>
       ) : (

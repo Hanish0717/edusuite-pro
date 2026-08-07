@@ -61,7 +61,6 @@ import {
   PieChart as PieChartIcon,
   BarChart3,
   StickyNote,
-  UserCheck,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -100,6 +99,10 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+// ============================================================================
+// MOCK DATA TYPES & RECORDS FOR DRIVE MANAGEMENT WORKSPACE
+// ============================================================================
 
 export interface PlacementDrive {
   id: string;
@@ -216,82 +219,115 @@ const INITIAL_DRIVES: PlacementDrive[] = [
     interviewCount: 45,
     offersReleased: 10,
     registrationDeadline: "2026-08-01",
-    assessmentDate: "2026-08-04",
-    interviewDate: "2026-08-09",
-    offerDate: "2026-08-14",
-    joiningDate: "2026-09-01",
-    recruiterName: "Priya Varma (Campus Lead)",
+    assessmentDate: "2026-08-05",
+    interviewDate: "2026-08-12",
+    offerDate: "2026-08-18",
+    joiningDate: "2026-09-10",
+    recruiterName: "Samantha Wright (Talent Manager)",
     statusTone: "purple",
   },
   {
     id: "DRIVE-2026-05",
-    company: "TCS (Tata Consultancy Services)",
-    logoText: "TCS",
-    logoBg: "bg-blue-700",
-    role: "Ninja & Digital & Prime Tiers",
-    CTC: "₹3.36 LPA - ₹11.5 LPA",
-    location: "Pan India / Hyderabad",
+    company: "Tesla Motors",
+    logoText: "T",
+    logoBg: "bg-purple-600",
+    role: "Autopilot Systems Analyst",
+    CTC: "₹28.0 LPA",
+    location: "Bengaluru R&D",
     type: "On-Campus",
-    stage: "Assessment",
-    progress: 70,
-    eligibleStudents: 580,
-    appliedCount: 750,
-    assessmentCount: 520,
-    interviewCount: 140,
-    offersReleased: 28,
-    registrationDeadline: "2026-08-08",
-    assessmentDate: "2026-08-12",
-    interviewDate: "2026-08-18",
-    offerDate: "2026-08-24",
-    joiningDate: "2026-09-10",
-    recruiterName: "Siddharth Mehta (Staff HR)",
+    stage: "Draft",
+    progress: 15,
+    eligibleStudents: 180,
+    appliedCount: 0,
+    assessmentCount: 0,
+    interviewCount: 0,
+    offersReleased: 0,
+    registrationDeadline: "2026-08-25",
+    assessmentDate: "2026-08-28",
+    interviewDate: "2026-09-02",
+    offerDate: "2026-09-08",
+    joiningDate: "2026-09-20",
+    recruiterName: "Marcus Vance (Senior Recruiter)",
+    statusTone: "rose",
+  },
+  {
+    id: "DRIVE-2026-06",
+    company: "Infosys Limited",
+    logoText: "INF",
+    logoBg: "bg-emerald-600",
+    role: "Systems Engineer Specialist",
+    CTC: "₹9.5 LPA",
+    location: "Mysuru / Pan India",
+    type: "Off-Campus",
+    stage: "Completed",
+    progress: 100,
+    eligibleStudents: 650,
+    appliedCount: 820,
+    assessmentCount: 740,
+    interviewCount: 220,
+    offersReleased: 95,
+    registrationDeadline: "2026-06-15",
+    assessmentDate: "2026-06-20",
+    interviewDate: "2026-06-25",
+    offerDate: "2026-07-05",
+    joiningDate: "2026-08-01",
+    recruiterName: "Priya Nair (Global Campus Lead)",
     statusTone: "success",
   },
 ];
 
-const DRIVE_ANALYTICS_DATA = [
-  { name: "Google Cloud", applications: 520, assessmentPass: 310, offers: 14 },
-  { name: "Microsoft", applications: 610, assessmentPass: 420, offers: 12 },
-  { name: "Qualcomm", applications: 430, assessmentPass: 290, offers: 8 },
-  { name: "AWS", applications: 480, assessmentPass: 380, offers: 10 },
-  { name: "TCS", applications: 750, assessmentPass: 520, offers: 28 },
+const STAGE_WORKFLOW_PIPELINE = [
+  { stage: "Draft", count: 2, pct: "5%", color: "bg-muted-foreground" },
+  { stage: "Published", count: 4, pct: "10%", color: "bg-blue-500" },
+  { stage: "Registration Open", count: 3, pct: "15%", color: "bg-amber-500" },
+  { stage: "Assessment", count: 5, pct: "25%", color: "bg-purple-500" },
+  { stage: "Result Review", count: 3, pct: "15%", color: "bg-indigo-500" },
+  { stage: "Interview", count: 4, pct: "20%", color: "bg-cyan-500" },
+  { stage: "Offer", count: 2, pct: "10%", color: "bg-teal-500" },
+  { stage: "Completed", count: 12, pct: "100%", color: "bg-emerald-500" },
 ];
 
 const DRIVE_CALENDAR_EVENTS = [
-  { date: "Aug 05, 2026", title: "Google Cloud Registration Cut-off", type: "Deadline", color: "bg-rose-500/10 text-rose-600 border-rose-500/20" },
-  { date: "Aug 10, 2026", title: "Google Cloud Online Assessment Day", type: "Assessment", color: "bg-purple-500/10 text-purple-600 border-purple-500/20" },
-  { date: "Aug 15, 2026", title: "Google Cloud Technical Interview Panels", type: "Interview", color: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
-  { date: "Aug 18, 2026", title: "Qualcomm Online Screening Test", type: "Assessment", color: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
-  { date: "Aug 20, 2026", title: "Google Cloud Offer Letter Distribution", type: "Offers", color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
+  { date: "Aug 02", title: "Microsoft Online Aptitude Assessment", type: "Assessment", color: "bg-purple-500/10 text-purple-600" },
+  { date: "Aug 06", title: "Microsoft Technical Interview Round 1", type: "Interview", color: "bg-blue-500/10 text-blue-600" },
+  { date: "Aug 10", title: "Google Cloud Technical Test #1", type: "Assessment", color: "bg-purple-500/10 text-purple-600" },
+  { date: "Aug 12", title: "AWS Technical & HR Panels", type: "Interview", color: "bg-blue-500/10 text-blue-600" },
+  { date: "Aug 15", title: "Google Cloud Offer Letters Distribution", type: "Offer", color: "bg-emerald-500/10 text-emerald-600" },
+  { date: "Aug 18", title: "Qualcomm Campus Drive Assessment", type: "Assessment", color: "bg-purple-500/10 text-purple-600" },
 ];
 
-export function DriveManagementWorkspace(props: any) {
-  return <PlacementDriveWorkspace {...props} />;
-}
+const DRIVE_ANALYTICS_DATA = [
+  { name: "Google Cloud", applications: 520, assessmentPass: 310, interviews: 84, offers: 14 },
+  { name: "Microsoft", applications: 610, assessmentPass: 420, interviews: 120, offers: 12 },
+  { name: "AWS", applications: 480, assessmentPass: 380, interviews: 45, offers: 10 },
+  { name: "Qualcomm", applications: 430, assessmentPass: 290, interviews: 32, offers: 8 },
+  { name: "Infosys", applications: 820, assessmentPass: 740, interviews: 220, offers: 95 },
+];
 
-export function PlacementDriveWorkspace() {
+export function DriveManagementWorkspace() {
+  // Local React States
   const [drives, setDrives] = useState<PlacementDrive[]>(INITIAL_DRIVES);
   const [searchQuery, setSearchQuery] = useState("");
   const [stageFilter, setStageFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
   const [viewMode, setViewMode] = useState<"cards" | "calendar">("cards");
 
-  // Selected Drive for Details Drawer
+  // Selected Drive for Workspace Sheet / Modal
   const [selectedDrive, setSelectedDrive] = useState<PlacementDrive | null>(null);
+  const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
+  const [workspaceTab, setWorkspaceTab] = useState("overview");
 
-  // Recruiter Assignment Modal State
-  const [assignDriveTarget, setAssignDriveTarget] = useState<PlacementDrive | null>(null);
-  const [selectedRecruiterOption, setSelectedRecruiterOption] = useState("David Miller (Staff Recruiter - Google Cloud)");
-  const [recruiterScopeOption, setRecruiterScopeOption] = useState("Full Drive & Assessment Scope");
-
-  // Create Drive Modal State
+  // Create & Import Modal States
   const [activeModal, setActiveModal] = useState<"none" | "create_drive" | "import_drive">("none");
+
+  // Form State for Create Drive Modal
   const [formCompany, setFormCompany] = useState("");
   const [formRole, setFormRole] = useState("");
   const [formCTC, setFormCTC] = useState("");
   const [formLocation, setFormLocation] = useState("");
   const [formType, setFormType] = useState<PlacementDrive["type"]>("On-Campus");
 
+  // Handlers
   const handleCreateDriveSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formCompany || !formRole) {
@@ -333,6 +369,7 @@ export function PlacementDriveWorkspace() {
     toast.success(`Published new campus recruitment drive for "${formCompany}"!`);
   };
 
+  // Filter Logic
   const filteredDrives = drives.filter((d) => {
     const matchesSearch =
       d.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -344,9 +381,12 @@ export function PlacementDriveWorkspace() {
   });
 
   return (
-    <div className="space-y-8 font-sans animate-fade-up">
-      {/* HEADER BANNER */}
+    <div className="space-y-8 animate-fade-up">
+      {/* ==================================================================== */}
+      {/* 1. EXECUTIVE HEADER (GLASSMORPHISM & QUICK ACTIONS)                 */}
+      {/* ==================================================================== */}
       <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card p-6 shadow-sm sm:p-8 backdrop-blur-xl">
+        <div className="absolute -right-20 -top-20 size-72 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
@@ -361,22 +401,30 @@ export function PlacementDriveWorkspace() {
               Placement Drive Management Workspace
             </h1>
             <p className="text-sm text-muted-foreground max-w-2xl">
-              Create placement drives, assign provisioned corporate recruiters (e.g. <strong>David Miller</strong>), monitor assessment progress, and manage candidate shortlist releases.
+              Create, monitor, and manage the complete lifecycle of corporate recruitment drives from registration to offer release.
             </p>
           </div>
 
+          {/* ACTION BUTTONS */}
           <div className="flex flex-wrap items-center gap-2.5">
             <Button
               onClick={() => setActiveModal("create_drive")}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5 shadow-md"
+              className="bg-brand-gradient shadow-glow font-bold text-xs rounded-xl h-10 px-4 cursor-pointer gap-1.5"
             >
               <Briefcase className="size-4" /> + Create Placement Drive
             </Button>
             <Button
               variant="outline"
+              onClick={() => setActiveModal("import_drive")}
+              className="text-xs rounded-xl h-10 px-3 cursor-pointer gap-1.5"
+            >
+              <Upload className="size-3.5" /> Import Drive
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => {
-                const headers = ["Drive ID", "Company", "Role", "CTC", "Assigned Recruiter", "Stage", "Applied", "Offers"];
-                const rows = drives.map((d) => [d.id, d.company, d.role, d.CTC, d.recruiterName, d.stage, d.appliedCount, d.offersReleased]);
+                const headers = ["Drive ID", "Company", "Role", "CTC", "Stage", "Applied", "Offers"];
+                const rows = drives.map((d) => [d.id, d.company, d.role, d.CTC, d.stage, d.appliedCount, d.offersReleased]);
                 const csvContent = [headers.join(","), ...rows.map((r) => r.map((x) => `"${x}"`).join(","))].join("\n");
                 const blob = new Blob([csvContent], { type: "text/csv" });
                 const url = URL.createObjectURL(blob);
@@ -390,11 +438,101 @@ export function PlacementDriveWorkspace() {
             >
               <Download className="size-3.5" /> Export CSV
             </Button>
+            <Button
+              variant={viewMode === "calendar" ? "secondary" : "outline"}
+              onClick={() => setViewMode(viewMode === "cards" ? "calendar" : "cards")}
+              className="text-xs rounded-xl h-10 px-3 cursor-pointer gap-1.5 font-bold"
+            >
+              <CalendarDays className="size-3.5" /> {viewMode === "cards" ? "Calendar View" : "Cards View"}
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* SEARCH & FILTERS BAR */}
+      {/* ==================================================================== */}
+      {/* 2. EXECUTIVE KPI DASHBOARD (10 CARDS)                                */}
+      {/* ==================================================================== */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="font-display text-sm font-bold text-muted-foreground uppercase tracking-wider">
+            Campus Drive Key Performance Indicators
+          </h3>
+          <Badge variant="outline" className="text-[0.65rem] font-mono">Live Operations Center</Badge>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {[
+            { label: "Total Drives", val: `${drives.length + 28}`, trend: "+8 this month", desc: "Registered campus drives", progress: 95 },
+            { label: "Draft Drives", val: "2", trend: "Pending publish", desc: "Drive setup in progress", progress: 20 },
+            { label: "Published Drives", val: "4", trend: "Student portal live", desc: "Open for applications", progress: 40 },
+            { label: "Active Drives", val: `${drives.length}`, trend: "Live now", desc: "Ongoing recruitment rounds", progress: 75 },
+            { label: "Assessment Running", val: "5", trend: "Online coding/test", desc: "Evaluating test scores", progress: 60 },
+            { label: "Interview Stage", val: "4", trend: "18 panels today", desc: "Technical & HR rounds", progress: 80 },
+            { label: "Offers Released", val: "120", trend: "+15 this week", desc: "Verified formal offers", progress: 85 },
+            { label: "Completed Drives", val: "12", trend: "100% closed", desc: "Hiring cycle finished", progress: 100 },
+            { label: "Cancelled Drives", val: "0", trend: "0% loss", desc: "Full partner commitment", progress: 0 },
+            { label: "Avg Hiring Ratio", val: "78.4%", trend: "+6.2% YoY", desc: "Application conversion", progress: 78 },
+          ].map((kpi) => (
+            <div
+              key={kpi.label}
+              onClick={() => toast.info(`Viewing metrics for ${kpi.label}`)}
+              className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm space-y-2 hover:border-primary/40 transition-all cursor-pointer hover:shadow-md"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[0.68rem] font-semibold text-muted-foreground">{kpi.label}</span>
+                <span className="text-[0.65rem] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
+                  {kpi.trend}
+                </span>
+              </div>
+              <p className="font-display text-2xl font-extrabold">{kpi.val}</p>
+              <div className="space-y-1">
+                <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                  <div className="h-full bg-brand-gradient rounded-full" style={{ width: `${kpi.progress}%` }} />
+                </div>
+                <p className="text-[0.65rem] text-muted-foreground">{kpi.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ==================================================================== */}
+      {/* 3. HORIZONTAL 8-STAGE RECRUITMENT DRIVE PIPELINE                     */}
+      {/* ==================================================================== */}
+      <Panel
+        title="8-Stage Recruitment Drive Lifecycle Pipeline"
+        description="Real-time status progression of drives from initial drafting to final drive completion."
+        action={<Badge variant="outline" className="font-mono text-xs">Drive Velocity Funnel</Badge>}
+      >
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 pt-2">
+          {STAGE_WORKFLOW_PIPELINE.map((s, idx) => (
+            <div
+              key={s.stage}
+              onClick={() => {
+                setStageFilter(s.stage);
+                toast.info(`Filtered drives for stage: ${s.stage}`);
+              }}
+              className={`p-3 rounded-xl border ${stageFilter === s.stage ? "border-primary bg-primary/5 shadow-glow" : "border-border/60 bg-muted/30"} space-y-2 flex flex-col justify-between cursor-pointer hover:border-primary/50 transition-all`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[0.65rem] font-mono font-bold text-muted-foreground">0{idx + 1}</span>
+                <span className="text-[0.65rem] font-mono font-bold text-primary">{s.pct}</span>
+              </div>
+              <div>
+                <p className="text-xs font-bold leading-tight">{s.stage}</p>
+                <p className="font-display text-lg font-extrabold mt-0.5">{s.count} Drives</p>
+              </div>
+              <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                <div className={`h-full ${s.color} rounded-full`} style={{ width: `${(idx + 1) * 12.5}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Panel>
+
+      {/* ==================================================================== */}
+      {/* 10. SEARCH & ENTERPRISE FILTERS BAR                                  */}
+      {/* ==================================================================== */}
       <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-xs space-y-3">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="relative flex-1 w-full">
@@ -408,6 +546,7 @@ export function PlacementDriveWorkspace() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            {/* Stage Filter */}
             <select
               value={stageFilter}
               onChange={(e) => setStageFilter(e.target.value)}
@@ -424,6 +563,7 @@ export function PlacementDriveWorkspace() {
               <option value="Completed">Completed</option>
             </select>
 
+            {/* Drive Type Filter */}
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
@@ -452,14 +592,24 @@ export function PlacementDriveWorkspace() {
         </div>
       </div>
 
-      {/* DRIVES GRID */}
+      {/* ==================================================================== */}
+      {/* 4. ACTIVE PLACEMENT DRIVES (CARDS / CALENDAR VIEWS)                  */}
+      {/* ==================================================================== */}
       {viewMode === "cards" ? (
-        <Panel title={`Active Placement Drives (${filteredDrives.length} Drives)`}>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 pt-2 font-mono text-xs">
+        <Panel
+          title="Active Recruitment Drive Workspaces"
+          description="Click 'View Workspace' to enter the full operational workspace for any drive."
+          action={
+            <Badge variant="outline" className="font-mono text-xs">
+              Showing {filteredDrives.length} Drives
+            </Badge>
+          }
+        >
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 pt-2">
             {filteredDrives.map((d) => (
               <div
                 key={d.id}
-                className="p-5 rounded-2xl border border-border/70 bg-card space-y-4 hover:border-blue-400 transition-all shadow-2xs flex flex-col justify-between"
+                className="p-5 rounded-2xl border border-border/70 bg-card space-y-4 hover:border-primary/50 transition-all shadow-xs flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -468,34 +618,13 @@ export function PlacementDriveWorkspace() {
                         {d.logoText}
                       </div>
                       <div>
-                        <h4 className="font-bold text-sm font-sans text-foreground">{d.company}</h4>
-                        <p className="text-xs text-muted-foreground font-sans">{d.role}</p>
+                        <h4 className="font-display text-sm font-bold">{d.company}</h4>
+                        <p className="text-xs text-muted-foreground font-medium">{d.role}</p>
                       </div>
                     </div>
-                    <Badge variant="outline" className="font-mono text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-950">
+                    <Badge variant="outline" className="font-mono text-xs font-bold text-primary bg-primary/5">
                       {d.CTC}
                     </Badge>
-                  </div>
-
-                  {/* ASSIGNED RECRUITER BADGE & ACTION BUTTON */}
-                  <div className="p-2.5 bg-blue-50/70 dark:bg-blue-950/30 rounded-xl border border-blue-200/60 dark:border-blue-800/40 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 truncate">
-                      <UserCheck className="size-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                      <span className="text-[0.68rem] text-muted-foreground font-sans truncate">
-                        HR: <strong className="text-foreground">{d.recruiterName}</strong>
-                      </span>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {
-                        setAssignDriveTarget(d);
-                        setSelectedRecruiterOption(d.recruiterName);
-                      }}
-                      className="h-6 text-[0.62rem] font-bold text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg px-2 cursor-pointer shrink-0 font-sans"
-                    >
-                      Assign / Switch HR
-                    </Button>
                   </div>
 
                   <div className="p-3 bg-muted/30 rounded-xl grid grid-cols-2 gap-2 text-xs font-mono">
@@ -518,26 +647,28 @@ export function PlacementDriveWorkspace() {
                   </div>
 
                   <div className="space-y-1">
-                    <div className="flex items-center justify-between text-xs font-sans">
+                    <div className="flex items-center justify-between text-xs">
                       <span className="text-[0.7rem] text-muted-foreground font-medium">Drive Stage Progress</span>
                       <span className="font-bold font-mono">{d.progress}%</span>
                     </div>
                     <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-600 rounded-full" style={{ width: `${d.progress}%` }} />
+                      <div className="h-full bg-brand-gradient rounded-full" style={{ width: `${d.progress}%` }} />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-border/50 font-sans">
-                  <Badge className="bg-emerald-600 text-white text-[0.68rem] font-mono">
+                <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                  <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[0.68rem] font-mono">
                     {d.stage}
                   </Badge>
                   <Button
                     size="sm"
-                    onClick={() => setSelectedDrive(d)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-8 rounded-xl cursor-pointer gap-1"
+                    asChild
+                    className="bg-brand-gradient shadow-glow font-bold text-xs h-8 rounded-xl cursor-pointer"
                   >
-                    View Details <ChevronRight className="size-3.5" />
+                    <Link to="/placement/drives/$driveId" params={{ driveId: d.id }}>
+                      View Workspace <ChevronRight className="size-3.5 ml-1" />
+                    </Link>
                   </Button>
                 </div>
               </div>
@@ -545,113 +676,167 @@ export function PlacementDriveWorkspace() {
           </div>
         </Panel>
       ) : (
-        <Panel title="Placement Schedule Calendar">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 pt-2 font-mono text-xs">
+        /* 8. ACTIVE CALENDAR VIEW */
+        <Panel title="Placement Schedule Calendar" description="Monthly timeline of test dates, interview rounds, and offer letters.">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 pt-2">
             {DRIVE_CALENDAR_EVENTS.map((ev, idx) => (
-              <div key={idx} className="p-4 rounded-2xl border border-border bg-card space-y-2">
+              <div key={idx} className="p-4 rounded-2xl border border-border/70 bg-card space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-blue-600">{ev.date}</span>
+                  <span className="font-mono text-xs font-bold text-primary">{ev.date}</span>
                   <Badge variant="outline" className={`text-[0.65rem] font-mono ${ev.color}`}>
                     {ev.type}
                   </Badge>
                 </div>
-                <h4 className="font-sans text-xs font-bold text-foreground">{ev.title}</h4>
+                <h4 className="font-display text-xs font-bold">{ev.title}</h4>
               </div>
             ))}
           </div>
         </Panel>
       )}
 
-      {/* ASSIGN RECRUITER TO DRIVE MODAL */}
-      <Dialog open={!!assignDriveTarget} onOpenChange={(open) => !open && setAssignDriveTarget(null)}>
-        <DialogContent className="sm:max-w-md rounded-3xl font-sans">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base font-extrabold">
-              <UserPlus className="size-5 text-blue-600" /> Assign Provisioned Corporate Recruiter
-            </DialogTitle>
-            <DialogDescription className="text-xs font-mono">
-              Authorize a provisioned recruiter account to manage <strong>{assignDriveTarget?.company} - {assignDriveTarget?.role}</strong>.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (assignDriveTarget) {
-                setDrives((prev) =>
-                  prev.map((drv) =>
-                    drv.id === assignDriveTarget.id
-                      ? { ...drv, recruiterName: selectedRecruiterOption }
-                      : drv
-                  )
-                );
-                toast.success(
-                  `Assigned "${selectedRecruiterOption}" to ${assignDriveTarget.company} drive! Access email invitation sent.`
-                );
-                setAssignDriveTarget(null);
-              }
-            }}
-            className="space-y-4 pt-2 font-mono text-xs"
-          >
-            <div className="p-3 bg-muted/40 rounded-2xl border border-border space-y-1">
-              <p className="text-[0.68rem] font-bold text-muted-foreground uppercase font-sans">Target Recruitment Drive:</p>
-              <p className="font-extrabold text-foreground text-sm font-sans">{assignDriveTarget?.company}</p>
-              <p className="text-xs text-primary font-bold">{assignDriveTarget?.role} • CTC: {assignDriveTarget?.CTC}</p>
+      {/* ==================================================================== */}
+      {/* 9. RECHARTS DRIVE ANALYTICS & 11. AI INSIGHTS ROW                    */}
+      {/* ==================================================================== */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* CHART (2 COLS) */}
+        <div className="lg:col-span-2">
+          <Panel title="Drive Recruitment Conversion Velocity" description="Comparative analysis of applications, test clearances, interviews, and final offers.">
+            <div className="h-72 w-full pt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={DRIVE_ANALYTICS_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip contentStyle={{ borderRadius: "12px", fontSize: "12px" }} />
+                  <Bar dataKey="applications" fill="#3b82f6" name="Applications" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="assessmentPass" fill="#8b5cf6" name="Assessment Cleared" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="offers" fill="#10b981" name="Offers Issued" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
+          </Panel>
+        </div>
 
-            <div className="space-y-1 font-sans">
-              <label className="text-xs font-bold text-foreground">Select Provisioned Corporate Recruiter Account:</label>
-              <select
-                value={selectedRecruiterOption}
-                onChange={(e) => setSelectedRecruiterOption(e.target.value)}
-                className="w-full h-10 text-xs rounded-xl bg-background border border-input px-3 font-sans font-bold"
-              >
-                <option value="David Miller (Staff Recruiter - Google Cloud)">David Miller (david.miller@google.com) — Google Cloud HR</option>
-                <option value="Ananya Sharma (University Lead - Microsoft)">Ananya Sharma (ananya@microsoft.com) — Microsoft Lead</option>
-                <option value="Rajesh Kumar (Tech Hiring Lead - Qualcomm)">Rajesh Kumar (rajesh@qualcomm.com) — Qualcomm Lead</option>
-                <option value="Priya Varma (Campus Lead - Amazon AWS)">Priya Varma (priya@amazon.com) — Amazon AWS Lead</option>
-                <option value="Siddharth Mehta (Staff HR - TCS)">Siddharth Mehta (siddharth@tcs.com) — TCS Talent Lead</option>
-              </select>
-            </div>
+        {/* AI INSIGHTS (1 COL) */}
+        <Panel title="AI Placement Drive Intelligence" description="Smart alerts powered by EduSuite AI." action={<Sparkles className="size-4 text-purple-500" />}>
+          <div className="space-y-3 pt-1">
+            {[
+              { title: "Google Drive Pending Approval", desc: "Brochure & test eligibility policy requires TPO approval.", tag: "Action Needed" },
+              { title: "Microsoft Interview Tomorrow", desc: "12 interview panels booked starting at 10:00 AM.", tag: "Reminder" },
+              { title: "Amazon Deadline Closing", desc: "Student application registration closes today at 5:00 PM.", tag: "Urgent" },
+              { title: "Infosys Drive Completed", desc: "95 final offer letters successfully verified by TPO.", tag: "Complete" },
+            ].map((ai) => (
+              <div key={ai.title} className="p-3 rounded-xl border border-border/70 bg-card space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold flex items-center gap-1">
+                    <Sparkles className="size-3 text-purple-500" /> {ai.title}
+                  </span>
+                  <Badge variant="outline" className="text-[0.62rem] font-mono">{ai.tag}</Badge>
+                </div>
+                <p className="text-[0.725rem] text-muted-foreground">{ai.desc}</p>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </div>
 
-            <div className="space-y-1 font-sans">
-              <label className="text-xs font-bold text-foreground">Recruiter Drive Access Privileges Scope:</label>
-              <select
-                value={recruiterScopeOption}
-                onChange={(e) => setRecruiterScopeOption(e.target.value)}
-                className="w-full h-10 text-xs rounded-xl bg-background border border-input px-3 font-sans"
-              >
-                <option value="Full Drive & Assessment Scope">Full Drive Scope (Forms, ATS Resumes, Test Dispatch &amp; Interviews)</option>
-                <option value="Assessment & Candidate Review Only">Assessment &amp; Candidate Resume Review Only</option>
-                <option value="Interview Panel Lead Only">Interview Panel Scheduling Only</option>
-              </select>
-            </div>
+      {/* ==================================================================== */}
+      {/* 5. PLACEMENT DRIVE WORKSPACE (SLIDE-OVER SHEET / DRAWER)            */}
+      {/* ==================================================================== */}
+      <Sheet open={isWorkspaceOpen} onOpenChange={setIsWorkspaceOpen}>
+        <SheetContent className="w-full sm:max-w-xl overflow-y-auto space-y-4">
+          {selectedDrive && (
+            <>
+              <SheetHeader className="pb-2 border-b border-border">
+                <div className="flex items-center gap-3">
+                  <div className={`size-12 rounded-2xl ${selectedDrive.logoBg} text-white grid place-items-center font-extrabold text-lg shadow-xs`}>
+                    {selectedDrive.logoText}
+                  </div>
+                  <div>
+                    <SheetTitle className="text-base font-extrabold">{selectedDrive.company} Workspace</SheetTitle>
+                    <SheetDescription className="text-xs font-semibold text-primary">
+                      Role: {selectedDrive.role} • Package: {selectedDrive.CTC}
+                    </SheetDescription>
+                  </div>
+                </div>
+              </SheetHeader>
 
-            <div className="p-3 bg-blue-50 dark:bg-blue-950/40 rounded-xl border border-blue-200 text-[0.68rem] text-blue-900 dark:text-blue-200 font-sans">
-              ✓ Once confirmed, <strong>{selectedRecruiterOption}</strong> can log into their External Recruiter Portal to manage this placement drive.
-            </div>
+              {/* 10 WORKSPACE TABS */}
+              <Tabs value={workspaceTab} onValueChange={setWorkspaceTab} className="w-full">
+                <TabsList className="bg-muted/40 p-1 rounded-xl w-full grid grid-cols-4 text-[0.62rem] font-bold mb-4">
+                  <TabsTrigger value="overview" className="rounded-lg">Overview</TabsTrigger>
+                  <TabsTrigger value="applications" className="rounded-lg">Applications</TabsTrigger>
+                  <TabsTrigger value="timeline" className="rounded-lg">Timeline</TabsTrigger>
+                  <TabsTrigger value="analytics" className="rounded-lg">Analytics</TabsTrigger>
+                </TabsList>
 
-            <DialogFooter className="pt-2">
-              <Button type="button" variant="outline" onClick={() => setAssignDriveTarget(null)} className="rounded-xl h-9 text-xs">
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl h-9 text-xs cursor-pointer gap-1.5 shadow-md">
-                <UserCheck className="size-4" /> Confirm Assignment &amp; Dispatch Access
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+                {/* OVERVIEW TAB */}
+                <TabsContent value="overview" className="space-y-3 text-xs mt-0">
+                  <div className="p-4 bg-muted/30 rounded-xl space-y-2 border border-border/50">
+                    <p><span className="font-semibold text-muted-foreground">Drive ID:</span> {selectedDrive.id}</p>
+                    <p><span className="font-semibold text-muted-foreground">Company HR Recruiter:</span> {selectedDrive.recruiterName}</p>
+                    <p><span className="font-semibold text-muted-foreground">Work Location:</span> {selectedDrive.location}</p>
+                    <p><span className="font-semibold text-muted-foreground">Drive Type:</span> {selectedDrive.type}</p>
+                    <p><span className="font-semibold text-muted-foreground">Registration Deadline:</span> {selectedDrive.registrationDeadline}</p>
+                    <p><span className="font-semibold text-muted-foreground">Assessment Date:</span> {selectedDrive.assessmentDate}</p>
+                    <p><span className="font-semibold text-muted-foreground">Interview Date:</span> {selectedDrive.interviewDate}</p>
+                    <p><span className="font-semibold text-muted-foreground">Offer Date:</span> {selectedDrive.offerDate}</p>
+                    <p><span className="font-semibold text-muted-foreground">Joining Date:</span> {selectedDrive.joiningDate}</p>
+                  </div>
+                </TabsContent>
+
+                {/* APPLICATIONS TAB */}
+                <TabsContent value="applications" className="space-y-3 text-xs mt-0">
+                  <div className="p-4 bg-muted/30 rounded-xl space-y-2 border border-border/50 font-mono">
+                    <p><span className="text-muted-foreground font-sans">Eligible Candidate Pool:</span> {selectedDrive.eligibleStudents} Students</p>
+                    <p><span className="text-muted-foreground font-sans font-bold text-blue-600">Total Applications Received:</span> {selectedDrive.appliedCount}</p>
+                    <p><span className="text-muted-foreground font-sans font-bold text-purple-600">Assessment Cleared:</span> {selectedDrive.assessmentCount}</p>
+                    <p><span className="text-muted-foreground font-sans font-bold text-cyan-600">Interview Slots Booked:</span> {selectedDrive.interviewCount}</p>
+                    <p><span className="text-muted-foreground font-sans font-bold text-emerald-600">Final Offers Released:</span> {selectedDrive.offersReleased}</p>
+                  </div>
+                </TabsContent>
+
+                {/* TIMELINE TAB */}
+                <TabsContent value="timeline" className="space-y-3 text-xs mt-0">
+                  <div className="p-4 bg-muted/30 rounded-xl space-y-3 border border-border/50">
+                    <p className="font-bold text-foreground">Vertical Drive Lifecycle Timeline</p>
+                    <div className="space-y-2 border-l-2 border-primary/40 pl-3">
+                      <p><span className="font-bold text-primary">• Drive Created</span> - Setup by TPO Admin</p>
+                      <p><span className="font-bold text-primary">• Published</span> - Live on Student Portal</p>
+                      <p><span className="font-bold text-primary">• Applications Open</span> - {selectedDrive.appliedCount} Registered</p>
+                      <p><span className="font-bold text-primary">• Assessment Running</span> - Online Coding Test</p>
+                      <p><span className="font-bold text-primary">• Technical & HR Interviews</span> - Panel evaluation</p>
+                      <p><span className="font-bold text-emerald-600">• Offers Released</span> - {selectedDrive.offersReleased} Issued</p>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* ANALYTICS TAB */}
+                <TabsContent value="analytics" className="space-y-3 text-xs mt-0">
+                  <div className="p-4 bg-muted/30 rounded-xl space-y-2 border border-border/50 font-mono">
+                    <p><span className="font-sans font-bold">Conversion Rate:</span> {((selectedDrive.offersReleased / (selectedDrive.appliedCount || 1)) * 100).toFixed(1)}%</p>
+                    <p><span className="font-sans font-bold">Assessment Pass Rate:</span> {((selectedDrive.assessmentCount / (selectedDrive.appliedCount || 1)) * 100).toFixed(1)}%</p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* ==================================================================== */}
+      {/* INTERACTIVE MODALS                                                   */}
+      {/* ==================================================================== */}
 
       {/* CREATE DRIVE MODAL */}
       <Dialog open={activeModal === "create_drive"} onOpenChange={(open) => !open && setActiveModal("none")}>
-        <DialogContent className="sm:max-w-md rounded-2xl font-sans">
+        <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle>Launch New Placement Drive</DialogTitle>
             <DialogDescription>Schedule and publish a corporate recruitment drive.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleCreateDriveSubmit} className="space-y-3.5 pt-2 font-mono text-xs">
-            <div className="space-y-1 font-sans">
+          <form onSubmit={handleCreateDriveSubmit} className="space-y-3.5 pt-2">
+            <div className="space-y-1">
               <label className="text-xs font-semibold">Company Name</label>
               <Input
                 required
@@ -661,7 +846,7 @@ export function PlacementDriveWorkspace() {
                 className="h-10 text-xs rounded-xl"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3 font-sans">
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <label className="text-xs font-semibold">Job Designation / Role</label>
                 <Input
@@ -682,7 +867,7 @@ export function PlacementDriveWorkspace() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 font-sans">
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <label className="text-xs font-semibold">Work Location</label>
                 <Input
@@ -707,7 +892,7 @@ export function PlacementDriveWorkspace() {
             </div>
             <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => setActiveModal("none")} className="rounded-xl">Cancel</Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl cursor-pointer">Publish Drive</Button>
+              <Button type="submit" className="bg-brand-gradient shadow-glow font-bold rounded-xl cursor-pointer">Publish Drive</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -715,5 +900,3 @@ export function PlacementDriveWorkspace() {
     </div>
   );
 }
-
-export default PlacementDriveWorkspace;
