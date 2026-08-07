@@ -578,11 +578,10 @@ export const INITIAL_PASSES: GatePassRequest[] = [
     passType: "Outing Pass",
     reason: "Project research equipment procurement",
     fromDate: "2026-08-04",
-    toDate: "2026-08-04",
-    status: "Pending",
   },
 ];
 
+export const DEFAULT_HOSTEL_CONFIG: HostelConfig = {
   feeStructure: {
     singleAc: 120000,
     doubleAc: 95000,

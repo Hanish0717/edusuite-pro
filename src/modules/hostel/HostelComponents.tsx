@@ -484,17 +484,8 @@ export function HostelModuleView() {
         >
           4. Hostel Analytics & Reports
         </button>
-        <button
-          onClick={() => setActiveTab("analytics")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-            activeTab === "analytics" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
-          }`}
-        >
-          4. Hostel Analytics & Reports
-        </button>
         <button onClick={() => setActiveTab("mess")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${activeTab === "mess" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
           <Utensils className="size-3.5 text-amber-500" /> 5. Mess Preparation Dashboard
-        </button>
         </button>
       </div>
 
