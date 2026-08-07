@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Webinar } from "./types";
-import { Radio } from "lucide-react";
+import { Radio, Loader2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface WebinarHeroProps {
   webinar: Webinar;
   onRegisterToggle: (webinarId: string) => void;
   onSelectWebinar: (webinar: Webinar) => void;
+  newlyRegisteredIds?: string[];
+  registeringId?: string | null;
 }
 
-export function WebinarHero({ webinar, onRegisterToggle, onSelectWebinar }: WebinarHeroProps) {
+export function WebinarHero({
+  webinar,
+  onRegisterToggle,
+  onSelectWebinar,
+  newlyRegisteredIds = [],
+  registeringId = null,
+}: WebinarHeroProps) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 2, mins: 35, secs: 40 });
 
   useEffect(() => {
@@ -109,10 +117,32 @@ export function WebinarHero({ webinar, onRegisterToggle, onSelectWebinar }: Webi
 
           {/* Button */}
           <Button
+            disabled={webinar.isRegistered || registeringId === webinar.id}
             onClick={() => onRegisterToggle(webinar.id)}
-            className="w-full sm:w-48 h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md"
+            className={`w-full sm:w-48 h-10 rounded-xl font-bold text-xs shadow-md transition-all ${
+              webinar.isRegistered
+                ? "bg-emerald-600 text-white opacity-95 cursor-default pointer-events-none"
+                : "bg-indigo-600 hover:bg-indigo-500 text-white"
+            }`}
           >
-            {webinar.isRegistered ? "Registered" : "Register Now"}
+            {registeringId === webinar.id ? (
+              <>
+                <Loader2 className="size-3.5 mr-1.5 animate-spin" />
+                Loading...
+              </>
+            ) : webinar.isRegistered ? (
+              newlyRegisteredIds.includes(webinar.id) ? (
+                <>
+                  <Check className="size-3.5 mr-1" /> Registered ✓
+                </>
+              ) : (
+                <>
+                  <Check className="size-3.5 mr-1" /> Already Registered
+                </>
+              )
+            ) : (
+              "Register Now"
+            )}
           </Button>
         </div>
       </div>

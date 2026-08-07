@@ -2,8 +2,6 @@ import React from "react";
 import { AcademicOverview } from "./types";
 import {
   CheckCircle2,
-  Award,
-  BookOpen,
   CreditCard,
   Library,
   FileSpreadsheet,
@@ -26,28 +24,12 @@ export const AcademicOverviewCards: React.FC<AcademicOverviewCardsProps> = ({ da
       color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
     },
     {
-      title: "Current CGPA",
-      value: data.cgpa.toFixed(2),
-      subtitle: "First Class with Distinction",
-      badgeType: "positive",
-      icon: Award,
-      color: "text-amber-500 bg-amber-500/10 border-amber-500/20"
-    },
-    {
       title: "Current Semester",
       value: data.currentSemester,
       subtitle: "B.Tech CSE - Autumn 2026",
       badgeType: "neutral",
       icon: GraduationCap,
       color: "text-indigo-500 bg-indigo-500/10 border-indigo-500/20"
-    },
-    {
-      title: "Credits Earned",
-      value: `${data.creditsEarned} / ${data.totalCredits}`,
-      subtitle: "70% Degree Progress",
-      badgeType: "neutral",
-      icon: BookOpen,
-      color: "text-blue-500 bg-blue-500/10 border-blue-500/20"
     },
     {
       title: "Pending Fees",
@@ -84,7 +66,7 @@ export const AcademicOverviewCards: React.FC<AcademicOverviewCardsProps> = ({ da
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {cards.map((card, idx) => {
         const Icon = card.icon;
         return (

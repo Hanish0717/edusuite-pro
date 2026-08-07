@@ -1,6 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { LibraryModuleView } from "@/modules/library";
 
 import { LibraryStoreProvider } from "@/modules/library/LibraryStore";
 
@@ -13,7 +12,7 @@ export function LibraryPage() {
   return (
     <LibraryStoreProvider>
       <DashboardLayout>
-        <LibraryModuleView />
+        <Outlet />
       </DashboardLayout>
     </LibraryStoreProvider>
   );

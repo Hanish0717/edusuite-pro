@@ -26,7 +26,7 @@ export function StudentDetailDrawer({ student, open, onOpenChange }: StudentDeta
       <SheetContent className="sm:max-w-[650px] overflow-y-auto rounded-l-3xl p-6 text-xs">
         <SheetHeader className="border-b border-border pb-4 space-y-2">
           <div className="flex items-center gap-2 text-muted-foreground font-mono font-bold text-[0.65rem] uppercase">
-            <span>Roll: {student.rollNumber}</span>
+            <span>Adm: {student.rollNumber}</span>
             <span>&middot;</span>
             <span>Reg: {student.registrationNumber}</span>
           </div>

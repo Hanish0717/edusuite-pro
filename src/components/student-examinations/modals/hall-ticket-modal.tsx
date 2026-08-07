@@ -24,10 +24,11 @@ const STATUS_BADGE: Record<string, React.ReactNode> = {
 };
 
 export function HallTicketModal({ open, onOpenChange, profile, exams, hallTicketRecord }: HallTicketModalProps) {
-  // Use hallTicketRecord data if available, otherwise fall back to exams prop
-  const displayExams = hallTicketRecord && hallTicketRecord.subjects.length > 0
-    ? hallTicketRecord.subjects
-    : exams;
+  // For current semester, prioritize the single-source-of-truth exams array (derived from course registration)
+  const isCurrentSem = !hallTicketRecord || hallTicketRecord.semester === profile.currentSemester;
+  const displayExams = isCurrentSem && exams.length > 0
+    ? exams
+    : (hallTicketRecord && hallTicketRecord.subjects.length > 0 ? hallTicketRecord.subjects : exams);
 
   const htNumber = hallTicketRecord?.hallTicketNumber || `HT-2026-SEM${profile.currentSemester}-0542`;
   const htStatus = hallTicketRecord?.status || "Verified & Issued";
@@ -53,7 +54,7 @@ export function HallTicketModal({ open, onOpenChange, profile, exams, hallTicket
 Hall Ticket Number : ${htNumber}
 Status             : ${htStatus}
 Student Name       : ${profile.name}
-Roll Number        : ${profile.rollNumber}
+Admission Number   : ${profile.rollNumber}
 Degree / Program   : ${profile.program}
 Branch             : ${profile.branch} (${profile.section})
 Semester           : ${htSemester} | Academic Year: ${htYear}
@@ -127,7 +128,7 @@ Controller of Examinations — EduSuite Pro Academic Board`;
               />
               <div className="space-y-0.5 text-xs">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">{profile.name}</h3>
-                <p className="text-slate-500 font-mono">Roll No: <strong className="text-blue-600">{profile.rollNumber}</strong></p>
+                <p className="text-slate-500 font-mono">Adm No: <strong className="text-blue-600">{profile.rollNumber}</strong></p>
                 <p className="text-slate-500">{profile.program} &middot; {profile.branch}</p>
                 <p className="text-slate-600 font-semibold">{profile.degree} · Semester {htSemester} ({profile.section})</p>
               </div>

@@ -82,7 +82,7 @@ function StudentIdCardPage() {
           <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
           <div>
             <span className="font-bold text-slate-800 dark:text-slate-200 block">Verified Student Identity</span>
-            <span className="text-[11px] text-slate-500">Roll No: {cardData.rollNumber} &middot; {cardData.departmentCode}</span>
+            <span className="text-[11px] text-slate-500">Adm No: {cardData.rollNumber} &middot; {cardData.departmentCode}</span>
           </div>
         </div>
       </div>

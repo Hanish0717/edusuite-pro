@@ -5,7 +5,7 @@ import { LibraryStoreProvider } from "@/modules/library/LibraryStore";
 
 export const Route = createFileRoute("/student/library")({
   head: () => ({
-    meta: [{ title: "Library (OPAC) — EduSuite Pro" }],
+    meta: [{ title: "Library — EduSuite Pro" }],
   }),
   component: StudentLibraryRoute,
 });

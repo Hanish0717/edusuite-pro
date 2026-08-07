@@ -229,6 +229,7 @@ import { Route as StudentResultsRouteImport } from './routes/student.results'
 import { Route as StudentTimetableRouteImport } from './routes/student.timetable'
 import { Route as StudentUpdatesRouteImport } from './routes/student.updates'
 import { Route as StudentWebinarsRouteImport } from './routes/student.webinars'
+import { Route as StudentsIndexRouteImport } from './routes/students.index'
 import { Route as SuperAdminIndexRouteImport } from './routes/super-admin.index'
 import { Route as SuperAdminAcademicsRouteImport } from './routes/super-admin.academics'
 import { Route as SuperAdminAllClassesAttendanceRouteImport } from './routes/super-admin.all-classes-attendance'
@@ -632,6 +633,7 @@ import { Route as StaffStudentDeanStudentRequestsRouteImport } from './routes/st
 import { Route as StaffStudentDeanStudentsRouteImport } from './routes/staff.student-dean.students'
 import { Route as StaffStudentDeanTimetableRouteImport } from './routes/staff.student-dean.timetable'
 import { Route as StaffStudent_deanSplatRouteImport } from './routes/staff.student_dean.$'
+import { Route as StudentsProfileIdRouteImport } from './routes/students.profile.$id'
 import { Route as SuperAdminAcademicsFacultyStatusRouteImport } from './routes/super-admin.academics.faculty-status'
 import { Route as SuperAdminAcademicsSyllabusTrackerRouteImport } from './routes/super-admin.academics.syllabus-tracker'
 import { Route as DashboardAcademicsAttendanceMarkRouteImport } from './routes/dashboard.academics.attendance.mark'
@@ -1745,6 +1747,11 @@ const StudentWebinarsRoute = StudentWebinarsRouteImport.update({
   id: '/webinars',
   path: '/webinars',
   getParentRoute: () => StudentRoute,
+} as any)
+const StudentsIndexRoute = StudentsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StudentsRoute,
 } as any)
 const SuperAdminIndexRoute = SuperAdminIndexRouteImport.update({
   id: '/',
@@ -4065,6 +4072,11 @@ const StaffStudent_deanSplatRoute = StaffStudent_deanSplatRouteImport.update({
   path: '/$',
   getParentRoute: () => StaffStudent_deanRoute,
 } as any)
+const StudentsProfileIdRoute = StudentsProfileIdRouteImport.update({
+  id: '/profile/$id',
+  path: '/profile/$id',
+  getParentRoute: () => StudentsRoute,
+} as any)
 const SuperAdminAcademicsFacultyStatusRoute =
   SuperAdminAcademicsFacultyStatusRouteImport.update({
     id: '/faculty-status',
@@ -4145,7 +4157,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/staff': typeof StaffRouteWithChildren
   '/student': typeof StudentRouteWithChildren
-  '/students': typeof StudentsRoute
+  '/students': typeof StudentsRouteWithChildren
   '/subject-management': typeof SubjectManagementRoute
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/timetable': typeof TimetableRoute
@@ -4332,6 +4344,7 @@ export interface FileRoutesByFullPath {
   '/placement/': typeof PlacementIndexRoute
   '/staff/': typeof StaffIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/students/': typeof StudentsIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
   '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
@@ -4705,6 +4718,7 @@ export interface FileRoutesByFullPath {
   '/staff/student-dean/students': typeof StaffStudentDeanStudentsRoute
   '/staff/student-dean/timetable': typeof StaffStudentDeanTimetableRoute
   '/staff/student_dean/$': typeof StaffStudent_deanSplatRoute
+  '/students/profile/$id': typeof StudentsProfileIdRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
@@ -4758,7 +4772,6 @@ export interface FileRoutesByTo {
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
-  '/students': typeof StudentsRoute
   '/subject-management': typeof SubjectManagementRoute
   '/timetable': typeof TimetableRoute
   '/verify-email': typeof VerifyEmailRoute
@@ -4934,6 +4947,7 @@ export interface FileRoutesByTo {
   '/placement': typeof PlacementIndexRoute
   '/staff': typeof StaffIndexRoute
   '/student': typeof StudentIndexRoute
+  '/students': typeof StudentsIndexRoute
   '/super-admin': typeof SuperAdminIndexRoute
   '/transport': typeof TransportIndexRoute
   '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
@@ -5307,6 +5321,7 @@ export interface FileRoutesByTo {
   '/staff/student-dean/students': typeof StaffStudentDeanStudentsRoute
   '/staff/student-dean/timetable': typeof StaffStudentDeanTimetableRoute
   '/staff/student_dean/$': typeof StaffStudent_deanSplatRoute
+  '/students/profile/$id': typeof StudentsProfileIdRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/librarian': typeof DashboardLibrarianIndexRoute
@@ -5377,7 +5392,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/staff': typeof StaffRouteWithChildren
   '/student': typeof StudentRouteWithChildren
-  '/students': typeof StudentsRoute
+  '/students': typeof StudentsRouteWithChildren
   '/subject-management': typeof SubjectManagementRoute
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/timetable': typeof TimetableRoute
@@ -5564,6 +5579,7 @@ export interface FileRoutesById {
   '/placement/': typeof PlacementIndexRoute
   '/staff/': typeof StaffIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/students/': typeof StudentsIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
   '/dashboard/academics/faculty-status': typeof DashboardAcademicsFacultyStatusRoute
@@ -5937,6 +5953,7 @@ export interface FileRoutesById {
   '/staff/student-dean/students': typeof StaffStudentDeanStudentsRoute
   '/staff/student-dean/timetable': typeof StaffStudentDeanTimetableRoute
   '/staff/student_dean/$': typeof StaffStudent_deanSplatRoute
+  '/students/profile/$id': typeof StudentsProfileIdRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
@@ -6195,6 +6212,7 @@ export interface FileRouteTypes {
     | '/placement/'
     | '/staff/'
     | '/student/'
+    | '/students/'
     | '/super-admin/'
     | '/transport/'
     | '/dashboard/academics/faculty-status'
@@ -6568,6 +6586,7 @@ export interface FileRouteTypes {
     | '/staff/student-dean/students'
     | '/staff/student-dean/timetable'
     | '/staff/student_dean/$'
+    | '/students/profile/$id'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/librarian/'
@@ -6621,7 +6640,6 @@ export interface FileRouteTypes {
     | '/results'
     | '/settings'
     | '/signup'
-    | '/students'
     | '/subject-management'
     | '/timetable'
     | '/verify-email'
@@ -6797,6 +6815,7 @@ export interface FileRouteTypes {
     | '/placement'
     | '/staff'
     | '/student'
+    | '/students'
     | '/super-admin'
     | '/transport'
     | '/dashboard/academics/faculty-status'
@@ -7170,6 +7189,7 @@ export interface FileRouteTypes {
     | '/staff/student-dean/students'
     | '/staff/student-dean/timetable'
     | '/staff/student_dean/$'
+    | '/students/profile/$id'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/librarian'
@@ -7426,6 +7446,7 @@ export interface FileRouteTypes {
     | '/placement/'
     | '/staff/'
     | '/student/'
+    | '/students/'
     | '/super-admin/'
     | '/transport/'
     | '/dashboard/academics/faculty-status'
@@ -7799,6 +7820,7 @@ export interface FileRouteTypes {
     | '/staff/student-dean/students'
     | '/staff/student-dean/timetable'
     | '/staff/student_dean/$'
+    | '/students/profile/$id'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/librarian/'
@@ -7869,7 +7891,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   StaffRoute: typeof StaffRouteWithChildren
   StudentRoute: typeof StudentRouteWithChildren
-  StudentsRoute: typeof StudentsRoute
+  StudentsRoute: typeof StudentsRouteWithChildren
   SubjectManagementRoute: typeof SubjectManagementRoute
   SuperAdminRoute: typeof SuperAdminRouteWithChildren
   TimetableRoute: typeof TimetableRoute
@@ -9424,6 +9446,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/student/webinars'
       preLoaderRoute: typeof StudentWebinarsRouteImport
       parentRoute: typeof StudentRoute
+    }
+    '/students/': {
+      id: '/students/'
+      path: '/'
+      fullPath: '/students/'
+      preLoaderRoute: typeof StudentsIndexRouteImport
+      parentRoute: typeof StudentsRoute
     }
     '/super-admin/': {
       id: '/super-admin/'
@@ -12246,6 +12275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaffStudent_deanSplatRouteImport
       parentRoute: typeof StaffStudent_deanRoute
     }
+    '/students/profile/$id': {
+      id: '/students/profile/$id'
+      path: '/profile/$id'
+      fullPath: '/students/profile/$id'
+      preLoaderRoute: typeof StudentsProfileIdRouteImport
+      parentRoute: typeof StudentsRoute
+    }
     '/super-admin/academics/faculty-status': {
       id: '/super-admin/academics/faculty-status'
       path: '/faculty-status'
@@ -13730,6 +13766,20 @@ const StudentRouteChildren: StudentRouteChildren = {
 const StudentRouteWithChildren =
   StudentRoute._addFileChildren(StudentRouteChildren)
 
+interface StudentsRouteChildren {
+  StudentsIndexRoute: typeof StudentsIndexRoute
+  StudentsProfileIdRoute: typeof StudentsProfileIdRoute
+}
+
+const StudentsRouteChildren: StudentsRouteChildren = {
+  StudentsIndexRoute: StudentsIndexRoute,
+  StudentsProfileIdRoute: StudentsProfileIdRoute,
+}
+
+const StudentsRouteWithChildren = StudentsRoute._addFileChildren(
+  StudentsRouteChildren,
+)
+
 interface SuperAdminAcademicsRouteChildren {
   SuperAdminAcademicsFacultyStatusRoute: typeof SuperAdminAcademicsFacultyStatusRoute
   SuperAdminAcademicsSyllabusTrackerRoute: typeof SuperAdminAcademicsSyllabusTrackerRoute
@@ -13868,7 +13918,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   StaffRoute: StaffRouteWithChildren,
   StudentRoute: StudentRouteWithChildren,
-  StudentsRoute: StudentsRoute,
+  StudentsRoute: StudentsRouteWithChildren,
   SubjectManagementRoute: SubjectManagementRoute,
   SuperAdminRoute: SuperAdminRouteWithChildren,
   TimetableRoute: TimetableRoute,

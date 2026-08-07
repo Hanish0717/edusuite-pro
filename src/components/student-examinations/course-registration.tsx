@@ -13,9 +13,11 @@ import {
   BookOpen,
   Info,
   CheckCircle2,
-  Clock,
-  ArrowRight,
+  CheckSquare,
+  Sparkles,
+  FileCheck,
 } from "lucide-react";
+import { isCourseNptelExempted } from "./nptel-service";
 
 interface CourseRegistrationProps {
   profile: StudentExamProfile;
@@ -31,6 +33,11 @@ interface CourseRegistrationProps {
   onOpenConfirmModal: () => void;
   onCompleteCourseRegistration: () => void;
   onNavigateToExamReg: () => void;
+  selectedCourseIds: string[];
+  onToggleSelect: (courseId: string) => void;
+  onSelectAllCourses: () => void;
+  onSubmitCourseRegistration: () => void;
+  nptelDeclarations?: Record<string, any>;
 }
 
 export function CourseRegistration({
@@ -40,25 +47,28 @@ export function CourseRegistration({
   selectedSemester,
   onYearChange,
   onSemesterChange,
-  onToggleRegister,
-  onCompleteCourseRegistration,
-  onNavigateToExamReg,
+  selectedCourseIds = [],
+  onToggleSelect,
+  onSelectAllCourses,
+  onSubmitCourseRegistration,
+  nptelDeclarations = {},
 }: CourseRegistrationProps) {
   const isCompleted = courseRegStatus === "Completed";
   const availableSemesters = YEAR_TO_SEMESTERS_MAP[selectedYear] || [5, 6];
 
   // Dynamically filter courses for selected semester
   const filteredCourses = courses.filter((c) => c.semester === selectedSemester);
+  const unregisteredCourses = filteredCourses.filter((c) => !c.isRegistered);
+  const allEligibleSelected =
+    unregisteredCourses.length > 0 &&
+    unregisteredCourses.every((c) => selectedCourseIds.includes(c.id));
 
   return (
     <div className="space-y-6">
-
-
-
-      {/* TWO COLUMN LAYOUT (EXACT MATCH WITH SCREENSHOT) */}
+      {/* TWO COLUMN LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* LEFT COLUMN: ACADEMIC FILTERS (3 COLUMNS) */}
+        {/* LEFT COLUMN: ACADEMIC FILTERS (4 COLUMNS) */}
         <div className="lg:col-span-4 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-5">
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">Academic Filters</h3>
 
@@ -99,10 +109,10 @@ export function CourseRegistration({
           <div className="p-4 rounded-xl bg-[#0b193c]/10 border border-[#0b193c]/20 text-xs space-y-1 text-slate-900 dark:text-blue-200">
             <div className="flex items-center gap-1.5 font-bold text-[#0b193c] dark:text-blue-300">
               <Info className="h-4 w-4 text-[#0b193c] dark:text-blue-400 shrink-0" />
-              <span>Note</span>
+              <span>Course Selection Rules</span>
             </div>
             <p className="text-[11px] leading-relaxed text-slate-700 dark:text-blue-300">
-              Courses are offered by the Exam Cell Office. Please verify subject names and codes before clicking register.
+              Click <strong>"Select All Courses"</strong> to auto-select all offered semester courses. NPTEL courses require uploading a PDF completion certificate.
             </p>
           </div>
         </div>
@@ -110,15 +120,31 @@ export function CourseRegistration({
         {/* RIGHT COLUMN: OFFERED COURSES CATALOG (8 COLUMNS) */}
         <div className="lg:col-span-8 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-5">
           
-          {/* HEADER */}
-          <div className="flex items-center justify-between">
+          {/* HEADER BAR WITH SELECT ALL BUTTON */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-[#0b193c] dark:text-blue-400" />
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Offered Courses Catalog</h3>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Offered Courses Catalog</h3>
+                <span className="text-[11px] text-slate-400 font-medium">CSE &middot; Semester {selectedSemester}</span>
+              </div>
             </div>
-            <span className="px-3 py-1 text-xs font-semibold rounded-full bg-[#0b193c]/10 text-[#0b193c] dark:text-blue-400 border border-[#0b193c]/20">
-              CSE - Sem {selectedSemester}
-            </span>
+
+            {/* SINGLE TOP-LEVEL SELECT ALL COURSES ACTION BUTTON */}
+            {!isCompleted && unregisteredCourses.length > 0 && (
+              <Button
+                onClick={onSelectAllCourses}
+                size="sm"
+                className={`text-xs font-bold rounded-xl gap-2 shadow-sm transition-all ${
+                  allEligibleSelected
+                    ? "bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300"
+                    : "bg-[#0b193c] hover:bg-[#0b193c]/90 text-white"
+                }`}
+              >
+                <CheckSquare className="h-4 w-4 text-blue-400" />
+                <span>{allEligibleSelected ? "Deselect All Courses" : "Select All Courses"}</span>
+              </Button>
+            )}
           </div>
 
           {/* COURSES CARD GRID */}
@@ -128,37 +154,106 @@ export function CourseRegistration({
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredCourses.map((c) => (
-                <div
-                  key={c.id}
-                  className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-3"
-                >
-                  <div>
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="font-mono font-bold text-[#0b193c] dark:text-blue-400">{c.code}</span>
-                      <span className="text-[11px] text-slate-400 font-medium">{c.category === "Core" ? "Normal Subject" : c.category}</span>
-                    </div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">{c.name}</h4>
-                    
-                    <div className="mt-2 space-y-1 text-xs text-slate-500">
-                      <p className="font-mono text-[11px]">Credits: {c.credits.toFixed(1)} &bull; Semester: {c.semester}</p>
-                      <p className="text-[11px]">Mentor: <span className="text-[#0b193c] dark:text-blue-400 font-semibold">{c.faculty}</span></p>
-                    </div>
-                  </div>
+              {filteredCourses.map((c) => {
+                const isSelected = selectedCourseIds.includes(c.id);
+                const isNptelExempt = isCourseNptelExempted(c.id, nptelDeclarations);
 
-                  <Button
-                    disabled={c.isRegistered}
-                    onClick={() => !c.isRegistered && onToggleRegister(c.id)}
-                    className={`w-full h-9 text-xs font-bold rounded-xl transition-all shadow-sm ${
-                      c.isRegistered
-                        ? "bg-emerald-600 text-white cursor-not-allowed opacity-100"
-                        : "bg-[#0b193c] hover:bg-[#0b193c]/90 text-white"
+                return (
+                  <div
+                    key={c.id}
+                    className={`p-4 rounded-2xl border transition-all flex flex-col justify-between space-y-3 ${
+                      c.isRegistered || (isCompleted && c.isRegistered)
+                        ? "border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/10 dark:bg-emerald-950/5 shadow-sm opacity-90"
+                        : isSelected
+                        ? "border-blue-500 bg-blue-50/10 dark:bg-blue-950/10 shadow-md ring-1 ring-blue-500/20"
+                        : "border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md"
                     }`}
                   >
-                    {c.isRegistered ? "Course Registered ✓" : "Register Course"}
-                  </Button>
-                </div>
-              ))}
+                    <div>
+                      <div className="flex items-center justify-between text-xs mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-[#0b193c] dark:text-blue-400">{c.code}</span>
+                          {c.isNptel && (
+                            <Badge variant="outline" className="text-[10px] px-1 py-0 bg-amber-500/10 text-amber-600 border-amber-500/20 font-bold shrink-0">
+                              NPTEL
+                            </Badge>
+                          )}
+                        </div>
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          {c.category === "Core" ? "Normal Subject" : c.category}
+                        </span>
+                      </div>
+
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">{c.name}</h4>
+                      
+                      <div className="mt-2 space-y-1 text-xs text-slate-500">
+                        <p className="font-mono text-[11px]">Credits: {c.credits.toFixed(1)} &bull; Semester: {c.semester}</p>
+                        <p className="text-[11px]">Mentor: <span className="text-[#0b193c] dark:text-blue-400 font-semibold">{c.faculty}</span></p>
+                      </div>
+
+                      {/* NPTEL Exemption Status Banner */}
+                      {c.isNptel && isNptelExempt && (
+                        <div className="mt-2.5 p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 text-[10px] text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5 font-bold">
+                          <FileCheck className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                          <span>Certificate Submitted (Exam Exempted)</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* CARD SELECTION BUTTON - Clean UI without HTML Checkboxes */}
+                    <Button
+                      disabled={c.isRegistered || isCompleted}
+                      onClick={() => {
+                        if (!c.isRegistered && !isCompleted) {
+                          onToggleSelect(c.id);
+                        }
+                      }}
+                      className={`w-full h-9 text-xs font-bold rounded-xl transition-all shadow-sm ${
+                        c.isRegistered || (isCompleted && c.isRegistered)
+                          ? "bg-emerald-600 text-white cursor-not-allowed opacity-100"
+                          : isCompleted
+                          ? "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed border-0"
+                          : isSelected
+                          ? "bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/10"
+                          : "bg-[#0b193c] hover:bg-[#0b193c]/90 text-white"
+                      }`}
+                    >
+                      {c.isRegistered || (isCompleted && c.isRegistered)
+                        ? "Course Registered ✓"
+                        : isCompleted
+                        ? "Not Registered"
+                        : isSelected
+                        ? "Selected ✓"
+                        : "Select Course"}
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* STICKY BOTTOM SUBMIT BAR */}
+          {!isCompleted && selectedCourseIds.length > 0 && (
+            <div className="sticky bottom-4 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-4 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg flex items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="text-xs">
+                <span className="text-slate-500 font-medium dark:text-slate-400">Selected:</span>{" "}
+                <span className="font-bold text-slate-900 dark:text-white">{selectedCourseIds.length} Subjects</span>
+                <span className="text-slate-400 mx-2">|</span>
+                <span className="text-slate-500 font-medium dark:text-slate-400">Credits:</span>{" "}
+                <span className="font-bold text-slate-900 dark:text-white font-mono">
+                  {courses
+                    .filter((c) => selectedCourseIds.includes(c.id))
+                    .reduce((sum, c) => sum + c.credits, 0)
+                    .toFixed(1)} Cr
+                </span>
+              </div>
+
+              <Button
+                onClick={onSubmitCourseRegistration}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-9 px-5 rounded-xl transition-all shadow-sm shrink-0"
+              >
+                Submit Course Registration ({selectedCourseIds.length})
+              </Button>
             </div>
           )}
 

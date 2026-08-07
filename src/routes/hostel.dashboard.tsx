@@ -5,7 +5,7 @@ export const Route = createFileRoute("/hostel/dashboard")({
   head: () => ({
     meta: [{ title: "Hostel Management Workspace — EduSuite Pro" }],
   }),
-  component: HostelDashboardPage,
+  component: HostelModuleView,
 });
 
 function HostelDashboardPage() {

@@ -161,9 +161,9 @@ Verified Document — Academic Affairs Committee`;
               <Button
                 onClick={() => handleOpenWorkspace(course.code, course.name)}
                 size="sm"
-                className="h-8 text-[11px] px-1 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold gap-1 w-full min-w-0 overflow-hidden cursor-pointer"
+                className="h-8 text-[11px] px-1 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold flex items-center justify-center w-full min-w-0 overflow-hidden cursor-pointer"
               >
-                <span className="truncate">Open</span> <ExternalLink className="h-3 w-3 shrink-0" />
+                <span className="truncate">Open</span>
               </Button>
             </div>
           </div>

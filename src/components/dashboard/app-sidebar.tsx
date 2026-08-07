@@ -41,7 +41,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -634,7 +633,6 @@ export function AppSidebar() {
                   const currentCleanPath = (pathname || "").split("?")[0] || "";
                   const hasQueryParam = item.url.includes("?");
                   const itemCleanPath = (item.url || "").split("?")[0] || "";
-                  const itemSlug = itemCleanPath.replace(/^\//, "").split("/")[0] || "";
                   let isItemActive = false;
 
                   const isChildActive =

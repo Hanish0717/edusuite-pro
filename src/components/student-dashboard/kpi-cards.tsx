@@ -2,19 +2,14 @@ import React from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   CalendarCheck,
-  Award,
   TrendingUp,
-  CreditCard,
   IndianRupee,
   CheckCircle2,
   BookOpen,
   Library,
   FileSpreadsheet,
   Clock,
-  ChevronRight,
   ArrowUpRight,
-  ArrowDownRight,
-  Minus,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -38,19 +33,6 @@ export function StudentKpiCards({ onNavigate }: KpiCardsProps) {
       route: "/student/attendance",
     },
     {
-      id: "cgpa",
-      label: "Current CGPA",
-      value: "8.45",
-      subValue: "Out of 10.0 scale",
-      icon: Award,
-      iconBg: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-      statusLabel: "Top 5% Rank",
-      statusVariant: "info",
-      trendText: "+0.08 vs Sem VI",
-      trendDir: "up",
-      route: "/student/examinations",
-    },
-    {
       id: "sgpa",
       label: "Current SGPA",
       value: "8.60",
@@ -61,19 +43,6 @@ export function StudentKpiCards({ onNavigate }: KpiCardsProps) {
       statusVariant: "info",
       trendText: "Consistent A Grade",
       trendDir: "up",
-      route: "/student/examinations",
-    },
-    {
-      id: "credits",
-      label: "Credits Earned",
-      value: "112 / 160",
-      subValue: "70% Degree Complete",
-      icon: CreditCard,
-      iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-      statusLabel: "On Track",
-      statusVariant: "success",
-      trendText: "48 credits remaining",
-      trendDir: "neutral",
       route: "/student/examinations",
     },
     {
@@ -162,10 +131,10 @@ export function StudentKpiCards({ onNavigate }: KpiCardsProps) {
         <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Executive Summary KPIs
         </h2>
-        <span className="text-[11px] text-slate-400 font-mono">10 Modules Overview</span>
+        <span className="text-[11px] text-slate-400 font-mono">8 Modules Overview</span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {cards.map((card) => {
           const IconComp = card.icon;
           return (

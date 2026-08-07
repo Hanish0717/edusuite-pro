@@ -70,7 +70,7 @@ export function DigitalIdCardModal({ open, onOpenChange, student }: DigitalIdCar
                     <h3 className="text-base font-extrabold text-white truncate">{student.name}</h3>
                     <p className="text-xs text-blue-400 font-semibold truncate">{student.department}</p>
                     <div className="text-[11px] text-slate-300">
-                      Roll No: <span className="font-mono font-bold text-white bg-slate-800 px-1.5 py-0.5 rounded">{student.rollNumber}</span>
+                      Adm No: <span className="font-mono font-bold text-white bg-slate-800 px-1.5 py-0.5 rounded">{student.rollNumber}</span>
                     </div>
                     <div className="text-[11px] text-slate-400">
                       Degree: <span className="text-slate-200 font-medium">{student.degree} (Sem {student.currentSemester})</span>

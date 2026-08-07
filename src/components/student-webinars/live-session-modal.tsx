@@ -55,7 +55,7 @@ export function LiveSessionModal({ webinar, isOpen, onClose }: LiveSessionModalP
 
       setChatLog((prev) => [
         ...prev.slice(-15),
-        { id: String(Date.now()), user: randomName, text: randomMsg, time: "16:08" },
+        { id: String(Date.now()), user: randomName || "Student", text: randomMsg || "Interesting!", time: "16:08" },
       ]);
     }, 4000);
 

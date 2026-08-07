@@ -1,121 +1,132 @@
-export type BookAvailabilityStatus = "Available" | "Issued" | "Reserved" | "Reference Only";
+export type BookType = "Hard Copy" | "E-Book";
+export type BookAvailability = "Available" | "Issued" | "Reserved" | "Out of Stock";
 
 export interface BookItem {
   id: string;
+  coverImage: string;
   title: string;
   author: string;
   publisher: string;
+  publicationYear: number;
+  edition: string;
   isbn: string;
+  rackNumber: string;
+  shelfNumber: string;
   category: string;
   department: string;
-  rackNumber: string;
-  edition: string;
-  publicationYear: number;
+  subject: string;
+  callNumber: string;
+  keywords: string[];
+  bookType: BookType;
+  status: BookAvailability;
   totalCopies: number;
   availableCopies: number;
-  status: BookAvailabilityStatus;
-  coverImage: string;
-  description: string;
   language: string;
-  semester?: string;
-  rating?: number;
+  pages: number;
+  description: string;
 }
 
-export interface IssuedBookItem {
+export interface BorrowedBook {
   id: string;
   bookId: string;
   title: string;
   author: string;
-  isbn: string;
   coverImage: string;
+  isbn: string;
+  accNumber: string;
   issueDate: string;
   dueDate: string;
   daysRemaining: number;
-  accNumber: string;
+  lateDays: number;
   fineAmount: number;
   renewalsCount: number;
   maxRenewals: number;
+  status: "Issued" | "Returned" | "Overdue";
+  finePaid: boolean;
+  librarianName?: string;
+  issueCounter?: string;
 }
 
-export interface BorrowHistoryItem {
+export interface ReservationItem {
   id: string;
   bookId: string;
   title: string;
   author: string;
-  isbn: string;
-  issuedDate: string;
-  returnedDate: string;
-  finePaid: number;
-  status: "Returned" | "Returned Late" | "Lost & Replaced";
-  receiptId: string;
-}
-
-export interface ReservedBookItem {
-  id: string;
-  bookId: string;
-  title: string;
-  author: string;
+  coverImage: string;
   reservedDate: string;
   queuePosition: number;
   availabilityDate: string;
-  status: "In Queue" | "Ready for Pickup" | "Expired";
+  status: "Waiting" | "Reserved" | "Ready for Pickup";
 }
 
 export interface FineRecordItem {
   id: string;
+  bookId: string;
   bookTitle: string;
-  reason: string;
-  amount: number;
-  dateIncurred: string;
-  status: "Pending" | "Paid" | "Waived";
+  dueDate: string;
+  currentDate: string;
+  lateDays: number;
+  ratePerDay: number;
+  fineAmount: number;
+  status: "Pending" | "Paid";
   transactionId?: string;
+  dateIncurred: string;
 }
 
-export interface DigitalResourceItem {
+export interface DigitalVisitLog {
+  id: string;
+  computerNumber: string;
+  seatNumber: string;
+  date: string;
+  loginTime: string;
+  logoutTime: string;
+  duration: string;
+  lab: string;
+  activity: string;
+  status: "Active" | "Completed";
+  system: string;
+}
+
+export interface ActivityLog {
+  id: string;
+  timestamp: string;
+  type:
+    | "Book Issued"
+    | "Book Returned"
+    | "Fine Paid"
+    | "Book Reserved"
+    | "Digital Lab Login"
+    | "Digital Lab Logout"
+    | "Librarian Update";
+  title: string;
+  details: string;
+}
+
+export interface NotificationItem {
   id: string;
   title: string;
-  category: 
-    | "E-Books"
-    | "Courseware"
-    | "Digital Library"
-    | "Dictionary"
-    | "Journals"
-    | "Lecture Videos"
-    | "Open ETD"
-    | "Useful Links"
-    | "Virtual Labs"
-    | "Previous Question Papers"
-    | "IEEE Papers"
-    | "NPTEL Courses"
-    | "Research Publications";
-  description: string;
-  department: string;
-  subject: string;
-  fileFormat: string;
-  fileSize: string;
-  downloadsCount: number;
-  authorOrProvider: string;
-  year: number;
-  url: string;
-  isBookmarked?: boolean;
-}
-
-export interface LibrarySummaryMetrics {
-  booksIssued: number;
-  maxBorrowLimit: number;
-  booksReserved: number;
-  fineAmount: number;
-  availableBorrowLimit: number;
-  digitalResourcesCount: number;
-  recentlyAddedBooksCount: number;
+  message: string;
+  date: string;
+  type: "due_soon" | "overdue" | "reserved_available" | "fine_pending" | "new_book";
+  read: boolean;
 }
 
 export interface CatalogFilterState {
   searchQuery: string;
   department: string;
-  semester: string;
+  subject: string;
   availability: string;
+  bookType: string;
   category: string;
-  language: string;
-  publicationYear: string;
+}
+
+export interface LibraryMetrics {
+  totalBorrowed: number;
+  currentlyBorrowed: number;
+  overdueCount: number;
+  recentReturns: number;
+  pendingFine: number;
+  reservedCount: number;
+  wishlistCount: number;
+  digitalVisitsCount: number;
 }

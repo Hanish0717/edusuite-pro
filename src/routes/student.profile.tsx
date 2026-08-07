@@ -14,28 +14,9 @@ import { ApplyLeaveModal } from "@/components/student-profile/modals/apply-leave
 import { PayFeesModal } from "@/components/student-profile/modals/pay-fees-modal";
 import { DocumentPreviewModal } from "@/components/student-profile/modals/document-preview-modal";
 import { BonafideModal } from "@/components/student-profile/modals/bonafide-modal";
-import { AddAchievementModal } from "@/components/student-profile/modals/add-achievement-modal";
-
+import { ResetPasswordModal } from "@/components/student-profile/modals/reset-password-modal";
 // Tabs
 import { OverviewTab } from "@/components/student-profile/tabs/overview-tab";
-import { PersonalTab } from "@/components/student-profile/tabs/personal-tab";
-import { AcademicTab } from "@/components/student-profile/tabs/academic-tab";
-import { ParentTab } from "@/components/student-profile/tabs/parent-tab";
-import { AddressTab } from "@/components/student-profile/tabs/address-tab";
-import { DocumentsTab } from "@/components/student-profile/tabs/documents-tab";
-import { MedicalTab } from "@/components/student-profile/tabs/medical-tab";
-import { AchievementsTab } from "@/components/student-profile/tabs/achievements-tab";
-import { DisciplinaryTab } from "@/components/student-profile/tabs/disciplinary-tab";
-import { AttendanceTab } from "@/components/student-profile/tabs/attendance-tab";
-import { FeesTab } from "@/components/student-profile/tabs/fees-tab";
-import { LibraryTab } from "@/components/student-profile/tabs/library-tab";
-import { HostelTab } from "@/components/student-profile/tabs/hostel-tab";
-import { TransportTab } from "@/components/student-profile/tabs/transport-tab";
-import { TimelineTab } from "@/components/student-profile/tabs/timeline-tab";
-import { SettingsTab } from "@/components/student-profile/tabs/settings-tab";
-
-// UI Components
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -44,27 +25,6 @@ import { EmptyState } from "@/components/ui/empty-state";
 import {
   Home,
   ChevronRight,
-  Search,
-  Download,
-  Printer,
-  FileSpreadsheet,
-  RefreshCw,
-  Sparkles,
-  User,
-  GraduationCap,
-  Users,
-  MapPin,
-  FileText,
-  Heart,
-  Trophy,
-  ShieldAlert,
-  TrendingUp,
-  DollarSign,
-  Library,
-  Building2 as HostelIcon,
-  Bus,
-  Calendar,
-  Settings as SettingsIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -74,10 +34,8 @@ export const Route = createFileRoute("/student/profile")({
   }),
   component: StudentProfilePage,
 });
-
 function StudentProfilePage() {
   const [student, setStudent] = useState<StudentProfileData>(MOCK_STUDENT_PROFILE);
-  const [activeTab, setActiveTab] = useState("overview");
   const [globalSearch, setGlobalSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isEmptyState, setIsEmptyState] = useState(false);
@@ -91,7 +49,7 @@ function StudentProfilePage() {
   const [docPreviewModalOpen, setDocPreviewModalOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<any>(null);
   const [bonafideModalOpen, setBonafideModalOpen] = useState(false);
-  const [addAchievementModalOpen, setAddAchievementModalOpen] = useState(false);
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
 
   // Download handlers
   const handleDownloadPdf = () => {
@@ -116,17 +74,7 @@ function StudentProfilePage() {
     setTimeout(() => setIsLoading(false), 1200);
   };
 
-  // List of core profile tabs
-  const tabItems = [
-    { id: "overview", label: "Overview", icon: Sparkles },
-    { id: "personal", label: "Personal Details", icon: User },
-    { id: "academic", label: "Academic Details", icon: GraduationCap },
-    { id: "guardian", label: "Guardian Details", icon: Users },
-    { id: "address", label: "Address", icon: MapPin },
-    { id: "documents", label: "Documents", icon: FileText },
-    { id: "achievements", label: "Achievements", icon: Trophy },
-    { id: "settings", label: "Settings", icon: SettingsIcon },
-  ];
+
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
@@ -178,83 +126,18 @@ function StudentProfilePage() {
             onOpenEdit={() => setEditDrawerOpen(true)}
             onDownloadPdf={() => {}}
             onPrint={handlePrint}
+            onOpenResetPassword={() => setResetPasswordOpen(true)}
           />
 
-          {/* 4. 16 TABS NAVIGATION BAR */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
-            
-            {/* Scrollable Tabs Header Bar */}
-            <div className="overflow-x-auto pb-2 scrollbar-none">
-              <TabsList className="inline-flex h-auto p-1 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-800 space-x-1 min-w-max">
-                {tabItems.map((tab) => {
-                  const IconComp = tab.icon;
-                  return (
-                    <TabsTrigger
-                      key={tab.id}
-                      value={tab.id}
-                      className="px-3.5 py-2 text-xs font-semibold rounded-xl data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all gap-1.5"
-                    >
-                      <IconComp className="h-3.5 w-3.5" />
-                      <span>{tab.label}</span>
-                    </TabsTrigger>
-                  );
-                })}
-              </TabsList>
-            </div>
-
-            {/* TAB CONTENTS */}
-            <TabsContent value="overview" className="mt-0">
-              <OverviewTab
-                student={student}
-                onOpenBonafide={() => setBonafideModalOpen(true)}
-                onOpenLeave={() => setLeaveModalOpen(true)}
-                onOpenPayFees={() => setPayFeesModalOpen(true)}
-                onOpenIdCard={() => setIdCardOpen(true)}
-                onOpenLibrarySearch={() => setActiveTab("library")}
-              />
-            </TabsContent>
-
-            <TabsContent value="personal" className="mt-0">
-              <PersonalTab student={student} onEdit={() => setEditDrawerOpen(true)} />
-            </TabsContent>
-
-            <TabsContent value="academic" className="mt-0">
-              <AcademicTab student={student} onContactMentor={() => toast.info(`Emailing advisor ${student.academicAdvisor.email}`)} />
-            </TabsContent>
-
-            <TabsContent value="guardian" className="mt-0">
-              <ParentTab student={student} />
-            </TabsContent>
-
-            <TabsContent value="address" className="mt-0">
-              <AddressTab student={student} />
-            </TabsContent>
-
-            <TabsContent value="documents" className="mt-0">
-              <DocumentsTab
-                student={student}
-                onPreviewDocument={(doc) => {
-                  setSelectedDoc(doc);
-                  setDocPreviewModalOpen(true);
-                }}
-              />
-            </TabsContent>
-
-            <TabsContent value="achievements" className="mt-0">
-              <AchievementsTab
-                student={student}
-                onAddAchievement={() => setAddAchievementModalOpen(true)}
-              />
-            </TabsContent>
-
-            <TabsContent value="settings" className="mt-0">
-              <SettingsTab
-                student={student}
-                onUpdateSettings={(newSettings) => setStudent({ ...student, settings: newSettings })}
-              />
-            </TabsContent>
-
-          </Tabs>
+          {/* MAIN OVERVIEW CONTENT */}
+          <OverviewTab
+            student={student}
+            onOpenBonafide={() => setBonafideModalOpen(true)}
+            onOpenLeave={() => setLeaveModalOpen(true)}
+            onOpenPayFees={() => setPayFeesModalOpen(true)}
+            onOpenIdCard={() => setIdCardOpen(true)}
+            onOpenLibrarySearch={() => {}}
+          />
         </>
       )}
 
@@ -317,15 +200,9 @@ function StudentProfilePage() {
         student={student}
       />
 
-      <AddAchievementModal
-        open={addAchievementModalOpen}
-        onOpenChange={setAddAchievementModalOpen}
-        onAdd={(newAch) => {
-          setStudent({
-            ...student,
-            achievements: [newAch, ...student.achievements],
-          });
-        }}
+      <ResetPasswordModal
+        open={resetPasswordOpen}
+        onOpenChange={setResetPasswordOpen}
       />
 
     </div>
