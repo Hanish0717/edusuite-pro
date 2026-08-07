@@ -183,11 +183,11 @@ export const navigation: NavSection[] = [
         moduleId: "examination",
         roles: ["super-admin", "staff"],
         children: [
-          { title: "Exam Schedule", url: "/examinations?tab=schedule", moduleId: "examination" },
-          { title: "Hall Tickets", url: "/examinations?tab=hall-tickets", moduleId: "examination" },
-          { title: "Internal Marks", url: "/examinations?tab=marks", moduleId: "examination" },
-          { title: "Results & Grades", url: "/examinations?tab=results", moduleId: "examination" },
-          { title: "Reevaluations", url: "/examinations?tab=revaluations", moduleId: "examination" },
+          { title: "Exam Schedule", url: "/examinations/schedule", moduleId: "examination" },
+          { title: "Hall Tickets", url: "/examinations/hall-tickets", moduleId: "examination" },
+          { title: "Internal Marks", url: "/examinations/internal-marks", moduleId: "examination" },
+          { title: "Results & Grades", url: "/results", moduleId: "examination" },
+          { title: "Reevaluations", url: "/examinations/revaluation", moduleId: "examination" },
         ],
       },
       { title: "Results", url: "/results", icon: Award, moduleId: "examination" },
@@ -238,6 +238,8 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     url.startsWith("/library") ||
     url.startsWith("/hostel") ||
     url.startsWith("/transport") ||
+    url.startsWith("/examinations") ||
+    url.startsWith("/results") ||
     [
       "/employee-management",
       "/leave",
