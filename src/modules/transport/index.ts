@@ -1,8 +1,8 @@
 export * from "./TransportService";
-export * from "./TransportComponents";
 export {
+  TransportModuleView,
   TransportModuleView as TransportVerificationView,
   TransportModuleView as TransportFeesManagementView,
   TransportModuleView as TransportNotificationsView,
   TransportModuleView as TransportSettingsView,
-};
+} from "./TransportComponents";
