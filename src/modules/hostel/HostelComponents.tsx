@@ -18,6 +18,26 @@ import {
   KeyRound,
   Calendar,
   Sparkles,
+  Utensils,
+  CreditCard,
+  Wallet,
+  Bell,
+  Settings,
+  MessageSquare,
+  ClipboardList,
+  Send,
+  Check,
+  Receipt,
+  CalendarDays,
+  Phone,
+  UserPlus,
+  Loader2,
+  TrendingUp,
+  PhoneCall,
+  Flame,
+  Lock,
+  Printer,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -106,7 +126,10 @@ export function HostelModuleView() {
 
   const handleAddRoomSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!roomForm.roomNo) return toast.error("Enter room number");
+    if (!roomForm.roomNo) {
+      toast.error("Enter room number");
+      return;
+    }
     const created = await createHostelRoom(roomForm);
     setRooms((prev) => [created, ...prev]);
     setIsAddRoomOpen(false);
