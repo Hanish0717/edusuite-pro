@@ -148,10 +148,7 @@ export function HostelModuleView() {
       }
     };
   }, [todayStr]);
-=======
-  const [activeTab, setActiveTab] = useState<"blocks" | "residents" | "compliance" | "analytics">("blocks");
 
->>>>>>> origin/feature/dean-erp-and-superadmin-updates
   const [loading, setLoading] = useState(false);
 
   // Filters state for Resident Roster
@@ -219,7 +216,6 @@ export function HostelModuleView() {
     setResidents(res);
     setPasses(ps);
     if (!isSilent) setLoading(false);
-  };
   };
 
   useEffect(() => {
@@ -475,13 +471,6 @@ export function HostelModuleView() {
         >
           3. Compliance, Security & Gate Pass Monitoring
         </button>
-        <button
-          onClick={() => setActiveTab("analytics")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-            activeTab === "analytics" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
-          }`}
-        >
-          4. Hostel Analytics & Reports
         <button
           onClick={() => setActiveTab("analytics")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
@@ -1265,7 +1254,6 @@ export function HostelModuleView() {
       )}
 
       {/* SECTION 7: VIEW DETAILS READ-ONLY MODAL */}
-      {/* SECTION 7: VIEW DETAILS READ-ONLY MODAL */}
       <Dialog open={isViewDetailsOpen} onOpenChange={setIsViewDetailsOpen}>
         <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
@@ -1723,3 +1711,25 @@ export function HostelModuleView() {
     </div>
   );
 }
+
+// Sub-route view aliases rendering the central HostelModuleView
+export const HostelBlocksView = HostelModuleView;
+export const HostelAttendanceView = HostelModuleView;
+export const HostelComplaintsView = HostelModuleView;
+export const HostelDeviceManagementView = HostelModuleView;
+export const HostelFeesView = HostelModuleView;
+export const HostelGuestBillingView = HostelModuleView;
+export const HostelLeavesSuspensionView = HostelModuleView;
+export const HostelLogHistoryView = HostelModuleView;
+export const HostelMaintenanceView = HostelModuleView;
+export const HostelMessFeesView = HostelModuleView;
+export const HostelMessManagementView = HostelModuleView;
+export const HostelMessMenusView = HostelModuleView;
+export const HostelNotificationsView = HostelModuleView;
+export const HostelOutingApprovalsView = HostelModuleView;
+export const HostelOutingLogHistoryView = HostelModuleView;
+export const HostelRoomsView = HostelModuleView;
+export const HostelSettingsView = HostelModuleView;
+export const HostelUserManagementView = HostelModuleView;
+export const HostelVisitorsView = HostelModuleView;
+

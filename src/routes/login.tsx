@@ -193,7 +193,6 @@ function LoginPage() {
       const target = resolved.targetRoute || (step2Designation === "admission_desk" ? "/dashboard/admission" : "/dashboard");
       navigate({ to: target });
     }
-    }
   };
 
   return (
