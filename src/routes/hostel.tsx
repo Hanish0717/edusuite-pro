@@ -6,7 +6,7 @@ export const Route = createFileRoute("/hostel")({
   component: HostelPage,
 });
 
-export function HostelPage() {
+function HostelPage() {
   return (
     <DashboardLayout>
       <Outlet />

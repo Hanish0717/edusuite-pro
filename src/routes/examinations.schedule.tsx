@@ -6,6 +6,6 @@ export const Route = createFileRoute("/examinations/schedule")({
   component: ExamSchedulePage,
 });
 
-export function ExamSchedulePage() {
+function ExamSchedulePage() {
   return <ExamScheduleView />;
 }

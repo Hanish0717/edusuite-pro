@@ -6,7 +6,7 @@ export const Route = createFileRoute("/transport")({
   component: TransportPage,
 });
 
-export function TransportPage() {
+function TransportPage() {
   return (
     <DashboardLayout>
       <Outlet />

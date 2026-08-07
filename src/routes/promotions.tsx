@@ -15,7 +15,7 @@ export const Route = createFileRoute("/promotions")({
   component: PromotionsPage,
 });
 
-export function PromotionsPage() {
+function PromotionsPage() {
   return (
     <DashboardLayout>
       <StudentPromotionModuleView />

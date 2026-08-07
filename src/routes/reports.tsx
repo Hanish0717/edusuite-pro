@@ -15,7 +15,7 @@ export const Route = createFileRoute("/reports")({
   component: ReportsPage,
 });
 
-export function ReportsPage() {
+function ReportsPage() {
   return (
     <DashboardLayout>
       <AcademicReportsModuleView />

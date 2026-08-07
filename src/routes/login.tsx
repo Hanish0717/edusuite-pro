@@ -60,7 +60,7 @@ const institutionLevelRoles = [
   "Academic Management",
 ];
 
-export function LoginPage() {
+function LoginPage() {
   const { setRole, setFlags, setDepartment, setExternalPersona } = useRole();
   const navigate = useNavigate();
 
@@ -150,7 +150,8 @@ export function LoginPage() {
     if (resolved.externalPersona) setExternalPersona(resolved.externalPersona);
 
     toast.success(resolved.toastMessage);
-    navigate({ to: "/dashboard" });
+    const target = resolved.targetRoute || (step2Designation === "admission_desk" ? "/dashboard/admission" : "/dashboard");
+    navigate({ to: target });
   };
 
   return (

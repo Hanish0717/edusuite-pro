@@ -15,7 +15,7 @@ export const Route = createFileRoute("/academics")({
   component: AcademicsPage,
 });
 
-export function AcademicsPage() {
+function AcademicsPage() {
   const search = Route.useSearch();
   return (
     <DashboardLayout>

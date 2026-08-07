@@ -31,6 +31,14 @@ export interface RoleResolutionContext {
 export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "super_admin",
+    roleName: "Admission Desk",
+    email: "admission@college.com",
+    defaultPassword: "password123",
+    primaryScope: "Admission Office",
+    personaName: "Admission Desk Control",
+  },
+  {
+    canonicalRole: "super_admin",
     roleName: "Super Admin",
     email: "superadmin@college.com",
     defaultPassword: "password123",
@@ -181,6 +189,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
 
 export const DESIGNATION_OPTIONS_MAP: Record<CoreRoleKey, DesignationOption[]> = {
   "super-admin": [
+    { id: "admission_desk", label: "Admission Desk" },
     { id: "global_admin", label: "Global System & Platform Owner" },
     { id: "security_admin", label: "Security & Compliance Officer" },
     { id: "audit_admin", label: "Institutional Audit Auditor" },
@@ -199,7 +208,7 @@ export const DESIGNATION_OPTIONS_MAP: Record<CoreRoleKey, DesignationOption[]> =
     { id: "library_admin", label: "Library Admin" },
     { id: "hr_manager", label: "HR Manager" },
     { id: "principal", label: "Principal" },
-    { id: "vice_principal", label: "Vice Principal" },
+    { id: "vice_principal", label: "Vice Principal text" },
     { id: "lab_incharge", label: "Lab Incharge" },
     { id: "naac_coordinator", label: "NAAC / IQAC Coordinator" },
   ],
@@ -235,6 +244,11 @@ export function getScopeOptionsForDesignation(coreRole: CoreRoleKey, designation
   }
 
   if (coreRole === "super-admin") {
+    if (designation === "admission_desk") {
+      return [
+        { value: "Admission Office", label: "Scope: Admission Office & Main Campus" },
+      ];
+    }
     return [
       { value: "All Campuses (Global)", label: "Scope: All Campuses & Departments (Global)" },
       { value: "Main Campus (Hyderabad)", label: "Scope: Main Campus (Hyderabad)" },
@@ -297,8 +311,16 @@ export function getDefaultCredentialsForSelection(
   designation?: string,
 ): { email: string; password: string } {
   let email = "faculty@college.com";
-  if (coreRole === "super-admin") email = "superadmin@college.com";
-  else if (coreRole === "student") email = "student@college.com";
+  let password = "password123";
+
+  if (coreRole === "super-admin") {
+    if (designation === "admission_desk") {
+      email = "admission@college.com";
+      password = "Admission@123";
+    } else {
+      email = "superadmin@college.com";
+    }
+  } else if (coreRole === "student") email = "student@college.com";
   else if (coreRole === "parent") email = "parent@college.com";
   else if (coreRole === "external-user") {
     if (designation === "alumni") email = "alumni@college.com";
@@ -318,15 +340,23 @@ export function getDefaultCredentialsForSelection(
     // Academic Management: institution-level, future backend integration point
     else if (designation === "academic_management") email = "academic.mgmt@college.com";
   }
-  return { email, password: "password123" };
+  return { email, password };
 }
 
 export function resolveRoleContextFromSelection(
   coreRole: CoreRoleKey,
   designation: string,
   branch: string,
-): RoleResolutionContext {
+): RoleResolutionContext & { targetRoute?: string } {
   if (coreRole === "super-admin") {
+    if (designation === "admission_desk") {
+      return {
+        role: "super-admin",
+        flags: ["isAdmissionsOfficer", "isSystemAdmin"],
+        toastMessage: "Logged in as Admission Desk — Admission Office Dashboard",
+        targetRoute: "/dashboard/admission",
+      };
+    }
     return {
       role: "super-admin",
       flags: ["isSystemAdmin", "isPrincipal"],
@@ -441,8 +471,8 @@ export function loginWithCredentials(email: string, password: string): LoginResu
     return { success: false, message: "Invalid email or role credential." };
   }
 
-  if (password !== "password123" && password !== "demo1234") {
-    return { success: false, message: "Invalid password. Use 'password123'." };
+  if (password !== "password123" && password !== "demo1234" && password !== "Admission@123") {
+    return { success: false, message: "Invalid password. Use 'password123' or 'Admission@123'." };
   }
 
   return {

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/communication")({
   component: CommunicationPage,
 });
 
-export function CommunicationPage() {
+function CommunicationPage() {
   return (
     <DashboardLayout>
       <CommunicationCenterModuleView />

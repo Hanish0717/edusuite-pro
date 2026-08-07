@@ -68,7 +68,7 @@ export const Route = createFileRoute("/approval-workflows")({
   component: ApprovalWorkflowsPage,
 });
 
-export function ApprovalWorkflowsPage() {
+function ApprovalWorkflowsPage() {
   const { hasFlag, role } = useRole();
   const [workflows, setWorkflows] = useState<WorkflowItem[]>(() => fetchWorkflows());
 

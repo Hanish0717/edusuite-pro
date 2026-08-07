@@ -44,7 +44,7 @@ export const Route = createFileRoute("/accreditation")({
   component: AccreditationPage,
 });
 
-export function AccreditationPage() {
+function AccreditationPage() {
   const { hasFlag, role } = useRole();
   const [criteriaSearch, setCriteriaSearch] = useState("");
 

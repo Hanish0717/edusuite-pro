@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   BadgeCheck,
   GraduationCap,
+  School,
   Users,
   UserCog,
   CalendarCheck,
@@ -124,7 +125,8 @@ export const navigation: NavSection[] = [
   {
     label: "Academics",
     items: [
-      { title: "Admissions", url: "/admission", icon: GraduationCap, moduleId: "admission" },
+      { title: "Pre-Admission Portal", url: "/pre-admission", icon: School, moduleId: "pre-admission" },
+      { title: "Admission Office", url: "/admission", icon: GraduationCap, moduleId: "admission" },
       { title: "Academics", url: "/academics", icon: GraduationCap, moduleId: "academics" },
       { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
       { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
@@ -187,6 +189,7 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/inventory",
       "/procurement",
       "/campus-events",
+      "/pre-admission",
       "/admission",
       "/accreditation",
       "/grievance",
