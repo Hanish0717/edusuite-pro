@@ -497,7 +497,6 @@ export function validateTimetableConflicts(entries: TimetableEntry[] = MASTER_TI
     for (let j = i + 1; j < entries.length; j++) {
       const a = entries[i];
       const b = entries[j];
-      if (!a || !b) continue;
 
       // Check same day and period overlap
       if (a.day === b.day && a.period === b.period) {
