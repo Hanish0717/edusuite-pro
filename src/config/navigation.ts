@@ -126,38 +126,8 @@ export const navigation: NavSection[] = [
     label: "Menu",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-      {
-        title: "System Administration",
-        url: "/super-admin/settings?tab=rbac",
-        icon: Settings,
-        roles: ["super-admin", "staff"],
-        children: [
-          { title: "Roles & Access Matrix", url: "/super-admin/settings?tab=rbac" },
-          { title: "Licensing & Feature Flags", url: "/super-admin/settings?tab=features" },
-          { title: "Approval Workflows", url: "/super-admin/settings?tab=workflows" },
-          { title: "Institution Settings", url: "/super-admin/settings?tab=institution" },
-          { title: "Security & Session", url: "/super-admin/settings?tab=security" },
-          { title: "Branding & Theme", url: "/super-admin/settings?tab=preferences" },
-          { title: "System Audit Logs", url: "/super-admin/settings?tab=audit" },
-        ],
-      },
       { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
-      {
-        title: "AI & Analytics",
-        url: "/ai-analytics/dashboard",
-        icon: BarChart3,
-        roles: ["super-admin", "staff", "student", "parent"],
-        children: [
-          { title: "AI Dashboard", url: "/ai-analytics/dashboard" },
-          { title: "Attendance Forecasts", url: "/ai-analytics/attendance-prediction" },
-          { title: "Student Risk Analysis", url: "/ai-analytics/student-risk" },
-          { title: "AI Campus Chatbot", url: "/ai-analytics/chatbot" },
-          { title: "AI Audit Reports", url: "/ai-analytics/reports" },
-          { title: "AI Trigger Warning Logs", url: "/ai-analytics/notifications" },
-          { title: "Model Insights", url: "/ai-analytics/model-insights" },
-          { title: "Engine Configuration", url: "/ai-analytics/settings" },
-        ],
-      },
+      { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
       { title: "Emergency Broadcast", url: "/emergency", icon: Siren, roles: ["super-admin", "staff"], badge: "Instant" },
     ],
   },
@@ -183,11 +153,14 @@ export const navigation: NavSection[] = [
         moduleId: "examination",
         roles: ["super-admin", "staff"],
         children: [
-          { title: "Exam Schedule", url: "/examinations?tab=schedule", moduleId: "examination" },
-          { title: "Hall Tickets", url: "/examinations?tab=hall-tickets", moduleId: "examination" },
-          { title: "Internal Marks", url: "/examinations?tab=marks", moduleId: "examination" },
-          { title: "Results & Grades", url: "/examinations?tab=results", moduleId: "examination" },
-          { title: "Reevaluations", url: "/examinations?tab=revaluations", moduleId: "examination" },
+          { title: "Dashboard", url: "/examinations", moduleId: "examination" },
+          { title: "Exam Schedule", url: "/examinations/schedule", moduleId: "examination" },
+          { title: "Hall Tickets", url: "/examinations/hall-tickets", moduleId: "examination" },
+          { title: "Internal Marks", url: "/examinations/internal-marks", moduleId: "examination" },
+          { title: "Revaluation", url: "/examinations/revaluation", moduleId: "examination" },
+          { title: "Exam Analytics", url: "/examinations/analytics", moduleId: "examination" },
+          { title: "Reports", url: "/examinations/reports", moduleId: "examination" },
+          { title: "Notifications", url: "/examinations/notifications", moduleId: "examination" },
         ],
       },
       { title: "Results", url: "/results", icon: Award, moduleId: "examination" },
@@ -234,10 +207,6 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
   if (
     url.startsWith("/staff") ||
     url.startsWith("/alumni") ||
-    url.startsWith("/ai-analytics") ||
-    url.startsWith("/library") ||
-    url.startsWith("/hostel") ||
-    url.startsWith("/transport") ||
     [
       "/employee-management",
       "/leave",
@@ -252,7 +221,6 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/approval-workflows",
       "/emergency",
       "/super-admin/emergency",
-      "/super-admin/settings",
     ].includes(url)
   ) {
     return url;
@@ -300,13 +268,6 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     if (flags.includes("isDean")) {
       if (url === "/dashboard") return "/staff";
       if (url === "/settings") return "/faculty/profile";
-      if (url === "/attendance") return "/attendance";
-      if (url === "/timetable") return "/timetable";
-      if (url === "/examinations") return "/examinations";
-      if (url === "/results") return "/results";
-      if (url === "/faculty") return "/faculty";
-      if (url === "/students") return "/students";
-      if (url === "/academics") return "/academics";
       if (url === "/subject-allocation" || title === "Subject Allocation" || title === "Workload") return "/dean/subject-allocation";
       return url;
     }
@@ -355,20 +316,11 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     }
 
     if (url === "/dashboard") return "/faculty/dashboard";
-    if (url.startsWith("/attendance")) {
-      const search = url.includes("?") ? url.substring(url.indexOf("?")) : "";
-      return `/faculty/attendance${search}`;
-    }
+    if (url === "/attendance") return "/faculty/attendance";
     if (url === "/lms") return "/faculty/lms";
-    if (url.startsWith("/examinations")) {
-      const search = url.includes("?") ? url.substring(url.indexOf("?")) : "";
-      return `/faculty/examinations${search}`;
-    }
-    if (url.startsWith("/results")) {
-      const search = url.includes("?") ? url.substring(url.indexOf("?")) : "";
-      return `/faculty/results${search}`;
-    }
-    if (url.startsWith("/settings")) return "/faculty/profile";
+    if (url === "/examinations") return "/faculty/examinations";
+    if (url === "/results") return "/faculty/results";
+    if (url === "/settings") return "/faculty/profile";
   }
 
   if (role === "external-user") {
@@ -384,11 +336,11 @@ export const RECRUITER_NAVIGATION: NavSection[] = [
     label: "Recruiter Portal",
     items: [
       { title: "Dashboard", url: "/external-user/dashboard?module=dashboard", icon: LayoutDashboard },
-      { title: "Drive Applications", url: "/external-user/dashboard?module=drive-applications", icon: FileText },
       { title: "Company Profile", url: "/external-user/dashboard?module=company-profile", icon: Building2 },
       { title: "Placement Drives", url: "/external-user/dashboard?module=placement-drives", icon: Briefcase },
       { title: "Assessments", url: "/external-user/dashboard?module=assessments", icon: FileCheck2 },
       { title: "Question Bank", url: "/external-user/dashboard?module=question-bank", icon: Database },
+      { title: "Assessment Requests", url: "/external-user/dashboard?module=assessment-requests", icon: Send },
       { title: "Interview Management", url: "/external-user/dashboard?module=interviews", icon: Video },
       { title: "Offer Management", url: "/external-user/dashboard?module=offers", icon: Award },
       { title: "Reports", url: "/external-user/dashboard?module=reports", icon: BarChart3 },
@@ -586,8 +538,9 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
     examination_dean: EXAMINATION_NAVIGATION,
     placement_dean: PLACEMENT_NAVIGATION,
   };
-  if (user.role in deanNavMap) {
-    return deanNavMap[user.role] as NavSection[];
+  const deanKey = (user.externalPersona || user.role) as string;
+  if (deanKey && deanKey in deanNavMap) {
+    return deanNavMap[deanKey] as NavSection[];
   }
   // Legacy generic dean flag fallback (isDean without specific role)
   if (user.role !== "super-admin" && user.flags.includes("isDean")) {
