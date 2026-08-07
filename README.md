@@ -1,8 +1,8 @@
 # EduSuite Pro
 
-If you mean Lovable (lovable.dev), then yes. The best way to build your ERP in Lovable is to provide a structured PRD that clearly explains the product, roles, modules, workflows, and UI expectations. Do not include code in the PRD.
+> 💡 **Featured Workflow Documentation:** Detailed technical specifications and workflows for the **Hostel**, **Library**, and **Transport** modules developed in the **Super Admin Module** can be found in [README_SUPER_ADMIN_MODULES.md](file:///c:/Users/netaj/OneDrive/Desktop/EDU/edusuite-pro/README_SUPER_ADMIN_MODULES.md).
 
-Below is a production-ready PRD that you can paste into Lovable as the starting specification.
+Below is the complete Product Requirements Document (PRD) and platform specification.
 
 Product Requirements Document (PRD)
 
