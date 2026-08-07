@@ -30,7 +30,6 @@ import { Route as DeanRouteImport } from './routes/dean'
 import { Route as DepartmentsRouteImport } from './routes/departments'
 import { Route as EmergencyRouteImport } from './routes/emergency'
 import { Route as EmployeeManagementRouteImport } from './routes/employee-management'
-import { Route as ExamcellRouteImport } from './routes/examcell'
 import { Route as ExaminationRouteImport } from './routes/examination'
 import { Route as ExaminationsRouteImport } from './routes/examinations'
 import { Route as ExternalUserRouteImport } from './routes/external-user'
@@ -62,6 +61,7 @@ import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as StaffRouteImport } from './routes/staff'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as StudentsRouteImport } from './routes/students'
 import { Route as SubjectManagementRouteImport } from './routes/subject-management'
@@ -82,26 +82,22 @@ import { Route as DashboardLibrarianRouteImport } from './routes/dashboard.libra
 import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
 import { Route as DeanSubjectAllocationRouteImport } from './routes/dean.subject-allocation'
+import { Route as DriveApplyRouteImport } from './routes/drive.apply'
 import { Route as ExamTakeRouteImport } from './routes/exam.take'
-import { Route as ExamcellIndexRouteImport } from './routes/examcell/index'
 import { Route as ExamcellAnalyticsRouteImport } from './routes/examcell/analytics'
-import { Route as ExamcellBloomstickRouteImport } from './routes/examcell/bloomstick'
 import { Route as ExamcellCorrectionAnalysisRouteImport } from './routes/examcell/correction-analysis'
-import { Route as ExamcellCorrectionRequestsRouteImport } from './routes/examcell/correction-requests'
-import { Route as ExamcellCorrectionsRouteImport } from './routes/examcell/corrections'
-import { Route as ExamcellCourseEnrollRouteImport } from './routes/examcell/course-enroll'
-import { Route as ExamcellDashboardRouteImport } from './routes/examcell/dashboard'
 import { Route as ExamcellHallTicketsRouteImport } from './routes/examcell/hall-tickets'
-import { Route as ExamcellNotificationsRouteImport } from './routes/examcell/notifications'
-import { Route as ExamcellQuestionsRouteImport } from './routes/examcell/questions'
 import { Route as ExamcellResultsRouteImport } from './routes/examcell/results'
-import { Route as ExamcellScheduleRouteImport } from './routes/examcell/schedule'
-import { Route as ExamcellSettingsRouteImport } from './routes/examcell/settings'
-import { Route as ExamcellSupplementaryRouteImport } from './routes/examcell/supplementary'
-import { Route as ExamcellTimetableRouteImport } from './routes/examcell/timetable'
-import { Route as ExamcellUpdatesRouteImport } from './routes/examcell/updates'
 import { Route as ExaminationIndexRouteImport } from './routes/examination.index'
 import { Route as ExaminationDashboardRouteImport } from './routes/examination.dashboard'
+import { Route as ExaminationsIndexRouteImport } from './routes/examinations.index'
+import { Route as ExaminationsAnalyticsRouteImport } from './routes/examinations.analytics'
+import { Route as ExaminationsHallTicketsRouteImport } from './routes/examinations.hall-tickets'
+import { Route as ExaminationsInternalMarksRouteImport } from './routes/examinations.internal-marks'
+import { Route as ExaminationsNotificationsRouteImport } from './routes/examinations.notifications'
+import { Route as ExaminationsReportsRouteImport } from './routes/examinations.reports'
+import { Route as ExaminationsRevaluationRouteImport } from './routes/examinations.revaluation'
+import { Route as ExaminationsScheduleRouteImport } from './routes/examinations.schedule'
 import { Route as ExternalUserIndexRouteImport } from './routes/external-user.index'
 import { Route as ExternalUserDashboardRouteImport } from './routes/external-user.dashboard'
 import { Route as FacultyIndexRouteImport } from './routes/faculty.index'
@@ -109,13 +105,10 @@ import { Route as FacultyAssessmentsRouteImport } from './routes/faculty.assessm
 import { Route as FacultyAssignmentsRouteImport } from './routes/faculty.assignments'
 import { Route as FacultyAttendanceRouteImport } from './routes/faculty.attendance'
 import { Route as FacultyDashboardRouteImport } from './routes/faculty.dashboard'
-import { Route as FacultyEvaluationAndMarksRouteImport } from './routes/faculty.evaluation-and-marks'
-import { Route as FacultyEvaluationsRouteImport } from './routes/faculty.evaluations'
 import { Route as FacultyExaminationsRouteImport } from './routes/faculty.examinations'
 import { Route as FacultyLeaveRouteImport } from './routes/faculty.leave'
 import { Route as FacultyLessonPlanRouteImport } from './routes/faculty.lesson-plan'
 import { Route as FacultyLmsRouteImport } from './routes/faculty.lms'
-import { Route as FacultyMarksRouteImport } from './routes/faculty.marks'
 import { Route as FacultyMaterialsRouteImport } from './routes/faculty.materials'
 import { Route as FacultyNotificationsRouteImport } from './routes/faculty.notifications'
 import { Route as FacultyPayrollRouteImport } from './routes/faculty.payroll'
@@ -209,6 +202,16 @@ import { Route as PlacementRecruitersRouteImport } from './routes/placement.recr
 import { Route as PlacementReportsRouteImport } from './routes/placement.reports'
 import { Route as PlacementSettingsRouteImport } from './routes/placement.settings'
 import { Route as PlacementStudentsRouteImport } from './routes/placement.students'
+import { Route as StaffIndexRouteImport } from './routes/staff.index'
+import { Route as StaffAcademicDeanRouteImport } from './routes/staff.academic-dean'
+import { Route as StaffExaminationDeanRouteImport } from './routes/staff.examination-dean'
+import { Route as StaffFinanceDeanRouteImport } from './routes/staff.finance-dean'
+import { Route as StaffImaRouteImport } from './routes/staff.ima'
+import { Route as StaffIqacRouteImport } from './routes/staff.iqac'
+import { Route as StaffPlacementDeanRouteImport } from './routes/staff.placement-dean'
+import { Route as StaffResearchDevelopmentRouteImport } from './routes/staff.research-development'
+import { Route as StaffStudentDeanRouteImport } from './routes/staff.student-dean'
+import { Route as StaffStudent_deanRouteImport } from './routes/staff.student_dean'
 import { Route as StudentIndexRouteImport } from './routes/student.index'
 import { Route as StudentAttendanceRouteImport } from './routes/student.attendance'
 import { Route as StudentCoursesRouteImport } from './routes/student.courses'
@@ -264,6 +267,371 @@ import { Route as DashboardLibrarianReportsRouteImport } from './routes/dashboar
 import { Route as DashboardLibrarianReturnBooksRouteImport } from './routes/dashboard.librarian.return-books'
 import { Route as DashboardLibrarianSettingsRouteImport } from './routes/dashboard.librarian.settings'
 import { Route as PlacementDrivesDriveIdRouteImport } from './routes/placement.drives_.$driveId'
+import { Route as StaffAcademicDeanIndexRouteImport } from './routes/staff.academic-dean.index'
+import { Route as StaffAcademicDeanAcademicAuditRouteImport } from './routes/staff.academic-dean.academic-audit'
+import { Route as StaffAcademicDeanAcademicCalendarRouteImport } from './routes/staff.academic-dean.academic-calendar'
+import { Route as StaffAcademicDeanAcademicCouncilRouteImport } from './routes/staff.academic-dean.academic-council'
+import { Route as StaffAcademicDeanAcademicPerformanceRouteImport } from './routes/staff.academic-dean.academic-performance'
+import { Route as StaffAcademicDeanAcademicReportsRouteImport } from './routes/staff.academic-dean.academic-reports'
+import { Route as StaffAcademicDeanAccreditationRouteImport } from './routes/staff.academic-dean.accreditation'
+import { Route as StaffAcademicDeanApprovalsRouteImport } from './routes/staff.academic-dean.approvals'
+import { Route as StaffAcademicDeanAssignSubstituteRouteImport } from './routes/staff.academic-dean.assign-substitute'
+import { Route as StaffAcademicDeanAttendanceMonitoringRouteImport } from './routes/staff.academic-dean.attendance-monitoring'
+import { Route as StaffAcademicDeanAttendanceReportsRouteImport } from './routes/staff.academic-dean.attendance-reports'
+import { Route as StaffAcademicDeanBosMeetingsRouteImport } from './routes/staff.academic-dean.bos-meetings'
+import { Route as StaffAcademicDeanCircularsRouteImport } from './routes/staff.academic-dean.circulars'
+import { Route as StaffAcademicDeanClassMonitoringRouteImport } from './routes/staff.academic-dean.class-monitoring'
+import { Route as StaffAcademicDeanClassroomAllocationRouteImport } from './routes/staff.academic-dean.classroom-allocation'
+import { Route as StaffAcademicDeanCopoMappingRouteImport } from './routes/staff.academic-dean.copo-mapping'
+import { Route as StaffAcademicDeanCourseAllocationRouteImport } from './routes/staff.academic-dean.course-allocation'
+import { Route as StaffAcademicDeanCourseManagementRouteImport } from './routes/staff.academic-dean.course-management'
+import { Route as StaffAcademicDeanCourseOutcomesRouteImport } from './routes/staff.academic-dean.course-outcomes'
+import { Route as StaffAcademicDeanCurriculumRouteImport } from './routes/staff.academic-dean.curriculum'
+import { Route as StaffAcademicDeanDepartmentReportsRouteImport } from './routes/staff.academic-dean.department-reports'
+import { Route as StaffAcademicDeanDepartmentsRouteImport } from './routes/staff.academic-dean.departments'
+import { Route as StaffAcademicDeanDeptWorkloadRouteImport } from './routes/staff.academic-dean.dept-workload'
+import { Route as StaffAcademicDeanFacultyManagementRouteImport } from './routes/staff.academic-dean.faculty-management'
+import { Route as StaffAcademicDeanFacultyPerformanceRouteImport } from './routes/staff.academic-dean.faculty-performance'
+import { Route as StaffAcademicDeanFacultyReportsRouteImport } from './routes/staff.academic-dean.faculty-reports'
+import { Route as StaffAcademicDeanFacultyTimetableRouteImport } from './routes/staff.academic-dean.faculty-timetable'
+import { Route as StaffAcademicDeanFacultyTimetablesRouteImport } from './routes/staff.academic-dean.faculty-timetables'
+import { Route as StaffAcademicDeanFacultyWorkloadRouteImport } from './routes/staff.academic-dean.faculty-workload'
+import { Route as StaffAcademicDeanMyClassesRouteImport } from './routes/staff.academic-dean.my-classes'
+import { Route as StaffAcademicDeanMyTimetableRouteImport } from './routes/staff.academic-dean.my-timetable'
+import { Route as StaffAcademicDeanNotificationsRouteImport } from './routes/staff.academic-dean.notifications'
+import { Route as StaffAcademicDeanObeManagementRouteImport } from './routes/staff.academic-dean.obe-management'
+import { Route as StaffAcademicDeanProgramsRouteImport } from './routes/staff.academic-dean.programs'
+import { Route as StaffAcademicDeanSettingsRouteImport } from './routes/staff.academic-dean.settings'
+import { Route as StaffAcademicDeanSlowLearnersRouteImport } from './routes/staff.academic-dean.slow-learners'
+import { Route as StaffAcademicDeanStudentReportsRouteImport } from './routes/staff.academic-dean.student-reports'
+import { Route as StaffAcademicDeanSubjectAllocationRouteImport } from './routes/staff.academic-dean.subject-allocation'
+import { Route as StaffAcademicDeanSubstituteFacultyRouteImport } from './routes/staff.academic-dean.substitute-faculty'
+import { Route as StaffAcademicDeanSubstitutionHistoryRouteImport } from './routes/staff.academic-dean.substitution-history'
+import { Route as StaffAcademicDeanTeachingLoadRouteImport } from './routes/staff.academic-dean.teaching-load'
+import { Route as StaffAcademicDeanTimetableRouteImport } from './routes/staff.academic-dean.timetable'
+import { Route as StaffAcademicDeanTimetableHistoryRouteImport } from './routes/staff.academic-dean.timetable-history'
+import { Route as StaffAcademicDeanTimetableReportsRouteImport } from './routes/staff.academic-dean.timetable-reports'
+import { Route as StaffAcademicDeanTopPerformersRouteImport } from './routes/staff.academic-dean.top-performers'
+import { Route as StaffExaminationDeanIndexRouteImport } from './routes/staff.examination-dean.index'
+import { Route as StaffExaminationDeanAcademicCalendarRouteImport } from './routes/staff.examination-dean.academic-calendar'
+import { Route as StaffExaminationDeanAnswerScriptAllocationRouteImport } from './routes/staff.examination-dean.answer-script-allocation'
+import { Route as StaffExaminationDeanAssignSubstituteRouteImport } from './routes/staff.examination-dean.assign-substitute'
+import { Route as StaffExaminationDeanCgpaCalculationRouteImport } from './routes/staff.examination-dean.cgpa-calculation'
+import { Route as StaffExaminationDeanCommitteeReportsRouteImport } from './routes/staff.examination-dean.committee-reports'
+import { Route as StaffExaminationDeanCompletedDrivesRouteImport } from './routes/staff.examination-dean.completed-drives'
+import { Route as StaffExaminationDeanConfidentialStorageRouteImport } from './routes/staff.examination-dean.confidential-storage'
+import { Route as StaffExaminationDeanDownloadHistoryRouteImport } from './routes/staff.examination-dean.download-history'
+import { Route as StaffExaminationDeanEvaluationRouteImport } from './routes/staff.examination-dean.evaluation'
+import { Route as StaffExaminationDeanExamReportsRouteImport } from './routes/staff.examination-dean.exam-reports'
+import { Route as StaffExaminationDeanExamScheduleRouteImport } from './routes/staff.examination-dean.exam-schedule'
+import { Route as StaffExaminationDeanExamSchedulesRouteImport } from './routes/staff.examination-dean.exam-schedules'
+import { Route as StaffExaminationDeanFacultyTimetablesRouteImport } from './routes/staff.examination-dean.faculty-timetables'
+import { Route as StaffExaminationDeanGenerateHallTicketsRouteImport } from './routes/staff.examination-dean.generate-hall-tickets'
+import { Route as StaffExaminationDeanGradeModerationRouteImport } from './routes/staff.examination-dean.grade-moderation'
+import { Route as StaffExaminationDeanGradeSheetsRouteImport } from './routes/staff.examination-dean.grade-sheets'
+import { Route as StaffExaminationDeanHallAllocationRouteImport } from './routes/staff.examination-dean.hall-allocation'
+import { Route as StaffExaminationDeanHallTicketReportsRouteImport } from './routes/staff.examination-dean.hall-ticket-reports'
+import { Route as StaffExaminationDeanHallTicketStatusRouteImport } from './routes/staff.examination-dean.hall-ticket-status'
+import { Route as StaffExaminationDeanHallTicketsRouteImport } from './routes/staff.examination-dean.hall-tickets'
+import { Route as StaffExaminationDeanInternalExamsRouteImport } from './routes/staff.examination-dean.internal-exams'
+import { Route as StaffExaminationDeanInvigilatorAllocationRouteImport } from './routes/staff.examination-dean.invigilator-allocation'
+import { Route as StaffExaminationDeanInvigilatorReportsRouteImport } from './routes/staff.examination-dean.invigilator-reports'
+import { Route as StaffExaminationDeanInvigilatorsRouteImport } from './routes/staff.examination-dean.invigilators'
+import { Route as StaffExaminationDeanMalpracticeCasesRouteImport } from './routes/staff.examination-dean.malpractice-cases'
+import { Route as StaffExaminationDeanMalpracticeReportsRouteImport } from './routes/staff.examination-dean.malpractice-reports'
+import { Route as StaffExaminationDeanMarksEntryRouteImport } from './routes/staff.examination-dean.marks-entry'
+import { Route as StaffExaminationDeanMarksVerificationRouteImport } from './routes/staff.examination-dean.marks-verification'
+import { Route as StaffExaminationDeanMidExamsRouteImport } from './routes/staff.examination-dean.mid-exams'
+import { Route as StaffExaminationDeanMyClassesRouteImport } from './routes/staff.examination-dean.my-classes'
+import { Route as StaffExaminationDeanMyTimetableRouteImport } from './routes/staff.examination-dean.my-timetable'
+import { Route as StaffExaminationDeanNotificationsRouteImport } from './routes/staff.examination-dean.notifications'
+import { Route as StaffExaminationDeanPaperDistributionRouteImport } from './routes/staff.examination-dean.paper-distribution'
+import { Route as StaffExaminationDeanPracticalExamsRouteImport } from './routes/staff.examination-dean.practical-exams'
+import { Route as StaffExaminationDeanPunishmentHistoryRouteImport } from './routes/staff.examination-dean.punishment-history'
+import { Route as StaffExaminationDeanQuestionPaperApprovalRouteImport } from './routes/staff.examination-dean.question-paper-approval'
+import { Route as StaffExaminationDeanQuestionPaperUploadRouteImport } from './routes/staff.examination-dean.question-paper-upload'
+import { Route as StaffExaminationDeanQuestionPapersRouteImport } from './routes/staff.examination-dean.question-papers'
+import { Route as StaffExaminationDeanRankListRouteImport } from './routes/staff.examination-dean.rank-list'
+import { Route as StaffExaminationDeanRecountingRouteImport } from './routes/staff.examination-dean.recounting'
+import { Route as StaffExaminationDeanReportsRouteImport } from './routes/staff.examination-dean.reports'
+import { Route as StaffExaminationDeanResultProcessingRouteImport } from './routes/staff.examination-dean.result-processing'
+import { Route as StaffExaminationDeanResultPublicationRouteImport } from './routes/staff.examination-dean.result-publication'
+import { Route as StaffExaminationDeanResultReportsRouteImport } from './routes/staff.examination-dean.result-reports'
+import { Route as StaffExaminationDeanResultsRouteImport } from './routes/staff.examination-dean.results'
+import { Route as StaffExaminationDeanRevaluationRouteImport } from './routes/staff.examination-dean.revaluation'
+import { Route as StaffExaminationDeanRevaluationRequestsRouteImport } from './routes/staff.examination-dean.revaluation-requests'
+import { Route as StaffExaminationDeanRevaluationStatusRouteImport } from './routes/staff.examination-dean.revaluation-status'
+import { Route as StaffExaminationDeanScheduleRouteImport } from './routes/staff.examination-dean.schedule'
+import { Route as StaffExaminationDeanSemesterExamsRouteImport } from './routes/staff.examination-dean.semester-exams'
+import { Route as StaffExaminationDeanSettingsRouteImport } from './routes/staff.examination-dean.settings'
+import { Route as StaffExaminationDeanSubstitutionHistoryRouteImport } from './routes/staff.examination-dean.substitution-history'
+import { Route as StaffExaminationDeanSupplementaryExamsRouteImport } from './routes/staff.examination-dean.supplementary-exams'
+import { Route as StaffExaminationDeanTimetableRouteImport } from './routes/staff.examination-dean.timetable'
+import { Route as StaffExaminationDeanTimetableGenerationRouteImport } from './routes/staff.examination-dean.timetable-generation'
+import { Route as StaffExaminationDeanTranscriptsRouteImport } from './routes/staff.examination-dean.transcripts'
+import { Route as StaffExaminationDeanUpdatedResultsRouteImport } from './routes/staff.examination-dean.updated-results'
+import { Route as StaffExaminationDeanValuationStatusRouteImport } from './routes/staff.examination-dean.valuation-status'
+import { Route as StaffFinanceDeanIndexRouteImport } from './routes/staff.finance-dean.index'
+import { Route as StaffFinanceDeanAccountsRouteImport } from './routes/staff.finance-dean.accounts'
+import { Route as StaffFinanceDeanAllowancesDeductionsRouteImport } from './routes/staff.finance-dean.allowances-deductions'
+import { Route as StaffFinanceDeanAnnualBudgetRouteImport } from './routes/staff.finance-dean.annual-budget'
+import { Route as StaffFinanceDeanAssignSubstituteRouteImport } from './routes/staff.finance-dean.assign-substitute'
+import { Route as StaffFinanceDeanAuditRouteImport } from './routes/staff.finance-dean.audit'
+import { Route as StaffFinanceDeanAuditComplianceRouteImport } from './routes/staff.finance-dean.audit-compliance'
+import { Route as StaffFinanceDeanAuditHistoryRouteImport } from './routes/staff.finance-dean.audit-history'
+import { Route as StaffFinanceDeanAuditReportsRouteImport } from './routes/staff.finance-dean.audit-reports'
+import { Route as StaffFinanceDeanAuditsRouteImport } from './routes/staff.finance-dean.audits'
+import { Route as StaffFinanceDeanBudgetRouteImport } from './routes/staff.finance-dean.budget'
+import { Route as StaffFinanceDeanBudgetAllocationRouteImport } from './routes/staff.finance-dean.budget-allocation'
+import { Route as StaffFinanceDeanBudgetReportsRouteImport } from './routes/staff.finance-dean.budget-reports'
+import { Route as StaffFinanceDeanBudgetUtilizationRouteImport } from './routes/staff.finance-dean.budget-utilization'
+import { Route as StaffFinanceDeanDailyExpensesRouteImport } from './routes/staff.finance-dean.daily-expenses'
+import { Route as StaffFinanceDeanDepartmentBudgetsRouteImport } from './routes/staff.finance-dean.department-budgets'
+import { Route as StaffFinanceDeanDeptBudgetsRouteImport } from './routes/staff.finance-dean.dept-budgets'
+import { Route as StaffFinanceDeanDeptExpensesRouteImport } from './routes/staff.finance-dean.dept-expenses'
+import { Route as StaffFinanceDeanExpensesRouteImport } from './routes/staff.finance-dean.expenses'
+import { Route as StaffFinanceDeanExternalAuditRouteImport } from './routes/staff.finance-dean.external-audit'
+import { Route as StaffFinanceDeanFacultyPayrollRouteImport } from './routes/staff.finance-dean.faculty-payroll'
+import { Route as StaffFinanceDeanFacultyTimetablesRouteImport } from './routes/staff.finance-dean.faculty-timetables'
+import { Route as StaffFinanceDeanFeeCollectionRouteImport } from './routes/staff.finance-dean.fee-collection'
+import { Route as StaffFinanceDeanFeeCollectionsRouteImport } from './routes/staff.finance-dean.fee-collections'
+import { Route as StaffFinanceDeanFeeReportsRouteImport } from './routes/staff.finance-dean.fee-reports'
+import { Route as StaffFinanceDeanFeesRouteImport } from './routes/staff.finance-dean.fees'
+import { Route as StaffFinanceDeanFinancialReportsRouteImport } from './routes/staff.finance-dean.financial-reports'
+import { Route as StaffFinanceDeanGrantsRouteImport } from './routes/staff.finance-dean.grants'
+import { Route as StaffFinanceDeanInternalAuditRouteImport } from './routes/staff.finance-dean.internal-audit'
+import { Route as StaffFinanceDeanInvoiceManagementRouteImport } from './routes/staff.finance-dean.invoice-management'
+import { Route as StaffFinanceDeanMyClassesRouteImport } from './routes/staff.finance-dean.my-classes'
+import { Route as StaffFinanceDeanMyTimetableRouteImport } from './routes/staff.finance-dean.my-timetable'
+import { Route as StaffFinanceDeanNotificationsRouteImport } from './routes/staff.finance-dean.notifications'
+import { Route as StaffFinanceDeanPayrollRouteImport } from './routes/staff.finance-dean.payroll'
+import { Route as StaffFinanceDeanPayrollReportsRouteImport } from './routes/staff.finance-dean.payroll-reports'
+import { Route as StaffFinanceDeanPendingFeesRouteImport } from './routes/staff.finance-dean.pending-fees'
+import { Route as StaffFinanceDeanPurchaseOrdersRouteImport } from './routes/staff.finance-dean.purchase-orders'
+import { Route as StaffFinanceDeanPurchasePaymentsRouteImport } from './routes/staff.finance-dean.purchase-payments'
+import { Route as StaffFinanceDeanPurchaseRequestsRouteImport } from './routes/staff.finance-dean.purchase-requests'
+import { Route as StaffFinanceDeanPurchasesRouteImport } from './routes/staff.finance-dean.purchases'
+import { Route as StaffFinanceDeanRefundManagementRouteImport } from './routes/staff.finance-dean.refund-management'
+import { Route as StaffFinanceDeanReportsRouteImport } from './routes/staff.finance-dean.reports'
+import { Route as StaffFinanceDeanSalaryHistoryRouteImport } from './routes/staff.finance-dean.salary-history'
+import { Route as StaffFinanceDeanScholarshipsConcessionsRouteImport } from './routes/staff.finance-dean.scholarships-concessions'
+import { Route as StaffFinanceDeanSettingsRouteImport } from './routes/staff.finance-dean.settings'
+import { Route as StaffFinanceDeanStaffPayrollRouteImport } from './routes/staff.finance-dean.staff-payroll'
+import { Route as StaffFinanceDeanSubstitutionHistoryRouteImport } from './routes/staff.finance-dean.substitution-history'
+import { Route as StaffFinanceDeanTimetableRouteImport } from './routes/staff.finance-dean.timetable'
+import { Route as StaffFinanceDeanVendorManagementRouteImport } from './routes/staff.finance-dean.vendor-management'
+import { Route as StaffFinanceDeanVendorPaymentsRouteImport } from './routes/staff.finance-dean.vendor-payments'
+import { Route as StaffImaIndexRouteImport } from './routes/staff.ima.index'
+import { Route as StaffImaAmcWarrantyRouteImport } from './routes/staff.ima.amc-warranty'
+import { Route as StaffImaApprovedPurchasesRouteImport } from './routes/staff.ima.approved-purchases'
+import { Route as StaffImaAssetAuditRouteImport } from './routes/staff.ima.asset-audit'
+import { Route as StaffImaAssetDisposalRouteImport } from './routes/staff.ima.asset-disposal'
+import { Route as StaffImaAssetRegisterRouteImport } from './routes/staff.ima.asset-register'
+import { Route as StaffImaAssetTransferRouteImport } from './routes/staff.ima.asset-transfer'
+import { Route as StaffImaAssignSubstituteRouteImport } from './routes/staff.ima.assign-substitute'
+import { Route as StaffImaCampusProjectsRouteImport } from './routes/staff.ima.campus-projects'
+import { Route as StaffImaComplianceRouteImport } from './routes/staff.ima.compliance'
+import { Route as StaffImaDepartmentAssetsRouteImport } from './routes/staff.ima.department-assets'
+import { Route as StaffImaEquipmentAllocationRouteImport } from './routes/staff.ima.equipment-allocation'
+import { Route as StaffImaEquipmentHistoryRouteImport } from './routes/staff.ima.equipment-history'
+import { Route as StaffImaEquipmentInventoryRouteImport } from './routes/staff.ima.equipment-inventory'
+import { Route as StaffImaEquipmentReportsRouteImport } from './routes/staff.ima.equipment-reports'
+import { Route as StaffImaEquipmentRequestsRouteImport } from './routes/staff.ima.equipment-requests'
+import { Route as StaffImaFacultyTimetablesRouteImport } from './routes/staff.ima.faculty-timetables'
+import { Route as StaffImaGuestLecturesRouteImport } from './routes/staff.ima.guest-lectures'
+import { Route as StaffImaIndustrialVisitsRouteImport } from './routes/staff.ima.industrial-visits'
+import { Route as StaffImaInfrastructureRouteImport } from './routes/staff.ima.infrastructure'
+import { Route as StaffImaInternshipsRouteImport } from './routes/staff.ima.internships'
+import { Route as StaffImaInventoryReportsRouteImport } from './routes/staff.ima.inventory-reports'
+import { Route as StaffImaLabBookingRouteImport } from './routes/staff.ima.lab-booking'
+import { Route as StaffImaLabDetailsRouteImport } from './routes/staff.ima.lab-details'
+import { Route as StaffImaLabTimetableRouteImport } from './routes/staff.ima.lab-timetable'
+import { Route as StaffImaLaboratoriesRouteImport } from './routes/staff.ima.laboratories'
+import { Route as StaffImaLaboratoryReportsRouteImport } from './routes/staff.ima.laboratory-reports'
+import { Route as StaffImaMaintenanceReportsRouteImport } from './routes/staff.ima.maintenance-reports'
+import { Route as StaffImaMaintenanceRequestsRouteImport } from './routes/staff.ima.maintenance-requests'
+import { Route as StaffImaMaintenanceScheduleRouteImport } from './routes/staff.ima.maintenance-schedule'
+import { Route as StaffImaMouRouteImport } from './routes/staff.ima.mou'
+import { Route as StaffImaMyClassesRouteImport } from './routes/staff.ima.my-classes'
+import { Route as StaffImaMyTimetableRouteImport } from './routes/staff.ima.my-timetable'
+import { Route as StaffImaNotificationsRouteImport } from './routes/staff.ima.notifications'
+import { Route as StaffImaPartnersRouteImport } from './routes/staff.ima.partners'
+import { Route as StaffImaPolicyDirectivesRouteImport } from './routes/staff.ima.policy-directives'
+import { Route as StaffImaPurchaseOrdersRouteImport } from './routes/staff.ima.purchase-orders'
+import { Route as StaffImaPurchaseReportsRouteImport } from './routes/staff.ima.purchase-reports'
+import { Route as StaffImaPurchaseRequestsRouteImport } from './routes/staff.ima.purchase-requests'
+import { Route as StaffImaPurchaseVendorsRouteImport } from './routes/staff.ima.purchase-vendors'
+import { Route as StaffImaReportsRouteImport } from './routes/staff.ima.reports'
+import { Route as StaffImaSettingsRouteImport } from './routes/staff.ima.settings'
+import { Route as StaffImaSubstitutionHistoryRouteImport } from './routes/staff.ima.substitution-history'
+import { Route as StaffImaTimetableRouteImport } from './routes/staff.ima.timetable'
+import { Route as StaffImaVendorsRouteImport } from './routes/staff.ima.vendors'
+import { Route as StaffImaWorkshopsRouteImport } from './routes/staff.ima.workshops'
+import { Route as StaffIqacIndexRouteImport } from './routes/staff.iqac.index'
+import { Route as StaffIqacAcademicAuditRouteImport } from './routes/staff.iqac.academic-audit'
+import { Route as StaffIqacAlumniFeedbackRouteImport } from './routes/staff.iqac.alumni-feedback'
+import { Route as StaffIqacAqarRouteImport } from './routes/staff.iqac.aqar'
+import { Route as StaffIqacAqarReportsRouteImport } from './routes/staff.iqac.aqar-reports'
+import { Route as StaffIqacAssignSubstituteRouteImport } from './routes/staff.iqac.assign-substitute'
+import { Route as StaffIqacAtrRouteImport } from './routes/staff.iqac.atr'
+import { Route as StaffIqacAuditRouteImport } from './routes/staff.iqac.audit'
+import { Route as StaffIqacAuditReportsRouteImport } from './routes/staff.iqac.audit-reports'
+import { Route as StaffIqacBenchmarkingRouteImport } from './routes/staff.iqac.benchmarking'
+import { Route as StaffIqacBestPracticesRouteImport } from './routes/staff.iqac.best-practices'
+import { Route as StaffIqacComplianceTrackerRouteImport } from './routes/staff.iqac.compliance-tracker'
+import { Route as StaffIqacCriteriaRouteImport } from './routes/staff.iqac.criteria'
+import { Route as StaffIqacCriteriaDocsRouteImport } from './routes/staff.iqac.criteria-docs'
+import { Route as StaffIqacDeptQualityMetricsRouteImport } from './routes/staff.iqac.dept-quality-metrics'
+import { Route as StaffIqacDocumentRepoRouteImport } from './routes/staff.iqac.document-repo'
+import { Route as StaffIqacDocumentsRouteImport } from './routes/staff.iqac.documents'
+import { Route as StaffIqacEmployerFeedbackRouteImport } from './routes/staff.iqac.employer-feedback'
+import { Route as StaffIqacEventsRouteImport } from './routes/staff.iqac.events'
+import { Route as StaffIqacEvidenceUploadsRouteImport } from './routes/staff.iqac.evidence-uploads'
+import { Route as StaffIqacFacultyFeedbackRouteImport } from './routes/staff.iqac.faculty-feedback'
+import { Route as StaffIqacFacultyTimetablesRouteImport } from './routes/staff.iqac.faculty-timetables'
+import { Route as StaffIqacFeedbackRouteImport } from './routes/staff.iqac.feedback'
+import { Route as StaffIqacFeedbackAnalyticsRouteImport } from './routes/staff.iqac.feedback-analytics'
+import { Route as StaffIqacFeedbackReportsRouteImport } from './routes/staff.iqac.feedback-reports'
+import { Route as StaffIqacInternalQualityAuditRouteImport } from './routes/staff.iqac.internal-quality-audit'
+import { Route as StaffIqacKpiDashboardRouteImport } from './routes/staff.iqac.kpi-dashboard'
+import { Route as StaffIqacKpiReportsRouteImport } from './routes/staff.iqac.kpi-reports'
+import { Route as StaffIqacMeetingsRouteImport } from './routes/staff.iqac.meetings'
+import { Route as StaffIqacMetricsRouteImport } from './routes/staff.iqac.metrics'
+import { Route as StaffIqacMyClassesRouteImport } from './routes/staff.iqac.my-classes'
+import { Route as StaffIqacMyTimetableRouteImport } from './routes/staff.iqac.my-timetable'
+import { Route as StaffIqacNaacRouteImport } from './routes/staff.iqac.naac'
+import { Route as StaffIqacNaacReportsRouteImport } from './routes/staff.iqac.naac-reports'
+import { Route as StaffIqacNbaRouteImport } from './routes/staff.iqac.nba'
+import { Route as StaffIqacNotificationsRouteImport } from './routes/staff.iqac.notifications'
+import { Route as StaffIqacPerformanceAnalysisRouteImport } from './routes/staff.iqac.performance-analysis'
+import { Route as StaffIqacQualityAuditsRouteImport } from './routes/staff.iqac.quality-audits'
+import { Route as StaffIqacQualityImprovementRouteImport } from './routes/staff.iqac.quality-improvement'
+import { Route as StaffIqacQualityMetricsRouteImport } from './routes/staff.iqac.quality-metrics'
+import { Route as StaffIqacReportsRouteImport } from './routes/staff.iqac.reports'
+import { Route as StaffIqacSettingsRouteImport } from './routes/staff.iqac.settings'
+import { Route as StaffIqacSsrRouteImport } from './routes/staff.iqac.ssr'
+import { Route as StaffIqacStudentFeedbackRouteImport } from './routes/staff.iqac.student-feedback'
+import { Route as StaffIqacSubstitutionHistoryRouteImport } from './routes/staff.iqac.substitution-history'
+import { Route as StaffIqacTimetableRouteImport } from './routes/staff.iqac.timetable'
+import { Route as StaffIqacWorkshopsRouteImport } from './routes/staff.iqac.workshops'
+import { Route as StaffPlacementDeanIndexRouteImport } from './routes/staff.placement-dean.index'
+import { Route as StaffPlacementDeanAptitudeTrainingRouteImport } from './routes/staff.placement-dean.aptitude-training'
+import { Route as StaffPlacementDeanAssignSubstituteRouteImport } from './routes/staff.placement-dean.assign-substitute'
+import { Route as StaffPlacementDeanCodingTrainingRouteImport } from './routes/staff.placement-dean.coding-training'
+import { Route as StaffPlacementDeanCompaniesRouteImport } from './routes/staff.placement-dean.companies'
+import { Route as StaffPlacementDeanCompanyHiringRouteImport } from './routes/staff.placement-dean.company-hiring'
+import { Route as StaffPlacementDeanCompanyProfilesRouteImport } from './routes/staff.placement-dean.company-profiles'
+import { Route as StaffPlacementDeanCompanyReportsRouteImport } from './routes/staff.placement-dean.company-reports'
+import { Route as StaffPlacementDeanCompanyVisitsRouteImport } from './routes/staff.placement-dean.company-visits'
+import { Route as StaffPlacementDeanCompletedDrivesRouteImport } from './routes/staff.placement-dean.completed-drives'
+import { Route as StaffPlacementDeanDeptPlacementsRouteImport } from './routes/staff.placement-dean.dept-placements'
+import { Route as StaffPlacementDeanDrivesRouteImport } from './routes/staff.placement-dean.drives'
+import { Route as StaffPlacementDeanEligibleStudentsRouteImport } from './routes/staff.placement-dean.eligible-students'
+import { Route as StaffPlacementDeanFacultyTimetablesRouteImport } from './routes/staff.placement-dean.faculty-timetables'
+import { Route as StaffPlacementDeanInternshipOpportunitiesRouteImport } from './routes/staff.placement-dean.internship-opportunities'
+import { Route as StaffPlacementDeanInternshipReportsRouteImport } from './routes/staff.placement-dean.internship-reports'
+import { Route as StaffPlacementDeanInternshipReportsListRouteImport } from './routes/staff.placement-dean.internship-reports-list'
+import { Route as StaffPlacementDeanInternshipTrackingRouteImport } from './routes/staff.placement-dean.internship-tracking'
+import { Route as StaffPlacementDeanInternshipsRouteImport } from './routes/staff.placement-dean.internships'
+import { Route as StaffPlacementDeanMockInterviewsRouteImport } from './routes/staff.placement-dean.mock-interviews'
+import { Route as StaffPlacementDeanMousRouteImport } from './routes/staff.placement-dean.mous'
+import { Route as StaffPlacementDeanMyClassesRouteImport } from './routes/staff.placement-dean.my-classes'
+import { Route as StaffPlacementDeanMyTimetableRouteImport } from './routes/staff.placement-dean.my-timetable'
+import { Route as StaffPlacementDeanNotificationsRouteImport } from './routes/staff.placement-dean.notifications'
+import { Route as StaffPlacementDeanOffCampusDrivesRouteImport } from './routes/staff.placement-dean.off-campus-drives'
+import { Route as StaffPlacementDeanOfferLettersRouteImport } from './routes/staff.placement-dean.offer-letters'
+import { Route as StaffPlacementDeanOffersRouteImport } from './routes/staff.placement-dean.offers'
+import { Route as StaffPlacementDeanOngoingDrivesRouteImport } from './routes/staff.placement-dean.ongoing-drives'
+import { Route as StaffPlacementDeanPackageAnalysisRouteImport } from './routes/staff.placement-dean.package-analysis'
+import { Route as StaffPlacementDeanPackageAnalyticsRouteImport } from './routes/staff.placement-dean.package-analytics'
+import { Route as StaffPlacementDeanPackagesRouteImport } from './routes/staff.placement-dean.packages'
+import { Route as StaffPlacementDeanPlacedStudentsRouteImport } from './routes/staff.placement-dean.placed-students'
+import { Route as StaffPlacementDeanPlacementReportsRouteImport } from './routes/staff.placement-dean.placement-reports'
+import { Route as StaffPlacementDeanPlacementStatisticsRouteImport } from './routes/staff.placement-dean.placement-statistics'
+import { Route as StaffPlacementDeanRecruitmentPartnersRouteImport } from './routes/staff.placement-dean.recruitment-partners'
+import { Route as StaffPlacementDeanRegisteredStudentsRouteImport } from './routes/staff.placement-dean.registered-students'
+import { Route as StaffPlacementDeanReportsRouteImport } from './routes/staff.placement-dean.reports'
+import { Route as StaffPlacementDeanResumeReviewsRouteImport } from './routes/staff.placement-dean.resume-reviews'
+import { Route as StaffPlacementDeanSelectedStudentsRouteImport } from './routes/staff.placement-dean.selected-students'
+import { Route as StaffPlacementDeanSettingsRouteImport } from './routes/staff.placement-dean.settings'
+import { Route as StaffPlacementDeanShortlistedStudentsRouteImport } from './routes/staff.placement-dean.shortlisted-students'
+import { Route as StaffPlacementDeanSoftSkillsRouteImport } from './routes/staff.placement-dean.soft-skills'
+import { Route as StaffPlacementDeanStudentReportsRouteImport } from './routes/staff.placement-dean.student-reports'
+import { Route as StaffPlacementDeanSubstitutionHistoryRouteImport } from './routes/staff.placement-dean.substitution-history'
+import { Route as StaffPlacementDeanTimetableRouteImport } from './routes/staff.placement-dean.timetable'
+import { Route as StaffPlacementDeanTrainingRouteImport } from './routes/staff.placement-dean.training'
+import { Route as StaffPlacementDeanTrainingReportsRouteImport } from './routes/staff.placement-dean.training-reports'
+import { Route as StaffPlacementDeanUpcomingDrivesRouteImport } from './routes/staff.placement-dean.upcoming-drives'
+import { Route as StaffResearchDevelopmentIndexRouteImport } from './routes/staff.research-development.index'
+import { Route as StaffResearchDevelopmentAssignSubstituteRouteImport } from './routes/staff.research-development.assign-substitute'
+import { Route as StaffResearchDevelopmentBookChaptersRouteImport } from './routes/staff.research-development.book-chapters'
+import { Route as StaffResearchDevelopmentCompletedProjectsRouteImport } from './routes/staff.research-development.completed-projects'
+import { Route as StaffResearchDevelopmentConferencePublicationsRouteImport } from './routes/staff.research-development.conference-publications'
+import { Route as StaffResearchDevelopmentConferencesRouteImport } from './routes/staff.research-development.conferences'
+import { Route as StaffResearchDevelopmentConsultancyProjectsRouteImport } from './routes/staff.research-development.consultancy-projects'
+import { Route as StaffResearchDevelopmentCopyrightsRouteImport } from './routes/staff.research-development.copyrights'
+import { Route as StaffResearchDevelopmentFacultyTimetablesRouteImport } from './routes/staff.research-development.faculty-timetables'
+import { Route as StaffResearchDevelopmentFdpsRouteImport } from './routes/staff.research-development.fdps'
+import { Route as StaffResearchDevelopmentFundingAgenciesRouteImport } from './routes/staff.research-development.funding-agencies'
+import { Route as StaffResearchDevelopmentGovtGrantsRouteImport } from './routes/staff.research-development.govt-grants'
+import { Route as StaffResearchDevelopmentGrantReportsRouteImport } from './routes/staff.research-development.grant-reports'
+import { Route as StaffResearchDevelopmentGrantUtilizationRouteImport } from './routes/staff.research-development.grant-utilization'
+import { Route as StaffResearchDevelopmentGrantsRouteImport } from './routes/staff.research-development.grants'
+import { Route as StaffResearchDevelopmentIncubationRouteImport } from './routes/staff.research-development.incubation'
+import { Route as StaffResearchDevelopmentIndustryGrantsRouteImport } from './routes/staff.research-development.industry-grants'
+import { Route as StaffResearchDevelopmentInnovationRouteImport } from './routes/staff.research-development.innovation'
+import { Route as StaffResearchDevelopmentInnovationsRouteImport } from './routes/staff.research-development.innovations'
+import { Route as StaffResearchDevelopmentJournalPublicationsRouteImport } from './routes/staff.research-development.journal-publications'
+import { Route as StaffResearchDevelopmentLabBookingRouteImport } from './routes/staff.research-development.lab-booking'
+import { Route as StaffResearchDevelopmentLabEquipmentRouteImport } from './routes/staff.research-development.lab-equipment'
+import { Route as StaffResearchDevelopmentLabUtilizationRouteImport } from './routes/staff.research-development.lab-utilization'
+import { Route as StaffResearchDevelopmentMyClassesRouteImport } from './routes/staff.research-development.my-classes'
+import { Route as StaffResearchDevelopmentMyTimetableRouteImport } from './routes/staff.research-development.my-timetable'
+import { Route as StaffResearchDevelopmentNotificationsRouteImport } from './routes/staff.research-development.notifications'
+import { Route as StaffResearchDevelopmentOngoingProjectsRouteImport } from './routes/staff.research-development.ongoing-projects'
+import { Route as StaffResearchDevelopmentPatentReportsRouteImport } from './routes/staff.research-development.patent-reports'
+import { Route as StaffResearchDevelopmentPatentsRouteImport } from './routes/staff.research-development.patents'
+import { Route as StaffResearchDevelopmentPhdScholarsRouteImport } from './routes/staff.research-development.phd-scholars'
+import { Route as StaffResearchDevelopmentProjectsRouteImport } from './routes/staff.research-development.projects'
+import { Route as StaffResearchDevelopmentPublicationReportsRouteImport } from './routes/staff.research-development.publication-reports'
+import { Route as StaffResearchDevelopmentPublicationsRepoRouteImport } from './routes/staff.research-development.publications-repo'
+import { Route as StaffResearchDevelopmentResearchGuidesRouteImport } from './routes/staff.research-development.research-guides'
+import { Route as StaffResearchDevelopmentResearchLabsRouteImport } from './routes/staff.research-development.research-labs'
+import { Route as StaffResearchDevelopmentResearchReportsRouteImport } from './routes/staff.research-development.research-reports'
+import { Route as StaffResearchDevelopmentScholarProgressRouteImport } from './routes/staff.research-development.scholar-progress'
+import { Route as StaffResearchDevelopmentScholarReportsRouteImport } from './routes/staff.research-development.scholar-reports'
+import { Route as StaffResearchDevelopmentScholarsRouteImport } from './routes/staff.research-development.scholars'
+import { Route as StaffResearchDevelopmentSeminarsRouteImport } from './routes/staff.research-development.seminars'
+import { Route as StaffResearchDevelopmentSettingsRouteImport } from './routes/staff.research-development.settings'
+import { Route as StaffResearchDevelopmentSponsoredProjectsRouteImport } from './routes/staff.research-development.sponsored-projects'
+import { Route as StaffResearchDevelopmentSubstitutionHistoryRouteImport } from './routes/staff.research-development.substitution-history'
+import { Route as StaffResearchDevelopmentThesisRepoRouteImport } from './routes/staff.research-development.thesis-repo'
+import { Route as StaffResearchDevelopmentTimetableRouteImport } from './routes/staff.research-development.timetable'
+import { Route as StaffResearchDevelopmentWorkshopsRouteImport } from './routes/staff.research-development.workshops'
+import { Route as StaffStudentDeanIndexRouteImport } from './routes/staff.student-dean.index'
+import { Route as StaffStudentDeanAttendanceRouteImport } from './routes/staff.student-dean.attendance'
+import { Route as StaffStudentDeanAttendanceHistoryRouteImport } from './routes/staff.student-dean.attendance-history'
+import { Route as StaffStudentDeanAttendanceReportsRouteImport } from './routes/staff.student-dean.attendance-reports'
+import { Route as StaffStudentDeanCertificatesRouteImport } from './routes/staff.student-dean.certificates'
+import { Route as StaffStudentDeanClubsEventsRouteImport } from './routes/staff.student-dean.clubs-events'
+import { Route as StaffStudentDeanCounsellingRouteImport } from './routes/staff.student-dean.counselling'
+import { Route as StaffStudentDeanDisciplineRouteImport } from './routes/staff.student-dean.discipline'
+import { Route as StaffStudentDeanGrievancesRouteImport } from './routes/staff.student-dean.grievances'
+import { Route as StaffStudentDeanHostelRouteImport } from './routes/staff.student-dean.hostel'
+import { Route as StaffStudentDeanMentoringRouteImport } from './routes/staff.student-dean.mentoring'
+import { Route as StaffStudentDeanNotificationsRouteImport } from './routes/staff.student-dean.notifications'
+import { Route as StaffStudentDeanProfilesRouteImport } from './routes/staff.student-dean.profiles'
+import { Route as StaffStudentDeanReportsRouteImport } from './routes/staff.student-dean.reports'
+import { Route as StaffStudentDeanScholarshipReportsRouteImport } from './routes/staff.student-dean.scholarship-reports'
+import { Route as StaffStudentDeanScholarshipsRouteImport } from './routes/staff.student-dean.scholarships'
+import { Route as StaffStudentDeanSettingsRouteImport } from './routes/staff.student-dean.settings'
+import { Route as StaffStudentDeanStudentActivitiesRouteImport } from './routes/staff.student-dean.student-activities'
+import { Route as StaffStudentDeanStudentProfilesRouteImport } from './routes/staff.student-dean.student-profiles'
+import { Route as StaffStudentDeanStudentReportsRouteImport } from './routes/staff.student-dean.student-reports'
+import { Route as StaffStudentDeanStudentRequestsRouteImport } from './routes/staff.student-dean.student-requests'
+import { Route as StaffStudentDeanStudentsRouteImport } from './routes/staff.student-dean.students'
+import { Route as StaffStudentDeanTimetableRouteImport } from './routes/staff.student-dean.timetable'
+import { Route as StaffStudent_deanSplatRouteImport } from './routes/staff.student_dean.$'
 import { Route as SuperAdminAcademicsFacultyStatusRouteImport } from './routes/super-admin.academics.faculty-status'
 import { Route as SuperAdminAcademicsSyllabusTrackerRouteImport } from './routes/super-admin.academics.syllabus-tracker'
 import { Route as DashboardAcademicsAttendanceMarkRouteImport } from './routes/dashboard.academics.attendance.mark'
@@ -372,11 +740,6 @@ const EmergencyRoute = EmergencyRouteImport.update({
 const EmployeeManagementRoute = EmployeeManagementRouteImport.update({
   id: '/employee-management',
   path: '/employee-management',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExamcellRoute = ExamcellRouteImport.update({
-  id: '/examcell',
-  path: '/examcell',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExaminationRoute = ExaminationRouteImport.update({
@@ -534,6 +897,11 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StaffRoute = StaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
   path: '/student',
@@ -637,97 +1005,36 @@ const DeanSubjectAllocationRoute = DeanSubjectAllocationRouteImport.update({
   path: '/subject-allocation',
   getParentRoute: () => DeanRoute,
 } as any)
+const DriveApplyRoute = DriveApplyRouteImport.update({
+  id: '/drive/apply',
+  path: '/drive/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExamTakeRoute = ExamTakeRouteImport.update({
   id: '/exam/take',
   path: '/exam/take',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ExamcellIndexRoute = ExamcellIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ExamcellRoute,
-} as any)
 const ExamcellAnalyticsRoute = ExamcellAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => ExamcellRoute,
-} as any)
-const ExamcellBloomstickRoute = ExamcellBloomstickRouteImport.update({
-  id: '/bloomstick',
-  path: '/bloomstick',
-  getParentRoute: () => ExamcellRoute,
+  id: '/examcell/analytics',
+  path: '/examcell/analytics',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ExamcellCorrectionAnalysisRoute =
   ExamcellCorrectionAnalysisRouteImport.update({
-    id: '/correction-analysis',
-    path: '/correction-analysis',
-    getParentRoute: () => ExamcellRoute,
+    id: '/examcell/correction-analysis',
+    path: '/examcell/correction-analysis',
+    getParentRoute: () => rootRouteImport,
   } as any)
-const ExamcellCorrectionRequestsRoute =
-  ExamcellCorrectionRequestsRouteImport.update({
-    id: '/correction-requests',
-    path: '/correction-requests',
-    getParentRoute: () => ExamcellRoute,
-  } as any)
-const ExamcellCorrectionsRoute = ExamcellCorrectionsRouteImport.update({
-  id: '/corrections',
-  path: '/corrections',
-  getParentRoute: () => ExamcellRoute,
-} as any)
-const ExamcellCourseEnrollRoute = ExamcellCourseEnrollRouteImport.update({
-  id: '/course-enroll',
-  path: '/course-enroll',
-  getParentRoute: () => ExamcellRoute,
-} as any)
-const ExamcellDashboardRoute = ExamcellDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => ExamcellRoute,
-} as any)
 const ExamcellHallTicketsRoute = ExamcellHallTicketsRouteImport.update({
-  id: '/hall-tickets',
-  path: '/hall-tickets',
-  getParentRoute: () => ExamcellRoute,
-} as any)
-const ExamcellNotificationsRoute = ExamcellNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => ExamcellRoute,
-} as any)
-const ExamcellQuestionsRoute = ExamcellQuestionsRouteImport.update({
-  id: '/questions',
-  path: '/questions',
-  getParentRoute: () => ExamcellRoute,
+  id: '/examcell/hall-tickets',
+  path: '/examcell/hall-tickets',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ExamcellResultsRoute = ExamcellResultsRouteImport.update({
-  id: '/results',
-  path: '/results',
-  getParentRoute: () => ExamcellRoute,
-} as any)
-const ExamcellScheduleRoute = ExamcellScheduleRouteImport.update({
-  id: '/schedule',
-  path: '/schedule',
-  getParentRoute: () => ExamcellRoute,
-} as any)
-const ExamcellSettingsRoute = ExamcellSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => ExamcellRoute,
-} as any)
-const ExamcellSupplementaryRoute = ExamcellSupplementaryRouteImport.update({
-  id: '/supplementary',
-  path: '/supplementary',
-  getParentRoute: () => ExamcellRoute,
-} as any)
-const ExamcellTimetableRoute = ExamcellTimetableRouteImport.update({
-  id: '/timetable',
-  path: '/timetable',
-  getParentRoute: () => ExamcellRoute,
-} as any)
-const ExamcellUpdatesRoute = ExamcellUpdatesRouteImport.update({
-  id: '/updates',
-  path: '/updates',
-  getParentRoute: () => ExamcellRoute,
+  id: '/examcell/results',
+  path: '/examcell/results',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ExaminationIndexRoute = ExaminationIndexRouteImport.update({
   id: '/',
@@ -738,6 +1045,48 @@ const ExaminationDashboardRoute = ExaminationDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => ExaminationRoute,
+} as any)
+const ExaminationsIndexRoute = ExaminationsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ExaminationsRoute,
+} as any)
+const ExaminationsAnalyticsRoute = ExaminationsAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => ExaminationsRoute,
+} as any)
+const ExaminationsHallTicketsRoute = ExaminationsHallTicketsRouteImport.update({
+  id: '/hall-tickets',
+  path: '/hall-tickets',
+  getParentRoute: () => ExaminationsRoute,
+} as any)
+const ExaminationsInternalMarksRoute =
+  ExaminationsInternalMarksRouteImport.update({
+    id: '/internal-marks',
+    path: '/internal-marks',
+    getParentRoute: () => ExaminationsRoute,
+  } as any)
+const ExaminationsNotificationsRoute =
+  ExaminationsNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => ExaminationsRoute,
+  } as any)
+const ExaminationsReportsRoute = ExaminationsReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => ExaminationsRoute,
+} as any)
+const ExaminationsRevaluationRoute = ExaminationsRevaluationRouteImport.update({
+  id: '/revaluation',
+  path: '/revaluation',
+  getParentRoute: () => ExaminationsRoute,
+} as any)
+const ExaminationsScheduleRoute = ExaminationsScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => ExaminationsRoute,
 } as any)
 const ExternalUserIndexRoute = ExternalUserIndexRouteImport.update({
   id: '/',
@@ -774,17 +1123,6 @@ const FacultyDashboardRoute = FacultyDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => FacultyRoute,
 } as any)
-const FacultyEvaluationAndMarksRoute =
-  FacultyEvaluationAndMarksRouteImport.update({
-    id: '/evaluation-and-marks',
-    path: '/evaluation-and-marks',
-    getParentRoute: () => FacultyRoute,
-  } as any)
-const FacultyEvaluationsRoute = FacultyEvaluationsRouteImport.update({
-  id: '/evaluations',
-  path: '/evaluations',
-  getParentRoute: () => FacultyRoute,
-} as any)
 const FacultyExaminationsRoute = FacultyExaminationsRouteImport.update({
   id: '/examinations',
   path: '/examinations',
@@ -803,11 +1141,6 @@ const FacultyLessonPlanRoute = FacultyLessonPlanRouteImport.update({
 const FacultyLmsRoute = FacultyLmsRouteImport.update({
   id: '/lms',
   path: '/lms',
-  getParentRoute: () => FacultyRoute,
-} as any)
-const FacultyMarksRoute = FacultyMarksRouteImport.update({
-  id: '/marks',
-  path: '/marks',
   getParentRoute: () => FacultyRoute,
 } as any)
 const FacultyMaterialsRoute = FacultyMaterialsRouteImport.update({
@@ -1277,6 +1610,57 @@ const PlacementStudentsRoute = PlacementStudentsRouteImport.update({
   path: '/students',
   getParentRoute: () => PlacementRoute,
 } as any)
+const StaffIndexRoute = StaffIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StaffRoute,
+} as any)
+const StaffAcademicDeanRoute = StaffAcademicDeanRouteImport.update({
+  id: '/academic-dean',
+  path: '/academic-dean',
+  getParentRoute: () => StaffRoute,
+} as any)
+const StaffExaminationDeanRoute = StaffExaminationDeanRouteImport.update({
+  id: '/examination-dean',
+  path: '/examination-dean',
+  getParentRoute: () => StaffRoute,
+} as any)
+const StaffFinanceDeanRoute = StaffFinanceDeanRouteImport.update({
+  id: '/finance-dean',
+  path: '/finance-dean',
+  getParentRoute: () => StaffRoute,
+} as any)
+const StaffImaRoute = StaffImaRouteImport.update({
+  id: '/ima',
+  path: '/ima',
+  getParentRoute: () => StaffRoute,
+} as any)
+const StaffIqacRoute = StaffIqacRouteImport.update({
+  id: '/iqac',
+  path: '/iqac',
+  getParentRoute: () => StaffRoute,
+} as any)
+const StaffPlacementDeanRoute = StaffPlacementDeanRouteImport.update({
+  id: '/placement-dean',
+  path: '/placement-dean',
+  getParentRoute: () => StaffRoute,
+} as any)
+const StaffResearchDevelopmentRoute =
+  StaffResearchDevelopmentRouteImport.update({
+    id: '/research-development',
+    path: '/research-development',
+    getParentRoute: () => StaffRoute,
+  } as any)
+const StaffStudentDeanRoute = StaffStudentDeanRouteImport.update({
+  id: '/student-dean',
+  path: '/student-dean',
+  getParentRoute: () => StaffRoute,
+} as any)
+const StaffStudent_deanRoute = StaffStudent_deanRouteImport.update({
+  id: '/student_dean',
+  path: '/student_dean',
+  getParentRoute: () => StaffRoute,
+} as any)
 const StudentIndexRoute = StudentIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -1567,6 +1951,2120 @@ const PlacementDrivesDriveIdRoute = PlacementDrivesDriveIdRouteImport.update({
   path: '/drives/$driveId',
   getParentRoute: () => PlacementRoute,
 } as any)
+const StaffAcademicDeanIndexRoute = StaffAcademicDeanIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StaffAcademicDeanRoute,
+} as any)
+const StaffAcademicDeanAcademicAuditRoute =
+  StaffAcademicDeanAcademicAuditRouteImport.update({
+    id: '/academic-audit',
+    path: '/academic-audit',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanAcademicCalendarRoute =
+  StaffAcademicDeanAcademicCalendarRouteImport.update({
+    id: '/academic-calendar',
+    path: '/academic-calendar',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanAcademicCouncilRoute =
+  StaffAcademicDeanAcademicCouncilRouteImport.update({
+    id: '/academic-council',
+    path: '/academic-council',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanAcademicPerformanceRoute =
+  StaffAcademicDeanAcademicPerformanceRouteImport.update({
+    id: '/academic-performance',
+    path: '/academic-performance',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanAcademicReportsRoute =
+  StaffAcademicDeanAcademicReportsRouteImport.update({
+    id: '/academic-reports',
+    path: '/academic-reports',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanAccreditationRoute =
+  StaffAcademicDeanAccreditationRouteImport.update({
+    id: '/accreditation',
+    path: '/accreditation',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanApprovalsRoute =
+  StaffAcademicDeanApprovalsRouteImport.update({
+    id: '/approvals',
+    path: '/approvals',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanAssignSubstituteRoute =
+  StaffAcademicDeanAssignSubstituteRouteImport.update({
+    id: '/assign-substitute',
+    path: '/assign-substitute',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanAttendanceMonitoringRoute =
+  StaffAcademicDeanAttendanceMonitoringRouteImport.update({
+    id: '/attendance-monitoring',
+    path: '/attendance-monitoring',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanAttendanceReportsRoute =
+  StaffAcademicDeanAttendanceReportsRouteImport.update({
+    id: '/attendance-reports',
+    path: '/attendance-reports',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanBosMeetingsRoute =
+  StaffAcademicDeanBosMeetingsRouteImport.update({
+    id: '/bos-meetings',
+    path: '/bos-meetings',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanCircularsRoute =
+  StaffAcademicDeanCircularsRouteImport.update({
+    id: '/circulars',
+    path: '/circulars',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanClassMonitoringRoute =
+  StaffAcademicDeanClassMonitoringRouteImport.update({
+    id: '/class-monitoring',
+    path: '/class-monitoring',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanClassroomAllocationRoute =
+  StaffAcademicDeanClassroomAllocationRouteImport.update({
+    id: '/classroom-allocation',
+    path: '/classroom-allocation',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanCopoMappingRoute =
+  StaffAcademicDeanCopoMappingRouteImport.update({
+    id: '/copo-mapping',
+    path: '/copo-mapping',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanCourseAllocationRoute =
+  StaffAcademicDeanCourseAllocationRouteImport.update({
+    id: '/course-allocation',
+    path: '/course-allocation',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanCourseManagementRoute =
+  StaffAcademicDeanCourseManagementRouteImport.update({
+    id: '/course-management',
+    path: '/course-management',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanCourseOutcomesRoute =
+  StaffAcademicDeanCourseOutcomesRouteImport.update({
+    id: '/course-outcomes',
+    path: '/course-outcomes',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanCurriculumRoute =
+  StaffAcademicDeanCurriculumRouteImport.update({
+    id: '/curriculum',
+    path: '/curriculum',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanDepartmentReportsRoute =
+  StaffAcademicDeanDepartmentReportsRouteImport.update({
+    id: '/department-reports',
+    path: '/department-reports',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanDepartmentsRoute =
+  StaffAcademicDeanDepartmentsRouteImport.update({
+    id: '/departments',
+    path: '/departments',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanDeptWorkloadRoute =
+  StaffAcademicDeanDeptWorkloadRouteImport.update({
+    id: '/dept-workload',
+    path: '/dept-workload',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanFacultyManagementRoute =
+  StaffAcademicDeanFacultyManagementRouteImport.update({
+    id: '/faculty-management',
+    path: '/faculty-management',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanFacultyPerformanceRoute =
+  StaffAcademicDeanFacultyPerformanceRouteImport.update({
+    id: '/faculty-performance',
+    path: '/faculty-performance',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanFacultyReportsRoute =
+  StaffAcademicDeanFacultyReportsRouteImport.update({
+    id: '/faculty-reports',
+    path: '/faculty-reports',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanFacultyTimetableRoute =
+  StaffAcademicDeanFacultyTimetableRouteImport.update({
+    id: '/faculty-timetable',
+    path: '/faculty-timetable',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanFacultyTimetablesRoute =
+  StaffAcademicDeanFacultyTimetablesRouteImport.update({
+    id: '/faculty-timetables',
+    path: '/faculty-timetables',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanFacultyWorkloadRoute =
+  StaffAcademicDeanFacultyWorkloadRouteImport.update({
+    id: '/faculty-workload',
+    path: '/faculty-workload',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanMyClassesRoute =
+  StaffAcademicDeanMyClassesRouteImport.update({
+    id: '/my-classes',
+    path: '/my-classes',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanMyTimetableRoute =
+  StaffAcademicDeanMyTimetableRouteImport.update({
+    id: '/my-timetable',
+    path: '/my-timetable',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanNotificationsRoute =
+  StaffAcademicDeanNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanObeManagementRoute =
+  StaffAcademicDeanObeManagementRouteImport.update({
+    id: '/obe-management',
+    path: '/obe-management',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanProgramsRoute =
+  StaffAcademicDeanProgramsRouteImport.update({
+    id: '/programs',
+    path: '/programs',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanSettingsRoute =
+  StaffAcademicDeanSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanSlowLearnersRoute =
+  StaffAcademicDeanSlowLearnersRouteImport.update({
+    id: '/slow-learners',
+    path: '/slow-learners',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanStudentReportsRoute =
+  StaffAcademicDeanStudentReportsRouteImport.update({
+    id: '/student-reports',
+    path: '/student-reports',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanSubjectAllocationRoute =
+  StaffAcademicDeanSubjectAllocationRouteImport.update({
+    id: '/subject-allocation',
+    path: '/subject-allocation',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanSubstituteFacultyRoute =
+  StaffAcademicDeanSubstituteFacultyRouteImport.update({
+    id: '/substitute-faculty',
+    path: '/substitute-faculty',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanSubstitutionHistoryRoute =
+  StaffAcademicDeanSubstitutionHistoryRouteImport.update({
+    id: '/substitution-history',
+    path: '/substitution-history',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanTeachingLoadRoute =
+  StaffAcademicDeanTeachingLoadRouteImport.update({
+    id: '/teaching-load',
+    path: '/teaching-load',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanTimetableRoute =
+  StaffAcademicDeanTimetableRouteImport.update({
+    id: '/timetable',
+    path: '/timetable',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanTimetableHistoryRoute =
+  StaffAcademicDeanTimetableHistoryRouteImport.update({
+    id: '/timetable-history',
+    path: '/timetable-history',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanTimetableReportsRoute =
+  StaffAcademicDeanTimetableReportsRouteImport.update({
+    id: '/timetable-reports',
+    path: '/timetable-reports',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffAcademicDeanTopPerformersRoute =
+  StaffAcademicDeanTopPerformersRouteImport.update({
+    id: '/top-performers',
+    path: '/top-performers',
+    getParentRoute: () => StaffAcademicDeanRoute,
+  } as any)
+const StaffExaminationDeanIndexRoute =
+  StaffExaminationDeanIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanAcademicCalendarRoute =
+  StaffExaminationDeanAcademicCalendarRouteImport.update({
+    id: '/academic-calendar',
+    path: '/academic-calendar',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanAnswerScriptAllocationRoute =
+  StaffExaminationDeanAnswerScriptAllocationRouteImport.update({
+    id: '/answer-script-allocation',
+    path: '/answer-script-allocation',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanAssignSubstituteRoute =
+  StaffExaminationDeanAssignSubstituteRouteImport.update({
+    id: '/assign-substitute',
+    path: '/assign-substitute',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanCgpaCalculationRoute =
+  StaffExaminationDeanCgpaCalculationRouteImport.update({
+    id: '/cgpa-calculation',
+    path: '/cgpa-calculation',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanCommitteeReportsRoute =
+  StaffExaminationDeanCommitteeReportsRouteImport.update({
+    id: '/committee-reports',
+    path: '/committee-reports',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanCompletedDrivesRoute =
+  StaffExaminationDeanCompletedDrivesRouteImport.update({
+    id: '/completed-drives',
+    path: '/completed-drives',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanConfidentialStorageRoute =
+  StaffExaminationDeanConfidentialStorageRouteImport.update({
+    id: '/confidential-storage',
+    path: '/confidential-storage',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanDownloadHistoryRoute =
+  StaffExaminationDeanDownloadHistoryRouteImport.update({
+    id: '/download-history',
+    path: '/download-history',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanEvaluationRoute =
+  StaffExaminationDeanEvaluationRouteImport.update({
+    id: '/evaluation',
+    path: '/evaluation',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanExamReportsRoute =
+  StaffExaminationDeanExamReportsRouteImport.update({
+    id: '/exam-reports',
+    path: '/exam-reports',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanExamScheduleRoute =
+  StaffExaminationDeanExamScheduleRouteImport.update({
+    id: '/exam-schedule',
+    path: '/exam-schedule',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanExamSchedulesRoute =
+  StaffExaminationDeanExamSchedulesRouteImport.update({
+    id: '/exam-schedules',
+    path: '/exam-schedules',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanFacultyTimetablesRoute =
+  StaffExaminationDeanFacultyTimetablesRouteImport.update({
+    id: '/faculty-timetables',
+    path: '/faculty-timetables',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanGenerateHallTicketsRoute =
+  StaffExaminationDeanGenerateHallTicketsRouteImport.update({
+    id: '/generate-hall-tickets',
+    path: '/generate-hall-tickets',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanGradeModerationRoute =
+  StaffExaminationDeanGradeModerationRouteImport.update({
+    id: '/grade-moderation',
+    path: '/grade-moderation',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanGradeSheetsRoute =
+  StaffExaminationDeanGradeSheetsRouteImport.update({
+    id: '/grade-sheets',
+    path: '/grade-sheets',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanHallAllocationRoute =
+  StaffExaminationDeanHallAllocationRouteImport.update({
+    id: '/hall-allocation',
+    path: '/hall-allocation',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanHallTicketReportsRoute =
+  StaffExaminationDeanHallTicketReportsRouteImport.update({
+    id: '/hall-ticket-reports',
+    path: '/hall-ticket-reports',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanHallTicketStatusRoute =
+  StaffExaminationDeanHallTicketStatusRouteImport.update({
+    id: '/hall-ticket-status',
+    path: '/hall-ticket-status',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanHallTicketsRoute =
+  StaffExaminationDeanHallTicketsRouteImport.update({
+    id: '/hall-tickets',
+    path: '/hall-tickets',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanInternalExamsRoute =
+  StaffExaminationDeanInternalExamsRouteImport.update({
+    id: '/internal-exams',
+    path: '/internal-exams',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanInvigilatorAllocationRoute =
+  StaffExaminationDeanInvigilatorAllocationRouteImport.update({
+    id: '/invigilator-allocation',
+    path: '/invigilator-allocation',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanInvigilatorReportsRoute =
+  StaffExaminationDeanInvigilatorReportsRouteImport.update({
+    id: '/invigilator-reports',
+    path: '/invigilator-reports',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanInvigilatorsRoute =
+  StaffExaminationDeanInvigilatorsRouteImport.update({
+    id: '/invigilators',
+    path: '/invigilators',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanMalpracticeCasesRoute =
+  StaffExaminationDeanMalpracticeCasesRouteImport.update({
+    id: '/malpractice-cases',
+    path: '/malpractice-cases',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanMalpracticeReportsRoute =
+  StaffExaminationDeanMalpracticeReportsRouteImport.update({
+    id: '/malpractice-reports',
+    path: '/malpractice-reports',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanMarksEntryRoute =
+  StaffExaminationDeanMarksEntryRouteImport.update({
+    id: '/marks-entry',
+    path: '/marks-entry',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanMarksVerificationRoute =
+  StaffExaminationDeanMarksVerificationRouteImport.update({
+    id: '/marks-verification',
+    path: '/marks-verification',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanMidExamsRoute =
+  StaffExaminationDeanMidExamsRouteImport.update({
+    id: '/mid-exams',
+    path: '/mid-exams',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanMyClassesRoute =
+  StaffExaminationDeanMyClassesRouteImport.update({
+    id: '/my-classes',
+    path: '/my-classes',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanMyTimetableRoute =
+  StaffExaminationDeanMyTimetableRouteImport.update({
+    id: '/my-timetable',
+    path: '/my-timetable',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanNotificationsRoute =
+  StaffExaminationDeanNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanPaperDistributionRoute =
+  StaffExaminationDeanPaperDistributionRouteImport.update({
+    id: '/paper-distribution',
+    path: '/paper-distribution',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanPracticalExamsRoute =
+  StaffExaminationDeanPracticalExamsRouteImport.update({
+    id: '/practical-exams',
+    path: '/practical-exams',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanPunishmentHistoryRoute =
+  StaffExaminationDeanPunishmentHistoryRouteImport.update({
+    id: '/punishment-history',
+    path: '/punishment-history',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanQuestionPaperApprovalRoute =
+  StaffExaminationDeanQuestionPaperApprovalRouteImport.update({
+    id: '/question-paper-approval',
+    path: '/question-paper-approval',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanQuestionPaperUploadRoute =
+  StaffExaminationDeanQuestionPaperUploadRouteImport.update({
+    id: '/question-paper-upload',
+    path: '/question-paper-upload',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanQuestionPapersRoute =
+  StaffExaminationDeanQuestionPapersRouteImport.update({
+    id: '/question-papers',
+    path: '/question-papers',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanRankListRoute =
+  StaffExaminationDeanRankListRouteImport.update({
+    id: '/rank-list',
+    path: '/rank-list',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanRecountingRoute =
+  StaffExaminationDeanRecountingRouteImport.update({
+    id: '/recounting',
+    path: '/recounting',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanReportsRoute =
+  StaffExaminationDeanReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanResultProcessingRoute =
+  StaffExaminationDeanResultProcessingRouteImport.update({
+    id: '/result-processing',
+    path: '/result-processing',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanResultPublicationRoute =
+  StaffExaminationDeanResultPublicationRouteImport.update({
+    id: '/result-publication',
+    path: '/result-publication',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanResultReportsRoute =
+  StaffExaminationDeanResultReportsRouteImport.update({
+    id: '/result-reports',
+    path: '/result-reports',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanResultsRoute =
+  StaffExaminationDeanResultsRouteImport.update({
+    id: '/results',
+    path: '/results',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanRevaluationRoute =
+  StaffExaminationDeanRevaluationRouteImport.update({
+    id: '/revaluation',
+    path: '/revaluation',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanRevaluationRequestsRoute =
+  StaffExaminationDeanRevaluationRequestsRouteImport.update({
+    id: '/revaluation-requests',
+    path: '/revaluation-requests',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanRevaluationStatusRoute =
+  StaffExaminationDeanRevaluationStatusRouteImport.update({
+    id: '/revaluation-status',
+    path: '/revaluation-status',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanScheduleRoute =
+  StaffExaminationDeanScheduleRouteImport.update({
+    id: '/schedule',
+    path: '/schedule',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanSemesterExamsRoute =
+  StaffExaminationDeanSemesterExamsRouteImport.update({
+    id: '/semester-exams',
+    path: '/semester-exams',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanSettingsRoute =
+  StaffExaminationDeanSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanSubstitutionHistoryRoute =
+  StaffExaminationDeanSubstitutionHistoryRouteImport.update({
+    id: '/substitution-history',
+    path: '/substitution-history',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanSupplementaryExamsRoute =
+  StaffExaminationDeanSupplementaryExamsRouteImport.update({
+    id: '/supplementary-exams',
+    path: '/supplementary-exams',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanTimetableRoute =
+  StaffExaminationDeanTimetableRouteImport.update({
+    id: '/timetable',
+    path: '/timetable',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanTimetableGenerationRoute =
+  StaffExaminationDeanTimetableGenerationRouteImport.update({
+    id: '/timetable-generation',
+    path: '/timetable-generation',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanTranscriptsRoute =
+  StaffExaminationDeanTranscriptsRouteImport.update({
+    id: '/transcripts',
+    path: '/transcripts',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanUpdatedResultsRoute =
+  StaffExaminationDeanUpdatedResultsRouteImport.update({
+    id: '/updated-results',
+    path: '/updated-results',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffExaminationDeanValuationStatusRoute =
+  StaffExaminationDeanValuationStatusRouteImport.update({
+    id: '/valuation-status',
+    path: '/valuation-status',
+    getParentRoute: () => StaffExaminationDeanRoute,
+  } as any)
+const StaffFinanceDeanIndexRoute = StaffFinanceDeanIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StaffFinanceDeanRoute,
+} as any)
+const StaffFinanceDeanAccountsRoute =
+  StaffFinanceDeanAccountsRouteImport.update({
+    id: '/accounts',
+    path: '/accounts',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanAllowancesDeductionsRoute =
+  StaffFinanceDeanAllowancesDeductionsRouteImport.update({
+    id: '/allowances-deductions',
+    path: '/allowances-deductions',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanAnnualBudgetRoute =
+  StaffFinanceDeanAnnualBudgetRouteImport.update({
+    id: '/annual-budget',
+    path: '/annual-budget',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanAssignSubstituteRoute =
+  StaffFinanceDeanAssignSubstituteRouteImport.update({
+    id: '/assign-substitute',
+    path: '/assign-substitute',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanAuditRoute = StaffFinanceDeanAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => StaffFinanceDeanRoute,
+} as any)
+const StaffFinanceDeanAuditComplianceRoute =
+  StaffFinanceDeanAuditComplianceRouteImport.update({
+    id: '/audit-compliance',
+    path: '/audit-compliance',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanAuditHistoryRoute =
+  StaffFinanceDeanAuditHistoryRouteImport.update({
+    id: '/audit-history',
+    path: '/audit-history',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanAuditReportsRoute =
+  StaffFinanceDeanAuditReportsRouteImport.update({
+    id: '/audit-reports',
+    path: '/audit-reports',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanAuditsRoute = StaffFinanceDeanAuditsRouteImport.update({
+  id: '/audits',
+  path: '/audits',
+  getParentRoute: () => StaffFinanceDeanRoute,
+} as any)
+const StaffFinanceDeanBudgetRoute = StaffFinanceDeanBudgetRouteImport.update({
+  id: '/budget',
+  path: '/budget',
+  getParentRoute: () => StaffFinanceDeanRoute,
+} as any)
+const StaffFinanceDeanBudgetAllocationRoute =
+  StaffFinanceDeanBudgetAllocationRouteImport.update({
+    id: '/budget-allocation',
+    path: '/budget-allocation',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanBudgetReportsRoute =
+  StaffFinanceDeanBudgetReportsRouteImport.update({
+    id: '/budget-reports',
+    path: '/budget-reports',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanBudgetUtilizationRoute =
+  StaffFinanceDeanBudgetUtilizationRouteImport.update({
+    id: '/budget-utilization',
+    path: '/budget-utilization',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanDailyExpensesRoute =
+  StaffFinanceDeanDailyExpensesRouteImport.update({
+    id: '/daily-expenses',
+    path: '/daily-expenses',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanDepartmentBudgetsRoute =
+  StaffFinanceDeanDepartmentBudgetsRouteImport.update({
+    id: '/department-budgets',
+    path: '/department-budgets',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanDeptBudgetsRoute =
+  StaffFinanceDeanDeptBudgetsRouteImport.update({
+    id: '/dept-budgets',
+    path: '/dept-budgets',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanDeptExpensesRoute =
+  StaffFinanceDeanDeptExpensesRouteImport.update({
+    id: '/dept-expenses',
+    path: '/dept-expenses',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanExpensesRoute =
+  StaffFinanceDeanExpensesRouteImport.update({
+    id: '/expenses',
+    path: '/expenses',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanExternalAuditRoute =
+  StaffFinanceDeanExternalAuditRouteImport.update({
+    id: '/external-audit',
+    path: '/external-audit',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanFacultyPayrollRoute =
+  StaffFinanceDeanFacultyPayrollRouteImport.update({
+    id: '/faculty-payroll',
+    path: '/faculty-payroll',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanFacultyTimetablesRoute =
+  StaffFinanceDeanFacultyTimetablesRouteImport.update({
+    id: '/faculty-timetables',
+    path: '/faculty-timetables',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanFeeCollectionRoute =
+  StaffFinanceDeanFeeCollectionRouteImport.update({
+    id: '/fee-collection',
+    path: '/fee-collection',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanFeeCollectionsRoute =
+  StaffFinanceDeanFeeCollectionsRouteImport.update({
+    id: '/fee-collections',
+    path: '/fee-collections',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanFeeReportsRoute =
+  StaffFinanceDeanFeeReportsRouteImport.update({
+    id: '/fee-reports',
+    path: '/fee-reports',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanFeesRoute = StaffFinanceDeanFeesRouteImport.update({
+  id: '/fees',
+  path: '/fees',
+  getParentRoute: () => StaffFinanceDeanRoute,
+} as any)
+const StaffFinanceDeanFinancialReportsRoute =
+  StaffFinanceDeanFinancialReportsRouteImport.update({
+    id: '/financial-reports',
+    path: '/financial-reports',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanGrantsRoute = StaffFinanceDeanGrantsRouteImport.update({
+  id: '/grants',
+  path: '/grants',
+  getParentRoute: () => StaffFinanceDeanRoute,
+} as any)
+const StaffFinanceDeanInternalAuditRoute =
+  StaffFinanceDeanInternalAuditRouteImport.update({
+    id: '/internal-audit',
+    path: '/internal-audit',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanInvoiceManagementRoute =
+  StaffFinanceDeanInvoiceManagementRouteImport.update({
+    id: '/invoice-management',
+    path: '/invoice-management',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanMyClassesRoute =
+  StaffFinanceDeanMyClassesRouteImport.update({
+    id: '/my-classes',
+    path: '/my-classes',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanMyTimetableRoute =
+  StaffFinanceDeanMyTimetableRouteImport.update({
+    id: '/my-timetable',
+    path: '/my-timetable',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanNotificationsRoute =
+  StaffFinanceDeanNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanPayrollRoute = StaffFinanceDeanPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => StaffFinanceDeanRoute,
+} as any)
+const StaffFinanceDeanPayrollReportsRoute =
+  StaffFinanceDeanPayrollReportsRouteImport.update({
+    id: '/payroll-reports',
+    path: '/payroll-reports',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanPendingFeesRoute =
+  StaffFinanceDeanPendingFeesRouteImport.update({
+    id: '/pending-fees',
+    path: '/pending-fees',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanPurchaseOrdersRoute =
+  StaffFinanceDeanPurchaseOrdersRouteImport.update({
+    id: '/purchase-orders',
+    path: '/purchase-orders',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanPurchasePaymentsRoute =
+  StaffFinanceDeanPurchasePaymentsRouteImport.update({
+    id: '/purchase-payments',
+    path: '/purchase-payments',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanPurchaseRequestsRoute =
+  StaffFinanceDeanPurchaseRequestsRouteImport.update({
+    id: '/purchase-requests',
+    path: '/purchase-requests',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanPurchasesRoute =
+  StaffFinanceDeanPurchasesRouteImport.update({
+    id: '/purchases',
+    path: '/purchases',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanRefundManagementRoute =
+  StaffFinanceDeanRefundManagementRouteImport.update({
+    id: '/refund-management',
+    path: '/refund-management',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanReportsRoute = StaffFinanceDeanReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => StaffFinanceDeanRoute,
+} as any)
+const StaffFinanceDeanSalaryHistoryRoute =
+  StaffFinanceDeanSalaryHistoryRouteImport.update({
+    id: '/salary-history',
+    path: '/salary-history',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanScholarshipsConcessionsRoute =
+  StaffFinanceDeanScholarshipsConcessionsRouteImport.update({
+    id: '/scholarships-concessions',
+    path: '/scholarships-concessions',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanSettingsRoute =
+  StaffFinanceDeanSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanStaffPayrollRoute =
+  StaffFinanceDeanStaffPayrollRouteImport.update({
+    id: '/staff-payroll',
+    path: '/staff-payroll',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanSubstitutionHistoryRoute =
+  StaffFinanceDeanSubstitutionHistoryRouteImport.update({
+    id: '/substitution-history',
+    path: '/substitution-history',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanTimetableRoute =
+  StaffFinanceDeanTimetableRouteImport.update({
+    id: '/timetable',
+    path: '/timetable',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanVendorManagementRoute =
+  StaffFinanceDeanVendorManagementRouteImport.update({
+    id: '/vendor-management',
+    path: '/vendor-management',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffFinanceDeanVendorPaymentsRoute =
+  StaffFinanceDeanVendorPaymentsRouteImport.update({
+    id: '/vendor-payments',
+    path: '/vendor-payments',
+    getParentRoute: () => StaffFinanceDeanRoute,
+  } as any)
+const StaffImaIndexRoute = StaffImaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaAmcWarrantyRoute = StaffImaAmcWarrantyRouteImport.update({
+  id: '/amc-warranty',
+  path: '/amc-warranty',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaApprovedPurchasesRoute =
+  StaffImaApprovedPurchasesRouteImport.update({
+    id: '/approved-purchases',
+    path: '/approved-purchases',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaAssetAuditRoute = StaffImaAssetAuditRouteImport.update({
+  id: '/asset-audit',
+  path: '/asset-audit',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaAssetDisposalRoute = StaffImaAssetDisposalRouteImport.update({
+  id: '/asset-disposal',
+  path: '/asset-disposal',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaAssetRegisterRoute = StaffImaAssetRegisterRouteImport.update({
+  id: '/asset-register',
+  path: '/asset-register',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaAssetTransferRoute = StaffImaAssetTransferRouteImport.update({
+  id: '/asset-transfer',
+  path: '/asset-transfer',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaAssignSubstituteRoute =
+  StaffImaAssignSubstituteRouteImport.update({
+    id: '/assign-substitute',
+    path: '/assign-substitute',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaCampusProjectsRoute = StaffImaCampusProjectsRouteImport.update({
+  id: '/campus-projects',
+  path: '/campus-projects',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaComplianceRoute = StaffImaComplianceRouteImport.update({
+  id: '/compliance',
+  path: '/compliance',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaDepartmentAssetsRoute =
+  StaffImaDepartmentAssetsRouteImport.update({
+    id: '/department-assets',
+    path: '/department-assets',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaEquipmentAllocationRoute =
+  StaffImaEquipmentAllocationRouteImport.update({
+    id: '/equipment-allocation',
+    path: '/equipment-allocation',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaEquipmentHistoryRoute =
+  StaffImaEquipmentHistoryRouteImport.update({
+    id: '/equipment-history',
+    path: '/equipment-history',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaEquipmentInventoryRoute =
+  StaffImaEquipmentInventoryRouteImport.update({
+    id: '/equipment-inventory',
+    path: '/equipment-inventory',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaEquipmentReportsRoute =
+  StaffImaEquipmentReportsRouteImport.update({
+    id: '/equipment-reports',
+    path: '/equipment-reports',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaEquipmentRequestsRoute =
+  StaffImaEquipmentRequestsRouteImport.update({
+    id: '/equipment-requests',
+    path: '/equipment-requests',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaFacultyTimetablesRoute =
+  StaffImaFacultyTimetablesRouteImport.update({
+    id: '/faculty-timetables',
+    path: '/faculty-timetables',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaGuestLecturesRoute = StaffImaGuestLecturesRouteImport.update({
+  id: '/guest-lectures',
+  path: '/guest-lectures',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaIndustrialVisitsRoute =
+  StaffImaIndustrialVisitsRouteImport.update({
+    id: '/industrial-visits',
+    path: '/industrial-visits',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaInfrastructureRoute = StaffImaInfrastructureRouteImport.update({
+  id: '/infrastructure',
+  path: '/infrastructure',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaInternshipsRoute = StaffImaInternshipsRouteImport.update({
+  id: '/internships',
+  path: '/internships',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaInventoryReportsRoute =
+  StaffImaInventoryReportsRouteImport.update({
+    id: '/inventory-reports',
+    path: '/inventory-reports',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaLabBookingRoute = StaffImaLabBookingRouteImport.update({
+  id: '/lab-booking',
+  path: '/lab-booking',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaLabDetailsRoute = StaffImaLabDetailsRouteImport.update({
+  id: '/lab-details',
+  path: '/lab-details',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaLabTimetableRoute = StaffImaLabTimetableRouteImport.update({
+  id: '/lab-timetable',
+  path: '/lab-timetable',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaLaboratoriesRoute = StaffImaLaboratoriesRouteImport.update({
+  id: '/laboratories',
+  path: '/laboratories',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaLaboratoryReportsRoute =
+  StaffImaLaboratoryReportsRouteImport.update({
+    id: '/laboratory-reports',
+    path: '/laboratory-reports',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaMaintenanceReportsRoute =
+  StaffImaMaintenanceReportsRouteImport.update({
+    id: '/maintenance-reports',
+    path: '/maintenance-reports',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaMaintenanceRequestsRoute =
+  StaffImaMaintenanceRequestsRouteImport.update({
+    id: '/maintenance-requests',
+    path: '/maintenance-requests',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaMaintenanceScheduleRoute =
+  StaffImaMaintenanceScheduleRouteImport.update({
+    id: '/maintenance-schedule',
+    path: '/maintenance-schedule',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaMouRoute = StaffImaMouRouteImport.update({
+  id: '/mou',
+  path: '/mou',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaMyClassesRoute = StaffImaMyClassesRouteImport.update({
+  id: '/my-classes',
+  path: '/my-classes',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaMyTimetableRoute = StaffImaMyTimetableRouteImport.update({
+  id: '/my-timetable',
+  path: '/my-timetable',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaNotificationsRoute = StaffImaNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaPartnersRoute = StaffImaPartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaPolicyDirectivesRoute =
+  StaffImaPolicyDirectivesRouteImport.update({
+    id: '/policy-directives',
+    path: '/policy-directives',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaPurchaseOrdersRoute = StaffImaPurchaseOrdersRouteImport.update({
+  id: '/purchase-orders',
+  path: '/purchase-orders',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaPurchaseReportsRoute = StaffImaPurchaseReportsRouteImport.update({
+  id: '/purchase-reports',
+  path: '/purchase-reports',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaPurchaseRequestsRoute =
+  StaffImaPurchaseRequestsRouteImport.update({
+    id: '/purchase-requests',
+    path: '/purchase-requests',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaPurchaseVendorsRoute = StaffImaPurchaseVendorsRouteImport.update({
+  id: '/purchase-vendors',
+  path: '/purchase-vendors',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaReportsRoute = StaffImaReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaSettingsRoute = StaffImaSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaSubstitutionHistoryRoute =
+  StaffImaSubstitutionHistoryRouteImport.update({
+    id: '/substitution-history',
+    path: '/substitution-history',
+    getParentRoute: () => StaffImaRoute,
+  } as any)
+const StaffImaTimetableRoute = StaffImaTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaVendorsRoute = StaffImaVendorsRouteImport.update({
+  id: '/vendors',
+  path: '/vendors',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffImaWorkshopsRoute = StaffImaWorkshopsRouteImport.update({
+  id: '/workshops',
+  path: '/workshops',
+  getParentRoute: () => StaffImaRoute,
+} as any)
+const StaffIqacIndexRoute = StaffIqacIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacAcademicAuditRoute = StaffIqacAcademicAuditRouteImport.update({
+  id: '/academic-audit',
+  path: '/academic-audit',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacAlumniFeedbackRoute = StaffIqacAlumniFeedbackRouteImport.update({
+  id: '/alumni-feedback',
+  path: '/alumni-feedback',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacAqarRoute = StaffIqacAqarRouteImport.update({
+  id: '/aqar',
+  path: '/aqar',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacAqarReportsRoute = StaffIqacAqarReportsRouteImport.update({
+  id: '/aqar-reports',
+  path: '/aqar-reports',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacAssignSubstituteRoute =
+  StaffIqacAssignSubstituteRouteImport.update({
+    id: '/assign-substitute',
+    path: '/assign-substitute',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacAtrRoute = StaffIqacAtrRouteImport.update({
+  id: '/atr',
+  path: '/atr',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacAuditRoute = StaffIqacAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacAuditReportsRoute = StaffIqacAuditReportsRouteImport.update({
+  id: '/audit-reports',
+  path: '/audit-reports',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacBenchmarkingRoute = StaffIqacBenchmarkingRouteImport.update({
+  id: '/benchmarking',
+  path: '/benchmarking',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacBestPracticesRoute = StaffIqacBestPracticesRouteImport.update({
+  id: '/best-practices',
+  path: '/best-practices',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacComplianceTrackerRoute =
+  StaffIqacComplianceTrackerRouteImport.update({
+    id: '/compliance-tracker',
+    path: '/compliance-tracker',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacCriteriaRoute = StaffIqacCriteriaRouteImport.update({
+  id: '/criteria',
+  path: '/criteria',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacCriteriaDocsRoute = StaffIqacCriteriaDocsRouteImport.update({
+  id: '/criteria-docs',
+  path: '/criteria-docs',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacDeptQualityMetricsRoute =
+  StaffIqacDeptQualityMetricsRouteImport.update({
+    id: '/dept-quality-metrics',
+    path: '/dept-quality-metrics',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacDocumentRepoRoute = StaffIqacDocumentRepoRouteImport.update({
+  id: '/document-repo',
+  path: '/document-repo',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacDocumentsRoute = StaffIqacDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacEmployerFeedbackRoute =
+  StaffIqacEmployerFeedbackRouteImport.update({
+    id: '/employer-feedback',
+    path: '/employer-feedback',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacEventsRoute = StaffIqacEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacEvidenceUploadsRoute =
+  StaffIqacEvidenceUploadsRouteImport.update({
+    id: '/evidence-uploads',
+    path: '/evidence-uploads',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacFacultyFeedbackRoute =
+  StaffIqacFacultyFeedbackRouteImport.update({
+    id: '/faculty-feedback',
+    path: '/faculty-feedback',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacFacultyTimetablesRoute =
+  StaffIqacFacultyTimetablesRouteImport.update({
+    id: '/faculty-timetables',
+    path: '/faculty-timetables',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacFeedbackRoute = StaffIqacFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacFeedbackAnalyticsRoute =
+  StaffIqacFeedbackAnalyticsRouteImport.update({
+    id: '/feedback-analytics',
+    path: '/feedback-analytics',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacFeedbackReportsRoute =
+  StaffIqacFeedbackReportsRouteImport.update({
+    id: '/feedback-reports',
+    path: '/feedback-reports',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacInternalQualityAuditRoute =
+  StaffIqacInternalQualityAuditRouteImport.update({
+    id: '/internal-quality-audit',
+    path: '/internal-quality-audit',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacKpiDashboardRoute = StaffIqacKpiDashboardRouteImport.update({
+  id: '/kpi-dashboard',
+  path: '/kpi-dashboard',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacKpiReportsRoute = StaffIqacKpiReportsRouteImport.update({
+  id: '/kpi-reports',
+  path: '/kpi-reports',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacMeetingsRoute = StaffIqacMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacMetricsRoute = StaffIqacMetricsRouteImport.update({
+  id: '/metrics',
+  path: '/metrics',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacMyClassesRoute = StaffIqacMyClassesRouteImport.update({
+  id: '/my-classes',
+  path: '/my-classes',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacMyTimetableRoute = StaffIqacMyTimetableRouteImport.update({
+  id: '/my-timetable',
+  path: '/my-timetable',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacNaacRoute = StaffIqacNaacRouteImport.update({
+  id: '/naac',
+  path: '/naac',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacNaacReportsRoute = StaffIqacNaacReportsRouteImport.update({
+  id: '/naac-reports',
+  path: '/naac-reports',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacNbaRoute = StaffIqacNbaRouteImport.update({
+  id: '/nba',
+  path: '/nba',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacNotificationsRoute = StaffIqacNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacPerformanceAnalysisRoute =
+  StaffIqacPerformanceAnalysisRouteImport.update({
+    id: '/performance-analysis',
+    path: '/performance-analysis',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacQualityAuditsRoute = StaffIqacQualityAuditsRouteImport.update({
+  id: '/quality-audits',
+  path: '/quality-audits',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacQualityImprovementRoute =
+  StaffIqacQualityImprovementRouteImport.update({
+    id: '/quality-improvement',
+    path: '/quality-improvement',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacQualityMetricsRoute = StaffIqacQualityMetricsRouteImport.update({
+  id: '/quality-metrics',
+  path: '/quality-metrics',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacReportsRoute = StaffIqacReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacSettingsRoute = StaffIqacSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacSsrRoute = StaffIqacSsrRouteImport.update({
+  id: '/ssr',
+  path: '/ssr',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacStudentFeedbackRoute =
+  StaffIqacStudentFeedbackRouteImport.update({
+    id: '/student-feedback',
+    path: '/student-feedback',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacSubstitutionHistoryRoute =
+  StaffIqacSubstitutionHistoryRouteImport.update({
+    id: '/substitution-history',
+    path: '/substitution-history',
+    getParentRoute: () => StaffIqacRoute,
+  } as any)
+const StaffIqacTimetableRoute = StaffIqacTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffIqacWorkshopsRoute = StaffIqacWorkshopsRouteImport.update({
+  id: '/workshops',
+  path: '/workshops',
+  getParentRoute: () => StaffIqacRoute,
+} as any)
+const StaffPlacementDeanIndexRoute = StaffPlacementDeanIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StaffPlacementDeanRoute,
+} as any)
+const StaffPlacementDeanAptitudeTrainingRoute =
+  StaffPlacementDeanAptitudeTrainingRouteImport.update({
+    id: '/aptitude-training',
+    path: '/aptitude-training',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanAssignSubstituteRoute =
+  StaffPlacementDeanAssignSubstituteRouteImport.update({
+    id: '/assign-substitute',
+    path: '/assign-substitute',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanCodingTrainingRoute =
+  StaffPlacementDeanCodingTrainingRouteImport.update({
+    id: '/coding-training',
+    path: '/coding-training',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanCompaniesRoute =
+  StaffPlacementDeanCompaniesRouteImport.update({
+    id: '/companies',
+    path: '/companies',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanCompanyHiringRoute =
+  StaffPlacementDeanCompanyHiringRouteImport.update({
+    id: '/company-hiring',
+    path: '/company-hiring',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanCompanyProfilesRoute =
+  StaffPlacementDeanCompanyProfilesRouteImport.update({
+    id: '/company-profiles',
+    path: '/company-profiles',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanCompanyReportsRoute =
+  StaffPlacementDeanCompanyReportsRouteImport.update({
+    id: '/company-reports',
+    path: '/company-reports',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanCompanyVisitsRoute =
+  StaffPlacementDeanCompanyVisitsRouteImport.update({
+    id: '/company-visits',
+    path: '/company-visits',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanCompletedDrivesRoute =
+  StaffPlacementDeanCompletedDrivesRouteImport.update({
+    id: '/completed-drives',
+    path: '/completed-drives',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanDeptPlacementsRoute =
+  StaffPlacementDeanDeptPlacementsRouteImport.update({
+    id: '/dept-placements',
+    path: '/dept-placements',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanDrivesRoute =
+  StaffPlacementDeanDrivesRouteImport.update({
+    id: '/drives',
+    path: '/drives',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanEligibleStudentsRoute =
+  StaffPlacementDeanEligibleStudentsRouteImport.update({
+    id: '/eligible-students',
+    path: '/eligible-students',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanFacultyTimetablesRoute =
+  StaffPlacementDeanFacultyTimetablesRouteImport.update({
+    id: '/faculty-timetables',
+    path: '/faculty-timetables',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanInternshipOpportunitiesRoute =
+  StaffPlacementDeanInternshipOpportunitiesRouteImport.update({
+    id: '/internship-opportunities',
+    path: '/internship-opportunities',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanInternshipReportsRoute =
+  StaffPlacementDeanInternshipReportsRouteImport.update({
+    id: '/internship-reports',
+    path: '/internship-reports',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanInternshipReportsListRoute =
+  StaffPlacementDeanInternshipReportsListRouteImport.update({
+    id: '/internship-reports-list',
+    path: '/internship-reports-list',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanInternshipTrackingRoute =
+  StaffPlacementDeanInternshipTrackingRouteImport.update({
+    id: '/internship-tracking',
+    path: '/internship-tracking',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanInternshipsRoute =
+  StaffPlacementDeanInternshipsRouteImport.update({
+    id: '/internships',
+    path: '/internships',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanMockInterviewsRoute =
+  StaffPlacementDeanMockInterviewsRouteImport.update({
+    id: '/mock-interviews',
+    path: '/mock-interviews',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanMousRoute = StaffPlacementDeanMousRouteImport.update({
+  id: '/mous',
+  path: '/mous',
+  getParentRoute: () => StaffPlacementDeanRoute,
+} as any)
+const StaffPlacementDeanMyClassesRoute =
+  StaffPlacementDeanMyClassesRouteImport.update({
+    id: '/my-classes',
+    path: '/my-classes',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanMyTimetableRoute =
+  StaffPlacementDeanMyTimetableRouteImport.update({
+    id: '/my-timetable',
+    path: '/my-timetable',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanNotificationsRoute =
+  StaffPlacementDeanNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanOffCampusDrivesRoute =
+  StaffPlacementDeanOffCampusDrivesRouteImport.update({
+    id: '/off-campus-drives',
+    path: '/off-campus-drives',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanOfferLettersRoute =
+  StaffPlacementDeanOfferLettersRouteImport.update({
+    id: '/offer-letters',
+    path: '/offer-letters',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanOffersRoute =
+  StaffPlacementDeanOffersRouteImport.update({
+    id: '/offers',
+    path: '/offers',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanOngoingDrivesRoute =
+  StaffPlacementDeanOngoingDrivesRouteImport.update({
+    id: '/ongoing-drives',
+    path: '/ongoing-drives',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanPackageAnalysisRoute =
+  StaffPlacementDeanPackageAnalysisRouteImport.update({
+    id: '/package-analysis',
+    path: '/package-analysis',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanPackageAnalyticsRoute =
+  StaffPlacementDeanPackageAnalyticsRouteImport.update({
+    id: '/package-analytics',
+    path: '/package-analytics',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanPackagesRoute =
+  StaffPlacementDeanPackagesRouteImport.update({
+    id: '/packages',
+    path: '/packages',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanPlacedStudentsRoute =
+  StaffPlacementDeanPlacedStudentsRouteImport.update({
+    id: '/placed-students',
+    path: '/placed-students',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanPlacementReportsRoute =
+  StaffPlacementDeanPlacementReportsRouteImport.update({
+    id: '/placement-reports',
+    path: '/placement-reports',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanPlacementStatisticsRoute =
+  StaffPlacementDeanPlacementStatisticsRouteImport.update({
+    id: '/placement-statistics',
+    path: '/placement-statistics',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanRecruitmentPartnersRoute =
+  StaffPlacementDeanRecruitmentPartnersRouteImport.update({
+    id: '/recruitment-partners',
+    path: '/recruitment-partners',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanRegisteredStudentsRoute =
+  StaffPlacementDeanRegisteredStudentsRouteImport.update({
+    id: '/registered-students',
+    path: '/registered-students',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanReportsRoute =
+  StaffPlacementDeanReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanResumeReviewsRoute =
+  StaffPlacementDeanResumeReviewsRouteImport.update({
+    id: '/resume-reviews',
+    path: '/resume-reviews',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanSelectedStudentsRoute =
+  StaffPlacementDeanSelectedStudentsRouteImport.update({
+    id: '/selected-students',
+    path: '/selected-students',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanSettingsRoute =
+  StaffPlacementDeanSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanShortlistedStudentsRoute =
+  StaffPlacementDeanShortlistedStudentsRouteImport.update({
+    id: '/shortlisted-students',
+    path: '/shortlisted-students',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanSoftSkillsRoute =
+  StaffPlacementDeanSoftSkillsRouteImport.update({
+    id: '/soft-skills',
+    path: '/soft-skills',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanStudentReportsRoute =
+  StaffPlacementDeanStudentReportsRouteImport.update({
+    id: '/student-reports',
+    path: '/student-reports',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanSubstitutionHistoryRoute =
+  StaffPlacementDeanSubstitutionHistoryRouteImport.update({
+    id: '/substitution-history',
+    path: '/substitution-history',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanTimetableRoute =
+  StaffPlacementDeanTimetableRouteImport.update({
+    id: '/timetable',
+    path: '/timetable',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanTrainingRoute =
+  StaffPlacementDeanTrainingRouteImport.update({
+    id: '/training',
+    path: '/training',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanTrainingReportsRoute =
+  StaffPlacementDeanTrainingReportsRouteImport.update({
+    id: '/training-reports',
+    path: '/training-reports',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffPlacementDeanUpcomingDrivesRoute =
+  StaffPlacementDeanUpcomingDrivesRouteImport.update({
+    id: '/upcoming-drives',
+    path: '/upcoming-drives',
+    getParentRoute: () => StaffPlacementDeanRoute,
+  } as any)
+const StaffResearchDevelopmentIndexRoute =
+  StaffResearchDevelopmentIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentAssignSubstituteRoute =
+  StaffResearchDevelopmentAssignSubstituteRouteImport.update({
+    id: '/assign-substitute',
+    path: '/assign-substitute',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentBookChaptersRoute =
+  StaffResearchDevelopmentBookChaptersRouteImport.update({
+    id: '/book-chapters',
+    path: '/book-chapters',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentCompletedProjectsRoute =
+  StaffResearchDevelopmentCompletedProjectsRouteImport.update({
+    id: '/completed-projects',
+    path: '/completed-projects',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentConferencePublicationsRoute =
+  StaffResearchDevelopmentConferencePublicationsRouteImport.update({
+    id: '/conference-publications',
+    path: '/conference-publications',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentConferencesRoute =
+  StaffResearchDevelopmentConferencesRouteImport.update({
+    id: '/conferences',
+    path: '/conferences',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentConsultancyProjectsRoute =
+  StaffResearchDevelopmentConsultancyProjectsRouteImport.update({
+    id: '/consultancy-projects',
+    path: '/consultancy-projects',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentCopyrightsRoute =
+  StaffResearchDevelopmentCopyrightsRouteImport.update({
+    id: '/copyrights',
+    path: '/copyrights',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentFacultyTimetablesRoute =
+  StaffResearchDevelopmentFacultyTimetablesRouteImport.update({
+    id: '/faculty-timetables',
+    path: '/faculty-timetables',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentFdpsRoute =
+  StaffResearchDevelopmentFdpsRouteImport.update({
+    id: '/fdps',
+    path: '/fdps',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentFundingAgenciesRoute =
+  StaffResearchDevelopmentFundingAgenciesRouteImport.update({
+    id: '/funding-agencies',
+    path: '/funding-agencies',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentGovtGrantsRoute =
+  StaffResearchDevelopmentGovtGrantsRouteImport.update({
+    id: '/govt-grants',
+    path: '/govt-grants',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentGrantReportsRoute =
+  StaffResearchDevelopmentGrantReportsRouteImport.update({
+    id: '/grant-reports',
+    path: '/grant-reports',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentGrantUtilizationRoute =
+  StaffResearchDevelopmentGrantUtilizationRouteImport.update({
+    id: '/grant-utilization',
+    path: '/grant-utilization',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentGrantsRoute =
+  StaffResearchDevelopmentGrantsRouteImport.update({
+    id: '/grants',
+    path: '/grants',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentIncubationRoute =
+  StaffResearchDevelopmentIncubationRouteImport.update({
+    id: '/incubation',
+    path: '/incubation',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentIndustryGrantsRoute =
+  StaffResearchDevelopmentIndustryGrantsRouteImport.update({
+    id: '/industry-grants',
+    path: '/industry-grants',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentInnovationRoute =
+  StaffResearchDevelopmentInnovationRouteImport.update({
+    id: '/innovation',
+    path: '/innovation',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentInnovationsRoute =
+  StaffResearchDevelopmentInnovationsRouteImport.update({
+    id: '/innovations',
+    path: '/innovations',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentJournalPublicationsRoute =
+  StaffResearchDevelopmentJournalPublicationsRouteImport.update({
+    id: '/journal-publications',
+    path: '/journal-publications',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentLabBookingRoute =
+  StaffResearchDevelopmentLabBookingRouteImport.update({
+    id: '/lab-booking',
+    path: '/lab-booking',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentLabEquipmentRoute =
+  StaffResearchDevelopmentLabEquipmentRouteImport.update({
+    id: '/lab-equipment',
+    path: '/lab-equipment',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentLabUtilizationRoute =
+  StaffResearchDevelopmentLabUtilizationRouteImport.update({
+    id: '/lab-utilization',
+    path: '/lab-utilization',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentMyClassesRoute =
+  StaffResearchDevelopmentMyClassesRouteImport.update({
+    id: '/my-classes',
+    path: '/my-classes',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentMyTimetableRoute =
+  StaffResearchDevelopmentMyTimetableRouteImport.update({
+    id: '/my-timetable',
+    path: '/my-timetable',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentNotificationsRoute =
+  StaffResearchDevelopmentNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentOngoingProjectsRoute =
+  StaffResearchDevelopmentOngoingProjectsRouteImport.update({
+    id: '/ongoing-projects',
+    path: '/ongoing-projects',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentPatentReportsRoute =
+  StaffResearchDevelopmentPatentReportsRouteImport.update({
+    id: '/patent-reports',
+    path: '/patent-reports',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentPatentsRoute =
+  StaffResearchDevelopmentPatentsRouteImport.update({
+    id: '/patents',
+    path: '/patents',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentPhdScholarsRoute =
+  StaffResearchDevelopmentPhdScholarsRouteImport.update({
+    id: '/phd-scholars',
+    path: '/phd-scholars',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentProjectsRoute =
+  StaffResearchDevelopmentProjectsRouteImport.update({
+    id: '/projects',
+    path: '/projects',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentPublicationReportsRoute =
+  StaffResearchDevelopmentPublicationReportsRouteImport.update({
+    id: '/publication-reports',
+    path: '/publication-reports',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentPublicationsRepoRoute =
+  StaffResearchDevelopmentPublicationsRepoRouteImport.update({
+    id: '/publications-repo',
+    path: '/publications-repo',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentResearchGuidesRoute =
+  StaffResearchDevelopmentResearchGuidesRouteImport.update({
+    id: '/research-guides',
+    path: '/research-guides',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentResearchLabsRoute =
+  StaffResearchDevelopmentResearchLabsRouteImport.update({
+    id: '/research-labs',
+    path: '/research-labs',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentResearchReportsRoute =
+  StaffResearchDevelopmentResearchReportsRouteImport.update({
+    id: '/research-reports',
+    path: '/research-reports',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentScholarProgressRoute =
+  StaffResearchDevelopmentScholarProgressRouteImport.update({
+    id: '/scholar-progress',
+    path: '/scholar-progress',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentScholarReportsRoute =
+  StaffResearchDevelopmentScholarReportsRouteImport.update({
+    id: '/scholar-reports',
+    path: '/scholar-reports',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentScholarsRoute =
+  StaffResearchDevelopmentScholarsRouteImport.update({
+    id: '/scholars',
+    path: '/scholars',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentSeminarsRoute =
+  StaffResearchDevelopmentSeminarsRouteImport.update({
+    id: '/seminars',
+    path: '/seminars',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentSettingsRoute =
+  StaffResearchDevelopmentSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentSponsoredProjectsRoute =
+  StaffResearchDevelopmentSponsoredProjectsRouteImport.update({
+    id: '/sponsored-projects',
+    path: '/sponsored-projects',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentSubstitutionHistoryRoute =
+  StaffResearchDevelopmentSubstitutionHistoryRouteImport.update({
+    id: '/substitution-history',
+    path: '/substitution-history',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentThesisRepoRoute =
+  StaffResearchDevelopmentThesisRepoRouteImport.update({
+    id: '/thesis-repo',
+    path: '/thesis-repo',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentTimetableRoute =
+  StaffResearchDevelopmentTimetableRouteImport.update({
+    id: '/timetable',
+    path: '/timetable',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffResearchDevelopmentWorkshopsRoute =
+  StaffResearchDevelopmentWorkshopsRouteImport.update({
+    id: '/workshops',
+    path: '/workshops',
+    getParentRoute: () => StaffResearchDevelopmentRoute,
+  } as any)
+const StaffStudentDeanIndexRoute = StaffStudentDeanIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StaffStudentDeanRoute,
+} as any)
+const StaffStudentDeanAttendanceRoute =
+  StaffStudentDeanAttendanceRouteImport.update({
+    id: '/attendance',
+    path: '/attendance',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanAttendanceHistoryRoute =
+  StaffStudentDeanAttendanceHistoryRouteImport.update({
+    id: '/attendance-history',
+    path: '/attendance-history',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanAttendanceReportsRoute =
+  StaffStudentDeanAttendanceReportsRouteImport.update({
+    id: '/attendance-reports',
+    path: '/attendance-reports',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanCertificatesRoute =
+  StaffStudentDeanCertificatesRouteImport.update({
+    id: '/certificates',
+    path: '/certificates',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanClubsEventsRoute =
+  StaffStudentDeanClubsEventsRouteImport.update({
+    id: '/clubs-events',
+    path: '/clubs-events',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanCounsellingRoute =
+  StaffStudentDeanCounsellingRouteImport.update({
+    id: '/counselling',
+    path: '/counselling',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanDisciplineRoute =
+  StaffStudentDeanDisciplineRouteImport.update({
+    id: '/discipline',
+    path: '/discipline',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanGrievancesRoute =
+  StaffStudentDeanGrievancesRouteImport.update({
+    id: '/grievances',
+    path: '/grievances',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanHostelRoute = StaffStudentDeanHostelRouteImport.update({
+  id: '/hostel',
+  path: '/hostel',
+  getParentRoute: () => StaffStudentDeanRoute,
+} as any)
+const StaffStudentDeanMentoringRoute =
+  StaffStudentDeanMentoringRouteImport.update({
+    id: '/mentoring',
+    path: '/mentoring',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanNotificationsRoute =
+  StaffStudentDeanNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanProfilesRoute =
+  StaffStudentDeanProfilesRouteImport.update({
+    id: '/profiles',
+    path: '/profiles',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanReportsRoute = StaffStudentDeanReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => StaffStudentDeanRoute,
+} as any)
+const StaffStudentDeanScholarshipReportsRoute =
+  StaffStudentDeanScholarshipReportsRouteImport.update({
+    id: '/scholarship-reports',
+    path: '/scholarship-reports',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanScholarshipsRoute =
+  StaffStudentDeanScholarshipsRouteImport.update({
+    id: '/scholarships',
+    path: '/scholarships',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanSettingsRoute =
+  StaffStudentDeanSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanStudentActivitiesRoute =
+  StaffStudentDeanStudentActivitiesRouteImport.update({
+    id: '/student-activities',
+    path: '/student-activities',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanStudentProfilesRoute =
+  StaffStudentDeanStudentProfilesRouteImport.update({
+    id: '/student-profiles',
+    path: '/student-profiles',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanStudentReportsRoute =
+  StaffStudentDeanStudentReportsRouteImport.update({
+    id: '/student-reports',
+    path: '/student-reports',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanStudentRequestsRoute =
+  StaffStudentDeanStudentRequestsRouteImport.update({
+    id: '/student-requests',
+    path: '/student-requests',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanStudentsRoute =
+  StaffStudentDeanStudentsRouteImport.update({
+    id: '/students',
+    path: '/students',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudentDeanTimetableRoute =
+  StaffStudentDeanTimetableRouteImport.update({
+    id: '/timetable',
+    path: '/timetable',
+    getParentRoute: () => StaffStudentDeanRoute,
+  } as any)
+const StaffStudent_deanSplatRoute = StaffStudent_deanSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => StaffStudent_deanRoute,
+} as any)
 const SuperAdminAcademicsFacultyStatusRoute =
   SuperAdminAcademicsFacultyStatusRouteImport.update({
     id: '/faculty-status',
@@ -1614,9 +4112,8 @@ export interface FileRoutesByFullPath {
   '/departments': typeof DepartmentsRoute
   '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
-  '/examcell': typeof ExamcellRouteWithChildren
   '/examination': typeof ExaminationRouteWithChildren
-  '/examinations': typeof ExaminationsRoute
+  '/examinations': typeof ExaminationsRouteWithChildren
   '/external-user': typeof ExternalUserRouteWithChildren
   '/faculty': typeof FacultyRouteWithChildren
   '/faculty-management': typeof FacultyManagementRoute
@@ -1646,6 +4143,7 @@ export interface FileRoutesByFullPath {
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/staff': typeof StaffRouteWithChildren
   '/student': typeof StudentRouteWithChildren
   '/students': typeof StudentsRoute
   '/subject-management': typeof SubjectManagementRoute
@@ -1664,36 +4162,29 @@ export interface FileRoutesByFullPath {
   '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
+  '/drive/apply': typeof DriveApplyRoute
   '/exam/take': typeof ExamTakeRoute
   '/examcell/analytics': typeof ExamcellAnalyticsRoute
-  '/examcell/bloomstick': typeof ExamcellBloomstickRoute
   '/examcell/correction-analysis': typeof ExamcellCorrectionAnalysisRoute
-  '/examcell/correction-requests': typeof ExamcellCorrectionRequestsRoute
-  '/examcell/corrections': typeof ExamcellCorrectionsRoute
-  '/examcell/course-enroll': typeof ExamcellCourseEnrollRoute
-  '/examcell/dashboard': typeof ExamcellDashboardRoute
   '/examcell/hall-tickets': typeof ExamcellHallTicketsRoute
-  '/examcell/notifications': typeof ExamcellNotificationsRoute
-  '/examcell/questions': typeof ExamcellQuestionsRoute
   '/examcell/results': typeof ExamcellResultsRoute
-  '/examcell/schedule': typeof ExamcellScheduleRoute
-  '/examcell/settings': typeof ExamcellSettingsRoute
-  '/examcell/supplementary': typeof ExamcellSupplementaryRoute
-  '/examcell/timetable': typeof ExamcellTimetableRoute
-  '/examcell/updates': typeof ExamcellUpdatesRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
+  '/examinations/analytics': typeof ExaminationsAnalyticsRoute
+  '/examinations/hall-tickets': typeof ExaminationsHallTicketsRoute
+  '/examinations/internal-marks': typeof ExaminationsInternalMarksRoute
+  '/examinations/notifications': typeof ExaminationsNotificationsRoute
+  '/examinations/reports': typeof ExaminationsReportsRoute
+  '/examinations/revaluation': typeof ExaminationsRevaluationRoute
+  '/examinations/schedule': typeof ExaminationsScheduleRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/assessments': typeof FacultyAssessmentsRoute
   '/faculty/assignments': typeof FacultyAssignmentsRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
   '/faculty/dashboard': typeof FacultyDashboardRoute
-  '/faculty/evaluation-and-marks': typeof FacultyEvaluationAndMarksRoute
-  '/faculty/evaluations': typeof FacultyEvaluationsRoute
   '/faculty/examinations': typeof FacultyExaminationsRoute
   '/faculty/leave': typeof FacultyLeaveRoute
   '/faculty/lesson-plan': typeof FacultyLessonPlanRoute
   '/faculty/lms': typeof FacultyLmsRoute
-  '/faculty/marks': typeof FacultyMarksRoute
   '/faculty/materials': typeof FacultyMaterialsRoute
   '/faculty/notifications': typeof FacultyNotificationsRoute
   '/faculty/payroll': typeof FacultyPayrollRoute
@@ -1779,6 +4270,15 @@ export interface FileRoutesByFullPath {
   '/placement/reports': typeof PlacementReportsRoute
   '/placement/settings': typeof PlacementSettingsRoute
   '/placement/students': typeof PlacementStudentsRoute
+  '/staff/academic-dean': typeof StaffAcademicDeanRouteWithChildren
+  '/staff/examination-dean': typeof StaffExaminationDeanRouteWithChildren
+  '/staff/finance-dean': typeof StaffFinanceDeanRouteWithChildren
+  '/staff/ima': typeof StaffImaRouteWithChildren
+  '/staff/iqac': typeof StaffIqacRouteWithChildren
+  '/staff/placement-dean': typeof StaffPlacementDeanRouteWithChildren
+  '/staff/research-development': typeof StaffResearchDevelopmentRouteWithChildren
+  '/staff/student-dean': typeof StaffStudentDeanRouteWithChildren
+  '/staff/student_dean': typeof StaffStudent_deanRouteWithChildren
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
@@ -1818,8 +4318,8 @@ export interface FileRoutesByFullPath {
   '/transport/settings': typeof TransportSettingsRoute
   '/ai-analytics/': typeof AiAnalyticsIndexRoute
   '/dean/': typeof DeanIndexRoute
-  '/examcell/': typeof ExamcellIndexRoute
   '/examination/': typeof ExaminationIndexRoute
+  '/examinations/': typeof ExaminationsIndexRoute
   '/external-user/': typeof ExternalUserIndexRoute
   '/faculty/': typeof FacultyIndexRoute
   '/finance/': typeof FinanceIndexRoute
@@ -1830,6 +4330,7 @@ export interface FileRoutesByFullPath {
   '/library/': typeof LibraryIndexRoute
   '/parent/': typeof ParentIndexRoute
   '/placement/': typeof PlacementIndexRoute
+  '/staff/': typeof StaffIndexRoute
   '/student/': typeof StudentIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
@@ -1847,9 +4348,374 @@ export interface FileRoutesByFullPath {
   '/dashboard/librarian/return-books': typeof DashboardLibrarianReturnBooksRoute
   '/dashboard/librarian/settings': typeof DashboardLibrarianSettingsRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/staff/academic-dean/academic-audit': typeof StaffAcademicDeanAcademicAuditRoute
+  '/staff/academic-dean/academic-calendar': typeof StaffAcademicDeanAcademicCalendarRoute
+  '/staff/academic-dean/academic-council': typeof StaffAcademicDeanAcademicCouncilRoute
+  '/staff/academic-dean/academic-performance': typeof StaffAcademicDeanAcademicPerformanceRoute
+  '/staff/academic-dean/academic-reports': typeof StaffAcademicDeanAcademicReportsRoute
+  '/staff/academic-dean/accreditation': typeof StaffAcademicDeanAccreditationRoute
+  '/staff/academic-dean/approvals': typeof StaffAcademicDeanApprovalsRoute
+  '/staff/academic-dean/assign-substitute': typeof StaffAcademicDeanAssignSubstituteRoute
+  '/staff/academic-dean/attendance-monitoring': typeof StaffAcademicDeanAttendanceMonitoringRoute
+  '/staff/academic-dean/attendance-reports': typeof StaffAcademicDeanAttendanceReportsRoute
+  '/staff/academic-dean/bos-meetings': typeof StaffAcademicDeanBosMeetingsRoute
+  '/staff/academic-dean/circulars': typeof StaffAcademicDeanCircularsRoute
+  '/staff/academic-dean/class-monitoring': typeof StaffAcademicDeanClassMonitoringRoute
+  '/staff/academic-dean/classroom-allocation': typeof StaffAcademicDeanClassroomAllocationRoute
+  '/staff/academic-dean/copo-mapping': typeof StaffAcademicDeanCopoMappingRoute
+  '/staff/academic-dean/course-allocation': typeof StaffAcademicDeanCourseAllocationRoute
+  '/staff/academic-dean/course-management': typeof StaffAcademicDeanCourseManagementRoute
+  '/staff/academic-dean/course-outcomes': typeof StaffAcademicDeanCourseOutcomesRoute
+  '/staff/academic-dean/curriculum': typeof StaffAcademicDeanCurriculumRoute
+  '/staff/academic-dean/department-reports': typeof StaffAcademicDeanDepartmentReportsRoute
+  '/staff/academic-dean/departments': typeof StaffAcademicDeanDepartmentsRoute
+  '/staff/academic-dean/dept-workload': typeof StaffAcademicDeanDeptWorkloadRoute
+  '/staff/academic-dean/faculty-management': typeof StaffAcademicDeanFacultyManagementRoute
+  '/staff/academic-dean/faculty-performance': typeof StaffAcademicDeanFacultyPerformanceRoute
+  '/staff/academic-dean/faculty-reports': typeof StaffAcademicDeanFacultyReportsRoute
+  '/staff/academic-dean/faculty-timetable': typeof StaffAcademicDeanFacultyTimetableRoute
+  '/staff/academic-dean/faculty-timetables': typeof StaffAcademicDeanFacultyTimetablesRoute
+  '/staff/academic-dean/faculty-workload': typeof StaffAcademicDeanFacultyWorkloadRoute
+  '/staff/academic-dean/my-classes': typeof StaffAcademicDeanMyClassesRoute
+  '/staff/academic-dean/my-timetable': typeof StaffAcademicDeanMyTimetableRoute
+  '/staff/academic-dean/notifications': typeof StaffAcademicDeanNotificationsRoute
+  '/staff/academic-dean/obe-management': typeof StaffAcademicDeanObeManagementRoute
+  '/staff/academic-dean/programs': typeof StaffAcademicDeanProgramsRoute
+  '/staff/academic-dean/settings': typeof StaffAcademicDeanSettingsRoute
+  '/staff/academic-dean/slow-learners': typeof StaffAcademicDeanSlowLearnersRoute
+  '/staff/academic-dean/student-reports': typeof StaffAcademicDeanStudentReportsRoute
+  '/staff/academic-dean/subject-allocation': typeof StaffAcademicDeanSubjectAllocationRoute
+  '/staff/academic-dean/substitute-faculty': typeof StaffAcademicDeanSubstituteFacultyRoute
+  '/staff/academic-dean/substitution-history': typeof StaffAcademicDeanSubstitutionHistoryRoute
+  '/staff/academic-dean/teaching-load': typeof StaffAcademicDeanTeachingLoadRoute
+  '/staff/academic-dean/timetable': typeof StaffAcademicDeanTimetableRoute
+  '/staff/academic-dean/timetable-history': typeof StaffAcademicDeanTimetableHistoryRoute
+  '/staff/academic-dean/timetable-reports': typeof StaffAcademicDeanTimetableReportsRoute
+  '/staff/academic-dean/top-performers': typeof StaffAcademicDeanTopPerformersRoute
+  '/staff/examination-dean/academic-calendar': typeof StaffExaminationDeanAcademicCalendarRoute
+  '/staff/examination-dean/answer-script-allocation': typeof StaffExaminationDeanAnswerScriptAllocationRoute
+  '/staff/examination-dean/assign-substitute': typeof StaffExaminationDeanAssignSubstituteRoute
+  '/staff/examination-dean/cgpa-calculation': typeof StaffExaminationDeanCgpaCalculationRoute
+  '/staff/examination-dean/committee-reports': typeof StaffExaminationDeanCommitteeReportsRoute
+  '/staff/examination-dean/completed-drives': typeof StaffExaminationDeanCompletedDrivesRoute
+  '/staff/examination-dean/confidential-storage': typeof StaffExaminationDeanConfidentialStorageRoute
+  '/staff/examination-dean/download-history': typeof StaffExaminationDeanDownloadHistoryRoute
+  '/staff/examination-dean/evaluation': typeof StaffExaminationDeanEvaluationRoute
+  '/staff/examination-dean/exam-reports': typeof StaffExaminationDeanExamReportsRoute
+  '/staff/examination-dean/exam-schedule': typeof StaffExaminationDeanExamScheduleRoute
+  '/staff/examination-dean/exam-schedules': typeof StaffExaminationDeanExamSchedulesRoute
+  '/staff/examination-dean/faculty-timetables': typeof StaffExaminationDeanFacultyTimetablesRoute
+  '/staff/examination-dean/generate-hall-tickets': typeof StaffExaminationDeanGenerateHallTicketsRoute
+  '/staff/examination-dean/grade-moderation': typeof StaffExaminationDeanGradeModerationRoute
+  '/staff/examination-dean/grade-sheets': typeof StaffExaminationDeanGradeSheetsRoute
+  '/staff/examination-dean/hall-allocation': typeof StaffExaminationDeanHallAllocationRoute
+  '/staff/examination-dean/hall-ticket-reports': typeof StaffExaminationDeanHallTicketReportsRoute
+  '/staff/examination-dean/hall-ticket-status': typeof StaffExaminationDeanHallTicketStatusRoute
+  '/staff/examination-dean/hall-tickets': typeof StaffExaminationDeanHallTicketsRoute
+  '/staff/examination-dean/internal-exams': typeof StaffExaminationDeanInternalExamsRoute
+  '/staff/examination-dean/invigilator-allocation': typeof StaffExaminationDeanInvigilatorAllocationRoute
+  '/staff/examination-dean/invigilator-reports': typeof StaffExaminationDeanInvigilatorReportsRoute
+  '/staff/examination-dean/invigilators': typeof StaffExaminationDeanInvigilatorsRoute
+  '/staff/examination-dean/malpractice-cases': typeof StaffExaminationDeanMalpracticeCasesRoute
+  '/staff/examination-dean/malpractice-reports': typeof StaffExaminationDeanMalpracticeReportsRoute
+  '/staff/examination-dean/marks-entry': typeof StaffExaminationDeanMarksEntryRoute
+  '/staff/examination-dean/marks-verification': typeof StaffExaminationDeanMarksVerificationRoute
+  '/staff/examination-dean/mid-exams': typeof StaffExaminationDeanMidExamsRoute
+  '/staff/examination-dean/my-classes': typeof StaffExaminationDeanMyClassesRoute
+  '/staff/examination-dean/my-timetable': typeof StaffExaminationDeanMyTimetableRoute
+  '/staff/examination-dean/notifications': typeof StaffExaminationDeanNotificationsRoute
+  '/staff/examination-dean/paper-distribution': typeof StaffExaminationDeanPaperDistributionRoute
+  '/staff/examination-dean/practical-exams': typeof StaffExaminationDeanPracticalExamsRoute
+  '/staff/examination-dean/punishment-history': typeof StaffExaminationDeanPunishmentHistoryRoute
+  '/staff/examination-dean/question-paper-approval': typeof StaffExaminationDeanQuestionPaperApprovalRoute
+  '/staff/examination-dean/question-paper-upload': typeof StaffExaminationDeanQuestionPaperUploadRoute
+  '/staff/examination-dean/question-papers': typeof StaffExaminationDeanQuestionPapersRoute
+  '/staff/examination-dean/rank-list': typeof StaffExaminationDeanRankListRoute
+  '/staff/examination-dean/recounting': typeof StaffExaminationDeanRecountingRoute
+  '/staff/examination-dean/reports': typeof StaffExaminationDeanReportsRoute
+  '/staff/examination-dean/result-processing': typeof StaffExaminationDeanResultProcessingRoute
+  '/staff/examination-dean/result-publication': typeof StaffExaminationDeanResultPublicationRoute
+  '/staff/examination-dean/result-reports': typeof StaffExaminationDeanResultReportsRoute
+  '/staff/examination-dean/results': typeof StaffExaminationDeanResultsRoute
+  '/staff/examination-dean/revaluation': typeof StaffExaminationDeanRevaluationRoute
+  '/staff/examination-dean/revaluation-requests': typeof StaffExaminationDeanRevaluationRequestsRoute
+  '/staff/examination-dean/revaluation-status': typeof StaffExaminationDeanRevaluationStatusRoute
+  '/staff/examination-dean/schedule': typeof StaffExaminationDeanScheduleRoute
+  '/staff/examination-dean/semester-exams': typeof StaffExaminationDeanSemesterExamsRoute
+  '/staff/examination-dean/settings': typeof StaffExaminationDeanSettingsRoute
+  '/staff/examination-dean/substitution-history': typeof StaffExaminationDeanSubstitutionHistoryRoute
+  '/staff/examination-dean/supplementary-exams': typeof StaffExaminationDeanSupplementaryExamsRoute
+  '/staff/examination-dean/timetable': typeof StaffExaminationDeanTimetableRoute
+  '/staff/examination-dean/timetable-generation': typeof StaffExaminationDeanTimetableGenerationRoute
+  '/staff/examination-dean/transcripts': typeof StaffExaminationDeanTranscriptsRoute
+  '/staff/examination-dean/updated-results': typeof StaffExaminationDeanUpdatedResultsRoute
+  '/staff/examination-dean/valuation-status': typeof StaffExaminationDeanValuationStatusRoute
+  '/staff/finance-dean/accounts': typeof StaffFinanceDeanAccountsRoute
+  '/staff/finance-dean/allowances-deductions': typeof StaffFinanceDeanAllowancesDeductionsRoute
+  '/staff/finance-dean/annual-budget': typeof StaffFinanceDeanAnnualBudgetRoute
+  '/staff/finance-dean/assign-substitute': typeof StaffFinanceDeanAssignSubstituteRoute
+  '/staff/finance-dean/audit': typeof StaffFinanceDeanAuditRoute
+  '/staff/finance-dean/audit-compliance': typeof StaffFinanceDeanAuditComplianceRoute
+  '/staff/finance-dean/audit-history': typeof StaffFinanceDeanAuditHistoryRoute
+  '/staff/finance-dean/audit-reports': typeof StaffFinanceDeanAuditReportsRoute
+  '/staff/finance-dean/audits': typeof StaffFinanceDeanAuditsRoute
+  '/staff/finance-dean/budget': typeof StaffFinanceDeanBudgetRoute
+  '/staff/finance-dean/budget-allocation': typeof StaffFinanceDeanBudgetAllocationRoute
+  '/staff/finance-dean/budget-reports': typeof StaffFinanceDeanBudgetReportsRoute
+  '/staff/finance-dean/budget-utilization': typeof StaffFinanceDeanBudgetUtilizationRoute
+  '/staff/finance-dean/daily-expenses': typeof StaffFinanceDeanDailyExpensesRoute
+  '/staff/finance-dean/department-budgets': typeof StaffFinanceDeanDepartmentBudgetsRoute
+  '/staff/finance-dean/dept-budgets': typeof StaffFinanceDeanDeptBudgetsRoute
+  '/staff/finance-dean/dept-expenses': typeof StaffFinanceDeanDeptExpensesRoute
+  '/staff/finance-dean/expenses': typeof StaffFinanceDeanExpensesRoute
+  '/staff/finance-dean/external-audit': typeof StaffFinanceDeanExternalAuditRoute
+  '/staff/finance-dean/faculty-payroll': typeof StaffFinanceDeanFacultyPayrollRoute
+  '/staff/finance-dean/faculty-timetables': typeof StaffFinanceDeanFacultyTimetablesRoute
+  '/staff/finance-dean/fee-collection': typeof StaffFinanceDeanFeeCollectionRoute
+  '/staff/finance-dean/fee-collections': typeof StaffFinanceDeanFeeCollectionsRoute
+  '/staff/finance-dean/fee-reports': typeof StaffFinanceDeanFeeReportsRoute
+  '/staff/finance-dean/fees': typeof StaffFinanceDeanFeesRoute
+  '/staff/finance-dean/financial-reports': typeof StaffFinanceDeanFinancialReportsRoute
+  '/staff/finance-dean/grants': typeof StaffFinanceDeanGrantsRoute
+  '/staff/finance-dean/internal-audit': typeof StaffFinanceDeanInternalAuditRoute
+  '/staff/finance-dean/invoice-management': typeof StaffFinanceDeanInvoiceManagementRoute
+  '/staff/finance-dean/my-classes': typeof StaffFinanceDeanMyClassesRoute
+  '/staff/finance-dean/my-timetable': typeof StaffFinanceDeanMyTimetableRoute
+  '/staff/finance-dean/notifications': typeof StaffFinanceDeanNotificationsRoute
+  '/staff/finance-dean/payroll': typeof StaffFinanceDeanPayrollRoute
+  '/staff/finance-dean/payroll-reports': typeof StaffFinanceDeanPayrollReportsRoute
+  '/staff/finance-dean/pending-fees': typeof StaffFinanceDeanPendingFeesRoute
+  '/staff/finance-dean/purchase-orders': typeof StaffFinanceDeanPurchaseOrdersRoute
+  '/staff/finance-dean/purchase-payments': typeof StaffFinanceDeanPurchasePaymentsRoute
+  '/staff/finance-dean/purchase-requests': typeof StaffFinanceDeanPurchaseRequestsRoute
+  '/staff/finance-dean/purchases': typeof StaffFinanceDeanPurchasesRoute
+  '/staff/finance-dean/refund-management': typeof StaffFinanceDeanRefundManagementRoute
+  '/staff/finance-dean/reports': typeof StaffFinanceDeanReportsRoute
+  '/staff/finance-dean/salary-history': typeof StaffFinanceDeanSalaryHistoryRoute
+  '/staff/finance-dean/scholarships-concessions': typeof StaffFinanceDeanScholarshipsConcessionsRoute
+  '/staff/finance-dean/settings': typeof StaffFinanceDeanSettingsRoute
+  '/staff/finance-dean/staff-payroll': typeof StaffFinanceDeanStaffPayrollRoute
+  '/staff/finance-dean/substitution-history': typeof StaffFinanceDeanSubstitutionHistoryRoute
+  '/staff/finance-dean/timetable': typeof StaffFinanceDeanTimetableRoute
+  '/staff/finance-dean/vendor-management': typeof StaffFinanceDeanVendorManagementRoute
+  '/staff/finance-dean/vendor-payments': typeof StaffFinanceDeanVendorPaymentsRoute
+  '/staff/ima/amc-warranty': typeof StaffImaAmcWarrantyRoute
+  '/staff/ima/approved-purchases': typeof StaffImaApprovedPurchasesRoute
+  '/staff/ima/asset-audit': typeof StaffImaAssetAuditRoute
+  '/staff/ima/asset-disposal': typeof StaffImaAssetDisposalRoute
+  '/staff/ima/asset-register': typeof StaffImaAssetRegisterRoute
+  '/staff/ima/asset-transfer': typeof StaffImaAssetTransferRoute
+  '/staff/ima/assign-substitute': typeof StaffImaAssignSubstituteRoute
+  '/staff/ima/campus-projects': typeof StaffImaCampusProjectsRoute
+  '/staff/ima/compliance': typeof StaffImaComplianceRoute
+  '/staff/ima/department-assets': typeof StaffImaDepartmentAssetsRoute
+  '/staff/ima/equipment-allocation': typeof StaffImaEquipmentAllocationRoute
+  '/staff/ima/equipment-history': typeof StaffImaEquipmentHistoryRoute
+  '/staff/ima/equipment-inventory': typeof StaffImaEquipmentInventoryRoute
+  '/staff/ima/equipment-reports': typeof StaffImaEquipmentReportsRoute
+  '/staff/ima/equipment-requests': typeof StaffImaEquipmentRequestsRoute
+  '/staff/ima/faculty-timetables': typeof StaffImaFacultyTimetablesRoute
+  '/staff/ima/guest-lectures': typeof StaffImaGuestLecturesRoute
+  '/staff/ima/industrial-visits': typeof StaffImaIndustrialVisitsRoute
+  '/staff/ima/infrastructure': typeof StaffImaInfrastructureRoute
+  '/staff/ima/internships': typeof StaffImaInternshipsRoute
+  '/staff/ima/inventory-reports': typeof StaffImaInventoryReportsRoute
+  '/staff/ima/lab-booking': typeof StaffImaLabBookingRoute
+  '/staff/ima/lab-details': typeof StaffImaLabDetailsRoute
+  '/staff/ima/lab-timetable': typeof StaffImaLabTimetableRoute
+  '/staff/ima/laboratories': typeof StaffImaLaboratoriesRoute
+  '/staff/ima/laboratory-reports': typeof StaffImaLaboratoryReportsRoute
+  '/staff/ima/maintenance-reports': typeof StaffImaMaintenanceReportsRoute
+  '/staff/ima/maintenance-requests': typeof StaffImaMaintenanceRequestsRoute
+  '/staff/ima/maintenance-schedule': typeof StaffImaMaintenanceScheduleRoute
+  '/staff/ima/mou': typeof StaffImaMouRoute
+  '/staff/ima/my-classes': typeof StaffImaMyClassesRoute
+  '/staff/ima/my-timetable': typeof StaffImaMyTimetableRoute
+  '/staff/ima/notifications': typeof StaffImaNotificationsRoute
+  '/staff/ima/partners': typeof StaffImaPartnersRoute
+  '/staff/ima/policy-directives': typeof StaffImaPolicyDirectivesRoute
+  '/staff/ima/purchase-orders': typeof StaffImaPurchaseOrdersRoute
+  '/staff/ima/purchase-reports': typeof StaffImaPurchaseReportsRoute
+  '/staff/ima/purchase-requests': typeof StaffImaPurchaseRequestsRoute
+  '/staff/ima/purchase-vendors': typeof StaffImaPurchaseVendorsRoute
+  '/staff/ima/reports': typeof StaffImaReportsRoute
+  '/staff/ima/settings': typeof StaffImaSettingsRoute
+  '/staff/ima/substitution-history': typeof StaffImaSubstitutionHistoryRoute
+  '/staff/ima/timetable': typeof StaffImaTimetableRoute
+  '/staff/ima/vendors': typeof StaffImaVendorsRoute
+  '/staff/ima/workshops': typeof StaffImaWorkshopsRoute
+  '/staff/iqac/academic-audit': typeof StaffIqacAcademicAuditRoute
+  '/staff/iqac/alumni-feedback': typeof StaffIqacAlumniFeedbackRoute
+  '/staff/iqac/aqar': typeof StaffIqacAqarRoute
+  '/staff/iqac/aqar-reports': typeof StaffIqacAqarReportsRoute
+  '/staff/iqac/assign-substitute': typeof StaffIqacAssignSubstituteRoute
+  '/staff/iqac/atr': typeof StaffIqacAtrRoute
+  '/staff/iqac/audit': typeof StaffIqacAuditRoute
+  '/staff/iqac/audit-reports': typeof StaffIqacAuditReportsRoute
+  '/staff/iqac/benchmarking': typeof StaffIqacBenchmarkingRoute
+  '/staff/iqac/best-practices': typeof StaffIqacBestPracticesRoute
+  '/staff/iqac/compliance-tracker': typeof StaffIqacComplianceTrackerRoute
+  '/staff/iqac/criteria': typeof StaffIqacCriteriaRoute
+  '/staff/iqac/criteria-docs': typeof StaffIqacCriteriaDocsRoute
+  '/staff/iqac/dept-quality-metrics': typeof StaffIqacDeptQualityMetricsRoute
+  '/staff/iqac/document-repo': typeof StaffIqacDocumentRepoRoute
+  '/staff/iqac/documents': typeof StaffIqacDocumentsRoute
+  '/staff/iqac/employer-feedback': typeof StaffIqacEmployerFeedbackRoute
+  '/staff/iqac/events': typeof StaffIqacEventsRoute
+  '/staff/iqac/evidence-uploads': typeof StaffIqacEvidenceUploadsRoute
+  '/staff/iqac/faculty-feedback': typeof StaffIqacFacultyFeedbackRoute
+  '/staff/iqac/faculty-timetables': typeof StaffIqacFacultyTimetablesRoute
+  '/staff/iqac/feedback': typeof StaffIqacFeedbackRoute
+  '/staff/iqac/feedback-analytics': typeof StaffIqacFeedbackAnalyticsRoute
+  '/staff/iqac/feedback-reports': typeof StaffIqacFeedbackReportsRoute
+  '/staff/iqac/internal-quality-audit': typeof StaffIqacInternalQualityAuditRoute
+  '/staff/iqac/kpi-dashboard': typeof StaffIqacKpiDashboardRoute
+  '/staff/iqac/kpi-reports': typeof StaffIqacKpiReportsRoute
+  '/staff/iqac/meetings': typeof StaffIqacMeetingsRoute
+  '/staff/iqac/metrics': typeof StaffIqacMetricsRoute
+  '/staff/iqac/my-classes': typeof StaffIqacMyClassesRoute
+  '/staff/iqac/my-timetable': typeof StaffIqacMyTimetableRoute
+  '/staff/iqac/naac': typeof StaffIqacNaacRoute
+  '/staff/iqac/naac-reports': typeof StaffIqacNaacReportsRoute
+  '/staff/iqac/nba': typeof StaffIqacNbaRoute
+  '/staff/iqac/notifications': typeof StaffIqacNotificationsRoute
+  '/staff/iqac/performance-analysis': typeof StaffIqacPerformanceAnalysisRoute
+  '/staff/iqac/quality-audits': typeof StaffIqacQualityAuditsRoute
+  '/staff/iqac/quality-improvement': typeof StaffIqacQualityImprovementRoute
+  '/staff/iqac/quality-metrics': typeof StaffIqacQualityMetricsRoute
+  '/staff/iqac/reports': typeof StaffIqacReportsRoute
+  '/staff/iqac/settings': typeof StaffIqacSettingsRoute
+  '/staff/iqac/ssr': typeof StaffIqacSsrRoute
+  '/staff/iqac/student-feedback': typeof StaffIqacStudentFeedbackRoute
+  '/staff/iqac/substitution-history': typeof StaffIqacSubstitutionHistoryRoute
+  '/staff/iqac/timetable': typeof StaffIqacTimetableRoute
+  '/staff/iqac/workshops': typeof StaffIqacWorkshopsRoute
+  '/staff/placement-dean/aptitude-training': typeof StaffPlacementDeanAptitudeTrainingRoute
+  '/staff/placement-dean/assign-substitute': typeof StaffPlacementDeanAssignSubstituteRoute
+  '/staff/placement-dean/coding-training': typeof StaffPlacementDeanCodingTrainingRoute
+  '/staff/placement-dean/companies': typeof StaffPlacementDeanCompaniesRoute
+  '/staff/placement-dean/company-hiring': typeof StaffPlacementDeanCompanyHiringRoute
+  '/staff/placement-dean/company-profiles': typeof StaffPlacementDeanCompanyProfilesRoute
+  '/staff/placement-dean/company-reports': typeof StaffPlacementDeanCompanyReportsRoute
+  '/staff/placement-dean/company-visits': typeof StaffPlacementDeanCompanyVisitsRoute
+  '/staff/placement-dean/completed-drives': typeof StaffPlacementDeanCompletedDrivesRoute
+  '/staff/placement-dean/dept-placements': typeof StaffPlacementDeanDeptPlacementsRoute
+  '/staff/placement-dean/drives': typeof StaffPlacementDeanDrivesRoute
+  '/staff/placement-dean/eligible-students': typeof StaffPlacementDeanEligibleStudentsRoute
+  '/staff/placement-dean/faculty-timetables': typeof StaffPlacementDeanFacultyTimetablesRoute
+  '/staff/placement-dean/internship-opportunities': typeof StaffPlacementDeanInternshipOpportunitiesRoute
+  '/staff/placement-dean/internship-reports': typeof StaffPlacementDeanInternshipReportsRoute
+  '/staff/placement-dean/internship-reports-list': typeof StaffPlacementDeanInternshipReportsListRoute
+  '/staff/placement-dean/internship-tracking': typeof StaffPlacementDeanInternshipTrackingRoute
+  '/staff/placement-dean/internships': typeof StaffPlacementDeanInternshipsRoute
+  '/staff/placement-dean/mock-interviews': typeof StaffPlacementDeanMockInterviewsRoute
+  '/staff/placement-dean/mous': typeof StaffPlacementDeanMousRoute
+  '/staff/placement-dean/my-classes': typeof StaffPlacementDeanMyClassesRoute
+  '/staff/placement-dean/my-timetable': typeof StaffPlacementDeanMyTimetableRoute
+  '/staff/placement-dean/notifications': typeof StaffPlacementDeanNotificationsRoute
+  '/staff/placement-dean/off-campus-drives': typeof StaffPlacementDeanOffCampusDrivesRoute
+  '/staff/placement-dean/offer-letters': typeof StaffPlacementDeanOfferLettersRoute
+  '/staff/placement-dean/offers': typeof StaffPlacementDeanOffersRoute
+  '/staff/placement-dean/ongoing-drives': typeof StaffPlacementDeanOngoingDrivesRoute
+  '/staff/placement-dean/package-analysis': typeof StaffPlacementDeanPackageAnalysisRoute
+  '/staff/placement-dean/package-analytics': typeof StaffPlacementDeanPackageAnalyticsRoute
+  '/staff/placement-dean/packages': typeof StaffPlacementDeanPackagesRoute
+  '/staff/placement-dean/placed-students': typeof StaffPlacementDeanPlacedStudentsRoute
+  '/staff/placement-dean/placement-reports': typeof StaffPlacementDeanPlacementReportsRoute
+  '/staff/placement-dean/placement-statistics': typeof StaffPlacementDeanPlacementStatisticsRoute
+  '/staff/placement-dean/recruitment-partners': typeof StaffPlacementDeanRecruitmentPartnersRoute
+  '/staff/placement-dean/registered-students': typeof StaffPlacementDeanRegisteredStudentsRoute
+  '/staff/placement-dean/reports': typeof StaffPlacementDeanReportsRoute
+  '/staff/placement-dean/resume-reviews': typeof StaffPlacementDeanResumeReviewsRoute
+  '/staff/placement-dean/selected-students': typeof StaffPlacementDeanSelectedStudentsRoute
+  '/staff/placement-dean/settings': typeof StaffPlacementDeanSettingsRoute
+  '/staff/placement-dean/shortlisted-students': typeof StaffPlacementDeanShortlistedStudentsRoute
+  '/staff/placement-dean/soft-skills': typeof StaffPlacementDeanSoftSkillsRoute
+  '/staff/placement-dean/student-reports': typeof StaffPlacementDeanStudentReportsRoute
+  '/staff/placement-dean/substitution-history': typeof StaffPlacementDeanSubstitutionHistoryRoute
+  '/staff/placement-dean/timetable': typeof StaffPlacementDeanTimetableRoute
+  '/staff/placement-dean/training': typeof StaffPlacementDeanTrainingRoute
+  '/staff/placement-dean/training-reports': typeof StaffPlacementDeanTrainingReportsRoute
+  '/staff/placement-dean/upcoming-drives': typeof StaffPlacementDeanUpcomingDrivesRoute
+  '/staff/research-development/assign-substitute': typeof StaffResearchDevelopmentAssignSubstituteRoute
+  '/staff/research-development/book-chapters': typeof StaffResearchDevelopmentBookChaptersRoute
+  '/staff/research-development/completed-projects': typeof StaffResearchDevelopmentCompletedProjectsRoute
+  '/staff/research-development/conference-publications': typeof StaffResearchDevelopmentConferencePublicationsRoute
+  '/staff/research-development/conferences': typeof StaffResearchDevelopmentConferencesRoute
+  '/staff/research-development/consultancy-projects': typeof StaffResearchDevelopmentConsultancyProjectsRoute
+  '/staff/research-development/copyrights': typeof StaffResearchDevelopmentCopyrightsRoute
+  '/staff/research-development/faculty-timetables': typeof StaffResearchDevelopmentFacultyTimetablesRoute
+  '/staff/research-development/fdps': typeof StaffResearchDevelopmentFdpsRoute
+  '/staff/research-development/funding-agencies': typeof StaffResearchDevelopmentFundingAgenciesRoute
+  '/staff/research-development/govt-grants': typeof StaffResearchDevelopmentGovtGrantsRoute
+  '/staff/research-development/grant-reports': typeof StaffResearchDevelopmentGrantReportsRoute
+  '/staff/research-development/grant-utilization': typeof StaffResearchDevelopmentGrantUtilizationRoute
+  '/staff/research-development/grants': typeof StaffResearchDevelopmentGrantsRoute
+  '/staff/research-development/incubation': typeof StaffResearchDevelopmentIncubationRoute
+  '/staff/research-development/industry-grants': typeof StaffResearchDevelopmentIndustryGrantsRoute
+  '/staff/research-development/innovation': typeof StaffResearchDevelopmentInnovationRoute
+  '/staff/research-development/innovations': typeof StaffResearchDevelopmentInnovationsRoute
+  '/staff/research-development/journal-publications': typeof StaffResearchDevelopmentJournalPublicationsRoute
+  '/staff/research-development/lab-booking': typeof StaffResearchDevelopmentLabBookingRoute
+  '/staff/research-development/lab-equipment': typeof StaffResearchDevelopmentLabEquipmentRoute
+  '/staff/research-development/lab-utilization': typeof StaffResearchDevelopmentLabUtilizationRoute
+  '/staff/research-development/my-classes': typeof StaffResearchDevelopmentMyClassesRoute
+  '/staff/research-development/my-timetable': typeof StaffResearchDevelopmentMyTimetableRoute
+  '/staff/research-development/notifications': typeof StaffResearchDevelopmentNotificationsRoute
+  '/staff/research-development/ongoing-projects': typeof StaffResearchDevelopmentOngoingProjectsRoute
+  '/staff/research-development/patent-reports': typeof StaffResearchDevelopmentPatentReportsRoute
+  '/staff/research-development/patents': typeof StaffResearchDevelopmentPatentsRoute
+  '/staff/research-development/phd-scholars': typeof StaffResearchDevelopmentPhdScholarsRoute
+  '/staff/research-development/projects': typeof StaffResearchDevelopmentProjectsRoute
+  '/staff/research-development/publication-reports': typeof StaffResearchDevelopmentPublicationReportsRoute
+  '/staff/research-development/publications-repo': typeof StaffResearchDevelopmentPublicationsRepoRoute
+  '/staff/research-development/research-guides': typeof StaffResearchDevelopmentResearchGuidesRoute
+  '/staff/research-development/research-labs': typeof StaffResearchDevelopmentResearchLabsRoute
+  '/staff/research-development/research-reports': typeof StaffResearchDevelopmentResearchReportsRoute
+  '/staff/research-development/scholar-progress': typeof StaffResearchDevelopmentScholarProgressRoute
+  '/staff/research-development/scholar-reports': typeof StaffResearchDevelopmentScholarReportsRoute
+  '/staff/research-development/scholars': typeof StaffResearchDevelopmentScholarsRoute
+  '/staff/research-development/seminars': typeof StaffResearchDevelopmentSeminarsRoute
+  '/staff/research-development/settings': typeof StaffResearchDevelopmentSettingsRoute
+  '/staff/research-development/sponsored-projects': typeof StaffResearchDevelopmentSponsoredProjectsRoute
+  '/staff/research-development/substitution-history': typeof StaffResearchDevelopmentSubstitutionHistoryRoute
+  '/staff/research-development/thesis-repo': typeof StaffResearchDevelopmentThesisRepoRoute
+  '/staff/research-development/timetable': typeof StaffResearchDevelopmentTimetableRoute
+  '/staff/research-development/workshops': typeof StaffResearchDevelopmentWorkshopsRoute
+  '/staff/student-dean/attendance': typeof StaffStudentDeanAttendanceRoute
+  '/staff/student-dean/attendance-history': typeof StaffStudentDeanAttendanceHistoryRoute
+  '/staff/student-dean/attendance-reports': typeof StaffStudentDeanAttendanceReportsRoute
+  '/staff/student-dean/certificates': typeof StaffStudentDeanCertificatesRoute
+  '/staff/student-dean/clubs-events': typeof StaffStudentDeanClubsEventsRoute
+  '/staff/student-dean/counselling': typeof StaffStudentDeanCounsellingRoute
+  '/staff/student-dean/discipline': typeof StaffStudentDeanDisciplineRoute
+  '/staff/student-dean/grievances': typeof StaffStudentDeanGrievancesRoute
+  '/staff/student-dean/hostel': typeof StaffStudentDeanHostelRoute
+  '/staff/student-dean/mentoring': typeof StaffStudentDeanMentoringRoute
+  '/staff/student-dean/notifications': typeof StaffStudentDeanNotificationsRoute
+  '/staff/student-dean/profiles': typeof StaffStudentDeanProfilesRoute
+  '/staff/student-dean/reports': typeof StaffStudentDeanReportsRoute
+  '/staff/student-dean/scholarship-reports': typeof StaffStudentDeanScholarshipReportsRoute
+  '/staff/student-dean/scholarships': typeof StaffStudentDeanScholarshipsRoute
+  '/staff/student-dean/settings': typeof StaffStudentDeanSettingsRoute
+  '/staff/student-dean/student-activities': typeof StaffStudentDeanStudentActivitiesRoute
+  '/staff/student-dean/student-profiles': typeof StaffStudentDeanStudentProfilesRoute
+  '/staff/student-dean/student-reports': typeof StaffStudentDeanStudentReportsRoute
+  '/staff/student-dean/student-requests': typeof StaffStudentDeanStudentRequestsRoute
+  '/staff/student-dean/students': typeof StaffStudentDeanStudentsRoute
+  '/staff/student-dean/timetable': typeof StaffStudentDeanTimetableRoute
+  '/staff/student_dean/$': typeof StaffStudent_deanSplatRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
+  '/staff/academic-dean/': typeof StaffAcademicDeanIndexRoute
+  '/staff/examination-dean/': typeof StaffExaminationDeanIndexRoute
+  '/staff/finance-dean/': typeof StaffFinanceDeanIndexRoute
+  '/staff/ima/': typeof StaffImaIndexRoute
+  '/staff/iqac/': typeof StaffIqacIndexRoute
+  '/staff/placement-dean/': typeof StaffPlacementDeanIndexRoute
+  '/staff/research-development/': typeof StaffResearchDevelopmentIndexRoute
+  '/staff/student-dean/': typeof StaffStudentDeanIndexRoute
   '/dashboard/academics/attendance/mark': typeof DashboardAcademicsAttendanceMarkRoute
   '/super-admin/academics/attendance/mark': typeof SuperAdminAcademicsAttendanceMarkRoute
 }
@@ -1873,7 +4739,6 @@ export interface FileRoutesByTo {
   '/departments': typeof DepartmentsRoute
   '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
-  '/examinations': typeof ExaminationsRoute
   '/faculty-management': typeof FacultyManagementRoute
   '/features': typeof FeaturesRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -1907,36 +4772,29 @@ export interface FileRoutesByTo {
   '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
+  '/drive/apply': typeof DriveApplyRoute
   '/exam/take': typeof ExamTakeRoute
   '/examcell/analytics': typeof ExamcellAnalyticsRoute
-  '/examcell/bloomstick': typeof ExamcellBloomstickRoute
   '/examcell/correction-analysis': typeof ExamcellCorrectionAnalysisRoute
-  '/examcell/correction-requests': typeof ExamcellCorrectionRequestsRoute
-  '/examcell/corrections': typeof ExamcellCorrectionsRoute
-  '/examcell/course-enroll': typeof ExamcellCourseEnrollRoute
-  '/examcell/dashboard': typeof ExamcellDashboardRoute
   '/examcell/hall-tickets': typeof ExamcellHallTicketsRoute
-  '/examcell/notifications': typeof ExamcellNotificationsRoute
-  '/examcell/questions': typeof ExamcellQuestionsRoute
   '/examcell/results': typeof ExamcellResultsRoute
-  '/examcell/schedule': typeof ExamcellScheduleRoute
-  '/examcell/settings': typeof ExamcellSettingsRoute
-  '/examcell/supplementary': typeof ExamcellSupplementaryRoute
-  '/examcell/timetable': typeof ExamcellTimetableRoute
-  '/examcell/updates': typeof ExamcellUpdatesRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
+  '/examinations/analytics': typeof ExaminationsAnalyticsRoute
+  '/examinations/hall-tickets': typeof ExaminationsHallTicketsRoute
+  '/examinations/internal-marks': typeof ExaminationsInternalMarksRoute
+  '/examinations/notifications': typeof ExaminationsNotificationsRoute
+  '/examinations/reports': typeof ExaminationsReportsRoute
+  '/examinations/revaluation': typeof ExaminationsRevaluationRoute
+  '/examinations/schedule': typeof ExaminationsScheduleRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/assessments': typeof FacultyAssessmentsRoute
   '/faculty/assignments': typeof FacultyAssignmentsRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
   '/faculty/dashboard': typeof FacultyDashboardRoute
-  '/faculty/evaluation-and-marks': typeof FacultyEvaluationAndMarksRoute
-  '/faculty/evaluations': typeof FacultyEvaluationsRoute
   '/faculty/examinations': typeof FacultyExaminationsRoute
   '/faculty/leave': typeof FacultyLeaveRoute
   '/faculty/lesson-plan': typeof FacultyLessonPlanRoute
   '/faculty/lms': typeof FacultyLmsRoute
-  '/faculty/marks': typeof FacultyMarksRoute
   '/faculty/materials': typeof FacultyMaterialsRoute
   '/faculty/notifications': typeof FacultyNotificationsRoute
   '/faculty/payroll': typeof FacultyPayrollRoute
@@ -2022,6 +4880,7 @@ export interface FileRoutesByTo {
   '/placement/reports': typeof PlacementReportsRoute
   '/placement/settings': typeof PlacementSettingsRoute
   '/placement/students': typeof PlacementStudentsRoute
+  '/staff/student_dean': typeof StaffStudent_deanRouteWithChildren
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
@@ -2061,8 +4920,8 @@ export interface FileRoutesByTo {
   '/transport/settings': typeof TransportSettingsRoute
   '/ai-analytics': typeof AiAnalyticsIndexRoute
   '/dean': typeof DeanIndexRoute
-  '/examcell': typeof ExamcellIndexRoute
   '/examination': typeof ExaminationIndexRoute
+  '/examinations': typeof ExaminationsIndexRoute
   '/external-user': typeof ExternalUserIndexRoute
   '/faculty': typeof FacultyIndexRoute
   '/finance': typeof FinanceIndexRoute
@@ -2073,6 +4932,7 @@ export interface FileRoutesByTo {
   '/library': typeof LibraryIndexRoute
   '/parent': typeof ParentIndexRoute
   '/placement': typeof PlacementIndexRoute
+  '/staff': typeof StaffIndexRoute
   '/student': typeof StudentIndexRoute
   '/super-admin': typeof SuperAdminIndexRoute
   '/transport': typeof TransportIndexRoute
@@ -2090,9 +4950,374 @@ export interface FileRoutesByTo {
   '/dashboard/librarian/return-books': typeof DashboardLibrarianReturnBooksRoute
   '/dashboard/librarian/settings': typeof DashboardLibrarianSettingsRoute
   '/placement/drives/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/staff/academic-dean/academic-audit': typeof StaffAcademicDeanAcademicAuditRoute
+  '/staff/academic-dean/academic-calendar': typeof StaffAcademicDeanAcademicCalendarRoute
+  '/staff/academic-dean/academic-council': typeof StaffAcademicDeanAcademicCouncilRoute
+  '/staff/academic-dean/academic-performance': typeof StaffAcademicDeanAcademicPerformanceRoute
+  '/staff/academic-dean/academic-reports': typeof StaffAcademicDeanAcademicReportsRoute
+  '/staff/academic-dean/accreditation': typeof StaffAcademicDeanAccreditationRoute
+  '/staff/academic-dean/approvals': typeof StaffAcademicDeanApprovalsRoute
+  '/staff/academic-dean/assign-substitute': typeof StaffAcademicDeanAssignSubstituteRoute
+  '/staff/academic-dean/attendance-monitoring': typeof StaffAcademicDeanAttendanceMonitoringRoute
+  '/staff/academic-dean/attendance-reports': typeof StaffAcademicDeanAttendanceReportsRoute
+  '/staff/academic-dean/bos-meetings': typeof StaffAcademicDeanBosMeetingsRoute
+  '/staff/academic-dean/circulars': typeof StaffAcademicDeanCircularsRoute
+  '/staff/academic-dean/class-monitoring': typeof StaffAcademicDeanClassMonitoringRoute
+  '/staff/academic-dean/classroom-allocation': typeof StaffAcademicDeanClassroomAllocationRoute
+  '/staff/academic-dean/copo-mapping': typeof StaffAcademicDeanCopoMappingRoute
+  '/staff/academic-dean/course-allocation': typeof StaffAcademicDeanCourseAllocationRoute
+  '/staff/academic-dean/course-management': typeof StaffAcademicDeanCourseManagementRoute
+  '/staff/academic-dean/course-outcomes': typeof StaffAcademicDeanCourseOutcomesRoute
+  '/staff/academic-dean/curriculum': typeof StaffAcademicDeanCurriculumRoute
+  '/staff/academic-dean/department-reports': typeof StaffAcademicDeanDepartmentReportsRoute
+  '/staff/academic-dean/departments': typeof StaffAcademicDeanDepartmentsRoute
+  '/staff/academic-dean/dept-workload': typeof StaffAcademicDeanDeptWorkloadRoute
+  '/staff/academic-dean/faculty-management': typeof StaffAcademicDeanFacultyManagementRoute
+  '/staff/academic-dean/faculty-performance': typeof StaffAcademicDeanFacultyPerformanceRoute
+  '/staff/academic-dean/faculty-reports': typeof StaffAcademicDeanFacultyReportsRoute
+  '/staff/academic-dean/faculty-timetable': typeof StaffAcademicDeanFacultyTimetableRoute
+  '/staff/academic-dean/faculty-timetables': typeof StaffAcademicDeanFacultyTimetablesRoute
+  '/staff/academic-dean/faculty-workload': typeof StaffAcademicDeanFacultyWorkloadRoute
+  '/staff/academic-dean/my-classes': typeof StaffAcademicDeanMyClassesRoute
+  '/staff/academic-dean/my-timetable': typeof StaffAcademicDeanMyTimetableRoute
+  '/staff/academic-dean/notifications': typeof StaffAcademicDeanNotificationsRoute
+  '/staff/academic-dean/obe-management': typeof StaffAcademicDeanObeManagementRoute
+  '/staff/academic-dean/programs': typeof StaffAcademicDeanProgramsRoute
+  '/staff/academic-dean/settings': typeof StaffAcademicDeanSettingsRoute
+  '/staff/academic-dean/slow-learners': typeof StaffAcademicDeanSlowLearnersRoute
+  '/staff/academic-dean/student-reports': typeof StaffAcademicDeanStudentReportsRoute
+  '/staff/academic-dean/subject-allocation': typeof StaffAcademicDeanSubjectAllocationRoute
+  '/staff/academic-dean/substitute-faculty': typeof StaffAcademicDeanSubstituteFacultyRoute
+  '/staff/academic-dean/substitution-history': typeof StaffAcademicDeanSubstitutionHistoryRoute
+  '/staff/academic-dean/teaching-load': typeof StaffAcademicDeanTeachingLoadRoute
+  '/staff/academic-dean/timetable': typeof StaffAcademicDeanTimetableRoute
+  '/staff/academic-dean/timetable-history': typeof StaffAcademicDeanTimetableHistoryRoute
+  '/staff/academic-dean/timetable-reports': typeof StaffAcademicDeanTimetableReportsRoute
+  '/staff/academic-dean/top-performers': typeof StaffAcademicDeanTopPerformersRoute
+  '/staff/examination-dean/academic-calendar': typeof StaffExaminationDeanAcademicCalendarRoute
+  '/staff/examination-dean/answer-script-allocation': typeof StaffExaminationDeanAnswerScriptAllocationRoute
+  '/staff/examination-dean/assign-substitute': typeof StaffExaminationDeanAssignSubstituteRoute
+  '/staff/examination-dean/cgpa-calculation': typeof StaffExaminationDeanCgpaCalculationRoute
+  '/staff/examination-dean/committee-reports': typeof StaffExaminationDeanCommitteeReportsRoute
+  '/staff/examination-dean/completed-drives': typeof StaffExaminationDeanCompletedDrivesRoute
+  '/staff/examination-dean/confidential-storage': typeof StaffExaminationDeanConfidentialStorageRoute
+  '/staff/examination-dean/download-history': typeof StaffExaminationDeanDownloadHistoryRoute
+  '/staff/examination-dean/evaluation': typeof StaffExaminationDeanEvaluationRoute
+  '/staff/examination-dean/exam-reports': typeof StaffExaminationDeanExamReportsRoute
+  '/staff/examination-dean/exam-schedule': typeof StaffExaminationDeanExamScheduleRoute
+  '/staff/examination-dean/exam-schedules': typeof StaffExaminationDeanExamSchedulesRoute
+  '/staff/examination-dean/faculty-timetables': typeof StaffExaminationDeanFacultyTimetablesRoute
+  '/staff/examination-dean/generate-hall-tickets': typeof StaffExaminationDeanGenerateHallTicketsRoute
+  '/staff/examination-dean/grade-moderation': typeof StaffExaminationDeanGradeModerationRoute
+  '/staff/examination-dean/grade-sheets': typeof StaffExaminationDeanGradeSheetsRoute
+  '/staff/examination-dean/hall-allocation': typeof StaffExaminationDeanHallAllocationRoute
+  '/staff/examination-dean/hall-ticket-reports': typeof StaffExaminationDeanHallTicketReportsRoute
+  '/staff/examination-dean/hall-ticket-status': typeof StaffExaminationDeanHallTicketStatusRoute
+  '/staff/examination-dean/hall-tickets': typeof StaffExaminationDeanHallTicketsRoute
+  '/staff/examination-dean/internal-exams': typeof StaffExaminationDeanInternalExamsRoute
+  '/staff/examination-dean/invigilator-allocation': typeof StaffExaminationDeanInvigilatorAllocationRoute
+  '/staff/examination-dean/invigilator-reports': typeof StaffExaminationDeanInvigilatorReportsRoute
+  '/staff/examination-dean/invigilators': typeof StaffExaminationDeanInvigilatorsRoute
+  '/staff/examination-dean/malpractice-cases': typeof StaffExaminationDeanMalpracticeCasesRoute
+  '/staff/examination-dean/malpractice-reports': typeof StaffExaminationDeanMalpracticeReportsRoute
+  '/staff/examination-dean/marks-entry': typeof StaffExaminationDeanMarksEntryRoute
+  '/staff/examination-dean/marks-verification': typeof StaffExaminationDeanMarksVerificationRoute
+  '/staff/examination-dean/mid-exams': typeof StaffExaminationDeanMidExamsRoute
+  '/staff/examination-dean/my-classes': typeof StaffExaminationDeanMyClassesRoute
+  '/staff/examination-dean/my-timetable': typeof StaffExaminationDeanMyTimetableRoute
+  '/staff/examination-dean/notifications': typeof StaffExaminationDeanNotificationsRoute
+  '/staff/examination-dean/paper-distribution': typeof StaffExaminationDeanPaperDistributionRoute
+  '/staff/examination-dean/practical-exams': typeof StaffExaminationDeanPracticalExamsRoute
+  '/staff/examination-dean/punishment-history': typeof StaffExaminationDeanPunishmentHistoryRoute
+  '/staff/examination-dean/question-paper-approval': typeof StaffExaminationDeanQuestionPaperApprovalRoute
+  '/staff/examination-dean/question-paper-upload': typeof StaffExaminationDeanQuestionPaperUploadRoute
+  '/staff/examination-dean/question-papers': typeof StaffExaminationDeanQuestionPapersRoute
+  '/staff/examination-dean/rank-list': typeof StaffExaminationDeanRankListRoute
+  '/staff/examination-dean/recounting': typeof StaffExaminationDeanRecountingRoute
+  '/staff/examination-dean/reports': typeof StaffExaminationDeanReportsRoute
+  '/staff/examination-dean/result-processing': typeof StaffExaminationDeanResultProcessingRoute
+  '/staff/examination-dean/result-publication': typeof StaffExaminationDeanResultPublicationRoute
+  '/staff/examination-dean/result-reports': typeof StaffExaminationDeanResultReportsRoute
+  '/staff/examination-dean/results': typeof StaffExaminationDeanResultsRoute
+  '/staff/examination-dean/revaluation': typeof StaffExaminationDeanRevaluationRoute
+  '/staff/examination-dean/revaluation-requests': typeof StaffExaminationDeanRevaluationRequestsRoute
+  '/staff/examination-dean/revaluation-status': typeof StaffExaminationDeanRevaluationStatusRoute
+  '/staff/examination-dean/schedule': typeof StaffExaminationDeanScheduleRoute
+  '/staff/examination-dean/semester-exams': typeof StaffExaminationDeanSemesterExamsRoute
+  '/staff/examination-dean/settings': typeof StaffExaminationDeanSettingsRoute
+  '/staff/examination-dean/substitution-history': typeof StaffExaminationDeanSubstitutionHistoryRoute
+  '/staff/examination-dean/supplementary-exams': typeof StaffExaminationDeanSupplementaryExamsRoute
+  '/staff/examination-dean/timetable': typeof StaffExaminationDeanTimetableRoute
+  '/staff/examination-dean/timetable-generation': typeof StaffExaminationDeanTimetableGenerationRoute
+  '/staff/examination-dean/transcripts': typeof StaffExaminationDeanTranscriptsRoute
+  '/staff/examination-dean/updated-results': typeof StaffExaminationDeanUpdatedResultsRoute
+  '/staff/examination-dean/valuation-status': typeof StaffExaminationDeanValuationStatusRoute
+  '/staff/finance-dean/accounts': typeof StaffFinanceDeanAccountsRoute
+  '/staff/finance-dean/allowances-deductions': typeof StaffFinanceDeanAllowancesDeductionsRoute
+  '/staff/finance-dean/annual-budget': typeof StaffFinanceDeanAnnualBudgetRoute
+  '/staff/finance-dean/assign-substitute': typeof StaffFinanceDeanAssignSubstituteRoute
+  '/staff/finance-dean/audit': typeof StaffFinanceDeanAuditRoute
+  '/staff/finance-dean/audit-compliance': typeof StaffFinanceDeanAuditComplianceRoute
+  '/staff/finance-dean/audit-history': typeof StaffFinanceDeanAuditHistoryRoute
+  '/staff/finance-dean/audit-reports': typeof StaffFinanceDeanAuditReportsRoute
+  '/staff/finance-dean/audits': typeof StaffFinanceDeanAuditsRoute
+  '/staff/finance-dean/budget': typeof StaffFinanceDeanBudgetRoute
+  '/staff/finance-dean/budget-allocation': typeof StaffFinanceDeanBudgetAllocationRoute
+  '/staff/finance-dean/budget-reports': typeof StaffFinanceDeanBudgetReportsRoute
+  '/staff/finance-dean/budget-utilization': typeof StaffFinanceDeanBudgetUtilizationRoute
+  '/staff/finance-dean/daily-expenses': typeof StaffFinanceDeanDailyExpensesRoute
+  '/staff/finance-dean/department-budgets': typeof StaffFinanceDeanDepartmentBudgetsRoute
+  '/staff/finance-dean/dept-budgets': typeof StaffFinanceDeanDeptBudgetsRoute
+  '/staff/finance-dean/dept-expenses': typeof StaffFinanceDeanDeptExpensesRoute
+  '/staff/finance-dean/expenses': typeof StaffFinanceDeanExpensesRoute
+  '/staff/finance-dean/external-audit': typeof StaffFinanceDeanExternalAuditRoute
+  '/staff/finance-dean/faculty-payroll': typeof StaffFinanceDeanFacultyPayrollRoute
+  '/staff/finance-dean/faculty-timetables': typeof StaffFinanceDeanFacultyTimetablesRoute
+  '/staff/finance-dean/fee-collection': typeof StaffFinanceDeanFeeCollectionRoute
+  '/staff/finance-dean/fee-collections': typeof StaffFinanceDeanFeeCollectionsRoute
+  '/staff/finance-dean/fee-reports': typeof StaffFinanceDeanFeeReportsRoute
+  '/staff/finance-dean/fees': typeof StaffFinanceDeanFeesRoute
+  '/staff/finance-dean/financial-reports': typeof StaffFinanceDeanFinancialReportsRoute
+  '/staff/finance-dean/grants': typeof StaffFinanceDeanGrantsRoute
+  '/staff/finance-dean/internal-audit': typeof StaffFinanceDeanInternalAuditRoute
+  '/staff/finance-dean/invoice-management': typeof StaffFinanceDeanInvoiceManagementRoute
+  '/staff/finance-dean/my-classes': typeof StaffFinanceDeanMyClassesRoute
+  '/staff/finance-dean/my-timetable': typeof StaffFinanceDeanMyTimetableRoute
+  '/staff/finance-dean/notifications': typeof StaffFinanceDeanNotificationsRoute
+  '/staff/finance-dean/payroll': typeof StaffFinanceDeanPayrollRoute
+  '/staff/finance-dean/payroll-reports': typeof StaffFinanceDeanPayrollReportsRoute
+  '/staff/finance-dean/pending-fees': typeof StaffFinanceDeanPendingFeesRoute
+  '/staff/finance-dean/purchase-orders': typeof StaffFinanceDeanPurchaseOrdersRoute
+  '/staff/finance-dean/purchase-payments': typeof StaffFinanceDeanPurchasePaymentsRoute
+  '/staff/finance-dean/purchase-requests': typeof StaffFinanceDeanPurchaseRequestsRoute
+  '/staff/finance-dean/purchases': typeof StaffFinanceDeanPurchasesRoute
+  '/staff/finance-dean/refund-management': typeof StaffFinanceDeanRefundManagementRoute
+  '/staff/finance-dean/reports': typeof StaffFinanceDeanReportsRoute
+  '/staff/finance-dean/salary-history': typeof StaffFinanceDeanSalaryHistoryRoute
+  '/staff/finance-dean/scholarships-concessions': typeof StaffFinanceDeanScholarshipsConcessionsRoute
+  '/staff/finance-dean/settings': typeof StaffFinanceDeanSettingsRoute
+  '/staff/finance-dean/staff-payroll': typeof StaffFinanceDeanStaffPayrollRoute
+  '/staff/finance-dean/substitution-history': typeof StaffFinanceDeanSubstitutionHistoryRoute
+  '/staff/finance-dean/timetable': typeof StaffFinanceDeanTimetableRoute
+  '/staff/finance-dean/vendor-management': typeof StaffFinanceDeanVendorManagementRoute
+  '/staff/finance-dean/vendor-payments': typeof StaffFinanceDeanVendorPaymentsRoute
+  '/staff/ima/amc-warranty': typeof StaffImaAmcWarrantyRoute
+  '/staff/ima/approved-purchases': typeof StaffImaApprovedPurchasesRoute
+  '/staff/ima/asset-audit': typeof StaffImaAssetAuditRoute
+  '/staff/ima/asset-disposal': typeof StaffImaAssetDisposalRoute
+  '/staff/ima/asset-register': typeof StaffImaAssetRegisterRoute
+  '/staff/ima/asset-transfer': typeof StaffImaAssetTransferRoute
+  '/staff/ima/assign-substitute': typeof StaffImaAssignSubstituteRoute
+  '/staff/ima/campus-projects': typeof StaffImaCampusProjectsRoute
+  '/staff/ima/compliance': typeof StaffImaComplianceRoute
+  '/staff/ima/department-assets': typeof StaffImaDepartmentAssetsRoute
+  '/staff/ima/equipment-allocation': typeof StaffImaEquipmentAllocationRoute
+  '/staff/ima/equipment-history': typeof StaffImaEquipmentHistoryRoute
+  '/staff/ima/equipment-inventory': typeof StaffImaEquipmentInventoryRoute
+  '/staff/ima/equipment-reports': typeof StaffImaEquipmentReportsRoute
+  '/staff/ima/equipment-requests': typeof StaffImaEquipmentRequestsRoute
+  '/staff/ima/faculty-timetables': typeof StaffImaFacultyTimetablesRoute
+  '/staff/ima/guest-lectures': typeof StaffImaGuestLecturesRoute
+  '/staff/ima/industrial-visits': typeof StaffImaIndustrialVisitsRoute
+  '/staff/ima/infrastructure': typeof StaffImaInfrastructureRoute
+  '/staff/ima/internships': typeof StaffImaInternshipsRoute
+  '/staff/ima/inventory-reports': typeof StaffImaInventoryReportsRoute
+  '/staff/ima/lab-booking': typeof StaffImaLabBookingRoute
+  '/staff/ima/lab-details': typeof StaffImaLabDetailsRoute
+  '/staff/ima/lab-timetable': typeof StaffImaLabTimetableRoute
+  '/staff/ima/laboratories': typeof StaffImaLaboratoriesRoute
+  '/staff/ima/laboratory-reports': typeof StaffImaLaboratoryReportsRoute
+  '/staff/ima/maintenance-reports': typeof StaffImaMaintenanceReportsRoute
+  '/staff/ima/maintenance-requests': typeof StaffImaMaintenanceRequestsRoute
+  '/staff/ima/maintenance-schedule': typeof StaffImaMaintenanceScheduleRoute
+  '/staff/ima/mou': typeof StaffImaMouRoute
+  '/staff/ima/my-classes': typeof StaffImaMyClassesRoute
+  '/staff/ima/my-timetable': typeof StaffImaMyTimetableRoute
+  '/staff/ima/notifications': typeof StaffImaNotificationsRoute
+  '/staff/ima/partners': typeof StaffImaPartnersRoute
+  '/staff/ima/policy-directives': typeof StaffImaPolicyDirectivesRoute
+  '/staff/ima/purchase-orders': typeof StaffImaPurchaseOrdersRoute
+  '/staff/ima/purchase-reports': typeof StaffImaPurchaseReportsRoute
+  '/staff/ima/purchase-requests': typeof StaffImaPurchaseRequestsRoute
+  '/staff/ima/purchase-vendors': typeof StaffImaPurchaseVendorsRoute
+  '/staff/ima/reports': typeof StaffImaReportsRoute
+  '/staff/ima/settings': typeof StaffImaSettingsRoute
+  '/staff/ima/substitution-history': typeof StaffImaSubstitutionHistoryRoute
+  '/staff/ima/timetable': typeof StaffImaTimetableRoute
+  '/staff/ima/vendors': typeof StaffImaVendorsRoute
+  '/staff/ima/workshops': typeof StaffImaWorkshopsRoute
+  '/staff/iqac/academic-audit': typeof StaffIqacAcademicAuditRoute
+  '/staff/iqac/alumni-feedback': typeof StaffIqacAlumniFeedbackRoute
+  '/staff/iqac/aqar': typeof StaffIqacAqarRoute
+  '/staff/iqac/aqar-reports': typeof StaffIqacAqarReportsRoute
+  '/staff/iqac/assign-substitute': typeof StaffIqacAssignSubstituteRoute
+  '/staff/iqac/atr': typeof StaffIqacAtrRoute
+  '/staff/iqac/audit': typeof StaffIqacAuditRoute
+  '/staff/iqac/audit-reports': typeof StaffIqacAuditReportsRoute
+  '/staff/iqac/benchmarking': typeof StaffIqacBenchmarkingRoute
+  '/staff/iqac/best-practices': typeof StaffIqacBestPracticesRoute
+  '/staff/iqac/compliance-tracker': typeof StaffIqacComplianceTrackerRoute
+  '/staff/iqac/criteria': typeof StaffIqacCriteriaRoute
+  '/staff/iqac/criteria-docs': typeof StaffIqacCriteriaDocsRoute
+  '/staff/iqac/dept-quality-metrics': typeof StaffIqacDeptQualityMetricsRoute
+  '/staff/iqac/document-repo': typeof StaffIqacDocumentRepoRoute
+  '/staff/iqac/documents': typeof StaffIqacDocumentsRoute
+  '/staff/iqac/employer-feedback': typeof StaffIqacEmployerFeedbackRoute
+  '/staff/iqac/events': typeof StaffIqacEventsRoute
+  '/staff/iqac/evidence-uploads': typeof StaffIqacEvidenceUploadsRoute
+  '/staff/iqac/faculty-feedback': typeof StaffIqacFacultyFeedbackRoute
+  '/staff/iqac/faculty-timetables': typeof StaffIqacFacultyTimetablesRoute
+  '/staff/iqac/feedback': typeof StaffIqacFeedbackRoute
+  '/staff/iqac/feedback-analytics': typeof StaffIqacFeedbackAnalyticsRoute
+  '/staff/iqac/feedback-reports': typeof StaffIqacFeedbackReportsRoute
+  '/staff/iqac/internal-quality-audit': typeof StaffIqacInternalQualityAuditRoute
+  '/staff/iqac/kpi-dashboard': typeof StaffIqacKpiDashboardRoute
+  '/staff/iqac/kpi-reports': typeof StaffIqacKpiReportsRoute
+  '/staff/iqac/meetings': typeof StaffIqacMeetingsRoute
+  '/staff/iqac/metrics': typeof StaffIqacMetricsRoute
+  '/staff/iqac/my-classes': typeof StaffIqacMyClassesRoute
+  '/staff/iqac/my-timetable': typeof StaffIqacMyTimetableRoute
+  '/staff/iqac/naac': typeof StaffIqacNaacRoute
+  '/staff/iqac/naac-reports': typeof StaffIqacNaacReportsRoute
+  '/staff/iqac/nba': typeof StaffIqacNbaRoute
+  '/staff/iqac/notifications': typeof StaffIqacNotificationsRoute
+  '/staff/iqac/performance-analysis': typeof StaffIqacPerformanceAnalysisRoute
+  '/staff/iqac/quality-audits': typeof StaffIqacQualityAuditsRoute
+  '/staff/iqac/quality-improvement': typeof StaffIqacQualityImprovementRoute
+  '/staff/iqac/quality-metrics': typeof StaffIqacQualityMetricsRoute
+  '/staff/iqac/reports': typeof StaffIqacReportsRoute
+  '/staff/iqac/settings': typeof StaffIqacSettingsRoute
+  '/staff/iqac/ssr': typeof StaffIqacSsrRoute
+  '/staff/iqac/student-feedback': typeof StaffIqacStudentFeedbackRoute
+  '/staff/iqac/substitution-history': typeof StaffIqacSubstitutionHistoryRoute
+  '/staff/iqac/timetable': typeof StaffIqacTimetableRoute
+  '/staff/iqac/workshops': typeof StaffIqacWorkshopsRoute
+  '/staff/placement-dean/aptitude-training': typeof StaffPlacementDeanAptitudeTrainingRoute
+  '/staff/placement-dean/assign-substitute': typeof StaffPlacementDeanAssignSubstituteRoute
+  '/staff/placement-dean/coding-training': typeof StaffPlacementDeanCodingTrainingRoute
+  '/staff/placement-dean/companies': typeof StaffPlacementDeanCompaniesRoute
+  '/staff/placement-dean/company-hiring': typeof StaffPlacementDeanCompanyHiringRoute
+  '/staff/placement-dean/company-profiles': typeof StaffPlacementDeanCompanyProfilesRoute
+  '/staff/placement-dean/company-reports': typeof StaffPlacementDeanCompanyReportsRoute
+  '/staff/placement-dean/company-visits': typeof StaffPlacementDeanCompanyVisitsRoute
+  '/staff/placement-dean/completed-drives': typeof StaffPlacementDeanCompletedDrivesRoute
+  '/staff/placement-dean/dept-placements': typeof StaffPlacementDeanDeptPlacementsRoute
+  '/staff/placement-dean/drives': typeof StaffPlacementDeanDrivesRoute
+  '/staff/placement-dean/eligible-students': typeof StaffPlacementDeanEligibleStudentsRoute
+  '/staff/placement-dean/faculty-timetables': typeof StaffPlacementDeanFacultyTimetablesRoute
+  '/staff/placement-dean/internship-opportunities': typeof StaffPlacementDeanInternshipOpportunitiesRoute
+  '/staff/placement-dean/internship-reports': typeof StaffPlacementDeanInternshipReportsRoute
+  '/staff/placement-dean/internship-reports-list': typeof StaffPlacementDeanInternshipReportsListRoute
+  '/staff/placement-dean/internship-tracking': typeof StaffPlacementDeanInternshipTrackingRoute
+  '/staff/placement-dean/internships': typeof StaffPlacementDeanInternshipsRoute
+  '/staff/placement-dean/mock-interviews': typeof StaffPlacementDeanMockInterviewsRoute
+  '/staff/placement-dean/mous': typeof StaffPlacementDeanMousRoute
+  '/staff/placement-dean/my-classes': typeof StaffPlacementDeanMyClassesRoute
+  '/staff/placement-dean/my-timetable': typeof StaffPlacementDeanMyTimetableRoute
+  '/staff/placement-dean/notifications': typeof StaffPlacementDeanNotificationsRoute
+  '/staff/placement-dean/off-campus-drives': typeof StaffPlacementDeanOffCampusDrivesRoute
+  '/staff/placement-dean/offer-letters': typeof StaffPlacementDeanOfferLettersRoute
+  '/staff/placement-dean/offers': typeof StaffPlacementDeanOffersRoute
+  '/staff/placement-dean/ongoing-drives': typeof StaffPlacementDeanOngoingDrivesRoute
+  '/staff/placement-dean/package-analysis': typeof StaffPlacementDeanPackageAnalysisRoute
+  '/staff/placement-dean/package-analytics': typeof StaffPlacementDeanPackageAnalyticsRoute
+  '/staff/placement-dean/packages': typeof StaffPlacementDeanPackagesRoute
+  '/staff/placement-dean/placed-students': typeof StaffPlacementDeanPlacedStudentsRoute
+  '/staff/placement-dean/placement-reports': typeof StaffPlacementDeanPlacementReportsRoute
+  '/staff/placement-dean/placement-statistics': typeof StaffPlacementDeanPlacementStatisticsRoute
+  '/staff/placement-dean/recruitment-partners': typeof StaffPlacementDeanRecruitmentPartnersRoute
+  '/staff/placement-dean/registered-students': typeof StaffPlacementDeanRegisteredStudentsRoute
+  '/staff/placement-dean/reports': typeof StaffPlacementDeanReportsRoute
+  '/staff/placement-dean/resume-reviews': typeof StaffPlacementDeanResumeReviewsRoute
+  '/staff/placement-dean/selected-students': typeof StaffPlacementDeanSelectedStudentsRoute
+  '/staff/placement-dean/settings': typeof StaffPlacementDeanSettingsRoute
+  '/staff/placement-dean/shortlisted-students': typeof StaffPlacementDeanShortlistedStudentsRoute
+  '/staff/placement-dean/soft-skills': typeof StaffPlacementDeanSoftSkillsRoute
+  '/staff/placement-dean/student-reports': typeof StaffPlacementDeanStudentReportsRoute
+  '/staff/placement-dean/substitution-history': typeof StaffPlacementDeanSubstitutionHistoryRoute
+  '/staff/placement-dean/timetable': typeof StaffPlacementDeanTimetableRoute
+  '/staff/placement-dean/training': typeof StaffPlacementDeanTrainingRoute
+  '/staff/placement-dean/training-reports': typeof StaffPlacementDeanTrainingReportsRoute
+  '/staff/placement-dean/upcoming-drives': typeof StaffPlacementDeanUpcomingDrivesRoute
+  '/staff/research-development/assign-substitute': typeof StaffResearchDevelopmentAssignSubstituteRoute
+  '/staff/research-development/book-chapters': typeof StaffResearchDevelopmentBookChaptersRoute
+  '/staff/research-development/completed-projects': typeof StaffResearchDevelopmentCompletedProjectsRoute
+  '/staff/research-development/conference-publications': typeof StaffResearchDevelopmentConferencePublicationsRoute
+  '/staff/research-development/conferences': typeof StaffResearchDevelopmentConferencesRoute
+  '/staff/research-development/consultancy-projects': typeof StaffResearchDevelopmentConsultancyProjectsRoute
+  '/staff/research-development/copyrights': typeof StaffResearchDevelopmentCopyrightsRoute
+  '/staff/research-development/faculty-timetables': typeof StaffResearchDevelopmentFacultyTimetablesRoute
+  '/staff/research-development/fdps': typeof StaffResearchDevelopmentFdpsRoute
+  '/staff/research-development/funding-agencies': typeof StaffResearchDevelopmentFundingAgenciesRoute
+  '/staff/research-development/govt-grants': typeof StaffResearchDevelopmentGovtGrantsRoute
+  '/staff/research-development/grant-reports': typeof StaffResearchDevelopmentGrantReportsRoute
+  '/staff/research-development/grant-utilization': typeof StaffResearchDevelopmentGrantUtilizationRoute
+  '/staff/research-development/grants': typeof StaffResearchDevelopmentGrantsRoute
+  '/staff/research-development/incubation': typeof StaffResearchDevelopmentIncubationRoute
+  '/staff/research-development/industry-grants': typeof StaffResearchDevelopmentIndustryGrantsRoute
+  '/staff/research-development/innovation': typeof StaffResearchDevelopmentInnovationRoute
+  '/staff/research-development/innovations': typeof StaffResearchDevelopmentInnovationsRoute
+  '/staff/research-development/journal-publications': typeof StaffResearchDevelopmentJournalPublicationsRoute
+  '/staff/research-development/lab-booking': typeof StaffResearchDevelopmentLabBookingRoute
+  '/staff/research-development/lab-equipment': typeof StaffResearchDevelopmentLabEquipmentRoute
+  '/staff/research-development/lab-utilization': typeof StaffResearchDevelopmentLabUtilizationRoute
+  '/staff/research-development/my-classes': typeof StaffResearchDevelopmentMyClassesRoute
+  '/staff/research-development/my-timetable': typeof StaffResearchDevelopmentMyTimetableRoute
+  '/staff/research-development/notifications': typeof StaffResearchDevelopmentNotificationsRoute
+  '/staff/research-development/ongoing-projects': typeof StaffResearchDevelopmentOngoingProjectsRoute
+  '/staff/research-development/patent-reports': typeof StaffResearchDevelopmentPatentReportsRoute
+  '/staff/research-development/patents': typeof StaffResearchDevelopmentPatentsRoute
+  '/staff/research-development/phd-scholars': typeof StaffResearchDevelopmentPhdScholarsRoute
+  '/staff/research-development/projects': typeof StaffResearchDevelopmentProjectsRoute
+  '/staff/research-development/publication-reports': typeof StaffResearchDevelopmentPublicationReportsRoute
+  '/staff/research-development/publications-repo': typeof StaffResearchDevelopmentPublicationsRepoRoute
+  '/staff/research-development/research-guides': typeof StaffResearchDevelopmentResearchGuidesRoute
+  '/staff/research-development/research-labs': typeof StaffResearchDevelopmentResearchLabsRoute
+  '/staff/research-development/research-reports': typeof StaffResearchDevelopmentResearchReportsRoute
+  '/staff/research-development/scholar-progress': typeof StaffResearchDevelopmentScholarProgressRoute
+  '/staff/research-development/scholar-reports': typeof StaffResearchDevelopmentScholarReportsRoute
+  '/staff/research-development/scholars': typeof StaffResearchDevelopmentScholarsRoute
+  '/staff/research-development/seminars': typeof StaffResearchDevelopmentSeminarsRoute
+  '/staff/research-development/settings': typeof StaffResearchDevelopmentSettingsRoute
+  '/staff/research-development/sponsored-projects': typeof StaffResearchDevelopmentSponsoredProjectsRoute
+  '/staff/research-development/substitution-history': typeof StaffResearchDevelopmentSubstitutionHistoryRoute
+  '/staff/research-development/thesis-repo': typeof StaffResearchDevelopmentThesisRepoRoute
+  '/staff/research-development/timetable': typeof StaffResearchDevelopmentTimetableRoute
+  '/staff/research-development/workshops': typeof StaffResearchDevelopmentWorkshopsRoute
+  '/staff/student-dean/attendance': typeof StaffStudentDeanAttendanceRoute
+  '/staff/student-dean/attendance-history': typeof StaffStudentDeanAttendanceHistoryRoute
+  '/staff/student-dean/attendance-reports': typeof StaffStudentDeanAttendanceReportsRoute
+  '/staff/student-dean/certificates': typeof StaffStudentDeanCertificatesRoute
+  '/staff/student-dean/clubs-events': typeof StaffStudentDeanClubsEventsRoute
+  '/staff/student-dean/counselling': typeof StaffStudentDeanCounsellingRoute
+  '/staff/student-dean/discipline': typeof StaffStudentDeanDisciplineRoute
+  '/staff/student-dean/grievances': typeof StaffStudentDeanGrievancesRoute
+  '/staff/student-dean/hostel': typeof StaffStudentDeanHostelRoute
+  '/staff/student-dean/mentoring': typeof StaffStudentDeanMentoringRoute
+  '/staff/student-dean/notifications': typeof StaffStudentDeanNotificationsRoute
+  '/staff/student-dean/profiles': typeof StaffStudentDeanProfilesRoute
+  '/staff/student-dean/reports': typeof StaffStudentDeanReportsRoute
+  '/staff/student-dean/scholarship-reports': typeof StaffStudentDeanScholarshipReportsRoute
+  '/staff/student-dean/scholarships': typeof StaffStudentDeanScholarshipsRoute
+  '/staff/student-dean/settings': typeof StaffStudentDeanSettingsRoute
+  '/staff/student-dean/student-activities': typeof StaffStudentDeanStudentActivitiesRoute
+  '/staff/student-dean/student-profiles': typeof StaffStudentDeanStudentProfilesRoute
+  '/staff/student-dean/student-reports': typeof StaffStudentDeanStudentReportsRoute
+  '/staff/student-dean/student-requests': typeof StaffStudentDeanStudentRequestsRoute
+  '/staff/student-dean/students': typeof StaffStudentDeanStudentsRoute
+  '/staff/student-dean/timetable': typeof StaffStudentDeanTimetableRoute
+  '/staff/student_dean/$': typeof StaffStudent_deanSplatRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/librarian': typeof DashboardLibrarianIndexRoute
+  '/staff/academic-dean': typeof StaffAcademicDeanIndexRoute
+  '/staff/examination-dean': typeof StaffExaminationDeanIndexRoute
+  '/staff/finance-dean': typeof StaffFinanceDeanIndexRoute
+  '/staff/ima': typeof StaffImaIndexRoute
+  '/staff/iqac': typeof StaffIqacIndexRoute
+  '/staff/placement-dean': typeof StaffPlacementDeanIndexRoute
+  '/staff/research-development': typeof StaffResearchDevelopmentIndexRoute
+  '/staff/student-dean': typeof StaffStudentDeanIndexRoute
   '/dashboard/academics/attendance/mark': typeof DashboardAcademicsAttendanceMarkRoute
   '/super-admin/academics/attendance/mark': typeof SuperAdminAcademicsAttendanceMarkRoute
 }
@@ -2119,9 +5344,8 @@ export interface FileRoutesById {
   '/departments': typeof DepartmentsRoute
   '/emergency': typeof EmergencyRoute
   '/employee-management': typeof EmployeeManagementRoute
-  '/examcell': typeof ExamcellRouteWithChildren
   '/examination': typeof ExaminationRouteWithChildren
-  '/examinations': typeof ExaminationsRoute
+  '/examinations': typeof ExaminationsRouteWithChildren
   '/external-user': typeof ExternalUserRouteWithChildren
   '/faculty': typeof FacultyRouteWithChildren
   '/faculty-management': typeof FacultyManagementRoute
@@ -2151,6 +5375,7 @@ export interface FileRoutesById {
   '/results': typeof ResultsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
+  '/staff': typeof StaffRouteWithChildren
   '/student': typeof StudentRouteWithChildren
   '/students': typeof StudentsRoute
   '/subject-management': typeof SubjectManagementRoute
@@ -2169,36 +5394,29 @@ export interface FileRoutesById {
   '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
+  '/drive/apply': typeof DriveApplyRoute
   '/exam/take': typeof ExamTakeRoute
   '/examcell/analytics': typeof ExamcellAnalyticsRoute
-  '/examcell/bloomstick': typeof ExamcellBloomstickRoute
   '/examcell/correction-analysis': typeof ExamcellCorrectionAnalysisRoute
-  '/examcell/correction-requests': typeof ExamcellCorrectionRequestsRoute
-  '/examcell/corrections': typeof ExamcellCorrectionsRoute
-  '/examcell/course-enroll': typeof ExamcellCourseEnrollRoute
-  '/examcell/dashboard': typeof ExamcellDashboardRoute
   '/examcell/hall-tickets': typeof ExamcellHallTicketsRoute
-  '/examcell/notifications': typeof ExamcellNotificationsRoute
-  '/examcell/questions': typeof ExamcellQuestionsRoute
   '/examcell/results': typeof ExamcellResultsRoute
-  '/examcell/schedule': typeof ExamcellScheduleRoute
-  '/examcell/settings': typeof ExamcellSettingsRoute
-  '/examcell/supplementary': typeof ExamcellSupplementaryRoute
-  '/examcell/timetable': typeof ExamcellTimetableRoute
-  '/examcell/updates': typeof ExamcellUpdatesRoute
   '/examination/dashboard': typeof ExaminationDashboardRoute
+  '/examinations/analytics': typeof ExaminationsAnalyticsRoute
+  '/examinations/hall-tickets': typeof ExaminationsHallTicketsRoute
+  '/examinations/internal-marks': typeof ExaminationsInternalMarksRoute
+  '/examinations/notifications': typeof ExaminationsNotificationsRoute
+  '/examinations/reports': typeof ExaminationsReportsRoute
+  '/examinations/revaluation': typeof ExaminationsRevaluationRoute
+  '/examinations/schedule': typeof ExaminationsScheduleRoute
   '/external-user/dashboard': typeof ExternalUserDashboardRoute
   '/faculty/assessments': typeof FacultyAssessmentsRoute
   '/faculty/assignments': typeof FacultyAssignmentsRoute
   '/faculty/attendance': typeof FacultyAttendanceRoute
   '/faculty/dashboard': typeof FacultyDashboardRoute
-  '/faculty/evaluation-and-marks': typeof FacultyEvaluationAndMarksRoute
-  '/faculty/evaluations': typeof FacultyEvaluationsRoute
   '/faculty/examinations': typeof FacultyExaminationsRoute
   '/faculty/leave': typeof FacultyLeaveRoute
   '/faculty/lesson-plan': typeof FacultyLessonPlanRoute
   '/faculty/lms': typeof FacultyLmsRoute
-  '/faculty/marks': typeof FacultyMarksRoute
   '/faculty/materials': typeof FacultyMaterialsRoute
   '/faculty/notifications': typeof FacultyNotificationsRoute
   '/faculty/payroll': typeof FacultyPayrollRoute
@@ -2284,6 +5502,15 @@ export interface FileRoutesById {
   '/placement/reports': typeof PlacementReportsRoute
   '/placement/settings': typeof PlacementSettingsRoute
   '/placement/students': typeof PlacementStudentsRoute
+  '/staff/academic-dean': typeof StaffAcademicDeanRouteWithChildren
+  '/staff/examination-dean': typeof StaffExaminationDeanRouteWithChildren
+  '/staff/finance-dean': typeof StaffFinanceDeanRouteWithChildren
+  '/staff/ima': typeof StaffImaRouteWithChildren
+  '/staff/iqac': typeof StaffIqacRouteWithChildren
+  '/staff/placement-dean': typeof StaffPlacementDeanRouteWithChildren
+  '/staff/research-development': typeof StaffResearchDevelopmentRouteWithChildren
+  '/staff/student-dean': typeof StaffStudentDeanRouteWithChildren
+  '/staff/student_dean': typeof StaffStudent_deanRouteWithChildren
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
   '/student/dashboard': typeof StudentDashboardRoute
@@ -2323,8 +5550,8 @@ export interface FileRoutesById {
   '/transport/settings': typeof TransportSettingsRoute
   '/ai-analytics/': typeof AiAnalyticsIndexRoute
   '/dean/': typeof DeanIndexRoute
-  '/examcell/': typeof ExamcellIndexRoute
   '/examination/': typeof ExaminationIndexRoute
+  '/examinations/': typeof ExaminationsIndexRoute
   '/external-user/': typeof ExternalUserIndexRoute
   '/faculty/': typeof FacultyIndexRoute
   '/finance/': typeof FinanceIndexRoute
@@ -2335,6 +5562,7 @@ export interface FileRoutesById {
   '/library/': typeof LibraryIndexRoute
   '/parent/': typeof ParentIndexRoute
   '/placement/': typeof PlacementIndexRoute
+  '/staff/': typeof StaffIndexRoute
   '/student/': typeof StudentIndexRoute
   '/super-admin/': typeof SuperAdminIndexRoute
   '/transport/': typeof TransportIndexRoute
@@ -2352,9 +5580,374 @@ export interface FileRoutesById {
   '/dashboard/librarian/return-books': typeof DashboardLibrarianReturnBooksRoute
   '/dashboard/librarian/settings': typeof DashboardLibrarianSettingsRoute
   '/placement/drives_/$driveId': typeof PlacementDrivesDriveIdRoute
+  '/staff/academic-dean/academic-audit': typeof StaffAcademicDeanAcademicAuditRoute
+  '/staff/academic-dean/academic-calendar': typeof StaffAcademicDeanAcademicCalendarRoute
+  '/staff/academic-dean/academic-council': typeof StaffAcademicDeanAcademicCouncilRoute
+  '/staff/academic-dean/academic-performance': typeof StaffAcademicDeanAcademicPerformanceRoute
+  '/staff/academic-dean/academic-reports': typeof StaffAcademicDeanAcademicReportsRoute
+  '/staff/academic-dean/accreditation': typeof StaffAcademicDeanAccreditationRoute
+  '/staff/academic-dean/approvals': typeof StaffAcademicDeanApprovalsRoute
+  '/staff/academic-dean/assign-substitute': typeof StaffAcademicDeanAssignSubstituteRoute
+  '/staff/academic-dean/attendance-monitoring': typeof StaffAcademicDeanAttendanceMonitoringRoute
+  '/staff/academic-dean/attendance-reports': typeof StaffAcademicDeanAttendanceReportsRoute
+  '/staff/academic-dean/bos-meetings': typeof StaffAcademicDeanBosMeetingsRoute
+  '/staff/academic-dean/circulars': typeof StaffAcademicDeanCircularsRoute
+  '/staff/academic-dean/class-monitoring': typeof StaffAcademicDeanClassMonitoringRoute
+  '/staff/academic-dean/classroom-allocation': typeof StaffAcademicDeanClassroomAllocationRoute
+  '/staff/academic-dean/copo-mapping': typeof StaffAcademicDeanCopoMappingRoute
+  '/staff/academic-dean/course-allocation': typeof StaffAcademicDeanCourseAllocationRoute
+  '/staff/academic-dean/course-management': typeof StaffAcademicDeanCourseManagementRoute
+  '/staff/academic-dean/course-outcomes': typeof StaffAcademicDeanCourseOutcomesRoute
+  '/staff/academic-dean/curriculum': typeof StaffAcademicDeanCurriculumRoute
+  '/staff/academic-dean/department-reports': typeof StaffAcademicDeanDepartmentReportsRoute
+  '/staff/academic-dean/departments': typeof StaffAcademicDeanDepartmentsRoute
+  '/staff/academic-dean/dept-workload': typeof StaffAcademicDeanDeptWorkloadRoute
+  '/staff/academic-dean/faculty-management': typeof StaffAcademicDeanFacultyManagementRoute
+  '/staff/academic-dean/faculty-performance': typeof StaffAcademicDeanFacultyPerformanceRoute
+  '/staff/academic-dean/faculty-reports': typeof StaffAcademicDeanFacultyReportsRoute
+  '/staff/academic-dean/faculty-timetable': typeof StaffAcademicDeanFacultyTimetableRoute
+  '/staff/academic-dean/faculty-timetables': typeof StaffAcademicDeanFacultyTimetablesRoute
+  '/staff/academic-dean/faculty-workload': typeof StaffAcademicDeanFacultyWorkloadRoute
+  '/staff/academic-dean/my-classes': typeof StaffAcademicDeanMyClassesRoute
+  '/staff/academic-dean/my-timetable': typeof StaffAcademicDeanMyTimetableRoute
+  '/staff/academic-dean/notifications': typeof StaffAcademicDeanNotificationsRoute
+  '/staff/academic-dean/obe-management': typeof StaffAcademicDeanObeManagementRoute
+  '/staff/academic-dean/programs': typeof StaffAcademicDeanProgramsRoute
+  '/staff/academic-dean/settings': typeof StaffAcademicDeanSettingsRoute
+  '/staff/academic-dean/slow-learners': typeof StaffAcademicDeanSlowLearnersRoute
+  '/staff/academic-dean/student-reports': typeof StaffAcademicDeanStudentReportsRoute
+  '/staff/academic-dean/subject-allocation': typeof StaffAcademicDeanSubjectAllocationRoute
+  '/staff/academic-dean/substitute-faculty': typeof StaffAcademicDeanSubstituteFacultyRoute
+  '/staff/academic-dean/substitution-history': typeof StaffAcademicDeanSubstitutionHistoryRoute
+  '/staff/academic-dean/teaching-load': typeof StaffAcademicDeanTeachingLoadRoute
+  '/staff/academic-dean/timetable': typeof StaffAcademicDeanTimetableRoute
+  '/staff/academic-dean/timetable-history': typeof StaffAcademicDeanTimetableHistoryRoute
+  '/staff/academic-dean/timetable-reports': typeof StaffAcademicDeanTimetableReportsRoute
+  '/staff/academic-dean/top-performers': typeof StaffAcademicDeanTopPerformersRoute
+  '/staff/examination-dean/academic-calendar': typeof StaffExaminationDeanAcademicCalendarRoute
+  '/staff/examination-dean/answer-script-allocation': typeof StaffExaminationDeanAnswerScriptAllocationRoute
+  '/staff/examination-dean/assign-substitute': typeof StaffExaminationDeanAssignSubstituteRoute
+  '/staff/examination-dean/cgpa-calculation': typeof StaffExaminationDeanCgpaCalculationRoute
+  '/staff/examination-dean/committee-reports': typeof StaffExaminationDeanCommitteeReportsRoute
+  '/staff/examination-dean/completed-drives': typeof StaffExaminationDeanCompletedDrivesRoute
+  '/staff/examination-dean/confidential-storage': typeof StaffExaminationDeanConfidentialStorageRoute
+  '/staff/examination-dean/download-history': typeof StaffExaminationDeanDownloadHistoryRoute
+  '/staff/examination-dean/evaluation': typeof StaffExaminationDeanEvaluationRoute
+  '/staff/examination-dean/exam-reports': typeof StaffExaminationDeanExamReportsRoute
+  '/staff/examination-dean/exam-schedule': typeof StaffExaminationDeanExamScheduleRoute
+  '/staff/examination-dean/exam-schedules': typeof StaffExaminationDeanExamSchedulesRoute
+  '/staff/examination-dean/faculty-timetables': typeof StaffExaminationDeanFacultyTimetablesRoute
+  '/staff/examination-dean/generate-hall-tickets': typeof StaffExaminationDeanGenerateHallTicketsRoute
+  '/staff/examination-dean/grade-moderation': typeof StaffExaminationDeanGradeModerationRoute
+  '/staff/examination-dean/grade-sheets': typeof StaffExaminationDeanGradeSheetsRoute
+  '/staff/examination-dean/hall-allocation': typeof StaffExaminationDeanHallAllocationRoute
+  '/staff/examination-dean/hall-ticket-reports': typeof StaffExaminationDeanHallTicketReportsRoute
+  '/staff/examination-dean/hall-ticket-status': typeof StaffExaminationDeanHallTicketStatusRoute
+  '/staff/examination-dean/hall-tickets': typeof StaffExaminationDeanHallTicketsRoute
+  '/staff/examination-dean/internal-exams': typeof StaffExaminationDeanInternalExamsRoute
+  '/staff/examination-dean/invigilator-allocation': typeof StaffExaminationDeanInvigilatorAllocationRoute
+  '/staff/examination-dean/invigilator-reports': typeof StaffExaminationDeanInvigilatorReportsRoute
+  '/staff/examination-dean/invigilators': typeof StaffExaminationDeanInvigilatorsRoute
+  '/staff/examination-dean/malpractice-cases': typeof StaffExaminationDeanMalpracticeCasesRoute
+  '/staff/examination-dean/malpractice-reports': typeof StaffExaminationDeanMalpracticeReportsRoute
+  '/staff/examination-dean/marks-entry': typeof StaffExaminationDeanMarksEntryRoute
+  '/staff/examination-dean/marks-verification': typeof StaffExaminationDeanMarksVerificationRoute
+  '/staff/examination-dean/mid-exams': typeof StaffExaminationDeanMidExamsRoute
+  '/staff/examination-dean/my-classes': typeof StaffExaminationDeanMyClassesRoute
+  '/staff/examination-dean/my-timetable': typeof StaffExaminationDeanMyTimetableRoute
+  '/staff/examination-dean/notifications': typeof StaffExaminationDeanNotificationsRoute
+  '/staff/examination-dean/paper-distribution': typeof StaffExaminationDeanPaperDistributionRoute
+  '/staff/examination-dean/practical-exams': typeof StaffExaminationDeanPracticalExamsRoute
+  '/staff/examination-dean/punishment-history': typeof StaffExaminationDeanPunishmentHistoryRoute
+  '/staff/examination-dean/question-paper-approval': typeof StaffExaminationDeanQuestionPaperApprovalRoute
+  '/staff/examination-dean/question-paper-upload': typeof StaffExaminationDeanQuestionPaperUploadRoute
+  '/staff/examination-dean/question-papers': typeof StaffExaminationDeanQuestionPapersRoute
+  '/staff/examination-dean/rank-list': typeof StaffExaminationDeanRankListRoute
+  '/staff/examination-dean/recounting': typeof StaffExaminationDeanRecountingRoute
+  '/staff/examination-dean/reports': typeof StaffExaminationDeanReportsRoute
+  '/staff/examination-dean/result-processing': typeof StaffExaminationDeanResultProcessingRoute
+  '/staff/examination-dean/result-publication': typeof StaffExaminationDeanResultPublicationRoute
+  '/staff/examination-dean/result-reports': typeof StaffExaminationDeanResultReportsRoute
+  '/staff/examination-dean/results': typeof StaffExaminationDeanResultsRoute
+  '/staff/examination-dean/revaluation': typeof StaffExaminationDeanRevaluationRoute
+  '/staff/examination-dean/revaluation-requests': typeof StaffExaminationDeanRevaluationRequestsRoute
+  '/staff/examination-dean/revaluation-status': typeof StaffExaminationDeanRevaluationStatusRoute
+  '/staff/examination-dean/schedule': typeof StaffExaminationDeanScheduleRoute
+  '/staff/examination-dean/semester-exams': typeof StaffExaminationDeanSemesterExamsRoute
+  '/staff/examination-dean/settings': typeof StaffExaminationDeanSettingsRoute
+  '/staff/examination-dean/substitution-history': typeof StaffExaminationDeanSubstitutionHistoryRoute
+  '/staff/examination-dean/supplementary-exams': typeof StaffExaminationDeanSupplementaryExamsRoute
+  '/staff/examination-dean/timetable': typeof StaffExaminationDeanTimetableRoute
+  '/staff/examination-dean/timetable-generation': typeof StaffExaminationDeanTimetableGenerationRoute
+  '/staff/examination-dean/transcripts': typeof StaffExaminationDeanTranscriptsRoute
+  '/staff/examination-dean/updated-results': typeof StaffExaminationDeanUpdatedResultsRoute
+  '/staff/examination-dean/valuation-status': typeof StaffExaminationDeanValuationStatusRoute
+  '/staff/finance-dean/accounts': typeof StaffFinanceDeanAccountsRoute
+  '/staff/finance-dean/allowances-deductions': typeof StaffFinanceDeanAllowancesDeductionsRoute
+  '/staff/finance-dean/annual-budget': typeof StaffFinanceDeanAnnualBudgetRoute
+  '/staff/finance-dean/assign-substitute': typeof StaffFinanceDeanAssignSubstituteRoute
+  '/staff/finance-dean/audit': typeof StaffFinanceDeanAuditRoute
+  '/staff/finance-dean/audit-compliance': typeof StaffFinanceDeanAuditComplianceRoute
+  '/staff/finance-dean/audit-history': typeof StaffFinanceDeanAuditHistoryRoute
+  '/staff/finance-dean/audit-reports': typeof StaffFinanceDeanAuditReportsRoute
+  '/staff/finance-dean/audits': typeof StaffFinanceDeanAuditsRoute
+  '/staff/finance-dean/budget': typeof StaffFinanceDeanBudgetRoute
+  '/staff/finance-dean/budget-allocation': typeof StaffFinanceDeanBudgetAllocationRoute
+  '/staff/finance-dean/budget-reports': typeof StaffFinanceDeanBudgetReportsRoute
+  '/staff/finance-dean/budget-utilization': typeof StaffFinanceDeanBudgetUtilizationRoute
+  '/staff/finance-dean/daily-expenses': typeof StaffFinanceDeanDailyExpensesRoute
+  '/staff/finance-dean/department-budgets': typeof StaffFinanceDeanDepartmentBudgetsRoute
+  '/staff/finance-dean/dept-budgets': typeof StaffFinanceDeanDeptBudgetsRoute
+  '/staff/finance-dean/dept-expenses': typeof StaffFinanceDeanDeptExpensesRoute
+  '/staff/finance-dean/expenses': typeof StaffFinanceDeanExpensesRoute
+  '/staff/finance-dean/external-audit': typeof StaffFinanceDeanExternalAuditRoute
+  '/staff/finance-dean/faculty-payroll': typeof StaffFinanceDeanFacultyPayrollRoute
+  '/staff/finance-dean/faculty-timetables': typeof StaffFinanceDeanFacultyTimetablesRoute
+  '/staff/finance-dean/fee-collection': typeof StaffFinanceDeanFeeCollectionRoute
+  '/staff/finance-dean/fee-collections': typeof StaffFinanceDeanFeeCollectionsRoute
+  '/staff/finance-dean/fee-reports': typeof StaffFinanceDeanFeeReportsRoute
+  '/staff/finance-dean/fees': typeof StaffFinanceDeanFeesRoute
+  '/staff/finance-dean/financial-reports': typeof StaffFinanceDeanFinancialReportsRoute
+  '/staff/finance-dean/grants': typeof StaffFinanceDeanGrantsRoute
+  '/staff/finance-dean/internal-audit': typeof StaffFinanceDeanInternalAuditRoute
+  '/staff/finance-dean/invoice-management': typeof StaffFinanceDeanInvoiceManagementRoute
+  '/staff/finance-dean/my-classes': typeof StaffFinanceDeanMyClassesRoute
+  '/staff/finance-dean/my-timetable': typeof StaffFinanceDeanMyTimetableRoute
+  '/staff/finance-dean/notifications': typeof StaffFinanceDeanNotificationsRoute
+  '/staff/finance-dean/payroll': typeof StaffFinanceDeanPayrollRoute
+  '/staff/finance-dean/payroll-reports': typeof StaffFinanceDeanPayrollReportsRoute
+  '/staff/finance-dean/pending-fees': typeof StaffFinanceDeanPendingFeesRoute
+  '/staff/finance-dean/purchase-orders': typeof StaffFinanceDeanPurchaseOrdersRoute
+  '/staff/finance-dean/purchase-payments': typeof StaffFinanceDeanPurchasePaymentsRoute
+  '/staff/finance-dean/purchase-requests': typeof StaffFinanceDeanPurchaseRequestsRoute
+  '/staff/finance-dean/purchases': typeof StaffFinanceDeanPurchasesRoute
+  '/staff/finance-dean/refund-management': typeof StaffFinanceDeanRefundManagementRoute
+  '/staff/finance-dean/reports': typeof StaffFinanceDeanReportsRoute
+  '/staff/finance-dean/salary-history': typeof StaffFinanceDeanSalaryHistoryRoute
+  '/staff/finance-dean/scholarships-concessions': typeof StaffFinanceDeanScholarshipsConcessionsRoute
+  '/staff/finance-dean/settings': typeof StaffFinanceDeanSettingsRoute
+  '/staff/finance-dean/staff-payroll': typeof StaffFinanceDeanStaffPayrollRoute
+  '/staff/finance-dean/substitution-history': typeof StaffFinanceDeanSubstitutionHistoryRoute
+  '/staff/finance-dean/timetable': typeof StaffFinanceDeanTimetableRoute
+  '/staff/finance-dean/vendor-management': typeof StaffFinanceDeanVendorManagementRoute
+  '/staff/finance-dean/vendor-payments': typeof StaffFinanceDeanVendorPaymentsRoute
+  '/staff/ima/amc-warranty': typeof StaffImaAmcWarrantyRoute
+  '/staff/ima/approved-purchases': typeof StaffImaApprovedPurchasesRoute
+  '/staff/ima/asset-audit': typeof StaffImaAssetAuditRoute
+  '/staff/ima/asset-disposal': typeof StaffImaAssetDisposalRoute
+  '/staff/ima/asset-register': typeof StaffImaAssetRegisterRoute
+  '/staff/ima/asset-transfer': typeof StaffImaAssetTransferRoute
+  '/staff/ima/assign-substitute': typeof StaffImaAssignSubstituteRoute
+  '/staff/ima/campus-projects': typeof StaffImaCampusProjectsRoute
+  '/staff/ima/compliance': typeof StaffImaComplianceRoute
+  '/staff/ima/department-assets': typeof StaffImaDepartmentAssetsRoute
+  '/staff/ima/equipment-allocation': typeof StaffImaEquipmentAllocationRoute
+  '/staff/ima/equipment-history': typeof StaffImaEquipmentHistoryRoute
+  '/staff/ima/equipment-inventory': typeof StaffImaEquipmentInventoryRoute
+  '/staff/ima/equipment-reports': typeof StaffImaEquipmentReportsRoute
+  '/staff/ima/equipment-requests': typeof StaffImaEquipmentRequestsRoute
+  '/staff/ima/faculty-timetables': typeof StaffImaFacultyTimetablesRoute
+  '/staff/ima/guest-lectures': typeof StaffImaGuestLecturesRoute
+  '/staff/ima/industrial-visits': typeof StaffImaIndustrialVisitsRoute
+  '/staff/ima/infrastructure': typeof StaffImaInfrastructureRoute
+  '/staff/ima/internships': typeof StaffImaInternshipsRoute
+  '/staff/ima/inventory-reports': typeof StaffImaInventoryReportsRoute
+  '/staff/ima/lab-booking': typeof StaffImaLabBookingRoute
+  '/staff/ima/lab-details': typeof StaffImaLabDetailsRoute
+  '/staff/ima/lab-timetable': typeof StaffImaLabTimetableRoute
+  '/staff/ima/laboratories': typeof StaffImaLaboratoriesRoute
+  '/staff/ima/laboratory-reports': typeof StaffImaLaboratoryReportsRoute
+  '/staff/ima/maintenance-reports': typeof StaffImaMaintenanceReportsRoute
+  '/staff/ima/maintenance-requests': typeof StaffImaMaintenanceRequestsRoute
+  '/staff/ima/maintenance-schedule': typeof StaffImaMaintenanceScheduleRoute
+  '/staff/ima/mou': typeof StaffImaMouRoute
+  '/staff/ima/my-classes': typeof StaffImaMyClassesRoute
+  '/staff/ima/my-timetable': typeof StaffImaMyTimetableRoute
+  '/staff/ima/notifications': typeof StaffImaNotificationsRoute
+  '/staff/ima/partners': typeof StaffImaPartnersRoute
+  '/staff/ima/policy-directives': typeof StaffImaPolicyDirectivesRoute
+  '/staff/ima/purchase-orders': typeof StaffImaPurchaseOrdersRoute
+  '/staff/ima/purchase-reports': typeof StaffImaPurchaseReportsRoute
+  '/staff/ima/purchase-requests': typeof StaffImaPurchaseRequestsRoute
+  '/staff/ima/purchase-vendors': typeof StaffImaPurchaseVendorsRoute
+  '/staff/ima/reports': typeof StaffImaReportsRoute
+  '/staff/ima/settings': typeof StaffImaSettingsRoute
+  '/staff/ima/substitution-history': typeof StaffImaSubstitutionHistoryRoute
+  '/staff/ima/timetable': typeof StaffImaTimetableRoute
+  '/staff/ima/vendors': typeof StaffImaVendorsRoute
+  '/staff/ima/workshops': typeof StaffImaWorkshopsRoute
+  '/staff/iqac/academic-audit': typeof StaffIqacAcademicAuditRoute
+  '/staff/iqac/alumni-feedback': typeof StaffIqacAlumniFeedbackRoute
+  '/staff/iqac/aqar': typeof StaffIqacAqarRoute
+  '/staff/iqac/aqar-reports': typeof StaffIqacAqarReportsRoute
+  '/staff/iqac/assign-substitute': typeof StaffIqacAssignSubstituteRoute
+  '/staff/iqac/atr': typeof StaffIqacAtrRoute
+  '/staff/iqac/audit': typeof StaffIqacAuditRoute
+  '/staff/iqac/audit-reports': typeof StaffIqacAuditReportsRoute
+  '/staff/iqac/benchmarking': typeof StaffIqacBenchmarkingRoute
+  '/staff/iqac/best-practices': typeof StaffIqacBestPracticesRoute
+  '/staff/iqac/compliance-tracker': typeof StaffIqacComplianceTrackerRoute
+  '/staff/iqac/criteria': typeof StaffIqacCriteriaRoute
+  '/staff/iqac/criteria-docs': typeof StaffIqacCriteriaDocsRoute
+  '/staff/iqac/dept-quality-metrics': typeof StaffIqacDeptQualityMetricsRoute
+  '/staff/iqac/document-repo': typeof StaffIqacDocumentRepoRoute
+  '/staff/iqac/documents': typeof StaffIqacDocumentsRoute
+  '/staff/iqac/employer-feedback': typeof StaffIqacEmployerFeedbackRoute
+  '/staff/iqac/events': typeof StaffIqacEventsRoute
+  '/staff/iqac/evidence-uploads': typeof StaffIqacEvidenceUploadsRoute
+  '/staff/iqac/faculty-feedback': typeof StaffIqacFacultyFeedbackRoute
+  '/staff/iqac/faculty-timetables': typeof StaffIqacFacultyTimetablesRoute
+  '/staff/iqac/feedback': typeof StaffIqacFeedbackRoute
+  '/staff/iqac/feedback-analytics': typeof StaffIqacFeedbackAnalyticsRoute
+  '/staff/iqac/feedback-reports': typeof StaffIqacFeedbackReportsRoute
+  '/staff/iqac/internal-quality-audit': typeof StaffIqacInternalQualityAuditRoute
+  '/staff/iqac/kpi-dashboard': typeof StaffIqacKpiDashboardRoute
+  '/staff/iqac/kpi-reports': typeof StaffIqacKpiReportsRoute
+  '/staff/iqac/meetings': typeof StaffIqacMeetingsRoute
+  '/staff/iqac/metrics': typeof StaffIqacMetricsRoute
+  '/staff/iqac/my-classes': typeof StaffIqacMyClassesRoute
+  '/staff/iqac/my-timetable': typeof StaffIqacMyTimetableRoute
+  '/staff/iqac/naac': typeof StaffIqacNaacRoute
+  '/staff/iqac/naac-reports': typeof StaffIqacNaacReportsRoute
+  '/staff/iqac/nba': typeof StaffIqacNbaRoute
+  '/staff/iqac/notifications': typeof StaffIqacNotificationsRoute
+  '/staff/iqac/performance-analysis': typeof StaffIqacPerformanceAnalysisRoute
+  '/staff/iqac/quality-audits': typeof StaffIqacQualityAuditsRoute
+  '/staff/iqac/quality-improvement': typeof StaffIqacQualityImprovementRoute
+  '/staff/iqac/quality-metrics': typeof StaffIqacQualityMetricsRoute
+  '/staff/iqac/reports': typeof StaffIqacReportsRoute
+  '/staff/iqac/settings': typeof StaffIqacSettingsRoute
+  '/staff/iqac/ssr': typeof StaffIqacSsrRoute
+  '/staff/iqac/student-feedback': typeof StaffIqacStudentFeedbackRoute
+  '/staff/iqac/substitution-history': typeof StaffIqacSubstitutionHistoryRoute
+  '/staff/iqac/timetable': typeof StaffIqacTimetableRoute
+  '/staff/iqac/workshops': typeof StaffIqacWorkshopsRoute
+  '/staff/placement-dean/aptitude-training': typeof StaffPlacementDeanAptitudeTrainingRoute
+  '/staff/placement-dean/assign-substitute': typeof StaffPlacementDeanAssignSubstituteRoute
+  '/staff/placement-dean/coding-training': typeof StaffPlacementDeanCodingTrainingRoute
+  '/staff/placement-dean/companies': typeof StaffPlacementDeanCompaniesRoute
+  '/staff/placement-dean/company-hiring': typeof StaffPlacementDeanCompanyHiringRoute
+  '/staff/placement-dean/company-profiles': typeof StaffPlacementDeanCompanyProfilesRoute
+  '/staff/placement-dean/company-reports': typeof StaffPlacementDeanCompanyReportsRoute
+  '/staff/placement-dean/company-visits': typeof StaffPlacementDeanCompanyVisitsRoute
+  '/staff/placement-dean/completed-drives': typeof StaffPlacementDeanCompletedDrivesRoute
+  '/staff/placement-dean/dept-placements': typeof StaffPlacementDeanDeptPlacementsRoute
+  '/staff/placement-dean/drives': typeof StaffPlacementDeanDrivesRoute
+  '/staff/placement-dean/eligible-students': typeof StaffPlacementDeanEligibleStudentsRoute
+  '/staff/placement-dean/faculty-timetables': typeof StaffPlacementDeanFacultyTimetablesRoute
+  '/staff/placement-dean/internship-opportunities': typeof StaffPlacementDeanInternshipOpportunitiesRoute
+  '/staff/placement-dean/internship-reports': typeof StaffPlacementDeanInternshipReportsRoute
+  '/staff/placement-dean/internship-reports-list': typeof StaffPlacementDeanInternshipReportsListRoute
+  '/staff/placement-dean/internship-tracking': typeof StaffPlacementDeanInternshipTrackingRoute
+  '/staff/placement-dean/internships': typeof StaffPlacementDeanInternshipsRoute
+  '/staff/placement-dean/mock-interviews': typeof StaffPlacementDeanMockInterviewsRoute
+  '/staff/placement-dean/mous': typeof StaffPlacementDeanMousRoute
+  '/staff/placement-dean/my-classes': typeof StaffPlacementDeanMyClassesRoute
+  '/staff/placement-dean/my-timetable': typeof StaffPlacementDeanMyTimetableRoute
+  '/staff/placement-dean/notifications': typeof StaffPlacementDeanNotificationsRoute
+  '/staff/placement-dean/off-campus-drives': typeof StaffPlacementDeanOffCampusDrivesRoute
+  '/staff/placement-dean/offer-letters': typeof StaffPlacementDeanOfferLettersRoute
+  '/staff/placement-dean/offers': typeof StaffPlacementDeanOffersRoute
+  '/staff/placement-dean/ongoing-drives': typeof StaffPlacementDeanOngoingDrivesRoute
+  '/staff/placement-dean/package-analysis': typeof StaffPlacementDeanPackageAnalysisRoute
+  '/staff/placement-dean/package-analytics': typeof StaffPlacementDeanPackageAnalyticsRoute
+  '/staff/placement-dean/packages': typeof StaffPlacementDeanPackagesRoute
+  '/staff/placement-dean/placed-students': typeof StaffPlacementDeanPlacedStudentsRoute
+  '/staff/placement-dean/placement-reports': typeof StaffPlacementDeanPlacementReportsRoute
+  '/staff/placement-dean/placement-statistics': typeof StaffPlacementDeanPlacementStatisticsRoute
+  '/staff/placement-dean/recruitment-partners': typeof StaffPlacementDeanRecruitmentPartnersRoute
+  '/staff/placement-dean/registered-students': typeof StaffPlacementDeanRegisteredStudentsRoute
+  '/staff/placement-dean/reports': typeof StaffPlacementDeanReportsRoute
+  '/staff/placement-dean/resume-reviews': typeof StaffPlacementDeanResumeReviewsRoute
+  '/staff/placement-dean/selected-students': typeof StaffPlacementDeanSelectedStudentsRoute
+  '/staff/placement-dean/settings': typeof StaffPlacementDeanSettingsRoute
+  '/staff/placement-dean/shortlisted-students': typeof StaffPlacementDeanShortlistedStudentsRoute
+  '/staff/placement-dean/soft-skills': typeof StaffPlacementDeanSoftSkillsRoute
+  '/staff/placement-dean/student-reports': typeof StaffPlacementDeanStudentReportsRoute
+  '/staff/placement-dean/substitution-history': typeof StaffPlacementDeanSubstitutionHistoryRoute
+  '/staff/placement-dean/timetable': typeof StaffPlacementDeanTimetableRoute
+  '/staff/placement-dean/training': typeof StaffPlacementDeanTrainingRoute
+  '/staff/placement-dean/training-reports': typeof StaffPlacementDeanTrainingReportsRoute
+  '/staff/placement-dean/upcoming-drives': typeof StaffPlacementDeanUpcomingDrivesRoute
+  '/staff/research-development/assign-substitute': typeof StaffResearchDevelopmentAssignSubstituteRoute
+  '/staff/research-development/book-chapters': typeof StaffResearchDevelopmentBookChaptersRoute
+  '/staff/research-development/completed-projects': typeof StaffResearchDevelopmentCompletedProjectsRoute
+  '/staff/research-development/conference-publications': typeof StaffResearchDevelopmentConferencePublicationsRoute
+  '/staff/research-development/conferences': typeof StaffResearchDevelopmentConferencesRoute
+  '/staff/research-development/consultancy-projects': typeof StaffResearchDevelopmentConsultancyProjectsRoute
+  '/staff/research-development/copyrights': typeof StaffResearchDevelopmentCopyrightsRoute
+  '/staff/research-development/faculty-timetables': typeof StaffResearchDevelopmentFacultyTimetablesRoute
+  '/staff/research-development/fdps': typeof StaffResearchDevelopmentFdpsRoute
+  '/staff/research-development/funding-agencies': typeof StaffResearchDevelopmentFundingAgenciesRoute
+  '/staff/research-development/govt-grants': typeof StaffResearchDevelopmentGovtGrantsRoute
+  '/staff/research-development/grant-reports': typeof StaffResearchDevelopmentGrantReportsRoute
+  '/staff/research-development/grant-utilization': typeof StaffResearchDevelopmentGrantUtilizationRoute
+  '/staff/research-development/grants': typeof StaffResearchDevelopmentGrantsRoute
+  '/staff/research-development/incubation': typeof StaffResearchDevelopmentIncubationRoute
+  '/staff/research-development/industry-grants': typeof StaffResearchDevelopmentIndustryGrantsRoute
+  '/staff/research-development/innovation': typeof StaffResearchDevelopmentInnovationRoute
+  '/staff/research-development/innovations': typeof StaffResearchDevelopmentInnovationsRoute
+  '/staff/research-development/journal-publications': typeof StaffResearchDevelopmentJournalPublicationsRoute
+  '/staff/research-development/lab-booking': typeof StaffResearchDevelopmentLabBookingRoute
+  '/staff/research-development/lab-equipment': typeof StaffResearchDevelopmentLabEquipmentRoute
+  '/staff/research-development/lab-utilization': typeof StaffResearchDevelopmentLabUtilizationRoute
+  '/staff/research-development/my-classes': typeof StaffResearchDevelopmentMyClassesRoute
+  '/staff/research-development/my-timetable': typeof StaffResearchDevelopmentMyTimetableRoute
+  '/staff/research-development/notifications': typeof StaffResearchDevelopmentNotificationsRoute
+  '/staff/research-development/ongoing-projects': typeof StaffResearchDevelopmentOngoingProjectsRoute
+  '/staff/research-development/patent-reports': typeof StaffResearchDevelopmentPatentReportsRoute
+  '/staff/research-development/patents': typeof StaffResearchDevelopmentPatentsRoute
+  '/staff/research-development/phd-scholars': typeof StaffResearchDevelopmentPhdScholarsRoute
+  '/staff/research-development/projects': typeof StaffResearchDevelopmentProjectsRoute
+  '/staff/research-development/publication-reports': typeof StaffResearchDevelopmentPublicationReportsRoute
+  '/staff/research-development/publications-repo': typeof StaffResearchDevelopmentPublicationsRepoRoute
+  '/staff/research-development/research-guides': typeof StaffResearchDevelopmentResearchGuidesRoute
+  '/staff/research-development/research-labs': typeof StaffResearchDevelopmentResearchLabsRoute
+  '/staff/research-development/research-reports': typeof StaffResearchDevelopmentResearchReportsRoute
+  '/staff/research-development/scholar-progress': typeof StaffResearchDevelopmentScholarProgressRoute
+  '/staff/research-development/scholar-reports': typeof StaffResearchDevelopmentScholarReportsRoute
+  '/staff/research-development/scholars': typeof StaffResearchDevelopmentScholarsRoute
+  '/staff/research-development/seminars': typeof StaffResearchDevelopmentSeminarsRoute
+  '/staff/research-development/settings': typeof StaffResearchDevelopmentSettingsRoute
+  '/staff/research-development/sponsored-projects': typeof StaffResearchDevelopmentSponsoredProjectsRoute
+  '/staff/research-development/substitution-history': typeof StaffResearchDevelopmentSubstitutionHistoryRoute
+  '/staff/research-development/thesis-repo': typeof StaffResearchDevelopmentThesisRepoRoute
+  '/staff/research-development/timetable': typeof StaffResearchDevelopmentTimetableRoute
+  '/staff/research-development/workshops': typeof StaffResearchDevelopmentWorkshopsRoute
+  '/staff/student-dean/attendance': typeof StaffStudentDeanAttendanceRoute
+  '/staff/student-dean/attendance-history': typeof StaffStudentDeanAttendanceHistoryRoute
+  '/staff/student-dean/attendance-reports': typeof StaffStudentDeanAttendanceReportsRoute
+  '/staff/student-dean/certificates': typeof StaffStudentDeanCertificatesRoute
+  '/staff/student-dean/clubs-events': typeof StaffStudentDeanClubsEventsRoute
+  '/staff/student-dean/counselling': typeof StaffStudentDeanCounsellingRoute
+  '/staff/student-dean/discipline': typeof StaffStudentDeanDisciplineRoute
+  '/staff/student-dean/grievances': typeof StaffStudentDeanGrievancesRoute
+  '/staff/student-dean/hostel': typeof StaffStudentDeanHostelRoute
+  '/staff/student-dean/mentoring': typeof StaffStudentDeanMentoringRoute
+  '/staff/student-dean/notifications': typeof StaffStudentDeanNotificationsRoute
+  '/staff/student-dean/profiles': typeof StaffStudentDeanProfilesRoute
+  '/staff/student-dean/reports': typeof StaffStudentDeanReportsRoute
+  '/staff/student-dean/scholarship-reports': typeof StaffStudentDeanScholarshipReportsRoute
+  '/staff/student-dean/scholarships': typeof StaffStudentDeanScholarshipsRoute
+  '/staff/student-dean/settings': typeof StaffStudentDeanSettingsRoute
+  '/staff/student-dean/student-activities': typeof StaffStudentDeanStudentActivitiesRoute
+  '/staff/student-dean/student-profiles': typeof StaffStudentDeanStudentProfilesRoute
+  '/staff/student-dean/student-reports': typeof StaffStudentDeanStudentReportsRoute
+  '/staff/student-dean/student-requests': typeof StaffStudentDeanStudentRequestsRoute
+  '/staff/student-dean/students': typeof StaffStudentDeanStudentsRoute
+  '/staff/student-dean/timetable': typeof StaffStudentDeanTimetableRoute
+  '/staff/student_dean/$': typeof StaffStudent_deanSplatRoute
   '/super-admin/academics/faculty-status': typeof SuperAdminAcademicsFacultyStatusRoute
   '/super-admin/academics/syllabus-tracker': typeof SuperAdminAcademicsSyllabusTrackerRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
+  '/staff/academic-dean/': typeof StaffAcademicDeanIndexRoute
+  '/staff/examination-dean/': typeof StaffExaminationDeanIndexRoute
+  '/staff/finance-dean/': typeof StaffFinanceDeanIndexRoute
+  '/staff/ima/': typeof StaffImaIndexRoute
+  '/staff/iqac/': typeof StaffIqacIndexRoute
+  '/staff/placement-dean/': typeof StaffPlacementDeanIndexRoute
+  '/staff/research-development/': typeof StaffResearchDevelopmentIndexRoute
+  '/staff/student-dean/': typeof StaffStudentDeanIndexRoute
   '/dashboard/academics/attendance/mark': typeof DashboardAcademicsAttendanceMarkRoute
   '/super-admin/academics/attendance/mark': typeof SuperAdminAcademicsAttendanceMarkRoute
 }
@@ -2382,7 +5975,6 @@ export interface FileRouteTypes {
     | '/departments'
     | '/emergency'
     | '/employee-management'
-    | '/examcell'
     | '/examination'
     | '/examinations'
     | '/external-user'
@@ -2414,6 +6006,7 @@ export interface FileRouteTypes {
     | '/results'
     | '/settings'
     | '/signup'
+    | '/staff'
     | '/student'
     | '/students'
     | '/subject-management'
@@ -2432,36 +6025,29 @@ export interface FileRouteTypes {
     | '/dashboard/librarian'
     | '/dean/dashboard'
     | '/dean/subject-allocation'
+    | '/drive/apply'
     | '/exam/take'
     | '/examcell/analytics'
-    | '/examcell/bloomstick'
     | '/examcell/correction-analysis'
-    | '/examcell/correction-requests'
-    | '/examcell/corrections'
-    | '/examcell/course-enroll'
-    | '/examcell/dashboard'
     | '/examcell/hall-tickets'
-    | '/examcell/notifications'
-    | '/examcell/questions'
     | '/examcell/results'
-    | '/examcell/schedule'
-    | '/examcell/settings'
-    | '/examcell/supplementary'
-    | '/examcell/timetable'
-    | '/examcell/updates'
     | '/examination/dashboard'
+    | '/examinations/analytics'
+    | '/examinations/hall-tickets'
+    | '/examinations/internal-marks'
+    | '/examinations/notifications'
+    | '/examinations/reports'
+    | '/examinations/revaluation'
+    | '/examinations/schedule'
     | '/external-user/dashboard'
     | '/faculty/assessments'
     | '/faculty/assignments'
     | '/faculty/attendance'
     | '/faculty/dashboard'
-    | '/faculty/evaluation-and-marks'
-    | '/faculty/evaluations'
     | '/faculty/examinations'
     | '/faculty/leave'
     | '/faculty/lesson-plan'
     | '/faculty/lms'
-    | '/faculty/marks'
     | '/faculty/materials'
     | '/faculty/notifications'
     | '/faculty/payroll'
@@ -2547,6 +6133,15 @@ export interface FileRouteTypes {
     | '/placement/reports'
     | '/placement/settings'
     | '/placement/students'
+    | '/staff/academic-dean'
+    | '/staff/examination-dean'
+    | '/staff/finance-dean'
+    | '/staff/ima'
+    | '/staff/iqac'
+    | '/staff/placement-dean'
+    | '/staff/research-development'
+    | '/staff/student-dean'
+    | '/staff/student_dean'
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
@@ -2586,8 +6181,8 @@ export interface FileRouteTypes {
     | '/transport/settings'
     | '/ai-analytics/'
     | '/dean/'
-    | '/examcell/'
     | '/examination/'
+    | '/examinations/'
     | '/external-user/'
     | '/faculty/'
     | '/finance/'
@@ -2598,6 +6193,7 @@ export interface FileRouteTypes {
     | '/library/'
     | '/parent/'
     | '/placement/'
+    | '/staff/'
     | '/student/'
     | '/super-admin/'
     | '/transport/'
@@ -2615,9 +6211,374 @@ export interface FileRouteTypes {
     | '/dashboard/librarian/return-books'
     | '/dashboard/librarian/settings'
     | '/placement/drives/$driveId'
+    | '/staff/academic-dean/academic-audit'
+    | '/staff/academic-dean/academic-calendar'
+    | '/staff/academic-dean/academic-council'
+    | '/staff/academic-dean/academic-performance'
+    | '/staff/academic-dean/academic-reports'
+    | '/staff/academic-dean/accreditation'
+    | '/staff/academic-dean/approvals'
+    | '/staff/academic-dean/assign-substitute'
+    | '/staff/academic-dean/attendance-monitoring'
+    | '/staff/academic-dean/attendance-reports'
+    | '/staff/academic-dean/bos-meetings'
+    | '/staff/academic-dean/circulars'
+    | '/staff/academic-dean/class-monitoring'
+    | '/staff/academic-dean/classroom-allocation'
+    | '/staff/academic-dean/copo-mapping'
+    | '/staff/academic-dean/course-allocation'
+    | '/staff/academic-dean/course-management'
+    | '/staff/academic-dean/course-outcomes'
+    | '/staff/academic-dean/curriculum'
+    | '/staff/academic-dean/department-reports'
+    | '/staff/academic-dean/departments'
+    | '/staff/academic-dean/dept-workload'
+    | '/staff/academic-dean/faculty-management'
+    | '/staff/academic-dean/faculty-performance'
+    | '/staff/academic-dean/faculty-reports'
+    | '/staff/academic-dean/faculty-timetable'
+    | '/staff/academic-dean/faculty-timetables'
+    | '/staff/academic-dean/faculty-workload'
+    | '/staff/academic-dean/my-classes'
+    | '/staff/academic-dean/my-timetable'
+    | '/staff/academic-dean/notifications'
+    | '/staff/academic-dean/obe-management'
+    | '/staff/academic-dean/programs'
+    | '/staff/academic-dean/settings'
+    | '/staff/academic-dean/slow-learners'
+    | '/staff/academic-dean/student-reports'
+    | '/staff/academic-dean/subject-allocation'
+    | '/staff/academic-dean/substitute-faculty'
+    | '/staff/academic-dean/substitution-history'
+    | '/staff/academic-dean/teaching-load'
+    | '/staff/academic-dean/timetable'
+    | '/staff/academic-dean/timetable-history'
+    | '/staff/academic-dean/timetable-reports'
+    | '/staff/academic-dean/top-performers'
+    | '/staff/examination-dean/academic-calendar'
+    | '/staff/examination-dean/answer-script-allocation'
+    | '/staff/examination-dean/assign-substitute'
+    | '/staff/examination-dean/cgpa-calculation'
+    | '/staff/examination-dean/committee-reports'
+    | '/staff/examination-dean/completed-drives'
+    | '/staff/examination-dean/confidential-storage'
+    | '/staff/examination-dean/download-history'
+    | '/staff/examination-dean/evaluation'
+    | '/staff/examination-dean/exam-reports'
+    | '/staff/examination-dean/exam-schedule'
+    | '/staff/examination-dean/exam-schedules'
+    | '/staff/examination-dean/faculty-timetables'
+    | '/staff/examination-dean/generate-hall-tickets'
+    | '/staff/examination-dean/grade-moderation'
+    | '/staff/examination-dean/grade-sheets'
+    | '/staff/examination-dean/hall-allocation'
+    | '/staff/examination-dean/hall-ticket-reports'
+    | '/staff/examination-dean/hall-ticket-status'
+    | '/staff/examination-dean/hall-tickets'
+    | '/staff/examination-dean/internal-exams'
+    | '/staff/examination-dean/invigilator-allocation'
+    | '/staff/examination-dean/invigilator-reports'
+    | '/staff/examination-dean/invigilators'
+    | '/staff/examination-dean/malpractice-cases'
+    | '/staff/examination-dean/malpractice-reports'
+    | '/staff/examination-dean/marks-entry'
+    | '/staff/examination-dean/marks-verification'
+    | '/staff/examination-dean/mid-exams'
+    | '/staff/examination-dean/my-classes'
+    | '/staff/examination-dean/my-timetable'
+    | '/staff/examination-dean/notifications'
+    | '/staff/examination-dean/paper-distribution'
+    | '/staff/examination-dean/practical-exams'
+    | '/staff/examination-dean/punishment-history'
+    | '/staff/examination-dean/question-paper-approval'
+    | '/staff/examination-dean/question-paper-upload'
+    | '/staff/examination-dean/question-papers'
+    | '/staff/examination-dean/rank-list'
+    | '/staff/examination-dean/recounting'
+    | '/staff/examination-dean/reports'
+    | '/staff/examination-dean/result-processing'
+    | '/staff/examination-dean/result-publication'
+    | '/staff/examination-dean/result-reports'
+    | '/staff/examination-dean/results'
+    | '/staff/examination-dean/revaluation'
+    | '/staff/examination-dean/revaluation-requests'
+    | '/staff/examination-dean/revaluation-status'
+    | '/staff/examination-dean/schedule'
+    | '/staff/examination-dean/semester-exams'
+    | '/staff/examination-dean/settings'
+    | '/staff/examination-dean/substitution-history'
+    | '/staff/examination-dean/supplementary-exams'
+    | '/staff/examination-dean/timetable'
+    | '/staff/examination-dean/timetable-generation'
+    | '/staff/examination-dean/transcripts'
+    | '/staff/examination-dean/updated-results'
+    | '/staff/examination-dean/valuation-status'
+    | '/staff/finance-dean/accounts'
+    | '/staff/finance-dean/allowances-deductions'
+    | '/staff/finance-dean/annual-budget'
+    | '/staff/finance-dean/assign-substitute'
+    | '/staff/finance-dean/audit'
+    | '/staff/finance-dean/audit-compliance'
+    | '/staff/finance-dean/audit-history'
+    | '/staff/finance-dean/audit-reports'
+    | '/staff/finance-dean/audits'
+    | '/staff/finance-dean/budget'
+    | '/staff/finance-dean/budget-allocation'
+    | '/staff/finance-dean/budget-reports'
+    | '/staff/finance-dean/budget-utilization'
+    | '/staff/finance-dean/daily-expenses'
+    | '/staff/finance-dean/department-budgets'
+    | '/staff/finance-dean/dept-budgets'
+    | '/staff/finance-dean/dept-expenses'
+    | '/staff/finance-dean/expenses'
+    | '/staff/finance-dean/external-audit'
+    | '/staff/finance-dean/faculty-payroll'
+    | '/staff/finance-dean/faculty-timetables'
+    | '/staff/finance-dean/fee-collection'
+    | '/staff/finance-dean/fee-collections'
+    | '/staff/finance-dean/fee-reports'
+    | '/staff/finance-dean/fees'
+    | '/staff/finance-dean/financial-reports'
+    | '/staff/finance-dean/grants'
+    | '/staff/finance-dean/internal-audit'
+    | '/staff/finance-dean/invoice-management'
+    | '/staff/finance-dean/my-classes'
+    | '/staff/finance-dean/my-timetable'
+    | '/staff/finance-dean/notifications'
+    | '/staff/finance-dean/payroll'
+    | '/staff/finance-dean/payroll-reports'
+    | '/staff/finance-dean/pending-fees'
+    | '/staff/finance-dean/purchase-orders'
+    | '/staff/finance-dean/purchase-payments'
+    | '/staff/finance-dean/purchase-requests'
+    | '/staff/finance-dean/purchases'
+    | '/staff/finance-dean/refund-management'
+    | '/staff/finance-dean/reports'
+    | '/staff/finance-dean/salary-history'
+    | '/staff/finance-dean/scholarships-concessions'
+    | '/staff/finance-dean/settings'
+    | '/staff/finance-dean/staff-payroll'
+    | '/staff/finance-dean/substitution-history'
+    | '/staff/finance-dean/timetable'
+    | '/staff/finance-dean/vendor-management'
+    | '/staff/finance-dean/vendor-payments'
+    | '/staff/ima/amc-warranty'
+    | '/staff/ima/approved-purchases'
+    | '/staff/ima/asset-audit'
+    | '/staff/ima/asset-disposal'
+    | '/staff/ima/asset-register'
+    | '/staff/ima/asset-transfer'
+    | '/staff/ima/assign-substitute'
+    | '/staff/ima/campus-projects'
+    | '/staff/ima/compliance'
+    | '/staff/ima/department-assets'
+    | '/staff/ima/equipment-allocation'
+    | '/staff/ima/equipment-history'
+    | '/staff/ima/equipment-inventory'
+    | '/staff/ima/equipment-reports'
+    | '/staff/ima/equipment-requests'
+    | '/staff/ima/faculty-timetables'
+    | '/staff/ima/guest-lectures'
+    | '/staff/ima/industrial-visits'
+    | '/staff/ima/infrastructure'
+    | '/staff/ima/internships'
+    | '/staff/ima/inventory-reports'
+    | '/staff/ima/lab-booking'
+    | '/staff/ima/lab-details'
+    | '/staff/ima/lab-timetable'
+    | '/staff/ima/laboratories'
+    | '/staff/ima/laboratory-reports'
+    | '/staff/ima/maintenance-reports'
+    | '/staff/ima/maintenance-requests'
+    | '/staff/ima/maintenance-schedule'
+    | '/staff/ima/mou'
+    | '/staff/ima/my-classes'
+    | '/staff/ima/my-timetable'
+    | '/staff/ima/notifications'
+    | '/staff/ima/partners'
+    | '/staff/ima/policy-directives'
+    | '/staff/ima/purchase-orders'
+    | '/staff/ima/purchase-reports'
+    | '/staff/ima/purchase-requests'
+    | '/staff/ima/purchase-vendors'
+    | '/staff/ima/reports'
+    | '/staff/ima/settings'
+    | '/staff/ima/substitution-history'
+    | '/staff/ima/timetable'
+    | '/staff/ima/vendors'
+    | '/staff/ima/workshops'
+    | '/staff/iqac/academic-audit'
+    | '/staff/iqac/alumni-feedback'
+    | '/staff/iqac/aqar'
+    | '/staff/iqac/aqar-reports'
+    | '/staff/iqac/assign-substitute'
+    | '/staff/iqac/atr'
+    | '/staff/iqac/audit'
+    | '/staff/iqac/audit-reports'
+    | '/staff/iqac/benchmarking'
+    | '/staff/iqac/best-practices'
+    | '/staff/iqac/compliance-tracker'
+    | '/staff/iqac/criteria'
+    | '/staff/iqac/criteria-docs'
+    | '/staff/iqac/dept-quality-metrics'
+    | '/staff/iqac/document-repo'
+    | '/staff/iqac/documents'
+    | '/staff/iqac/employer-feedback'
+    | '/staff/iqac/events'
+    | '/staff/iqac/evidence-uploads'
+    | '/staff/iqac/faculty-feedback'
+    | '/staff/iqac/faculty-timetables'
+    | '/staff/iqac/feedback'
+    | '/staff/iqac/feedback-analytics'
+    | '/staff/iqac/feedback-reports'
+    | '/staff/iqac/internal-quality-audit'
+    | '/staff/iqac/kpi-dashboard'
+    | '/staff/iqac/kpi-reports'
+    | '/staff/iqac/meetings'
+    | '/staff/iqac/metrics'
+    | '/staff/iqac/my-classes'
+    | '/staff/iqac/my-timetable'
+    | '/staff/iqac/naac'
+    | '/staff/iqac/naac-reports'
+    | '/staff/iqac/nba'
+    | '/staff/iqac/notifications'
+    | '/staff/iqac/performance-analysis'
+    | '/staff/iqac/quality-audits'
+    | '/staff/iqac/quality-improvement'
+    | '/staff/iqac/quality-metrics'
+    | '/staff/iqac/reports'
+    | '/staff/iqac/settings'
+    | '/staff/iqac/ssr'
+    | '/staff/iqac/student-feedback'
+    | '/staff/iqac/substitution-history'
+    | '/staff/iqac/timetable'
+    | '/staff/iqac/workshops'
+    | '/staff/placement-dean/aptitude-training'
+    | '/staff/placement-dean/assign-substitute'
+    | '/staff/placement-dean/coding-training'
+    | '/staff/placement-dean/companies'
+    | '/staff/placement-dean/company-hiring'
+    | '/staff/placement-dean/company-profiles'
+    | '/staff/placement-dean/company-reports'
+    | '/staff/placement-dean/company-visits'
+    | '/staff/placement-dean/completed-drives'
+    | '/staff/placement-dean/dept-placements'
+    | '/staff/placement-dean/drives'
+    | '/staff/placement-dean/eligible-students'
+    | '/staff/placement-dean/faculty-timetables'
+    | '/staff/placement-dean/internship-opportunities'
+    | '/staff/placement-dean/internship-reports'
+    | '/staff/placement-dean/internship-reports-list'
+    | '/staff/placement-dean/internship-tracking'
+    | '/staff/placement-dean/internships'
+    | '/staff/placement-dean/mock-interviews'
+    | '/staff/placement-dean/mous'
+    | '/staff/placement-dean/my-classes'
+    | '/staff/placement-dean/my-timetable'
+    | '/staff/placement-dean/notifications'
+    | '/staff/placement-dean/off-campus-drives'
+    | '/staff/placement-dean/offer-letters'
+    | '/staff/placement-dean/offers'
+    | '/staff/placement-dean/ongoing-drives'
+    | '/staff/placement-dean/package-analysis'
+    | '/staff/placement-dean/package-analytics'
+    | '/staff/placement-dean/packages'
+    | '/staff/placement-dean/placed-students'
+    | '/staff/placement-dean/placement-reports'
+    | '/staff/placement-dean/placement-statistics'
+    | '/staff/placement-dean/recruitment-partners'
+    | '/staff/placement-dean/registered-students'
+    | '/staff/placement-dean/reports'
+    | '/staff/placement-dean/resume-reviews'
+    | '/staff/placement-dean/selected-students'
+    | '/staff/placement-dean/settings'
+    | '/staff/placement-dean/shortlisted-students'
+    | '/staff/placement-dean/soft-skills'
+    | '/staff/placement-dean/student-reports'
+    | '/staff/placement-dean/substitution-history'
+    | '/staff/placement-dean/timetable'
+    | '/staff/placement-dean/training'
+    | '/staff/placement-dean/training-reports'
+    | '/staff/placement-dean/upcoming-drives'
+    | '/staff/research-development/assign-substitute'
+    | '/staff/research-development/book-chapters'
+    | '/staff/research-development/completed-projects'
+    | '/staff/research-development/conference-publications'
+    | '/staff/research-development/conferences'
+    | '/staff/research-development/consultancy-projects'
+    | '/staff/research-development/copyrights'
+    | '/staff/research-development/faculty-timetables'
+    | '/staff/research-development/fdps'
+    | '/staff/research-development/funding-agencies'
+    | '/staff/research-development/govt-grants'
+    | '/staff/research-development/grant-reports'
+    | '/staff/research-development/grant-utilization'
+    | '/staff/research-development/grants'
+    | '/staff/research-development/incubation'
+    | '/staff/research-development/industry-grants'
+    | '/staff/research-development/innovation'
+    | '/staff/research-development/innovations'
+    | '/staff/research-development/journal-publications'
+    | '/staff/research-development/lab-booking'
+    | '/staff/research-development/lab-equipment'
+    | '/staff/research-development/lab-utilization'
+    | '/staff/research-development/my-classes'
+    | '/staff/research-development/my-timetable'
+    | '/staff/research-development/notifications'
+    | '/staff/research-development/ongoing-projects'
+    | '/staff/research-development/patent-reports'
+    | '/staff/research-development/patents'
+    | '/staff/research-development/phd-scholars'
+    | '/staff/research-development/projects'
+    | '/staff/research-development/publication-reports'
+    | '/staff/research-development/publications-repo'
+    | '/staff/research-development/research-guides'
+    | '/staff/research-development/research-labs'
+    | '/staff/research-development/research-reports'
+    | '/staff/research-development/scholar-progress'
+    | '/staff/research-development/scholar-reports'
+    | '/staff/research-development/scholars'
+    | '/staff/research-development/seminars'
+    | '/staff/research-development/settings'
+    | '/staff/research-development/sponsored-projects'
+    | '/staff/research-development/substitution-history'
+    | '/staff/research-development/thesis-repo'
+    | '/staff/research-development/timetable'
+    | '/staff/research-development/workshops'
+    | '/staff/student-dean/attendance'
+    | '/staff/student-dean/attendance-history'
+    | '/staff/student-dean/attendance-reports'
+    | '/staff/student-dean/certificates'
+    | '/staff/student-dean/clubs-events'
+    | '/staff/student-dean/counselling'
+    | '/staff/student-dean/discipline'
+    | '/staff/student-dean/grievances'
+    | '/staff/student-dean/hostel'
+    | '/staff/student-dean/mentoring'
+    | '/staff/student-dean/notifications'
+    | '/staff/student-dean/profiles'
+    | '/staff/student-dean/reports'
+    | '/staff/student-dean/scholarship-reports'
+    | '/staff/student-dean/scholarships'
+    | '/staff/student-dean/settings'
+    | '/staff/student-dean/student-activities'
+    | '/staff/student-dean/student-profiles'
+    | '/staff/student-dean/student-reports'
+    | '/staff/student-dean/student-requests'
+    | '/staff/student-dean/students'
+    | '/staff/student-dean/timetable'
+    | '/staff/student_dean/$'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/librarian/'
+    | '/staff/academic-dean/'
+    | '/staff/examination-dean/'
+    | '/staff/finance-dean/'
+    | '/staff/ima/'
+    | '/staff/iqac/'
+    | '/staff/placement-dean/'
+    | '/staff/research-development/'
+    | '/staff/student-dean/'
     | '/dashboard/academics/attendance/mark'
     | '/super-admin/academics/attendance/mark'
   fileRoutesByTo: FileRoutesByTo
@@ -2641,7 +6602,6 @@ export interface FileRouteTypes {
     | '/departments'
     | '/emergency'
     | '/employee-management'
-    | '/examinations'
     | '/faculty-management'
     | '/features'
     | '/forgot-password'
@@ -2675,36 +6635,29 @@ export interface FileRouteTypes {
     | '/ai-analytics/student-risk'
     | '/dean/dashboard'
     | '/dean/subject-allocation'
+    | '/drive/apply'
     | '/exam/take'
     | '/examcell/analytics'
-    | '/examcell/bloomstick'
     | '/examcell/correction-analysis'
-    | '/examcell/correction-requests'
-    | '/examcell/corrections'
-    | '/examcell/course-enroll'
-    | '/examcell/dashboard'
     | '/examcell/hall-tickets'
-    | '/examcell/notifications'
-    | '/examcell/questions'
     | '/examcell/results'
-    | '/examcell/schedule'
-    | '/examcell/settings'
-    | '/examcell/supplementary'
-    | '/examcell/timetable'
-    | '/examcell/updates'
     | '/examination/dashboard'
+    | '/examinations/analytics'
+    | '/examinations/hall-tickets'
+    | '/examinations/internal-marks'
+    | '/examinations/notifications'
+    | '/examinations/reports'
+    | '/examinations/revaluation'
+    | '/examinations/schedule'
     | '/external-user/dashboard'
     | '/faculty/assessments'
     | '/faculty/assignments'
     | '/faculty/attendance'
     | '/faculty/dashboard'
-    | '/faculty/evaluation-and-marks'
-    | '/faculty/evaluations'
     | '/faculty/examinations'
     | '/faculty/leave'
     | '/faculty/lesson-plan'
     | '/faculty/lms'
-    | '/faculty/marks'
     | '/faculty/materials'
     | '/faculty/notifications'
     | '/faculty/payroll'
@@ -2790,6 +6743,7 @@ export interface FileRouteTypes {
     | '/placement/reports'
     | '/placement/settings'
     | '/placement/students'
+    | '/staff/student_dean'
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
@@ -2829,8 +6783,8 @@ export interface FileRouteTypes {
     | '/transport/settings'
     | '/ai-analytics'
     | '/dean'
-    | '/examcell'
     | '/examination'
+    | '/examinations'
     | '/external-user'
     | '/faculty'
     | '/finance'
@@ -2841,6 +6795,7 @@ export interface FileRouteTypes {
     | '/library'
     | '/parent'
     | '/placement'
+    | '/staff'
     | '/student'
     | '/super-admin'
     | '/transport'
@@ -2858,9 +6813,374 @@ export interface FileRouteTypes {
     | '/dashboard/librarian/return-books'
     | '/dashboard/librarian/settings'
     | '/placement/drives/$driveId'
+    | '/staff/academic-dean/academic-audit'
+    | '/staff/academic-dean/academic-calendar'
+    | '/staff/academic-dean/academic-council'
+    | '/staff/academic-dean/academic-performance'
+    | '/staff/academic-dean/academic-reports'
+    | '/staff/academic-dean/accreditation'
+    | '/staff/academic-dean/approvals'
+    | '/staff/academic-dean/assign-substitute'
+    | '/staff/academic-dean/attendance-monitoring'
+    | '/staff/academic-dean/attendance-reports'
+    | '/staff/academic-dean/bos-meetings'
+    | '/staff/academic-dean/circulars'
+    | '/staff/academic-dean/class-monitoring'
+    | '/staff/academic-dean/classroom-allocation'
+    | '/staff/academic-dean/copo-mapping'
+    | '/staff/academic-dean/course-allocation'
+    | '/staff/academic-dean/course-management'
+    | '/staff/academic-dean/course-outcomes'
+    | '/staff/academic-dean/curriculum'
+    | '/staff/academic-dean/department-reports'
+    | '/staff/academic-dean/departments'
+    | '/staff/academic-dean/dept-workload'
+    | '/staff/academic-dean/faculty-management'
+    | '/staff/academic-dean/faculty-performance'
+    | '/staff/academic-dean/faculty-reports'
+    | '/staff/academic-dean/faculty-timetable'
+    | '/staff/academic-dean/faculty-timetables'
+    | '/staff/academic-dean/faculty-workload'
+    | '/staff/academic-dean/my-classes'
+    | '/staff/academic-dean/my-timetable'
+    | '/staff/academic-dean/notifications'
+    | '/staff/academic-dean/obe-management'
+    | '/staff/academic-dean/programs'
+    | '/staff/academic-dean/settings'
+    | '/staff/academic-dean/slow-learners'
+    | '/staff/academic-dean/student-reports'
+    | '/staff/academic-dean/subject-allocation'
+    | '/staff/academic-dean/substitute-faculty'
+    | '/staff/academic-dean/substitution-history'
+    | '/staff/academic-dean/teaching-load'
+    | '/staff/academic-dean/timetable'
+    | '/staff/academic-dean/timetable-history'
+    | '/staff/academic-dean/timetable-reports'
+    | '/staff/academic-dean/top-performers'
+    | '/staff/examination-dean/academic-calendar'
+    | '/staff/examination-dean/answer-script-allocation'
+    | '/staff/examination-dean/assign-substitute'
+    | '/staff/examination-dean/cgpa-calculation'
+    | '/staff/examination-dean/committee-reports'
+    | '/staff/examination-dean/completed-drives'
+    | '/staff/examination-dean/confidential-storage'
+    | '/staff/examination-dean/download-history'
+    | '/staff/examination-dean/evaluation'
+    | '/staff/examination-dean/exam-reports'
+    | '/staff/examination-dean/exam-schedule'
+    | '/staff/examination-dean/exam-schedules'
+    | '/staff/examination-dean/faculty-timetables'
+    | '/staff/examination-dean/generate-hall-tickets'
+    | '/staff/examination-dean/grade-moderation'
+    | '/staff/examination-dean/grade-sheets'
+    | '/staff/examination-dean/hall-allocation'
+    | '/staff/examination-dean/hall-ticket-reports'
+    | '/staff/examination-dean/hall-ticket-status'
+    | '/staff/examination-dean/hall-tickets'
+    | '/staff/examination-dean/internal-exams'
+    | '/staff/examination-dean/invigilator-allocation'
+    | '/staff/examination-dean/invigilator-reports'
+    | '/staff/examination-dean/invigilators'
+    | '/staff/examination-dean/malpractice-cases'
+    | '/staff/examination-dean/malpractice-reports'
+    | '/staff/examination-dean/marks-entry'
+    | '/staff/examination-dean/marks-verification'
+    | '/staff/examination-dean/mid-exams'
+    | '/staff/examination-dean/my-classes'
+    | '/staff/examination-dean/my-timetable'
+    | '/staff/examination-dean/notifications'
+    | '/staff/examination-dean/paper-distribution'
+    | '/staff/examination-dean/practical-exams'
+    | '/staff/examination-dean/punishment-history'
+    | '/staff/examination-dean/question-paper-approval'
+    | '/staff/examination-dean/question-paper-upload'
+    | '/staff/examination-dean/question-papers'
+    | '/staff/examination-dean/rank-list'
+    | '/staff/examination-dean/recounting'
+    | '/staff/examination-dean/reports'
+    | '/staff/examination-dean/result-processing'
+    | '/staff/examination-dean/result-publication'
+    | '/staff/examination-dean/result-reports'
+    | '/staff/examination-dean/results'
+    | '/staff/examination-dean/revaluation'
+    | '/staff/examination-dean/revaluation-requests'
+    | '/staff/examination-dean/revaluation-status'
+    | '/staff/examination-dean/schedule'
+    | '/staff/examination-dean/semester-exams'
+    | '/staff/examination-dean/settings'
+    | '/staff/examination-dean/substitution-history'
+    | '/staff/examination-dean/supplementary-exams'
+    | '/staff/examination-dean/timetable'
+    | '/staff/examination-dean/timetable-generation'
+    | '/staff/examination-dean/transcripts'
+    | '/staff/examination-dean/updated-results'
+    | '/staff/examination-dean/valuation-status'
+    | '/staff/finance-dean/accounts'
+    | '/staff/finance-dean/allowances-deductions'
+    | '/staff/finance-dean/annual-budget'
+    | '/staff/finance-dean/assign-substitute'
+    | '/staff/finance-dean/audit'
+    | '/staff/finance-dean/audit-compliance'
+    | '/staff/finance-dean/audit-history'
+    | '/staff/finance-dean/audit-reports'
+    | '/staff/finance-dean/audits'
+    | '/staff/finance-dean/budget'
+    | '/staff/finance-dean/budget-allocation'
+    | '/staff/finance-dean/budget-reports'
+    | '/staff/finance-dean/budget-utilization'
+    | '/staff/finance-dean/daily-expenses'
+    | '/staff/finance-dean/department-budgets'
+    | '/staff/finance-dean/dept-budgets'
+    | '/staff/finance-dean/dept-expenses'
+    | '/staff/finance-dean/expenses'
+    | '/staff/finance-dean/external-audit'
+    | '/staff/finance-dean/faculty-payroll'
+    | '/staff/finance-dean/faculty-timetables'
+    | '/staff/finance-dean/fee-collection'
+    | '/staff/finance-dean/fee-collections'
+    | '/staff/finance-dean/fee-reports'
+    | '/staff/finance-dean/fees'
+    | '/staff/finance-dean/financial-reports'
+    | '/staff/finance-dean/grants'
+    | '/staff/finance-dean/internal-audit'
+    | '/staff/finance-dean/invoice-management'
+    | '/staff/finance-dean/my-classes'
+    | '/staff/finance-dean/my-timetable'
+    | '/staff/finance-dean/notifications'
+    | '/staff/finance-dean/payroll'
+    | '/staff/finance-dean/payroll-reports'
+    | '/staff/finance-dean/pending-fees'
+    | '/staff/finance-dean/purchase-orders'
+    | '/staff/finance-dean/purchase-payments'
+    | '/staff/finance-dean/purchase-requests'
+    | '/staff/finance-dean/purchases'
+    | '/staff/finance-dean/refund-management'
+    | '/staff/finance-dean/reports'
+    | '/staff/finance-dean/salary-history'
+    | '/staff/finance-dean/scholarships-concessions'
+    | '/staff/finance-dean/settings'
+    | '/staff/finance-dean/staff-payroll'
+    | '/staff/finance-dean/substitution-history'
+    | '/staff/finance-dean/timetable'
+    | '/staff/finance-dean/vendor-management'
+    | '/staff/finance-dean/vendor-payments'
+    | '/staff/ima/amc-warranty'
+    | '/staff/ima/approved-purchases'
+    | '/staff/ima/asset-audit'
+    | '/staff/ima/asset-disposal'
+    | '/staff/ima/asset-register'
+    | '/staff/ima/asset-transfer'
+    | '/staff/ima/assign-substitute'
+    | '/staff/ima/campus-projects'
+    | '/staff/ima/compliance'
+    | '/staff/ima/department-assets'
+    | '/staff/ima/equipment-allocation'
+    | '/staff/ima/equipment-history'
+    | '/staff/ima/equipment-inventory'
+    | '/staff/ima/equipment-reports'
+    | '/staff/ima/equipment-requests'
+    | '/staff/ima/faculty-timetables'
+    | '/staff/ima/guest-lectures'
+    | '/staff/ima/industrial-visits'
+    | '/staff/ima/infrastructure'
+    | '/staff/ima/internships'
+    | '/staff/ima/inventory-reports'
+    | '/staff/ima/lab-booking'
+    | '/staff/ima/lab-details'
+    | '/staff/ima/lab-timetable'
+    | '/staff/ima/laboratories'
+    | '/staff/ima/laboratory-reports'
+    | '/staff/ima/maintenance-reports'
+    | '/staff/ima/maintenance-requests'
+    | '/staff/ima/maintenance-schedule'
+    | '/staff/ima/mou'
+    | '/staff/ima/my-classes'
+    | '/staff/ima/my-timetable'
+    | '/staff/ima/notifications'
+    | '/staff/ima/partners'
+    | '/staff/ima/policy-directives'
+    | '/staff/ima/purchase-orders'
+    | '/staff/ima/purchase-reports'
+    | '/staff/ima/purchase-requests'
+    | '/staff/ima/purchase-vendors'
+    | '/staff/ima/reports'
+    | '/staff/ima/settings'
+    | '/staff/ima/substitution-history'
+    | '/staff/ima/timetable'
+    | '/staff/ima/vendors'
+    | '/staff/ima/workshops'
+    | '/staff/iqac/academic-audit'
+    | '/staff/iqac/alumni-feedback'
+    | '/staff/iqac/aqar'
+    | '/staff/iqac/aqar-reports'
+    | '/staff/iqac/assign-substitute'
+    | '/staff/iqac/atr'
+    | '/staff/iqac/audit'
+    | '/staff/iqac/audit-reports'
+    | '/staff/iqac/benchmarking'
+    | '/staff/iqac/best-practices'
+    | '/staff/iqac/compliance-tracker'
+    | '/staff/iqac/criteria'
+    | '/staff/iqac/criteria-docs'
+    | '/staff/iqac/dept-quality-metrics'
+    | '/staff/iqac/document-repo'
+    | '/staff/iqac/documents'
+    | '/staff/iqac/employer-feedback'
+    | '/staff/iqac/events'
+    | '/staff/iqac/evidence-uploads'
+    | '/staff/iqac/faculty-feedback'
+    | '/staff/iqac/faculty-timetables'
+    | '/staff/iqac/feedback'
+    | '/staff/iqac/feedback-analytics'
+    | '/staff/iqac/feedback-reports'
+    | '/staff/iqac/internal-quality-audit'
+    | '/staff/iqac/kpi-dashboard'
+    | '/staff/iqac/kpi-reports'
+    | '/staff/iqac/meetings'
+    | '/staff/iqac/metrics'
+    | '/staff/iqac/my-classes'
+    | '/staff/iqac/my-timetable'
+    | '/staff/iqac/naac'
+    | '/staff/iqac/naac-reports'
+    | '/staff/iqac/nba'
+    | '/staff/iqac/notifications'
+    | '/staff/iqac/performance-analysis'
+    | '/staff/iqac/quality-audits'
+    | '/staff/iqac/quality-improvement'
+    | '/staff/iqac/quality-metrics'
+    | '/staff/iqac/reports'
+    | '/staff/iqac/settings'
+    | '/staff/iqac/ssr'
+    | '/staff/iqac/student-feedback'
+    | '/staff/iqac/substitution-history'
+    | '/staff/iqac/timetable'
+    | '/staff/iqac/workshops'
+    | '/staff/placement-dean/aptitude-training'
+    | '/staff/placement-dean/assign-substitute'
+    | '/staff/placement-dean/coding-training'
+    | '/staff/placement-dean/companies'
+    | '/staff/placement-dean/company-hiring'
+    | '/staff/placement-dean/company-profiles'
+    | '/staff/placement-dean/company-reports'
+    | '/staff/placement-dean/company-visits'
+    | '/staff/placement-dean/completed-drives'
+    | '/staff/placement-dean/dept-placements'
+    | '/staff/placement-dean/drives'
+    | '/staff/placement-dean/eligible-students'
+    | '/staff/placement-dean/faculty-timetables'
+    | '/staff/placement-dean/internship-opportunities'
+    | '/staff/placement-dean/internship-reports'
+    | '/staff/placement-dean/internship-reports-list'
+    | '/staff/placement-dean/internship-tracking'
+    | '/staff/placement-dean/internships'
+    | '/staff/placement-dean/mock-interviews'
+    | '/staff/placement-dean/mous'
+    | '/staff/placement-dean/my-classes'
+    | '/staff/placement-dean/my-timetable'
+    | '/staff/placement-dean/notifications'
+    | '/staff/placement-dean/off-campus-drives'
+    | '/staff/placement-dean/offer-letters'
+    | '/staff/placement-dean/offers'
+    | '/staff/placement-dean/ongoing-drives'
+    | '/staff/placement-dean/package-analysis'
+    | '/staff/placement-dean/package-analytics'
+    | '/staff/placement-dean/packages'
+    | '/staff/placement-dean/placed-students'
+    | '/staff/placement-dean/placement-reports'
+    | '/staff/placement-dean/placement-statistics'
+    | '/staff/placement-dean/recruitment-partners'
+    | '/staff/placement-dean/registered-students'
+    | '/staff/placement-dean/reports'
+    | '/staff/placement-dean/resume-reviews'
+    | '/staff/placement-dean/selected-students'
+    | '/staff/placement-dean/settings'
+    | '/staff/placement-dean/shortlisted-students'
+    | '/staff/placement-dean/soft-skills'
+    | '/staff/placement-dean/student-reports'
+    | '/staff/placement-dean/substitution-history'
+    | '/staff/placement-dean/timetable'
+    | '/staff/placement-dean/training'
+    | '/staff/placement-dean/training-reports'
+    | '/staff/placement-dean/upcoming-drives'
+    | '/staff/research-development/assign-substitute'
+    | '/staff/research-development/book-chapters'
+    | '/staff/research-development/completed-projects'
+    | '/staff/research-development/conference-publications'
+    | '/staff/research-development/conferences'
+    | '/staff/research-development/consultancy-projects'
+    | '/staff/research-development/copyrights'
+    | '/staff/research-development/faculty-timetables'
+    | '/staff/research-development/fdps'
+    | '/staff/research-development/funding-agencies'
+    | '/staff/research-development/govt-grants'
+    | '/staff/research-development/grant-reports'
+    | '/staff/research-development/grant-utilization'
+    | '/staff/research-development/grants'
+    | '/staff/research-development/incubation'
+    | '/staff/research-development/industry-grants'
+    | '/staff/research-development/innovation'
+    | '/staff/research-development/innovations'
+    | '/staff/research-development/journal-publications'
+    | '/staff/research-development/lab-booking'
+    | '/staff/research-development/lab-equipment'
+    | '/staff/research-development/lab-utilization'
+    | '/staff/research-development/my-classes'
+    | '/staff/research-development/my-timetable'
+    | '/staff/research-development/notifications'
+    | '/staff/research-development/ongoing-projects'
+    | '/staff/research-development/patent-reports'
+    | '/staff/research-development/patents'
+    | '/staff/research-development/phd-scholars'
+    | '/staff/research-development/projects'
+    | '/staff/research-development/publication-reports'
+    | '/staff/research-development/publications-repo'
+    | '/staff/research-development/research-guides'
+    | '/staff/research-development/research-labs'
+    | '/staff/research-development/research-reports'
+    | '/staff/research-development/scholar-progress'
+    | '/staff/research-development/scholar-reports'
+    | '/staff/research-development/scholars'
+    | '/staff/research-development/seminars'
+    | '/staff/research-development/settings'
+    | '/staff/research-development/sponsored-projects'
+    | '/staff/research-development/substitution-history'
+    | '/staff/research-development/thesis-repo'
+    | '/staff/research-development/timetable'
+    | '/staff/research-development/workshops'
+    | '/staff/student-dean/attendance'
+    | '/staff/student-dean/attendance-history'
+    | '/staff/student-dean/attendance-reports'
+    | '/staff/student-dean/certificates'
+    | '/staff/student-dean/clubs-events'
+    | '/staff/student-dean/counselling'
+    | '/staff/student-dean/discipline'
+    | '/staff/student-dean/grievances'
+    | '/staff/student-dean/hostel'
+    | '/staff/student-dean/mentoring'
+    | '/staff/student-dean/notifications'
+    | '/staff/student-dean/profiles'
+    | '/staff/student-dean/reports'
+    | '/staff/student-dean/scholarship-reports'
+    | '/staff/student-dean/scholarships'
+    | '/staff/student-dean/settings'
+    | '/staff/student-dean/student-activities'
+    | '/staff/student-dean/student-profiles'
+    | '/staff/student-dean/student-reports'
+    | '/staff/student-dean/student-requests'
+    | '/staff/student-dean/students'
+    | '/staff/student-dean/timetable'
+    | '/staff/student_dean/$'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/librarian'
+    | '/staff/academic-dean'
+    | '/staff/examination-dean'
+    | '/staff/finance-dean'
+    | '/staff/ima'
+    | '/staff/iqac'
+    | '/staff/placement-dean'
+    | '/staff/research-development'
+    | '/staff/student-dean'
     | '/dashboard/academics/attendance/mark'
     | '/super-admin/academics/attendance/mark'
   id:
@@ -2886,7 +7206,6 @@ export interface FileRouteTypes {
     | '/departments'
     | '/emergency'
     | '/employee-management'
-    | '/examcell'
     | '/examination'
     | '/examinations'
     | '/external-user'
@@ -2918,6 +7237,7 @@ export interface FileRouteTypes {
     | '/results'
     | '/settings'
     | '/signup'
+    | '/staff'
     | '/student'
     | '/students'
     | '/subject-management'
@@ -2936,36 +7256,29 @@ export interface FileRouteTypes {
     | '/dashboard/librarian'
     | '/dean/dashboard'
     | '/dean/subject-allocation'
+    | '/drive/apply'
     | '/exam/take'
     | '/examcell/analytics'
-    | '/examcell/bloomstick'
     | '/examcell/correction-analysis'
-    | '/examcell/correction-requests'
-    | '/examcell/corrections'
-    | '/examcell/course-enroll'
-    | '/examcell/dashboard'
     | '/examcell/hall-tickets'
-    | '/examcell/notifications'
-    | '/examcell/questions'
     | '/examcell/results'
-    | '/examcell/schedule'
-    | '/examcell/settings'
-    | '/examcell/supplementary'
-    | '/examcell/timetable'
-    | '/examcell/updates'
     | '/examination/dashboard'
+    | '/examinations/analytics'
+    | '/examinations/hall-tickets'
+    | '/examinations/internal-marks'
+    | '/examinations/notifications'
+    | '/examinations/reports'
+    | '/examinations/revaluation'
+    | '/examinations/schedule'
     | '/external-user/dashboard'
     | '/faculty/assessments'
     | '/faculty/assignments'
     | '/faculty/attendance'
     | '/faculty/dashboard'
-    | '/faculty/evaluation-and-marks'
-    | '/faculty/evaluations'
     | '/faculty/examinations'
     | '/faculty/leave'
     | '/faculty/lesson-plan'
     | '/faculty/lms'
-    | '/faculty/marks'
     | '/faculty/materials'
     | '/faculty/notifications'
     | '/faculty/payroll'
@@ -3051,6 +7364,15 @@ export interface FileRouteTypes {
     | '/placement/reports'
     | '/placement/settings'
     | '/placement/students'
+    | '/staff/academic-dean'
+    | '/staff/examination-dean'
+    | '/staff/finance-dean'
+    | '/staff/ima'
+    | '/staff/iqac'
+    | '/staff/placement-dean'
+    | '/staff/research-development'
+    | '/staff/student-dean'
+    | '/staff/student_dean'
     | '/student/attendance'
     | '/student/courses'
     | '/student/dashboard'
@@ -3090,8 +7412,8 @@ export interface FileRouteTypes {
     | '/transport/settings'
     | '/ai-analytics/'
     | '/dean/'
-    | '/examcell/'
     | '/examination/'
+    | '/examinations/'
     | '/external-user/'
     | '/faculty/'
     | '/finance/'
@@ -3102,6 +7424,7 @@ export interface FileRouteTypes {
     | '/library/'
     | '/parent/'
     | '/placement/'
+    | '/staff/'
     | '/student/'
     | '/super-admin/'
     | '/transport/'
@@ -3119,9 +7442,374 @@ export interface FileRouteTypes {
     | '/dashboard/librarian/return-books'
     | '/dashboard/librarian/settings'
     | '/placement/drives_/$driveId'
+    | '/staff/academic-dean/academic-audit'
+    | '/staff/academic-dean/academic-calendar'
+    | '/staff/academic-dean/academic-council'
+    | '/staff/academic-dean/academic-performance'
+    | '/staff/academic-dean/academic-reports'
+    | '/staff/academic-dean/accreditation'
+    | '/staff/academic-dean/approvals'
+    | '/staff/academic-dean/assign-substitute'
+    | '/staff/academic-dean/attendance-monitoring'
+    | '/staff/academic-dean/attendance-reports'
+    | '/staff/academic-dean/bos-meetings'
+    | '/staff/academic-dean/circulars'
+    | '/staff/academic-dean/class-monitoring'
+    | '/staff/academic-dean/classroom-allocation'
+    | '/staff/academic-dean/copo-mapping'
+    | '/staff/academic-dean/course-allocation'
+    | '/staff/academic-dean/course-management'
+    | '/staff/academic-dean/course-outcomes'
+    | '/staff/academic-dean/curriculum'
+    | '/staff/academic-dean/department-reports'
+    | '/staff/academic-dean/departments'
+    | '/staff/academic-dean/dept-workload'
+    | '/staff/academic-dean/faculty-management'
+    | '/staff/academic-dean/faculty-performance'
+    | '/staff/academic-dean/faculty-reports'
+    | '/staff/academic-dean/faculty-timetable'
+    | '/staff/academic-dean/faculty-timetables'
+    | '/staff/academic-dean/faculty-workload'
+    | '/staff/academic-dean/my-classes'
+    | '/staff/academic-dean/my-timetable'
+    | '/staff/academic-dean/notifications'
+    | '/staff/academic-dean/obe-management'
+    | '/staff/academic-dean/programs'
+    | '/staff/academic-dean/settings'
+    | '/staff/academic-dean/slow-learners'
+    | '/staff/academic-dean/student-reports'
+    | '/staff/academic-dean/subject-allocation'
+    | '/staff/academic-dean/substitute-faculty'
+    | '/staff/academic-dean/substitution-history'
+    | '/staff/academic-dean/teaching-load'
+    | '/staff/academic-dean/timetable'
+    | '/staff/academic-dean/timetable-history'
+    | '/staff/academic-dean/timetable-reports'
+    | '/staff/academic-dean/top-performers'
+    | '/staff/examination-dean/academic-calendar'
+    | '/staff/examination-dean/answer-script-allocation'
+    | '/staff/examination-dean/assign-substitute'
+    | '/staff/examination-dean/cgpa-calculation'
+    | '/staff/examination-dean/committee-reports'
+    | '/staff/examination-dean/completed-drives'
+    | '/staff/examination-dean/confidential-storage'
+    | '/staff/examination-dean/download-history'
+    | '/staff/examination-dean/evaluation'
+    | '/staff/examination-dean/exam-reports'
+    | '/staff/examination-dean/exam-schedule'
+    | '/staff/examination-dean/exam-schedules'
+    | '/staff/examination-dean/faculty-timetables'
+    | '/staff/examination-dean/generate-hall-tickets'
+    | '/staff/examination-dean/grade-moderation'
+    | '/staff/examination-dean/grade-sheets'
+    | '/staff/examination-dean/hall-allocation'
+    | '/staff/examination-dean/hall-ticket-reports'
+    | '/staff/examination-dean/hall-ticket-status'
+    | '/staff/examination-dean/hall-tickets'
+    | '/staff/examination-dean/internal-exams'
+    | '/staff/examination-dean/invigilator-allocation'
+    | '/staff/examination-dean/invigilator-reports'
+    | '/staff/examination-dean/invigilators'
+    | '/staff/examination-dean/malpractice-cases'
+    | '/staff/examination-dean/malpractice-reports'
+    | '/staff/examination-dean/marks-entry'
+    | '/staff/examination-dean/marks-verification'
+    | '/staff/examination-dean/mid-exams'
+    | '/staff/examination-dean/my-classes'
+    | '/staff/examination-dean/my-timetable'
+    | '/staff/examination-dean/notifications'
+    | '/staff/examination-dean/paper-distribution'
+    | '/staff/examination-dean/practical-exams'
+    | '/staff/examination-dean/punishment-history'
+    | '/staff/examination-dean/question-paper-approval'
+    | '/staff/examination-dean/question-paper-upload'
+    | '/staff/examination-dean/question-papers'
+    | '/staff/examination-dean/rank-list'
+    | '/staff/examination-dean/recounting'
+    | '/staff/examination-dean/reports'
+    | '/staff/examination-dean/result-processing'
+    | '/staff/examination-dean/result-publication'
+    | '/staff/examination-dean/result-reports'
+    | '/staff/examination-dean/results'
+    | '/staff/examination-dean/revaluation'
+    | '/staff/examination-dean/revaluation-requests'
+    | '/staff/examination-dean/revaluation-status'
+    | '/staff/examination-dean/schedule'
+    | '/staff/examination-dean/semester-exams'
+    | '/staff/examination-dean/settings'
+    | '/staff/examination-dean/substitution-history'
+    | '/staff/examination-dean/supplementary-exams'
+    | '/staff/examination-dean/timetable'
+    | '/staff/examination-dean/timetable-generation'
+    | '/staff/examination-dean/transcripts'
+    | '/staff/examination-dean/updated-results'
+    | '/staff/examination-dean/valuation-status'
+    | '/staff/finance-dean/accounts'
+    | '/staff/finance-dean/allowances-deductions'
+    | '/staff/finance-dean/annual-budget'
+    | '/staff/finance-dean/assign-substitute'
+    | '/staff/finance-dean/audit'
+    | '/staff/finance-dean/audit-compliance'
+    | '/staff/finance-dean/audit-history'
+    | '/staff/finance-dean/audit-reports'
+    | '/staff/finance-dean/audits'
+    | '/staff/finance-dean/budget'
+    | '/staff/finance-dean/budget-allocation'
+    | '/staff/finance-dean/budget-reports'
+    | '/staff/finance-dean/budget-utilization'
+    | '/staff/finance-dean/daily-expenses'
+    | '/staff/finance-dean/department-budgets'
+    | '/staff/finance-dean/dept-budgets'
+    | '/staff/finance-dean/dept-expenses'
+    | '/staff/finance-dean/expenses'
+    | '/staff/finance-dean/external-audit'
+    | '/staff/finance-dean/faculty-payroll'
+    | '/staff/finance-dean/faculty-timetables'
+    | '/staff/finance-dean/fee-collection'
+    | '/staff/finance-dean/fee-collections'
+    | '/staff/finance-dean/fee-reports'
+    | '/staff/finance-dean/fees'
+    | '/staff/finance-dean/financial-reports'
+    | '/staff/finance-dean/grants'
+    | '/staff/finance-dean/internal-audit'
+    | '/staff/finance-dean/invoice-management'
+    | '/staff/finance-dean/my-classes'
+    | '/staff/finance-dean/my-timetable'
+    | '/staff/finance-dean/notifications'
+    | '/staff/finance-dean/payroll'
+    | '/staff/finance-dean/payroll-reports'
+    | '/staff/finance-dean/pending-fees'
+    | '/staff/finance-dean/purchase-orders'
+    | '/staff/finance-dean/purchase-payments'
+    | '/staff/finance-dean/purchase-requests'
+    | '/staff/finance-dean/purchases'
+    | '/staff/finance-dean/refund-management'
+    | '/staff/finance-dean/reports'
+    | '/staff/finance-dean/salary-history'
+    | '/staff/finance-dean/scholarships-concessions'
+    | '/staff/finance-dean/settings'
+    | '/staff/finance-dean/staff-payroll'
+    | '/staff/finance-dean/substitution-history'
+    | '/staff/finance-dean/timetable'
+    | '/staff/finance-dean/vendor-management'
+    | '/staff/finance-dean/vendor-payments'
+    | '/staff/ima/amc-warranty'
+    | '/staff/ima/approved-purchases'
+    | '/staff/ima/asset-audit'
+    | '/staff/ima/asset-disposal'
+    | '/staff/ima/asset-register'
+    | '/staff/ima/asset-transfer'
+    | '/staff/ima/assign-substitute'
+    | '/staff/ima/campus-projects'
+    | '/staff/ima/compliance'
+    | '/staff/ima/department-assets'
+    | '/staff/ima/equipment-allocation'
+    | '/staff/ima/equipment-history'
+    | '/staff/ima/equipment-inventory'
+    | '/staff/ima/equipment-reports'
+    | '/staff/ima/equipment-requests'
+    | '/staff/ima/faculty-timetables'
+    | '/staff/ima/guest-lectures'
+    | '/staff/ima/industrial-visits'
+    | '/staff/ima/infrastructure'
+    | '/staff/ima/internships'
+    | '/staff/ima/inventory-reports'
+    | '/staff/ima/lab-booking'
+    | '/staff/ima/lab-details'
+    | '/staff/ima/lab-timetable'
+    | '/staff/ima/laboratories'
+    | '/staff/ima/laboratory-reports'
+    | '/staff/ima/maintenance-reports'
+    | '/staff/ima/maintenance-requests'
+    | '/staff/ima/maintenance-schedule'
+    | '/staff/ima/mou'
+    | '/staff/ima/my-classes'
+    | '/staff/ima/my-timetable'
+    | '/staff/ima/notifications'
+    | '/staff/ima/partners'
+    | '/staff/ima/policy-directives'
+    | '/staff/ima/purchase-orders'
+    | '/staff/ima/purchase-reports'
+    | '/staff/ima/purchase-requests'
+    | '/staff/ima/purchase-vendors'
+    | '/staff/ima/reports'
+    | '/staff/ima/settings'
+    | '/staff/ima/substitution-history'
+    | '/staff/ima/timetable'
+    | '/staff/ima/vendors'
+    | '/staff/ima/workshops'
+    | '/staff/iqac/academic-audit'
+    | '/staff/iqac/alumni-feedback'
+    | '/staff/iqac/aqar'
+    | '/staff/iqac/aqar-reports'
+    | '/staff/iqac/assign-substitute'
+    | '/staff/iqac/atr'
+    | '/staff/iqac/audit'
+    | '/staff/iqac/audit-reports'
+    | '/staff/iqac/benchmarking'
+    | '/staff/iqac/best-practices'
+    | '/staff/iqac/compliance-tracker'
+    | '/staff/iqac/criteria'
+    | '/staff/iqac/criteria-docs'
+    | '/staff/iqac/dept-quality-metrics'
+    | '/staff/iqac/document-repo'
+    | '/staff/iqac/documents'
+    | '/staff/iqac/employer-feedback'
+    | '/staff/iqac/events'
+    | '/staff/iqac/evidence-uploads'
+    | '/staff/iqac/faculty-feedback'
+    | '/staff/iqac/faculty-timetables'
+    | '/staff/iqac/feedback'
+    | '/staff/iqac/feedback-analytics'
+    | '/staff/iqac/feedback-reports'
+    | '/staff/iqac/internal-quality-audit'
+    | '/staff/iqac/kpi-dashboard'
+    | '/staff/iqac/kpi-reports'
+    | '/staff/iqac/meetings'
+    | '/staff/iqac/metrics'
+    | '/staff/iqac/my-classes'
+    | '/staff/iqac/my-timetable'
+    | '/staff/iqac/naac'
+    | '/staff/iqac/naac-reports'
+    | '/staff/iqac/nba'
+    | '/staff/iqac/notifications'
+    | '/staff/iqac/performance-analysis'
+    | '/staff/iqac/quality-audits'
+    | '/staff/iqac/quality-improvement'
+    | '/staff/iqac/quality-metrics'
+    | '/staff/iqac/reports'
+    | '/staff/iqac/settings'
+    | '/staff/iqac/ssr'
+    | '/staff/iqac/student-feedback'
+    | '/staff/iqac/substitution-history'
+    | '/staff/iqac/timetable'
+    | '/staff/iqac/workshops'
+    | '/staff/placement-dean/aptitude-training'
+    | '/staff/placement-dean/assign-substitute'
+    | '/staff/placement-dean/coding-training'
+    | '/staff/placement-dean/companies'
+    | '/staff/placement-dean/company-hiring'
+    | '/staff/placement-dean/company-profiles'
+    | '/staff/placement-dean/company-reports'
+    | '/staff/placement-dean/company-visits'
+    | '/staff/placement-dean/completed-drives'
+    | '/staff/placement-dean/dept-placements'
+    | '/staff/placement-dean/drives'
+    | '/staff/placement-dean/eligible-students'
+    | '/staff/placement-dean/faculty-timetables'
+    | '/staff/placement-dean/internship-opportunities'
+    | '/staff/placement-dean/internship-reports'
+    | '/staff/placement-dean/internship-reports-list'
+    | '/staff/placement-dean/internship-tracking'
+    | '/staff/placement-dean/internships'
+    | '/staff/placement-dean/mock-interviews'
+    | '/staff/placement-dean/mous'
+    | '/staff/placement-dean/my-classes'
+    | '/staff/placement-dean/my-timetable'
+    | '/staff/placement-dean/notifications'
+    | '/staff/placement-dean/off-campus-drives'
+    | '/staff/placement-dean/offer-letters'
+    | '/staff/placement-dean/offers'
+    | '/staff/placement-dean/ongoing-drives'
+    | '/staff/placement-dean/package-analysis'
+    | '/staff/placement-dean/package-analytics'
+    | '/staff/placement-dean/packages'
+    | '/staff/placement-dean/placed-students'
+    | '/staff/placement-dean/placement-reports'
+    | '/staff/placement-dean/placement-statistics'
+    | '/staff/placement-dean/recruitment-partners'
+    | '/staff/placement-dean/registered-students'
+    | '/staff/placement-dean/reports'
+    | '/staff/placement-dean/resume-reviews'
+    | '/staff/placement-dean/selected-students'
+    | '/staff/placement-dean/settings'
+    | '/staff/placement-dean/shortlisted-students'
+    | '/staff/placement-dean/soft-skills'
+    | '/staff/placement-dean/student-reports'
+    | '/staff/placement-dean/substitution-history'
+    | '/staff/placement-dean/timetable'
+    | '/staff/placement-dean/training'
+    | '/staff/placement-dean/training-reports'
+    | '/staff/placement-dean/upcoming-drives'
+    | '/staff/research-development/assign-substitute'
+    | '/staff/research-development/book-chapters'
+    | '/staff/research-development/completed-projects'
+    | '/staff/research-development/conference-publications'
+    | '/staff/research-development/conferences'
+    | '/staff/research-development/consultancy-projects'
+    | '/staff/research-development/copyrights'
+    | '/staff/research-development/faculty-timetables'
+    | '/staff/research-development/fdps'
+    | '/staff/research-development/funding-agencies'
+    | '/staff/research-development/govt-grants'
+    | '/staff/research-development/grant-reports'
+    | '/staff/research-development/grant-utilization'
+    | '/staff/research-development/grants'
+    | '/staff/research-development/incubation'
+    | '/staff/research-development/industry-grants'
+    | '/staff/research-development/innovation'
+    | '/staff/research-development/innovations'
+    | '/staff/research-development/journal-publications'
+    | '/staff/research-development/lab-booking'
+    | '/staff/research-development/lab-equipment'
+    | '/staff/research-development/lab-utilization'
+    | '/staff/research-development/my-classes'
+    | '/staff/research-development/my-timetable'
+    | '/staff/research-development/notifications'
+    | '/staff/research-development/ongoing-projects'
+    | '/staff/research-development/patent-reports'
+    | '/staff/research-development/patents'
+    | '/staff/research-development/phd-scholars'
+    | '/staff/research-development/projects'
+    | '/staff/research-development/publication-reports'
+    | '/staff/research-development/publications-repo'
+    | '/staff/research-development/research-guides'
+    | '/staff/research-development/research-labs'
+    | '/staff/research-development/research-reports'
+    | '/staff/research-development/scholar-progress'
+    | '/staff/research-development/scholar-reports'
+    | '/staff/research-development/scholars'
+    | '/staff/research-development/seminars'
+    | '/staff/research-development/settings'
+    | '/staff/research-development/sponsored-projects'
+    | '/staff/research-development/substitution-history'
+    | '/staff/research-development/thesis-repo'
+    | '/staff/research-development/timetable'
+    | '/staff/research-development/workshops'
+    | '/staff/student-dean/attendance'
+    | '/staff/student-dean/attendance-history'
+    | '/staff/student-dean/attendance-reports'
+    | '/staff/student-dean/certificates'
+    | '/staff/student-dean/clubs-events'
+    | '/staff/student-dean/counselling'
+    | '/staff/student-dean/discipline'
+    | '/staff/student-dean/grievances'
+    | '/staff/student-dean/hostel'
+    | '/staff/student-dean/mentoring'
+    | '/staff/student-dean/notifications'
+    | '/staff/student-dean/profiles'
+    | '/staff/student-dean/reports'
+    | '/staff/student-dean/scholarship-reports'
+    | '/staff/student-dean/scholarships'
+    | '/staff/student-dean/settings'
+    | '/staff/student-dean/student-activities'
+    | '/staff/student-dean/student-profiles'
+    | '/staff/student-dean/student-reports'
+    | '/staff/student-dean/student-requests'
+    | '/staff/student-dean/students'
+    | '/staff/student-dean/timetable'
+    | '/staff/student_dean/$'
     | '/super-admin/academics/faculty-status'
     | '/super-admin/academics/syllabus-tracker'
     | '/dashboard/librarian/'
+    | '/staff/academic-dean/'
+    | '/staff/examination-dean/'
+    | '/staff/finance-dean/'
+    | '/staff/ima/'
+    | '/staff/iqac/'
+    | '/staff/placement-dean/'
+    | '/staff/research-development/'
+    | '/staff/student-dean/'
     | '/dashboard/academics/attendance/mark'
     | '/super-admin/academics/attendance/mark'
   fileRoutesById: FileRoutesById
@@ -3148,9 +7836,8 @@ export interface RootRouteChildren {
   DepartmentsRoute: typeof DepartmentsRoute
   EmergencyRoute: typeof EmergencyRoute
   EmployeeManagementRoute: typeof EmployeeManagementRoute
-  ExamcellRoute: typeof ExamcellRouteWithChildren
   ExaminationRoute: typeof ExaminationRouteWithChildren
-  ExaminationsRoute: typeof ExaminationsRoute
+  ExaminationsRoute: typeof ExaminationsRouteWithChildren
   ExternalUserRoute: typeof ExternalUserRouteWithChildren
   FacultyRoute: typeof FacultyRouteWithChildren
   FacultyManagementRoute: typeof FacultyManagementRoute
@@ -3180,6 +7867,7 @@ export interface RootRouteChildren {
   ResultsRoute: typeof ResultsRoute
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
+  StaffRoute: typeof StaffRouteWithChildren
   StudentRoute: typeof StudentRouteWithChildren
   StudentsRoute: typeof StudentsRoute
   SubjectManagementRoute: typeof SubjectManagementRoute
@@ -3187,7 +7875,12 @@ export interface RootRouteChildren {
   TimetableRoute: typeof TimetableRoute
   TransportRoute: typeof TransportRouteWithChildren
   VerifyEmailRoute: typeof VerifyEmailRoute
+  DriveApplyRoute: typeof DriveApplyRoute
   ExamTakeRoute: typeof ExamTakeRoute
+  ExamcellAnalyticsRoute: typeof ExamcellAnalyticsRoute
+  ExamcellCorrectionAnalysisRoute: typeof ExamcellCorrectionAnalysisRoute
+  ExamcellHallTicketsRoute: typeof ExamcellHallTicketsRoute
+  ExamcellResultsRoute: typeof ExamcellResultsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -3337,13 +8030,6 @@ declare module '@tanstack/react-router' {
       path: '/employee-management'
       fullPath: '/employee-management'
       preLoaderRoute: typeof EmployeeManagementRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/examcell': {
-      id: '/examcell'
-      path: '/examcell'
-      fullPath: '/examcell'
-      preLoaderRoute: typeof ExamcellRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/examination': {
@@ -3563,6 +8249,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/staff': {
+      id: '/staff'
+      path: '/staff'
+      fullPath: '/staff'
+      preLoaderRoute: typeof StaffRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/student': {
       id: '/student'
       path: '/student'
@@ -3703,6 +8396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeanSubjectAllocationRouteImport
       parentRoute: typeof DeanRoute
     }
+    '/drive/apply': {
+      id: '/drive/apply'
+      path: '/drive/apply'
+      fullPath: '/drive/apply'
+      preLoaderRoute: typeof DriveApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/exam/take': {
       id: '/exam/take'
       path: '/exam/take'
@@ -3710,124 +8410,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExamTakeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/examcell/': {
-      id: '/examcell/'
-      path: '/'
-      fullPath: '/examcell/'
-      preLoaderRoute: typeof ExamcellIndexRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
     '/examcell/analytics': {
       id: '/examcell/analytics'
-      path: '/analytics'
+      path: '/examcell/analytics'
       fullPath: '/examcell/analytics'
       preLoaderRoute: typeof ExamcellAnalyticsRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/bloomstick': {
-      id: '/examcell/bloomstick'
-      path: '/bloomstick'
-      fullPath: '/examcell/bloomstick'
-      preLoaderRoute: typeof ExamcellBloomstickRouteImport
-      parentRoute: typeof ExamcellRoute
+      parentRoute: typeof rootRouteImport
     }
     '/examcell/correction-analysis': {
       id: '/examcell/correction-analysis'
-      path: '/correction-analysis'
+      path: '/examcell/correction-analysis'
       fullPath: '/examcell/correction-analysis'
       preLoaderRoute: typeof ExamcellCorrectionAnalysisRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/correction-requests': {
-      id: '/examcell/correction-requests'
-      path: '/correction-requests'
-      fullPath: '/examcell/correction-requests'
-      preLoaderRoute: typeof ExamcellCorrectionRequestsRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/corrections': {
-      id: '/examcell/corrections'
-      path: '/corrections'
-      fullPath: '/examcell/corrections'
-      preLoaderRoute: typeof ExamcellCorrectionsRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/course-enroll': {
-      id: '/examcell/course-enroll'
-      path: '/course-enroll'
-      fullPath: '/examcell/course-enroll'
-      preLoaderRoute: typeof ExamcellCourseEnrollRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/dashboard': {
-      id: '/examcell/dashboard'
-      path: '/dashboard'
-      fullPath: '/examcell/dashboard'
-      preLoaderRoute: typeof ExamcellDashboardRouteImport
-      parentRoute: typeof ExamcellRoute
+      parentRoute: typeof rootRouteImport
     }
     '/examcell/hall-tickets': {
       id: '/examcell/hall-tickets'
-      path: '/hall-tickets'
+      path: '/examcell/hall-tickets'
       fullPath: '/examcell/hall-tickets'
       preLoaderRoute: typeof ExamcellHallTicketsRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/notifications': {
-      id: '/examcell/notifications'
-      path: '/notifications'
-      fullPath: '/examcell/notifications'
-      preLoaderRoute: typeof ExamcellNotificationsRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/questions': {
-      id: '/examcell/questions'
-      path: '/questions'
-      fullPath: '/examcell/questions'
-      preLoaderRoute: typeof ExamcellQuestionsRouteImport
-      parentRoute: typeof ExamcellRoute
+      parentRoute: typeof rootRouteImport
     }
     '/examcell/results': {
       id: '/examcell/results'
-      path: '/results'
+      path: '/examcell/results'
       fullPath: '/examcell/results'
       preLoaderRoute: typeof ExamcellResultsRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/schedule': {
-      id: '/examcell/schedule'
-      path: '/schedule'
-      fullPath: '/examcell/schedule'
-      preLoaderRoute: typeof ExamcellScheduleRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/settings': {
-      id: '/examcell/settings'
-      path: '/settings'
-      fullPath: '/examcell/settings'
-      preLoaderRoute: typeof ExamcellSettingsRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/supplementary': {
-      id: '/examcell/supplementary'
-      path: '/supplementary'
-      fullPath: '/examcell/supplementary'
-      preLoaderRoute: typeof ExamcellSupplementaryRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/timetable': {
-      id: '/examcell/timetable'
-      path: '/timetable'
-      fullPath: '/examcell/timetable'
-      preLoaderRoute: typeof ExamcellTimetableRouteImport
-      parentRoute: typeof ExamcellRoute
-    }
-    '/examcell/updates': {
-      id: '/examcell/updates'
-      path: '/updates'
-      fullPath: '/examcell/updates'
-      preLoaderRoute: typeof ExamcellUpdatesRouteImport
-      parentRoute: typeof ExamcellRoute
+      parentRoute: typeof rootRouteImport
     }
     '/examination/': {
       id: '/examination/'
@@ -3842,6 +8451,62 @@ declare module '@tanstack/react-router' {
       fullPath: '/examination/dashboard'
       preLoaderRoute: typeof ExaminationDashboardRouteImport
       parentRoute: typeof ExaminationRoute
+    }
+    '/examinations/': {
+      id: '/examinations/'
+      path: '/'
+      fullPath: '/examinations/'
+      preLoaderRoute: typeof ExaminationsIndexRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
+    '/examinations/analytics': {
+      id: '/examinations/analytics'
+      path: '/analytics'
+      fullPath: '/examinations/analytics'
+      preLoaderRoute: typeof ExaminationsAnalyticsRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
+    '/examinations/hall-tickets': {
+      id: '/examinations/hall-tickets'
+      path: '/hall-tickets'
+      fullPath: '/examinations/hall-tickets'
+      preLoaderRoute: typeof ExaminationsHallTicketsRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
+    '/examinations/internal-marks': {
+      id: '/examinations/internal-marks'
+      path: '/internal-marks'
+      fullPath: '/examinations/internal-marks'
+      preLoaderRoute: typeof ExaminationsInternalMarksRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
+    '/examinations/notifications': {
+      id: '/examinations/notifications'
+      path: '/notifications'
+      fullPath: '/examinations/notifications'
+      preLoaderRoute: typeof ExaminationsNotificationsRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
+    '/examinations/reports': {
+      id: '/examinations/reports'
+      path: '/reports'
+      fullPath: '/examinations/reports'
+      preLoaderRoute: typeof ExaminationsReportsRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
+    '/examinations/revaluation': {
+      id: '/examinations/revaluation'
+      path: '/revaluation'
+      fullPath: '/examinations/revaluation'
+      preLoaderRoute: typeof ExaminationsRevaluationRouteImport
+      parentRoute: typeof ExaminationsRoute
+    }
+    '/examinations/schedule': {
+      id: '/examinations/schedule'
+      path: '/schedule'
+      fullPath: '/examinations/schedule'
+      preLoaderRoute: typeof ExaminationsScheduleRouteImport
+      parentRoute: typeof ExaminationsRoute
     }
     '/external-user/': {
       id: '/external-user/'
@@ -3892,20 +8557,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacultyDashboardRouteImport
       parentRoute: typeof FacultyRoute
     }
-    '/faculty/evaluation-and-marks': {
-      id: '/faculty/evaluation-and-marks'
-      path: '/evaluation-and-marks'
-      fullPath: '/faculty/evaluation-and-marks'
-      preLoaderRoute: typeof FacultyEvaluationAndMarksRouteImport
-      parentRoute: typeof FacultyRoute
-    }
-    '/faculty/evaluations': {
-      id: '/faculty/evaluations'
-      path: '/evaluations'
-      fullPath: '/faculty/evaluations'
-      preLoaderRoute: typeof FacultyEvaluationsRouteImport
-      parentRoute: typeof FacultyRoute
-    }
     '/faculty/examinations': {
       id: '/faculty/examinations'
       path: '/examinations'
@@ -3932,13 +8583,6 @@ declare module '@tanstack/react-router' {
       path: '/lms'
       fullPath: '/faculty/lms'
       preLoaderRoute: typeof FacultyLmsRouteImport
-      parentRoute: typeof FacultyRoute
-    }
-    '/faculty/marks': {
-      id: '/faculty/marks'
-      path: '/marks'
-      fullPath: '/faculty/marks'
-      preLoaderRoute: typeof FacultyMarksRouteImport
       parentRoute: typeof FacultyRoute
     }
     '/faculty/materials': {
@@ -4592,6 +9236,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlacementStudentsRouteImport
       parentRoute: typeof PlacementRoute
     }
+    '/staff/': {
+      id: '/staff/'
+      path: '/'
+      fullPath: '/staff/'
+      preLoaderRoute: typeof StaffIndexRouteImport
+      parentRoute: typeof StaffRoute
+    }
+    '/staff/academic-dean': {
+      id: '/staff/academic-dean'
+      path: '/academic-dean'
+      fullPath: '/staff/academic-dean'
+      preLoaderRoute: typeof StaffAcademicDeanRouteImport
+      parentRoute: typeof StaffRoute
+    }
+    '/staff/examination-dean': {
+      id: '/staff/examination-dean'
+      path: '/examination-dean'
+      fullPath: '/staff/examination-dean'
+      preLoaderRoute: typeof StaffExaminationDeanRouteImport
+      parentRoute: typeof StaffRoute
+    }
+    '/staff/finance-dean': {
+      id: '/staff/finance-dean'
+      path: '/finance-dean'
+      fullPath: '/staff/finance-dean'
+      preLoaderRoute: typeof StaffFinanceDeanRouteImport
+      parentRoute: typeof StaffRoute
+    }
+    '/staff/ima': {
+      id: '/staff/ima'
+      path: '/ima'
+      fullPath: '/staff/ima'
+      preLoaderRoute: typeof StaffImaRouteImport
+      parentRoute: typeof StaffRoute
+    }
+    '/staff/iqac': {
+      id: '/staff/iqac'
+      path: '/iqac'
+      fullPath: '/staff/iqac'
+      preLoaderRoute: typeof StaffIqacRouteImport
+      parentRoute: typeof StaffRoute
+    }
+    '/staff/placement-dean': {
+      id: '/staff/placement-dean'
+      path: '/placement-dean'
+      fullPath: '/staff/placement-dean'
+      preLoaderRoute: typeof StaffPlacementDeanRouteImport
+      parentRoute: typeof StaffRoute
+    }
+    '/staff/research-development': {
+      id: '/staff/research-development'
+      path: '/research-development'
+      fullPath: '/staff/research-development'
+      preLoaderRoute: typeof StaffResearchDevelopmentRouteImport
+      parentRoute: typeof StaffRoute
+    }
+    '/staff/student-dean': {
+      id: '/staff/student-dean'
+      path: '/student-dean'
+      fullPath: '/staff/student-dean'
+      preLoaderRoute: typeof StaffStudentDeanRouteImport
+      parentRoute: typeof StaffRoute
+    }
+    '/staff/student_dean': {
+      id: '/staff/student_dean'
+      path: '/student_dean'
+      fullPath: '/staff/student_dean'
+      preLoaderRoute: typeof StaffStudent_deanRouteImport
+      parentRoute: typeof StaffRoute
+    }
     '/student/': {
       id: '/student/'
       path: '/'
@@ -4977,6 +9691,2561 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlacementDrivesDriveIdRouteImport
       parentRoute: typeof PlacementRoute
     }
+    '/staff/academic-dean/': {
+      id: '/staff/academic-dean/'
+      path: '/'
+      fullPath: '/staff/academic-dean/'
+      preLoaderRoute: typeof StaffAcademicDeanIndexRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/academic-audit': {
+      id: '/staff/academic-dean/academic-audit'
+      path: '/academic-audit'
+      fullPath: '/staff/academic-dean/academic-audit'
+      preLoaderRoute: typeof StaffAcademicDeanAcademicAuditRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/academic-calendar': {
+      id: '/staff/academic-dean/academic-calendar'
+      path: '/academic-calendar'
+      fullPath: '/staff/academic-dean/academic-calendar'
+      preLoaderRoute: typeof StaffAcademicDeanAcademicCalendarRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/academic-council': {
+      id: '/staff/academic-dean/academic-council'
+      path: '/academic-council'
+      fullPath: '/staff/academic-dean/academic-council'
+      preLoaderRoute: typeof StaffAcademicDeanAcademicCouncilRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/academic-performance': {
+      id: '/staff/academic-dean/academic-performance'
+      path: '/academic-performance'
+      fullPath: '/staff/academic-dean/academic-performance'
+      preLoaderRoute: typeof StaffAcademicDeanAcademicPerformanceRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/academic-reports': {
+      id: '/staff/academic-dean/academic-reports'
+      path: '/academic-reports'
+      fullPath: '/staff/academic-dean/academic-reports'
+      preLoaderRoute: typeof StaffAcademicDeanAcademicReportsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/accreditation': {
+      id: '/staff/academic-dean/accreditation'
+      path: '/accreditation'
+      fullPath: '/staff/academic-dean/accreditation'
+      preLoaderRoute: typeof StaffAcademicDeanAccreditationRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/approvals': {
+      id: '/staff/academic-dean/approvals'
+      path: '/approvals'
+      fullPath: '/staff/academic-dean/approvals'
+      preLoaderRoute: typeof StaffAcademicDeanApprovalsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/assign-substitute': {
+      id: '/staff/academic-dean/assign-substitute'
+      path: '/assign-substitute'
+      fullPath: '/staff/academic-dean/assign-substitute'
+      preLoaderRoute: typeof StaffAcademicDeanAssignSubstituteRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/attendance-monitoring': {
+      id: '/staff/academic-dean/attendance-monitoring'
+      path: '/attendance-monitoring'
+      fullPath: '/staff/academic-dean/attendance-monitoring'
+      preLoaderRoute: typeof StaffAcademicDeanAttendanceMonitoringRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/attendance-reports': {
+      id: '/staff/academic-dean/attendance-reports'
+      path: '/attendance-reports'
+      fullPath: '/staff/academic-dean/attendance-reports'
+      preLoaderRoute: typeof StaffAcademicDeanAttendanceReportsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/bos-meetings': {
+      id: '/staff/academic-dean/bos-meetings'
+      path: '/bos-meetings'
+      fullPath: '/staff/academic-dean/bos-meetings'
+      preLoaderRoute: typeof StaffAcademicDeanBosMeetingsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/circulars': {
+      id: '/staff/academic-dean/circulars'
+      path: '/circulars'
+      fullPath: '/staff/academic-dean/circulars'
+      preLoaderRoute: typeof StaffAcademicDeanCircularsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/class-monitoring': {
+      id: '/staff/academic-dean/class-monitoring'
+      path: '/class-monitoring'
+      fullPath: '/staff/academic-dean/class-monitoring'
+      preLoaderRoute: typeof StaffAcademicDeanClassMonitoringRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/classroom-allocation': {
+      id: '/staff/academic-dean/classroom-allocation'
+      path: '/classroom-allocation'
+      fullPath: '/staff/academic-dean/classroom-allocation'
+      preLoaderRoute: typeof StaffAcademicDeanClassroomAllocationRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/copo-mapping': {
+      id: '/staff/academic-dean/copo-mapping'
+      path: '/copo-mapping'
+      fullPath: '/staff/academic-dean/copo-mapping'
+      preLoaderRoute: typeof StaffAcademicDeanCopoMappingRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/course-allocation': {
+      id: '/staff/academic-dean/course-allocation'
+      path: '/course-allocation'
+      fullPath: '/staff/academic-dean/course-allocation'
+      preLoaderRoute: typeof StaffAcademicDeanCourseAllocationRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/course-management': {
+      id: '/staff/academic-dean/course-management'
+      path: '/course-management'
+      fullPath: '/staff/academic-dean/course-management'
+      preLoaderRoute: typeof StaffAcademicDeanCourseManagementRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/course-outcomes': {
+      id: '/staff/academic-dean/course-outcomes'
+      path: '/course-outcomes'
+      fullPath: '/staff/academic-dean/course-outcomes'
+      preLoaderRoute: typeof StaffAcademicDeanCourseOutcomesRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/curriculum': {
+      id: '/staff/academic-dean/curriculum'
+      path: '/curriculum'
+      fullPath: '/staff/academic-dean/curriculum'
+      preLoaderRoute: typeof StaffAcademicDeanCurriculumRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/department-reports': {
+      id: '/staff/academic-dean/department-reports'
+      path: '/department-reports'
+      fullPath: '/staff/academic-dean/department-reports'
+      preLoaderRoute: typeof StaffAcademicDeanDepartmentReportsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/departments': {
+      id: '/staff/academic-dean/departments'
+      path: '/departments'
+      fullPath: '/staff/academic-dean/departments'
+      preLoaderRoute: typeof StaffAcademicDeanDepartmentsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/dept-workload': {
+      id: '/staff/academic-dean/dept-workload'
+      path: '/dept-workload'
+      fullPath: '/staff/academic-dean/dept-workload'
+      preLoaderRoute: typeof StaffAcademicDeanDeptWorkloadRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/faculty-management': {
+      id: '/staff/academic-dean/faculty-management'
+      path: '/faculty-management'
+      fullPath: '/staff/academic-dean/faculty-management'
+      preLoaderRoute: typeof StaffAcademicDeanFacultyManagementRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/faculty-performance': {
+      id: '/staff/academic-dean/faculty-performance'
+      path: '/faculty-performance'
+      fullPath: '/staff/academic-dean/faculty-performance'
+      preLoaderRoute: typeof StaffAcademicDeanFacultyPerformanceRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/faculty-reports': {
+      id: '/staff/academic-dean/faculty-reports'
+      path: '/faculty-reports'
+      fullPath: '/staff/academic-dean/faculty-reports'
+      preLoaderRoute: typeof StaffAcademicDeanFacultyReportsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/faculty-timetable': {
+      id: '/staff/academic-dean/faculty-timetable'
+      path: '/faculty-timetable'
+      fullPath: '/staff/academic-dean/faculty-timetable'
+      preLoaderRoute: typeof StaffAcademicDeanFacultyTimetableRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/faculty-timetables': {
+      id: '/staff/academic-dean/faculty-timetables'
+      path: '/faculty-timetables'
+      fullPath: '/staff/academic-dean/faculty-timetables'
+      preLoaderRoute: typeof StaffAcademicDeanFacultyTimetablesRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/faculty-workload': {
+      id: '/staff/academic-dean/faculty-workload'
+      path: '/faculty-workload'
+      fullPath: '/staff/academic-dean/faculty-workload'
+      preLoaderRoute: typeof StaffAcademicDeanFacultyWorkloadRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/my-classes': {
+      id: '/staff/academic-dean/my-classes'
+      path: '/my-classes'
+      fullPath: '/staff/academic-dean/my-classes'
+      preLoaderRoute: typeof StaffAcademicDeanMyClassesRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/my-timetable': {
+      id: '/staff/academic-dean/my-timetable'
+      path: '/my-timetable'
+      fullPath: '/staff/academic-dean/my-timetable'
+      preLoaderRoute: typeof StaffAcademicDeanMyTimetableRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/notifications': {
+      id: '/staff/academic-dean/notifications'
+      path: '/notifications'
+      fullPath: '/staff/academic-dean/notifications'
+      preLoaderRoute: typeof StaffAcademicDeanNotificationsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/obe-management': {
+      id: '/staff/academic-dean/obe-management'
+      path: '/obe-management'
+      fullPath: '/staff/academic-dean/obe-management'
+      preLoaderRoute: typeof StaffAcademicDeanObeManagementRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/programs': {
+      id: '/staff/academic-dean/programs'
+      path: '/programs'
+      fullPath: '/staff/academic-dean/programs'
+      preLoaderRoute: typeof StaffAcademicDeanProgramsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/settings': {
+      id: '/staff/academic-dean/settings'
+      path: '/settings'
+      fullPath: '/staff/academic-dean/settings'
+      preLoaderRoute: typeof StaffAcademicDeanSettingsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/slow-learners': {
+      id: '/staff/academic-dean/slow-learners'
+      path: '/slow-learners'
+      fullPath: '/staff/academic-dean/slow-learners'
+      preLoaderRoute: typeof StaffAcademicDeanSlowLearnersRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/student-reports': {
+      id: '/staff/academic-dean/student-reports'
+      path: '/student-reports'
+      fullPath: '/staff/academic-dean/student-reports'
+      preLoaderRoute: typeof StaffAcademicDeanStudentReportsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/subject-allocation': {
+      id: '/staff/academic-dean/subject-allocation'
+      path: '/subject-allocation'
+      fullPath: '/staff/academic-dean/subject-allocation'
+      preLoaderRoute: typeof StaffAcademicDeanSubjectAllocationRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/substitute-faculty': {
+      id: '/staff/academic-dean/substitute-faculty'
+      path: '/substitute-faculty'
+      fullPath: '/staff/academic-dean/substitute-faculty'
+      preLoaderRoute: typeof StaffAcademicDeanSubstituteFacultyRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/substitution-history': {
+      id: '/staff/academic-dean/substitution-history'
+      path: '/substitution-history'
+      fullPath: '/staff/academic-dean/substitution-history'
+      preLoaderRoute: typeof StaffAcademicDeanSubstitutionHistoryRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/teaching-load': {
+      id: '/staff/academic-dean/teaching-load'
+      path: '/teaching-load'
+      fullPath: '/staff/academic-dean/teaching-load'
+      preLoaderRoute: typeof StaffAcademicDeanTeachingLoadRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/timetable': {
+      id: '/staff/academic-dean/timetable'
+      path: '/timetable'
+      fullPath: '/staff/academic-dean/timetable'
+      preLoaderRoute: typeof StaffAcademicDeanTimetableRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/timetable-history': {
+      id: '/staff/academic-dean/timetable-history'
+      path: '/timetable-history'
+      fullPath: '/staff/academic-dean/timetable-history'
+      preLoaderRoute: typeof StaffAcademicDeanTimetableHistoryRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/timetable-reports': {
+      id: '/staff/academic-dean/timetable-reports'
+      path: '/timetable-reports'
+      fullPath: '/staff/academic-dean/timetable-reports'
+      preLoaderRoute: typeof StaffAcademicDeanTimetableReportsRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/academic-dean/top-performers': {
+      id: '/staff/academic-dean/top-performers'
+      path: '/top-performers'
+      fullPath: '/staff/academic-dean/top-performers'
+      preLoaderRoute: typeof StaffAcademicDeanTopPerformersRouteImport
+      parentRoute: typeof StaffAcademicDeanRoute
+    }
+    '/staff/examination-dean/': {
+      id: '/staff/examination-dean/'
+      path: '/'
+      fullPath: '/staff/examination-dean/'
+      preLoaderRoute: typeof StaffExaminationDeanIndexRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/academic-calendar': {
+      id: '/staff/examination-dean/academic-calendar'
+      path: '/academic-calendar'
+      fullPath: '/staff/examination-dean/academic-calendar'
+      preLoaderRoute: typeof StaffExaminationDeanAcademicCalendarRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/answer-script-allocation': {
+      id: '/staff/examination-dean/answer-script-allocation'
+      path: '/answer-script-allocation'
+      fullPath: '/staff/examination-dean/answer-script-allocation'
+      preLoaderRoute: typeof StaffExaminationDeanAnswerScriptAllocationRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/assign-substitute': {
+      id: '/staff/examination-dean/assign-substitute'
+      path: '/assign-substitute'
+      fullPath: '/staff/examination-dean/assign-substitute'
+      preLoaderRoute: typeof StaffExaminationDeanAssignSubstituteRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/cgpa-calculation': {
+      id: '/staff/examination-dean/cgpa-calculation'
+      path: '/cgpa-calculation'
+      fullPath: '/staff/examination-dean/cgpa-calculation'
+      preLoaderRoute: typeof StaffExaminationDeanCgpaCalculationRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/committee-reports': {
+      id: '/staff/examination-dean/committee-reports'
+      path: '/committee-reports'
+      fullPath: '/staff/examination-dean/committee-reports'
+      preLoaderRoute: typeof StaffExaminationDeanCommitteeReportsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/completed-drives': {
+      id: '/staff/examination-dean/completed-drives'
+      path: '/completed-drives'
+      fullPath: '/staff/examination-dean/completed-drives'
+      preLoaderRoute: typeof StaffExaminationDeanCompletedDrivesRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/confidential-storage': {
+      id: '/staff/examination-dean/confidential-storage'
+      path: '/confidential-storage'
+      fullPath: '/staff/examination-dean/confidential-storage'
+      preLoaderRoute: typeof StaffExaminationDeanConfidentialStorageRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/download-history': {
+      id: '/staff/examination-dean/download-history'
+      path: '/download-history'
+      fullPath: '/staff/examination-dean/download-history'
+      preLoaderRoute: typeof StaffExaminationDeanDownloadHistoryRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/evaluation': {
+      id: '/staff/examination-dean/evaluation'
+      path: '/evaluation'
+      fullPath: '/staff/examination-dean/evaluation'
+      preLoaderRoute: typeof StaffExaminationDeanEvaluationRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/exam-reports': {
+      id: '/staff/examination-dean/exam-reports'
+      path: '/exam-reports'
+      fullPath: '/staff/examination-dean/exam-reports'
+      preLoaderRoute: typeof StaffExaminationDeanExamReportsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/exam-schedule': {
+      id: '/staff/examination-dean/exam-schedule'
+      path: '/exam-schedule'
+      fullPath: '/staff/examination-dean/exam-schedule'
+      preLoaderRoute: typeof StaffExaminationDeanExamScheduleRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/exam-schedules': {
+      id: '/staff/examination-dean/exam-schedules'
+      path: '/exam-schedules'
+      fullPath: '/staff/examination-dean/exam-schedules'
+      preLoaderRoute: typeof StaffExaminationDeanExamSchedulesRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/faculty-timetables': {
+      id: '/staff/examination-dean/faculty-timetables'
+      path: '/faculty-timetables'
+      fullPath: '/staff/examination-dean/faculty-timetables'
+      preLoaderRoute: typeof StaffExaminationDeanFacultyTimetablesRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/generate-hall-tickets': {
+      id: '/staff/examination-dean/generate-hall-tickets'
+      path: '/generate-hall-tickets'
+      fullPath: '/staff/examination-dean/generate-hall-tickets'
+      preLoaderRoute: typeof StaffExaminationDeanGenerateHallTicketsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/grade-moderation': {
+      id: '/staff/examination-dean/grade-moderation'
+      path: '/grade-moderation'
+      fullPath: '/staff/examination-dean/grade-moderation'
+      preLoaderRoute: typeof StaffExaminationDeanGradeModerationRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/grade-sheets': {
+      id: '/staff/examination-dean/grade-sheets'
+      path: '/grade-sheets'
+      fullPath: '/staff/examination-dean/grade-sheets'
+      preLoaderRoute: typeof StaffExaminationDeanGradeSheetsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/hall-allocation': {
+      id: '/staff/examination-dean/hall-allocation'
+      path: '/hall-allocation'
+      fullPath: '/staff/examination-dean/hall-allocation'
+      preLoaderRoute: typeof StaffExaminationDeanHallAllocationRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/hall-ticket-reports': {
+      id: '/staff/examination-dean/hall-ticket-reports'
+      path: '/hall-ticket-reports'
+      fullPath: '/staff/examination-dean/hall-ticket-reports'
+      preLoaderRoute: typeof StaffExaminationDeanHallTicketReportsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/hall-ticket-status': {
+      id: '/staff/examination-dean/hall-ticket-status'
+      path: '/hall-ticket-status'
+      fullPath: '/staff/examination-dean/hall-ticket-status'
+      preLoaderRoute: typeof StaffExaminationDeanHallTicketStatusRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/hall-tickets': {
+      id: '/staff/examination-dean/hall-tickets'
+      path: '/hall-tickets'
+      fullPath: '/staff/examination-dean/hall-tickets'
+      preLoaderRoute: typeof StaffExaminationDeanHallTicketsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/internal-exams': {
+      id: '/staff/examination-dean/internal-exams'
+      path: '/internal-exams'
+      fullPath: '/staff/examination-dean/internal-exams'
+      preLoaderRoute: typeof StaffExaminationDeanInternalExamsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/invigilator-allocation': {
+      id: '/staff/examination-dean/invigilator-allocation'
+      path: '/invigilator-allocation'
+      fullPath: '/staff/examination-dean/invigilator-allocation'
+      preLoaderRoute: typeof StaffExaminationDeanInvigilatorAllocationRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/invigilator-reports': {
+      id: '/staff/examination-dean/invigilator-reports'
+      path: '/invigilator-reports'
+      fullPath: '/staff/examination-dean/invigilator-reports'
+      preLoaderRoute: typeof StaffExaminationDeanInvigilatorReportsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/invigilators': {
+      id: '/staff/examination-dean/invigilators'
+      path: '/invigilators'
+      fullPath: '/staff/examination-dean/invigilators'
+      preLoaderRoute: typeof StaffExaminationDeanInvigilatorsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/malpractice-cases': {
+      id: '/staff/examination-dean/malpractice-cases'
+      path: '/malpractice-cases'
+      fullPath: '/staff/examination-dean/malpractice-cases'
+      preLoaderRoute: typeof StaffExaminationDeanMalpracticeCasesRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/malpractice-reports': {
+      id: '/staff/examination-dean/malpractice-reports'
+      path: '/malpractice-reports'
+      fullPath: '/staff/examination-dean/malpractice-reports'
+      preLoaderRoute: typeof StaffExaminationDeanMalpracticeReportsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/marks-entry': {
+      id: '/staff/examination-dean/marks-entry'
+      path: '/marks-entry'
+      fullPath: '/staff/examination-dean/marks-entry'
+      preLoaderRoute: typeof StaffExaminationDeanMarksEntryRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/marks-verification': {
+      id: '/staff/examination-dean/marks-verification'
+      path: '/marks-verification'
+      fullPath: '/staff/examination-dean/marks-verification'
+      preLoaderRoute: typeof StaffExaminationDeanMarksVerificationRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/mid-exams': {
+      id: '/staff/examination-dean/mid-exams'
+      path: '/mid-exams'
+      fullPath: '/staff/examination-dean/mid-exams'
+      preLoaderRoute: typeof StaffExaminationDeanMidExamsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/my-classes': {
+      id: '/staff/examination-dean/my-classes'
+      path: '/my-classes'
+      fullPath: '/staff/examination-dean/my-classes'
+      preLoaderRoute: typeof StaffExaminationDeanMyClassesRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/my-timetable': {
+      id: '/staff/examination-dean/my-timetable'
+      path: '/my-timetable'
+      fullPath: '/staff/examination-dean/my-timetable'
+      preLoaderRoute: typeof StaffExaminationDeanMyTimetableRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/notifications': {
+      id: '/staff/examination-dean/notifications'
+      path: '/notifications'
+      fullPath: '/staff/examination-dean/notifications'
+      preLoaderRoute: typeof StaffExaminationDeanNotificationsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/paper-distribution': {
+      id: '/staff/examination-dean/paper-distribution'
+      path: '/paper-distribution'
+      fullPath: '/staff/examination-dean/paper-distribution'
+      preLoaderRoute: typeof StaffExaminationDeanPaperDistributionRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/practical-exams': {
+      id: '/staff/examination-dean/practical-exams'
+      path: '/practical-exams'
+      fullPath: '/staff/examination-dean/practical-exams'
+      preLoaderRoute: typeof StaffExaminationDeanPracticalExamsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/punishment-history': {
+      id: '/staff/examination-dean/punishment-history'
+      path: '/punishment-history'
+      fullPath: '/staff/examination-dean/punishment-history'
+      preLoaderRoute: typeof StaffExaminationDeanPunishmentHistoryRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/question-paper-approval': {
+      id: '/staff/examination-dean/question-paper-approval'
+      path: '/question-paper-approval'
+      fullPath: '/staff/examination-dean/question-paper-approval'
+      preLoaderRoute: typeof StaffExaminationDeanQuestionPaperApprovalRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/question-paper-upload': {
+      id: '/staff/examination-dean/question-paper-upload'
+      path: '/question-paper-upload'
+      fullPath: '/staff/examination-dean/question-paper-upload'
+      preLoaderRoute: typeof StaffExaminationDeanQuestionPaperUploadRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/question-papers': {
+      id: '/staff/examination-dean/question-papers'
+      path: '/question-papers'
+      fullPath: '/staff/examination-dean/question-papers'
+      preLoaderRoute: typeof StaffExaminationDeanQuestionPapersRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/rank-list': {
+      id: '/staff/examination-dean/rank-list'
+      path: '/rank-list'
+      fullPath: '/staff/examination-dean/rank-list'
+      preLoaderRoute: typeof StaffExaminationDeanRankListRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/recounting': {
+      id: '/staff/examination-dean/recounting'
+      path: '/recounting'
+      fullPath: '/staff/examination-dean/recounting'
+      preLoaderRoute: typeof StaffExaminationDeanRecountingRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/reports': {
+      id: '/staff/examination-dean/reports'
+      path: '/reports'
+      fullPath: '/staff/examination-dean/reports'
+      preLoaderRoute: typeof StaffExaminationDeanReportsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/result-processing': {
+      id: '/staff/examination-dean/result-processing'
+      path: '/result-processing'
+      fullPath: '/staff/examination-dean/result-processing'
+      preLoaderRoute: typeof StaffExaminationDeanResultProcessingRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/result-publication': {
+      id: '/staff/examination-dean/result-publication'
+      path: '/result-publication'
+      fullPath: '/staff/examination-dean/result-publication'
+      preLoaderRoute: typeof StaffExaminationDeanResultPublicationRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/result-reports': {
+      id: '/staff/examination-dean/result-reports'
+      path: '/result-reports'
+      fullPath: '/staff/examination-dean/result-reports'
+      preLoaderRoute: typeof StaffExaminationDeanResultReportsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/results': {
+      id: '/staff/examination-dean/results'
+      path: '/results'
+      fullPath: '/staff/examination-dean/results'
+      preLoaderRoute: typeof StaffExaminationDeanResultsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/revaluation': {
+      id: '/staff/examination-dean/revaluation'
+      path: '/revaluation'
+      fullPath: '/staff/examination-dean/revaluation'
+      preLoaderRoute: typeof StaffExaminationDeanRevaluationRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/revaluation-requests': {
+      id: '/staff/examination-dean/revaluation-requests'
+      path: '/revaluation-requests'
+      fullPath: '/staff/examination-dean/revaluation-requests'
+      preLoaderRoute: typeof StaffExaminationDeanRevaluationRequestsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/revaluation-status': {
+      id: '/staff/examination-dean/revaluation-status'
+      path: '/revaluation-status'
+      fullPath: '/staff/examination-dean/revaluation-status'
+      preLoaderRoute: typeof StaffExaminationDeanRevaluationStatusRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/schedule': {
+      id: '/staff/examination-dean/schedule'
+      path: '/schedule'
+      fullPath: '/staff/examination-dean/schedule'
+      preLoaderRoute: typeof StaffExaminationDeanScheduleRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/semester-exams': {
+      id: '/staff/examination-dean/semester-exams'
+      path: '/semester-exams'
+      fullPath: '/staff/examination-dean/semester-exams'
+      preLoaderRoute: typeof StaffExaminationDeanSemesterExamsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/settings': {
+      id: '/staff/examination-dean/settings'
+      path: '/settings'
+      fullPath: '/staff/examination-dean/settings'
+      preLoaderRoute: typeof StaffExaminationDeanSettingsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/substitution-history': {
+      id: '/staff/examination-dean/substitution-history'
+      path: '/substitution-history'
+      fullPath: '/staff/examination-dean/substitution-history'
+      preLoaderRoute: typeof StaffExaminationDeanSubstitutionHistoryRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/supplementary-exams': {
+      id: '/staff/examination-dean/supplementary-exams'
+      path: '/supplementary-exams'
+      fullPath: '/staff/examination-dean/supplementary-exams'
+      preLoaderRoute: typeof StaffExaminationDeanSupplementaryExamsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/timetable': {
+      id: '/staff/examination-dean/timetable'
+      path: '/timetable'
+      fullPath: '/staff/examination-dean/timetable'
+      preLoaderRoute: typeof StaffExaminationDeanTimetableRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/timetable-generation': {
+      id: '/staff/examination-dean/timetable-generation'
+      path: '/timetable-generation'
+      fullPath: '/staff/examination-dean/timetable-generation'
+      preLoaderRoute: typeof StaffExaminationDeanTimetableGenerationRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/transcripts': {
+      id: '/staff/examination-dean/transcripts'
+      path: '/transcripts'
+      fullPath: '/staff/examination-dean/transcripts'
+      preLoaderRoute: typeof StaffExaminationDeanTranscriptsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/updated-results': {
+      id: '/staff/examination-dean/updated-results'
+      path: '/updated-results'
+      fullPath: '/staff/examination-dean/updated-results'
+      preLoaderRoute: typeof StaffExaminationDeanUpdatedResultsRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/examination-dean/valuation-status': {
+      id: '/staff/examination-dean/valuation-status'
+      path: '/valuation-status'
+      fullPath: '/staff/examination-dean/valuation-status'
+      preLoaderRoute: typeof StaffExaminationDeanValuationStatusRouteImport
+      parentRoute: typeof StaffExaminationDeanRoute
+    }
+    '/staff/finance-dean/': {
+      id: '/staff/finance-dean/'
+      path: '/'
+      fullPath: '/staff/finance-dean/'
+      preLoaderRoute: typeof StaffFinanceDeanIndexRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/accounts': {
+      id: '/staff/finance-dean/accounts'
+      path: '/accounts'
+      fullPath: '/staff/finance-dean/accounts'
+      preLoaderRoute: typeof StaffFinanceDeanAccountsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/allowances-deductions': {
+      id: '/staff/finance-dean/allowances-deductions'
+      path: '/allowances-deductions'
+      fullPath: '/staff/finance-dean/allowances-deductions'
+      preLoaderRoute: typeof StaffFinanceDeanAllowancesDeductionsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/annual-budget': {
+      id: '/staff/finance-dean/annual-budget'
+      path: '/annual-budget'
+      fullPath: '/staff/finance-dean/annual-budget'
+      preLoaderRoute: typeof StaffFinanceDeanAnnualBudgetRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/assign-substitute': {
+      id: '/staff/finance-dean/assign-substitute'
+      path: '/assign-substitute'
+      fullPath: '/staff/finance-dean/assign-substitute'
+      preLoaderRoute: typeof StaffFinanceDeanAssignSubstituteRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/audit': {
+      id: '/staff/finance-dean/audit'
+      path: '/audit'
+      fullPath: '/staff/finance-dean/audit'
+      preLoaderRoute: typeof StaffFinanceDeanAuditRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/audit-compliance': {
+      id: '/staff/finance-dean/audit-compliance'
+      path: '/audit-compliance'
+      fullPath: '/staff/finance-dean/audit-compliance'
+      preLoaderRoute: typeof StaffFinanceDeanAuditComplianceRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/audit-history': {
+      id: '/staff/finance-dean/audit-history'
+      path: '/audit-history'
+      fullPath: '/staff/finance-dean/audit-history'
+      preLoaderRoute: typeof StaffFinanceDeanAuditHistoryRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/audit-reports': {
+      id: '/staff/finance-dean/audit-reports'
+      path: '/audit-reports'
+      fullPath: '/staff/finance-dean/audit-reports'
+      preLoaderRoute: typeof StaffFinanceDeanAuditReportsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/audits': {
+      id: '/staff/finance-dean/audits'
+      path: '/audits'
+      fullPath: '/staff/finance-dean/audits'
+      preLoaderRoute: typeof StaffFinanceDeanAuditsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/budget': {
+      id: '/staff/finance-dean/budget'
+      path: '/budget'
+      fullPath: '/staff/finance-dean/budget'
+      preLoaderRoute: typeof StaffFinanceDeanBudgetRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/budget-allocation': {
+      id: '/staff/finance-dean/budget-allocation'
+      path: '/budget-allocation'
+      fullPath: '/staff/finance-dean/budget-allocation'
+      preLoaderRoute: typeof StaffFinanceDeanBudgetAllocationRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/budget-reports': {
+      id: '/staff/finance-dean/budget-reports'
+      path: '/budget-reports'
+      fullPath: '/staff/finance-dean/budget-reports'
+      preLoaderRoute: typeof StaffFinanceDeanBudgetReportsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/budget-utilization': {
+      id: '/staff/finance-dean/budget-utilization'
+      path: '/budget-utilization'
+      fullPath: '/staff/finance-dean/budget-utilization'
+      preLoaderRoute: typeof StaffFinanceDeanBudgetUtilizationRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/daily-expenses': {
+      id: '/staff/finance-dean/daily-expenses'
+      path: '/daily-expenses'
+      fullPath: '/staff/finance-dean/daily-expenses'
+      preLoaderRoute: typeof StaffFinanceDeanDailyExpensesRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/department-budgets': {
+      id: '/staff/finance-dean/department-budgets'
+      path: '/department-budgets'
+      fullPath: '/staff/finance-dean/department-budgets'
+      preLoaderRoute: typeof StaffFinanceDeanDepartmentBudgetsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/dept-budgets': {
+      id: '/staff/finance-dean/dept-budgets'
+      path: '/dept-budgets'
+      fullPath: '/staff/finance-dean/dept-budgets'
+      preLoaderRoute: typeof StaffFinanceDeanDeptBudgetsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/dept-expenses': {
+      id: '/staff/finance-dean/dept-expenses'
+      path: '/dept-expenses'
+      fullPath: '/staff/finance-dean/dept-expenses'
+      preLoaderRoute: typeof StaffFinanceDeanDeptExpensesRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/expenses': {
+      id: '/staff/finance-dean/expenses'
+      path: '/expenses'
+      fullPath: '/staff/finance-dean/expenses'
+      preLoaderRoute: typeof StaffFinanceDeanExpensesRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/external-audit': {
+      id: '/staff/finance-dean/external-audit'
+      path: '/external-audit'
+      fullPath: '/staff/finance-dean/external-audit'
+      preLoaderRoute: typeof StaffFinanceDeanExternalAuditRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/faculty-payroll': {
+      id: '/staff/finance-dean/faculty-payroll'
+      path: '/faculty-payroll'
+      fullPath: '/staff/finance-dean/faculty-payroll'
+      preLoaderRoute: typeof StaffFinanceDeanFacultyPayrollRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/faculty-timetables': {
+      id: '/staff/finance-dean/faculty-timetables'
+      path: '/faculty-timetables'
+      fullPath: '/staff/finance-dean/faculty-timetables'
+      preLoaderRoute: typeof StaffFinanceDeanFacultyTimetablesRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/fee-collection': {
+      id: '/staff/finance-dean/fee-collection'
+      path: '/fee-collection'
+      fullPath: '/staff/finance-dean/fee-collection'
+      preLoaderRoute: typeof StaffFinanceDeanFeeCollectionRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/fee-collections': {
+      id: '/staff/finance-dean/fee-collections'
+      path: '/fee-collections'
+      fullPath: '/staff/finance-dean/fee-collections'
+      preLoaderRoute: typeof StaffFinanceDeanFeeCollectionsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/fee-reports': {
+      id: '/staff/finance-dean/fee-reports'
+      path: '/fee-reports'
+      fullPath: '/staff/finance-dean/fee-reports'
+      preLoaderRoute: typeof StaffFinanceDeanFeeReportsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/fees': {
+      id: '/staff/finance-dean/fees'
+      path: '/fees'
+      fullPath: '/staff/finance-dean/fees'
+      preLoaderRoute: typeof StaffFinanceDeanFeesRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/financial-reports': {
+      id: '/staff/finance-dean/financial-reports'
+      path: '/financial-reports'
+      fullPath: '/staff/finance-dean/financial-reports'
+      preLoaderRoute: typeof StaffFinanceDeanFinancialReportsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/grants': {
+      id: '/staff/finance-dean/grants'
+      path: '/grants'
+      fullPath: '/staff/finance-dean/grants'
+      preLoaderRoute: typeof StaffFinanceDeanGrantsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/internal-audit': {
+      id: '/staff/finance-dean/internal-audit'
+      path: '/internal-audit'
+      fullPath: '/staff/finance-dean/internal-audit'
+      preLoaderRoute: typeof StaffFinanceDeanInternalAuditRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/invoice-management': {
+      id: '/staff/finance-dean/invoice-management'
+      path: '/invoice-management'
+      fullPath: '/staff/finance-dean/invoice-management'
+      preLoaderRoute: typeof StaffFinanceDeanInvoiceManagementRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/my-classes': {
+      id: '/staff/finance-dean/my-classes'
+      path: '/my-classes'
+      fullPath: '/staff/finance-dean/my-classes'
+      preLoaderRoute: typeof StaffFinanceDeanMyClassesRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/my-timetable': {
+      id: '/staff/finance-dean/my-timetable'
+      path: '/my-timetable'
+      fullPath: '/staff/finance-dean/my-timetable'
+      preLoaderRoute: typeof StaffFinanceDeanMyTimetableRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/notifications': {
+      id: '/staff/finance-dean/notifications'
+      path: '/notifications'
+      fullPath: '/staff/finance-dean/notifications'
+      preLoaderRoute: typeof StaffFinanceDeanNotificationsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/payroll': {
+      id: '/staff/finance-dean/payroll'
+      path: '/payroll'
+      fullPath: '/staff/finance-dean/payroll'
+      preLoaderRoute: typeof StaffFinanceDeanPayrollRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/payroll-reports': {
+      id: '/staff/finance-dean/payroll-reports'
+      path: '/payroll-reports'
+      fullPath: '/staff/finance-dean/payroll-reports'
+      preLoaderRoute: typeof StaffFinanceDeanPayrollReportsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/pending-fees': {
+      id: '/staff/finance-dean/pending-fees'
+      path: '/pending-fees'
+      fullPath: '/staff/finance-dean/pending-fees'
+      preLoaderRoute: typeof StaffFinanceDeanPendingFeesRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/purchase-orders': {
+      id: '/staff/finance-dean/purchase-orders'
+      path: '/purchase-orders'
+      fullPath: '/staff/finance-dean/purchase-orders'
+      preLoaderRoute: typeof StaffFinanceDeanPurchaseOrdersRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/purchase-payments': {
+      id: '/staff/finance-dean/purchase-payments'
+      path: '/purchase-payments'
+      fullPath: '/staff/finance-dean/purchase-payments'
+      preLoaderRoute: typeof StaffFinanceDeanPurchasePaymentsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/purchase-requests': {
+      id: '/staff/finance-dean/purchase-requests'
+      path: '/purchase-requests'
+      fullPath: '/staff/finance-dean/purchase-requests'
+      preLoaderRoute: typeof StaffFinanceDeanPurchaseRequestsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/purchases': {
+      id: '/staff/finance-dean/purchases'
+      path: '/purchases'
+      fullPath: '/staff/finance-dean/purchases'
+      preLoaderRoute: typeof StaffFinanceDeanPurchasesRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/refund-management': {
+      id: '/staff/finance-dean/refund-management'
+      path: '/refund-management'
+      fullPath: '/staff/finance-dean/refund-management'
+      preLoaderRoute: typeof StaffFinanceDeanRefundManagementRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/reports': {
+      id: '/staff/finance-dean/reports'
+      path: '/reports'
+      fullPath: '/staff/finance-dean/reports'
+      preLoaderRoute: typeof StaffFinanceDeanReportsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/salary-history': {
+      id: '/staff/finance-dean/salary-history'
+      path: '/salary-history'
+      fullPath: '/staff/finance-dean/salary-history'
+      preLoaderRoute: typeof StaffFinanceDeanSalaryHistoryRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/scholarships-concessions': {
+      id: '/staff/finance-dean/scholarships-concessions'
+      path: '/scholarships-concessions'
+      fullPath: '/staff/finance-dean/scholarships-concessions'
+      preLoaderRoute: typeof StaffFinanceDeanScholarshipsConcessionsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/settings': {
+      id: '/staff/finance-dean/settings'
+      path: '/settings'
+      fullPath: '/staff/finance-dean/settings'
+      preLoaderRoute: typeof StaffFinanceDeanSettingsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/staff-payroll': {
+      id: '/staff/finance-dean/staff-payroll'
+      path: '/staff-payroll'
+      fullPath: '/staff/finance-dean/staff-payroll'
+      preLoaderRoute: typeof StaffFinanceDeanStaffPayrollRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/substitution-history': {
+      id: '/staff/finance-dean/substitution-history'
+      path: '/substitution-history'
+      fullPath: '/staff/finance-dean/substitution-history'
+      preLoaderRoute: typeof StaffFinanceDeanSubstitutionHistoryRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/timetable': {
+      id: '/staff/finance-dean/timetable'
+      path: '/timetable'
+      fullPath: '/staff/finance-dean/timetable'
+      preLoaderRoute: typeof StaffFinanceDeanTimetableRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/vendor-management': {
+      id: '/staff/finance-dean/vendor-management'
+      path: '/vendor-management'
+      fullPath: '/staff/finance-dean/vendor-management'
+      preLoaderRoute: typeof StaffFinanceDeanVendorManagementRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/finance-dean/vendor-payments': {
+      id: '/staff/finance-dean/vendor-payments'
+      path: '/vendor-payments'
+      fullPath: '/staff/finance-dean/vendor-payments'
+      preLoaderRoute: typeof StaffFinanceDeanVendorPaymentsRouteImport
+      parentRoute: typeof StaffFinanceDeanRoute
+    }
+    '/staff/ima/': {
+      id: '/staff/ima/'
+      path: '/'
+      fullPath: '/staff/ima/'
+      preLoaderRoute: typeof StaffImaIndexRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/amc-warranty': {
+      id: '/staff/ima/amc-warranty'
+      path: '/amc-warranty'
+      fullPath: '/staff/ima/amc-warranty'
+      preLoaderRoute: typeof StaffImaAmcWarrantyRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/approved-purchases': {
+      id: '/staff/ima/approved-purchases'
+      path: '/approved-purchases'
+      fullPath: '/staff/ima/approved-purchases'
+      preLoaderRoute: typeof StaffImaApprovedPurchasesRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/asset-audit': {
+      id: '/staff/ima/asset-audit'
+      path: '/asset-audit'
+      fullPath: '/staff/ima/asset-audit'
+      preLoaderRoute: typeof StaffImaAssetAuditRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/asset-disposal': {
+      id: '/staff/ima/asset-disposal'
+      path: '/asset-disposal'
+      fullPath: '/staff/ima/asset-disposal'
+      preLoaderRoute: typeof StaffImaAssetDisposalRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/asset-register': {
+      id: '/staff/ima/asset-register'
+      path: '/asset-register'
+      fullPath: '/staff/ima/asset-register'
+      preLoaderRoute: typeof StaffImaAssetRegisterRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/asset-transfer': {
+      id: '/staff/ima/asset-transfer'
+      path: '/asset-transfer'
+      fullPath: '/staff/ima/asset-transfer'
+      preLoaderRoute: typeof StaffImaAssetTransferRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/assign-substitute': {
+      id: '/staff/ima/assign-substitute'
+      path: '/assign-substitute'
+      fullPath: '/staff/ima/assign-substitute'
+      preLoaderRoute: typeof StaffImaAssignSubstituteRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/campus-projects': {
+      id: '/staff/ima/campus-projects'
+      path: '/campus-projects'
+      fullPath: '/staff/ima/campus-projects'
+      preLoaderRoute: typeof StaffImaCampusProjectsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/compliance': {
+      id: '/staff/ima/compliance'
+      path: '/compliance'
+      fullPath: '/staff/ima/compliance'
+      preLoaderRoute: typeof StaffImaComplianceRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/department-assets': {
+      id: '/staff/ima/department-assets'
+      path: '/department-assets'
+      fullPath: '/staff/ima/department-assets'
+      preLoaderRoute: typeof StaffImaDepartmentAssetsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/equipment-allocation': {
+      id: '/staff/ima/equipment-allocation'
+      path: '/equipment-allocation'
+      fullPath: '/staff/ima/equipment-allocation'
+      preLoaderRoute: typeof StaffImaEquipmentAllocationRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/equipment-history': {
+      id: '/staff/ima/equipment-history'
+      path: '/equipment-history'
+      fullPath: '/staff/ima/equipment-history'
+      preLoaderRoute: typeof StaffImaEquipmentHistoryRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/equipment-inventory': {
+      id: '/staff/ima/equipment-inventory'
+      path: '/equipment-inventory'
+      fullPath: '/staff/ima/equipment-inventory'
+      preLoaderRoute: typeof StaffImaEquipmentInventoryRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/equipment-reports': {
+      id: '/staff/ima/equipment-reports'
+      path: '/equipment-reports'
+      fullPath: '/staff/ima/equipment-reports'
+      preLoaderRoute: typeof StaffImaEquipmentReportsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/equipment-requests': {
+      id: '/staff/ima/equipment-requests'
+      path: '/equipment-requests'
+      fullPath: '/staff/ima/equipment-requests'
+      preLoaderRoute: typeof StaffImaEquipmentRequestsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/faculty-timetables': {
+      id: '/staff/ima/faculty-timetables'
+      path: '/faculty-timetables'
+      fullPath: '/staff/ima/faculty-timetables'
+      preLoaderRoute: typeof StaffImaFacultyTimetablesRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/guest-lectures': {
+      id: '/staff/ima/guest-lectures'
+      path: '/guest-lectures'
+      fullPath: '/staff/ima/guest-lectures'
+      preLoaderRoute: typeof StaffImaGuestLecturesRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/industrial-visits': {
+      id: '/staff/ima/industrial-visits'
+      path: '/industrial-visits'
+      fullPath: '/staff/ima/industrial-visits'
+      preLoaderRoute: typeof StaffImaIndustrialVisitsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/infrastructure': {
+      id: '/staff/ima/infrastructure'
+      path: '/infrastructure'
+      fullPath: '/staff/ima/infrastructure'
+      preLoaderRoute: typeof StaffImaInfrastructureRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/internships': {
+      id: '/staff/ima/internships'
+      path: '/internships'
+      fullPath: '/staff/ima/internships'
+      preLoaderRoute: typeof StaffImaInternshipsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/inventory-reports': {
+      id: '/staff/ima/inventory-reports'
+      path: '/inventory-reports'
+      fullPath: '/staff/ima/inventory-reports'
+      preLoaderRoute: typeof StaffImaInventoryReportsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/lab-booking': {
+      id: '/staff/ima/lab-booking'
+      path: '/lab-booking'
+      fullPath: '/staff/ima/lab-booking'
+      preLoaderRoute: typeof StaffImaLabBookingRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/lab-details': {
+      id: '/staff/ima/lab-details'
+      path: '/lab-details'
+      fullPath: '/staff/ima/lab-details'
+      preLoaderRoute: typeof StaffImaLabDetailsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/lab-timetable': {
+      id: '/staff/ima/lab-timetable'
+      path: '/lab-timetable'
+      fullPath: '/staff/ima/lab-timetable'
+      preLoaderRoute: typeof StaffImaLabTimetableRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/laboratories': {
+      id: '/staff/ima/laboratories'
+      path: '/laboratories'
+      fullPath: '/staff/ima/laboratories'
+      preLoaderRoute: typeof StaffImaLaboratoriesRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/laboratory-reports': {
+      id: '/staff/ima/laboratory-reports'
+      path: '/laboratory-reports'
+      fullPath: '/staff/ima/laboratory-reports'
+      preLoaderRoute: typeof StaffImaLaboratoryReportsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/maintenance-reports': {
+      id: '/staff/ima/maintenance-reports'
+      path: '/maintenance-reports'
+      fullPath: '/staff/ima/maintenance-reports'
+      preLoaderRoute: typeof StaffImaMaintenanceReportsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/maintenance-requests': {
+      id: '/staff/ima/maintenance-requests'
+      path: '/maintenance-requests'
+      fullPath: '/staff/ima/maintenance-requests'
+      preLoaderRoute: typeof StaffImaMaintenanceRequestsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/maintenance-schedule': {
+      id: '/staff/ima/maintenance-schedule'
+      path: '/maintenance-schedule'
+      fullPath: '/staff/ima/maintenance-schedule'
+      preLoaderRoute: typeof StaffImaMaintenanceScheduleRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/mou': {
+      id: '/staff/ima/mou'
+      path: '/mou'
+      fullPath: '/staff/ima/mou'
+      preLoaderRoute: typeof StaffImaMouRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/my-classes': {
+      id: '/staff/ima/my-classes'
+      path: '/my-classes'
+      fullPath: '/staff/ima/my-classes'
+      preLoaderRoute: typeof StaffImaMyClassesRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/my-timetable': {
+      id: '/staff/ima/my-timetable'
+      path: '/my-timetable'
+      fullPath: '/staff/ima/my-timetable'
+      preLoaderRoute: typeof StaffImaMyTimetableRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/notifications': {
+      id: '/staff/ima/notifications'
+      path: '/notifications'
+      fullPath: '/staff/ima/notifications'
+      preLoaderRoute: typeof StaffImaNotificationsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/partners': {
+      id: '/staff/ima/partners'
+      path: '/partners'
+      fullPath: '/staff/ima/partners'
+      preLoaderRoute: typeof StaffImaPartnersRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/policy-directives': {
+      id: '/staff/ima/policy-directives'
+      path: '/policy-directives'
+      fullPath: '/staff/ima/policy-directives'
+      preLoaderRoute: typeof StaffImaPolicyDirectivesRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/purchase-orders': {
+      id: '/staff/ima/purchase-orders'
+      path: '/purchase-orders'
+      fullPath: '/staff/ima/purchase-orders'
+      preLoaderRoute: typeof StaffImaPurchaseOrdersRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/purchase-reports': {
+      id: '/staff/ima/purchase-reports'
+      path: '/purchase-reports'
+      fullPath: '/staff/ima/purchase-reports'
+      preLoaderRoute: typeof StaffImaPurchaseReportsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/purchase-requests': {
+      id: '/staff/ima/purchase-requests'
+      path: '/purchase-requests'
+      fullPath: '/staff/ima/purchase-requests'
+      preLoaderRoute: typeof StaffImaPurchaseRequestsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/purchase-vendors': {
+      id: '/staff/ima/purchase-vendors'
+      path: '/purchase-vendors'
+      fullPath: '/staff/ima/purchase-vendors'
+      preLoaderRoute: typeof StaffImaPurchaseVendorsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/reports': {
+      id: '/staff/ima/reports'
+      path: '/reports'
+      fullPath: '/staff/ima/reports'
+      preLoaderRoute: typeof StaffImaReportsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/settings': {
+      id: '/staff/ima/settings'
+      path: '/settings'
+      fullPath: '/staff/ima/settings'
+      preLoaderRoute: typeof StaffImaSettingsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/substitution-history': {
+      id: '/staff/ima/substitution-history'
+      path: '/substitution-history'
+      fullPath: '/staff/ima/substitution-history'
+      preLoaderRoute: typeof StaffImaSubstitutionHistoryRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/timetable': {
+      id: '/staff/ima/timetable'
+      path: '/timetable'
+      fullPath: '/staff/ima/timetable'
+      preLoaderRoute: typeof StaffImaTimetableRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/vendors': {
+      id: '/staff/ima/vendors'
+      path: '/vendors'
+      fullPath: '/staff/ima/vendors'
+      preLoaderRoute: typeof StaffImaVendorsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/ima/workshops': {
+      id: '/staff/ima/workshops'
+      path: '/workshops'
+      fullPath: '/staff/ima/workshops'
+      preLoaderRoute: typeof StaffImaWorkshopsRouteImport
+      parentRoute: typeof StaffImaRoute
+    }
+    '/staff/iqac/': {
+      id: '/staff/iqac/'
+      path: '/'
+      fullPath: '/staff/iqac/'
+      preLoaderRoute: typeof StaffIqacIndexRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/academic-audit': {
+      id: '/staff/iqac/academic-audit'
+      path: '/academic-audit'
+      fullPath: '/staff/iqac/academic-audit'
+      preLoaderRoute: typeof StaffIqacAcademicAuditRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/alumni-feedback': {
+      id: '/staff/iqac/alumni-feedback'
+      path: '/alumni-feedback'
+      fullPath: '/staff/iqac/alumni-feedback'
+      preLoaderRoute: typeof StaffIqacAlumniFeedbackRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/aqar': {
+      id: '/staff/iqac/aqar'
+      path: '/aqar'
+      fullPath: '/staff/iqac/aqar'
+      preLoaderRoute: typeof StaffIqacAqarRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/aqar-reports': {
+      id: '/staff/iqac/aqar-reports'
+      path: '/aqar-reports'
+      fullPath: '/staff/iqac/aqar-reports'
+      preLoaderRoute: typeof StaffIqacAqarReportsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/assign-substitute': {
+      id: '/staff/iqac/assign-substitute'
+      path: '/assign-substitute'
+      fullPath: '/staff/iqac/assign-substitute'
+      preLoaderRoute: typeof StaffIqacAssignSubstituteRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/atr': {
+      id: '/staff/iqac/atr'
+      path: '/atr'
+      fullPath: '/staff/iqac/atr'
+      preLoaderRoute: typeof StaffIqacAtrRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/audit': {
+      id: '/staff/iqac/audit'
+      path: '/audit'
+      fullPath: '/staff/iqac/audit'
+      preLoaderRoute: typeof StaffIqacAuditRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/audit-reports': {
+      id: '/staff/iqac/audit-reports'
+      path: '/audit-reports'
+      fullPath: '/staff/iqac/audit-reports'
+      preLoaderRoute: typeof StaffIqacAuditReportsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/benchmarking': {
+      id: '/staff/iqac/benchmarking'
+      path: '/benchmarking'
+      fullPath: '/staff/iqac/benchmarking'
+      preLoaderRoute: typeof StaffIqacBenchmarkingRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/best-practices': {
+      id: '/staff/iqac/best-practices'
+      path: '/best-practices'
+      fullPath: '/staff/iqac/best-practices'
+      preLoaderRoute: typeof StaffIqacBestPracticesRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/compliance-tracker': {
+      id: '/staff/iqac/compliance-tracker'
+      path: '/compliance-tracker'
+      fullPath: '/staff/iqac/compliance-tracker'
+      preLoaderRoute: typeof StaffIqacComplianceTrackerRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/criteria': {
+      id: '/staff/iqac/criteria'
+      path: '/criteria'
+      fullPath: '/staff/iqac/criteria'
+      preLoaderRoute: typeof StaffIqacCriteriaRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/criteria-docs': {
+      id: '/staff/iqac/criteria-docs'
+      path: '/criteria-docs'
+      fullPath: '/staff/iqac/criteria-docs'
+      preLoaderRoute: typeof StaffIqacCriteriaDocsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/dept-quality-metrics': {
+      id: '/staff/iqac/dept-quality-metrics'
+      path: '/dept-quality-metrics'
+      fullPath: '/staff/iqac/dept-quality-metrics'
+      preLoaderRoute: typeof StaffIqacDeptQualityMetricsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/document-repo': {
+      id: '/staff/iqac/document-repo'
+      path: '/document-repo'
+      fullPath: '/staff/iqac/document-repo'
+      preLoaderRoute: typeof StaffIqacDocumentRepoRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/documents': {
+      id: '/staff/iqac/documents'
+      path: '/documents'
+      fullPath: '/staff/iqac/documents'
+      preLoaderRoute: typeof StaffIqacDocumentsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/employer-feedback': {
+      id: '/staff/iqac/employer-feedback'
+      path: '/employer-feedback'
+      fullPath: '/staff/iqac/employer-feedback'
+      preLoaderRoute: typeof StaffIqacEmployerFeedbackRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/events': {
+      id: '/staff/iqac/events'
+      path: '/events'
+      fullPath: '/staff/iqac/events'
+      preLoaderRoute: typeof StaffIqacEventsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/evidence-uploads': {
+      id: '/staff/iqac/evidence-uploads'
+      path: '/evidence-uploads'
+      fullPath: '/staff/iqac/evidence-uploads'
+      preLoaderRoute: typeof StaffIqacEvidenceUploadsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/faculty-feedback': {
+      id: '/staff/iqac/faculty-feedback'
+      path: '/faculty-feedback'
+      fullPath: '/staff/iqac/faculty-feedback'
+      preLoaderRoute: typeof StaffIqacFacultyFeedbackRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/faculty-timetables': {
+      id: '/staff/iqac/faculty-timetables'
+      path: '/faculty-timetables'
+      fullPath: '/staff/iqac/faculty-timetables'
+      preLoaderRoute: typeof StaffIqacFacultyTimetablesRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/feedback': {
+      id: '/staff/iqac/feedback'
+      path: '/feedback'
+      fullPath: '/staff/iqac/feedback'
+      preLoaderRoute: typeof StaffIqacFeedbackRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/feedback-analytics': {
+      id: '/staff/iqac/feedback-analytics'
+      path: '/feedback-analytics'
+      fullPath: '/staff/iqac/feedback-analytics'
+      preLoaderRoute: typeof StaffIqacFeedbackAnalyticsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/feedback-reports': {
+      id: '/staff/iqac/feedback-reports'
+      path: '/feedback-reports'
+      fullPath: '/staff/iqac/feedback-reports'
+      preLoaderRoute: typeof StaffIqacFeedbackReportsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/internal-quality-audit': {
+      id: '/staff/iqac/internal-quality-audit'
+      path: '/internal-quality-audit'
+      fullPath: '/staff/iqac/internal-quality-audit'
+      preLoaderRoute: typeof StaffIqacInternalQualityAuditRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/kpi-dashboard': {
+      id: '/staff/iqac/kpi-dashboard'
+      path: '/kpi-dashboard'
+      fullPath: '/staff/iqac/kpi-dashboard'
+      preLoaderRoute: typeof StaffIqacKpiDashboardRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/kpi-reports': {
+      id: '/staff/iqac/kpi-reports'
+      path: '/kpi-reports'
+      fullPath: '/staff/iqac/kpi-reports'
+      preLoaderRoute: typeof StaffIqacKpiReportsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/meetings': {
+      id: '/staff/iqac/meetings'
+      path: '/meetings'
+      fullPath: '/staff/iqac/meetings'
+      preLoaderRoute: typeof StaffIqacMeetingsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/metrics': {
+      id: '/staff/iqac/metrics'
+      path: '/metrics'
+      fullPath: '/staff/iqac/metrics'
+      preLoaderRoute: typeof StaffIqacMetricsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/my-classes': {
+      id: '/staff/iqac/my-classes'
+      path: '/my-classes'
+      fullPath: '/staff/iqac/my-classes'
+      preLoaderRoute: typeof StaffIqacMyClassesRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/my-timetable': {
+      id: '/staff/iqac/my-timetable'
+      path: '/my-timetable'
+      fullPath: '/staff/iqac/my-timetable'
+      preLoaderRoute: typeof StaffIqacMyTimetableRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/naac': {
+      id: '/staff/iqac/naac'
+      path: '/naac'
+      fullPath: '/staff/iqac/naac'
+      preLoaderRoute: typeof StaffIqacNaacRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/naac-reports': {
+      id: '/staff/iqac/naac-reports'
+      path: '/naac-reports'
+      fullPath: '/staff/iqac/naac-reports'
+      preLoaderRoute: typeof StaffIqacNaacReportsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/nba': {
+      id: '/staff/iqac/nba'
+      path: '/nba'
+      fullPath: '/staff/iqac/nba'
+      preLoaderRoute: typeof StaffIqacNbaRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/notifications': {
+      id: '/staff/iqac/notifications'
+      path: '/notifications'
+      fullPath: '/staff/iqac/notifications'
+      preLoaderRoute: typeof StaffIqacNotificationsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/performance-analysis': {
+      id: '/staff/iqac/performance-analysis'
+      path: '/performance-analysis'
+      fullPath: '/staff/iqac/performance-analysis'
+      preLoaderRoute: typeof StaffIqacPerformanceAnalysisRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/quality-audits': {
+      id: '/staff/iqac/quality-audits'
+      path: '/quality-audits'
+      fullPath: '/staff/iqac/quality-audits'
+      preLoaderRoute: typeof StaffIqacQualityAuditsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/quality-improvement': {
+      id: '/staff/iqac/quality-improvement'
+      path: '/quality-improvement'
+      fullPath: '/staff/iqac/quality-improvement'
+      preLoaderRoute: typeof StaffIqacQualityImprovementRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/quality-metrics': {
+      id: '/staff/iqac/quality-metrics'
+      path: '/quality-metrics'
+      fullPath: '/staff/iqac/quality-metrics'
+      preLoaderRoute: typeof StaffIqacQualityMetricsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/reports': {
+      id: '/staff/iqac/reports'
+      path: '/reports'
+      fullPath: '/staff/iqac/reports'
+      preLoaderRoute: typeof StaffIqacReportsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/settings': {
+      id: '/staff/iqac/settings'
+      path: '/settings'
+      fullPath: '/staff/iqac/settings'
+      preLoaderRoute: typeof StaffIqacSettingsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/ssr': {
+      id: '/staff/iqac/ssr'
+      path: '/ssr'
+      fullPath: '/staff/iqac/ssr'
+      preLoaderRoute: typeof StaffIqacSsrRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/student-feedback': {
+      id: '/staff/iqac/student-feedback'
+      path: '/student-feedback'
+      fullPath: '/staff/iqac/student-feedback'
+      preLoaderRoute: typeof StaffIqacStudentFeedbackRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/substitution-history': {
+      id: '/staff/iqac/substitution-history'
+      path: '/substitution-history'
+      fullPath: '/staff/iqac/substitution-history'
+      preLoaderRoute: typeof StaffIqacSubstitutionHistoryRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/timetable': {
+      id: '/staff/iqac/timetable'
+      path: '/timetable'
+      fullPath: '/staff/iqac/timetable'
+      preLoaderRoute: typeof StaffIqacTimetableRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/iqac/workshops': {
+      id: '/staff/iqac/workshops'
+      path: '/workshops'
+      fullPath: '/staff/iqac/workshops'
+      preLoaderRoute: typeof StaffIqacWorkshopsRouteImport
+      parentRoute: typeof StaffIqacRoute
+    }
+    '/staff/placement-dean/': {
+      id: '/staff/placement-dean/'
+      path: '/'
+      fullPath: '/staff/placement-dean/'
+      preLoaderRoute: typeof StaffPlacementDeanIndexRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/aptitude-training': {
+      id: '/staff/placement-dean/aptitude-training'
+      path: '/aptitude-training'
+      fullPath: '/staff/placement-dean/aptitude-training'
+      preLoaderRoute: typeof StaffPlacementDeanAptitudeTrainingRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/assign-substitute': {
+      id: '/staff/placement-dean/assign-substitute'
+      path: '/assign-substitute'
+      fullPath: '/staff/placement-dean/assign-substitute'
+      preLoaderRoute: typeof StaffPlacementDeanAssignSubstituteRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/coding-training': {
+      id: '/staff/placement-dean/coding-training'
+      path: '/coding-training'
+      fullPath: '/staff/placement-dean/coding-training'
+      preLoaderRoute: typeof StaffPlacementDeanCodingTrainingRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/companies': {
+      id: '/staff/placement-dean/companies'
+      path: '/companies'
+      fullPath: '/staff/placement-dean/companies'
+      preLoaderRoute: typeof StaffPlacementDeanCompaniesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/company-hiring': {
+      id: '/staff/placement-dean/company-hiring'
+      path: '/company-hiring'
+      fullPath: '/staff/placement-dean/company-hiring'
+      preLoaderRoute: typeof StaffPlacementDeanCompanyHiringRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/company-profiles': {
+      id: '/staff/placement-dean/company-profiles'
+      path: '/company-profiles'
+      fullPath: '/staff/placement-dean/company-profiles'
+      preLoaderRoute: typeof StaffPlacementDeanCompanyProfilesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/company-reports': {
+      id: '/staff/placement-dean/company-reports'
+      path: '/company-reports'
+      fullPath: '/staff/placement-dean/company-reports'
+      preLoaderRoute: typeof StaffPlacementDeanCompanyReportsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/company-visits': {
+      id: '/staff/placement-dean/company-visits'
+      path: '/company-visits'
+      fullPath: '/staff/placement-dean/company-visits'
+      preLoaderRoute: typeof StaffPlacementDeanCompanyVisitsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/completed-drives': {
+      id: '/staff/placement-dean/completed-drives'
+      path: '/completed-drives'
+      fullPath: '/staff/placement-dean/completed-drives'
+      preLoaderRoute: typeof StaffPlacementDeanCompletedDrivesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/dept-placements': {
+      id: '/staff/placement-dean/dept-placements'
+      path: '/dept-placements'
+      fullPath: '/staff/placement-dean/dept-placements'
+      preLoaderRoute: typeof StaffPlacementDeanDeptPlacementsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/drives': {
+      id: '/staff/placement-dean/drives'
+      path: '/drives'
+      fullPath: '/staff/placement-dean/drives'
+      preLoaderRoute: typeof StaffPlacementDeanDrivesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/eligible-students': {
+      id: '/staff/placement-dean/eligible-students'
+      path: '/eligible-students'
+      fullPath: '/staff/placement-dean/eligible-students'
+      preLoaderRoute: typeof StaffPlacementDeanEligibleStudentsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/faculty-timetables': {
+      id: '/staff/placement-dean/faculty-timetables'
+      path: '/faculty-timetables'
+      fullPath: '/staff/placement-dean/faculty-timetables'
+      preLoaderRoute: typeof StaffPlacementDeanFacultyTimetablesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/internship-opportunities': {
+      id: '/staff/placement-dean/internship-opportunities'
+      path: '/internship-opportunities'
+      fullPath: '/staff/placement-dean/internship-opportunities'
+      preLoaderRoute: typeof StaffPlacementDeanInternshipOpportunitiesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/internship-reports': {
+      id: '/staff/placement-dean/internship-reports'
+      path: '/internship-reports'
+      fullPath: '/staff/placement-dean/internship-reports'
+      preLoaderRoute: typeof StaffPlacementDeanInternshipReportsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/internship-reports-list': {
+      id: '/staff/placement-dean/internship-reports-list'
+      path: '/internship-reports-list'
+      fullPath: '/staff/placement-dean/internship-reports-list'
+      preLoaderRoute: typeof StaffPlacementDeanInternshipReportsListRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/internship-tracking': {
+      id: '/staff/placement-dean/internship-tracking'
+      path: '/internship-tracking'
+      fullPath: '/staff/placement-dean/internship-tracking'
+      preLoaderRoute: typeof StaffPlacementDeanInternshipTrackingRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/internships': {
+      id: '/staff/placement-dean/internships'
+      path: '/internships'
+      fullPath: '/staff/placement-dean/internships'
+      preLoaderRoute: typeof StaffPlacementDeanInternshipsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/mock-interviews': {
+      id: '/staff/placement-dean/mock-interviews'
+      path: '/mock-interviews'
+      fullPath: '/staff/placement-dean/mock-interviews'
+      preLoaderRoute: typeof StaffPlacementDeanMockInterviewsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/mous': {
+      id: '/staff/placement-dean/mous'
+      path: '/mous'
+      fullPath: '/staff/placement-dean/mous'
+      preLoaderRoute: typeof StaffPlacementDeanMousRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/my-classes': {
+      id: '/staff/placement-dean/my-classes'
+      path: '/my-classes'
+      fullPath: '/staff/placement-dean/my-classes'
+      preLoaderRoute: typeof StaffPlacementDeanMyClassesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/my-timetable': {
+      id: '/staff/placement-dean/my-timetable'
+      path: '/my-timetable'
+      fullPath: '/staff/placement-dean/my-timetable'
+      preLoaderRoute: typeof StaffPlacementDeanMyTimetableRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/notifications': {
+      id: '/staff/placement-dean/notifications'
+      path: '/notifications'
+      fullPath: '/staff/placement-dean/notifications'
+      preLoaderRoute: typeof StaffPlacementDeanNotificationsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/off-campus-drives': {
+      id: '/staff/placement-dean/off-campus-drives'
+      path: '/off-campus-drives'
+      fullPath: '/staff/placement-dean/off-campus-drives'
+      preLoaderRoute: typeof StaffPlacementDeanOffCampusDrivesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/offer-letters': {
+      id: '/staff/placement-dean/offer-letters'
+      path: '/offer-letters'
+      fullPath: '/staff/placement-dean/offer-letters'
+      preLoaderRoute: typeof StaffPlacementDeanOfferLettersRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/offers': {
+      id: '/staff/placement-dean/offers'
+      path: '/offers'
+      fullPath: '/staff/placement-dean/offers'
+      preLoaderRoute: typeof StaffPlacementDeanOffersRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/ongoing-drives': {
+      id: '/staff/placement-dean/ongoing-drives'
+      path: '/ongoing-drives'
+      fullPath: '/staff/placement-dean/ongoing-drives'
+      preLoaderRoute: typeof StaffPlacementDeanOngoingDrivesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/package-analysis': {
+      id: '/staff/placement-dean/package-analysis'
+      path: '/package-analysis'
+      fullPath: '/staff/placement-dean/package-analysis'
+      preLoaderRoute: typeof StaffPlacementDeanPackageAnalysisRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/package-analytics': {
+      id: '/staff/placement-dean/package-analytics'
+      path: '/package-analytics'
+      fullPath: '/staff/placement-dean/package-analytics'
+      preLoaderRoute: typeof StaffPlacementDeanPackageAnalyticsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/packages': {
+      id: '/staff/placement-dean/packages'
+      path: '/packages'
+      fullPath: '/staff/placement-dean/packages'
+      preLoaderRoute: typeof StaffPlacementDeanPackagesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/placed-students': {
+      id: '/staff/placement-dean/placed-students'
+      path: '/placed-students'
+      fullPath: '/staff/placement-dean/placed-students'
+      preLoaderRoute: typeof StaffPlacementDeanPlacedStudentsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/placement-reports': {
+      id: '/staff/placement-dean/placement-reports'
+      path: '/placement-reports'
+      fullPath: '/staff/placement-dean/placement-reports'
+      preLoaderRoute: typeof StaffPlacementDeanPlacementReportsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/placement-statistics': {
+      id: '/staff/placement-dean/placement-statistics'
+      path: '/placement-statistics'
+      fullPath: '/staff/placement-dean/placement-statistics'
+      preLoaderRoute: typeof StaffPlacementDeanPlacementStatisticsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/recruitment-partners': {
+      id: '/staff/placement-dean/recruitment-partners'
+      path: '/recruitment-partners'
+      fullPath: '/staff/placement-dean/recruitment-partners'
+      preLoaderRoute: typeof StaffPlacementDeanRecruitmentPartnersRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/registered-students': {
+      id: '/staff/placement-dean/registered-students'
+      path: '/registered-students'
+      fullPath: '/staff/placement-dean/registered-students'
+      preLoaderRoute: typeof StaffPlacementDeanRegisteredStudentsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/reports': {
+      id: '/staff/placement-dean/reports'
+      path: '/reports'
+      fullPath: '/staff/placement-dean/reports'
+      preLoaderRoute: typeof StaffPlacementDeanReportsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/resume-reviews': {
+      id: '/staff/placement-dean/resume-reviews'
+      path: '/resume-reviews'
+      fullPath: '/staff/placement-dean/resume-reviews'
+      preLoaderRoute: typeof StaffPlacementDeanResumeReviewsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/selected-students': {
+      id: '/staff/placement-dean/selected-students'
+      path: '/selected-students'
+      fullPath: '/staff/placement-dean/selected-students'
+      preLoaderRoute: typeof StaffPlacementDeanSelectedStudentsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/settings': {
+      id: '/staff/placement-dean/settings'
+      path: '/settings'
+      fullPath: '/staff/placement-dean/settings'
+      preLoaderRoute: typeof StaffPlacementDeanSettingsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/shortlisted-students': {
+      id: '/staff/placement-dean/shortlisted-students'
+      path: '/shortlisted-students'
+      fullPath: '/staff/placement-dean/shortlisted-students'
+      preLoaderRoute: typeof StaffPlacementDeanShortlistedStudentsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/soft-skills': {
+      id: '/staff/placement-dean/soft-skills'
+      path: '/soft-skills'
+      fullPath: '/staff/placement-dean/soft-skills'
+      preLoaderRoute: typeof StaffPlacementDeanSoftSkillsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/student-reports': {
+      id: '/staff/placement-dean/student-reports'
+      path: '/student-reports'
+      fullPath: '/staff/placement-dean/student-reports'
+      preLoaderRoute: typeof StaffPlacementDeanStudentReportsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/substitution-history': {
+      id: '/staff/placement-dean/substitution-history'
+      path: '/substitution-history'
+      fullPath: '/staff/placement-dean/substitution-history'
+      preLoaderRoute: typeof StaffPlacementDeanSubstitutionHistoryRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/timetable': {
+      id: '/staff/placement-dean/timetable'
+      path: '/timetable'
+      fullPath: '/staff/placement-dean/timetable'
+      preLoaderRoute: typeof StaffPlacementDeanTimetableRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/training': {
+      id: '/staff/placement-dean/training'
+      path: '/training'
+      fullPath: '/staff/placement-dean/training'
+      preLoaderRoute: typeof StaffPlacementDeanTrainingRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/training-reports': {
+      id: '/staff/placement-dean/training-reports'
+      path: '/training-reports'
+      fullPath: '/staff/placement-dean/training-reports'
+      preLoaderRoute: typeof StaffPlacementDeanTrainingReportsRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/placement-dean/upcoming-drives': {
+      id: '/staff/placement-dean/upcoming-drives'
+      path: '/upcoming-drives'
+      fullPath: '/staff/placement-dean/upcoming-drives'
+      preLoaderRoute: typeof StaffPlacementDeanUpcomingDrivesRouteImport
+      parentRoute: typeof StaffPlacementDeanRoute
+    }
+    '/staff/research-development/': {
+      id: '/staff/research-development/'
+      path: '/'
+      fullPath: '/staff/research-development/'
+      preLoaderRoute: typeof StaffResearchDevelopmentIndexRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/assign-substitute': {
+      id: '/staff/research-development/assign-substitute'
+      path: '/assign-substitute'
+      fullPath: '/staff/research-development/assign-substitute'
+      preLoaderRoute: typeof StaffResearchDevelopmentAssignSubstituteRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/book-chapters': {
+      id: '/staff/research-development/book-chapters'
+      path: '/book-chapters'
+      fullPath: '/staff/research-development/book-chapters'
+      preLoaderRoute: typeof StaffResearchDevelopmentBookChaptersRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/completed-projects': {
+      id: '/staff/research-development/completed-projects'
+      path: '/completed-projects'
+      fullPath: '/staff/research-development/completed-projects'
+      preLoaderRoute: typeof StaffResearchDevelopmentCompletedProjectsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/conference-publications': {
+      id: '/staff/research-development/conference-publications'
+      path: '/conference-publications'
+      fullPath: '/staff/research-development/conference-publications'
+      preLoaderRoute: typeof StaffResearchDevelopmentConferencePublicationsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/conferences': {
+      id: '/staff/research-development/conferences'
+      path: '/conferences'
+      fullPath: '/staff/research-development/conferences'
+      preLoaderRoute: typeof StaffResearchDevelopmentConferencesRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/consultancy-projects': {
+      id: '/staff/research-development/consultancy-projects'
+      path: '/consultancy-projects'
+      fullPath: '/staff/research-development/consultancy-projects'
+      preLoaderRoute: typeof StaffResearchDevelopmentConsultancyProjectsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/copyrights': {
+      id: '/staff/research-development/copyrights'
+      path: '/copyrights'
+      fullPath: '/staff/research-development/copyrights'
+      preLoaderRoute: typeof StaffResearchDevelopmentCopyrightsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/faculty-timetables': {
+      id: '/staff/research-development/faculty-timetables'
+      path: '/faculty-timetables'
+      fullPath: '/staff/research-development/faculty-timetables'
+      preLoaderRoute: typeof StaffResearchDevelopmentFacultyTimetablesRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/fdps': {
+      id: '/staff/research-development/fdps'
+      path: '/fdps'
+      fullPath: '/staff/research-development/fdps'
+      preLoaderRoute: typeof StaffResearchDevelopmentFdpsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/funding-agencies': {
+      id: '/staff/research-development/funding-agencies'
+      path: '/funding-agencies'
+      fullPath: '/staff/research-development/funding-agencies'
+      preLoaderRoute: typeof StaffResearchDevelopmentFundingAgenciesRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/govt-grants': {
+      id: '/staff/research-development/govt-grants'
+      path: '/govt-grants'
+      fullPath: '/staff/research-development/govt-grants'
+      preLoaderRoute: typeof StaffResearchDevelopmentGovtGrantsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/grant-reports': {
+      id: '/staff/research-development/grant-reports'
+      path: '/grant-reports'
+      fullPath: '/staff/research-development/grant-reports'
+      preLoaderRoute: typeof StaffResearchDevelopmentGrantReportsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/grant-utilization': {
+      id: '/staff/research-development/grant-utilization'
+      path: '/grant-utilization'
+      fullPath: '/staff/research-development/grant-utilization'
+      preLoaderRoute: typeof StaffResearchDevelopmentGrantUtilizationRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/grants': {
+      id: '/staff/research-development/grants'
+      path: '/grants'
+      fullPath: '/staff/research-development/grants'
+      preLoaderRoute: typeof StaffResearchDevelopmentGrantsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/incubation': {
+      id: '/staff/research-development/incubation'
+      path: '/incubation'
+      fullPath: '/staff/research-development/incubation'
+      preLoaderRoute: typeof StaffResearchDevelopmentIncubationRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/industry-grants': {
+      id: '/staff/research-development/industry-grants'
+      path: '/industry-grants'
+      fullPath: '/staff/research-development/industry-grants'
+      preLoaderRoute: typeof StaffResearchDevelopmentIndustryGrantsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/innovation': {
+      id: '/staff/research-development/innovation'
+      path: '/innovation'
+      fullPath: '/staff/research-development/innovation'
+      preLoaderRoute: typeof StaffResearchDevelopmentInnovationRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/innovations': {
+      id: '/staff/research-development/innovations'
+      path: '/innovations'
+      fullPath: '/staff/research-development/innovations'
+      preLoaderRoute: typeof StaffResearchDevelopmentInnovationsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/journal-publications': {
+      id: '/staff/research-development/journal-publications'
+      path: '/journal-publications'
+      fullPath: '/staff/research-development/journal-publications'
+      preLoaderRoute: typeof StaffResearchDevelopmentJournalPublicationsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/lab-booking': {
+      id: '/staff/research-development/lab-booking'
+      path: '/lab-booking'
+      fullPath: '/staff/research-development/lab-booking'
+      preLoaderRoute: typeof StaffResearchDevelopmentLabBookingRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/lab-equipment': {
+      id: '/staff/research-development/lab-equipment'
+      path: '/lab-equipment'
+      fullPath: '/staff/research-development/lab-equipment'
+      preLoaderRoute: typeof StaffResearchDevelopmentLabEquipmentRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/lab-utilization': {
+      id: '/staff/research-development/lab-utilization'
+      path: '/lab-utilization'
+      fullPath: '/staff/research-development/lab-utilization'
+      preLoaderRoute: typeof StaffResearchDevelopmentLabUtilizationRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/my-classes': {
+      id: '/staff/research-development/my-classes'
+      path: '/my-classes'
+      fullPath: '/staff/research-development/my-classes'
+      preLoaderRoute: typeof StaffResearchDevelopmentMyClassesRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/my-timetable': {
+      id: '/staff/research-development/my-timetable'
+      path: '/my-timetable'
+      fullPath: '/staff/research-development/my-timetable'
+      preLoaderRoute: typeof StaffResearchDevelopmentMyTimetableRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/notifications': {
+      id: '/staff/research-development/notifications'
+      path: '/notifications'
+      fullPath: '/staff/research-development/notifications'
+      preLoaderRoute: typeof StaffResearchDevelopmentNotificationsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/ongoing-projects': {
+      id: '/staff/research-development/ongoing-projects'
+      path: '/ongoing-projects'
+      fullPath: '/staff/research-development/ongoing-projects'
+      preLoaderRoute: typeof StaffResearchDevelopmentOngoingProjectsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/patent-reports': {
+      id: '/staff/research-development/patent-reports'
+      path: '/patent-reports'
+      fullPath: '/staff/research-development/patent-reports'
+      preLoaderRoute: typeof StaffResearchDevelopmentPatentReportsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/patents': {
+      id: '/staff/research-development/patents'
+      path: '/patents'
+      fullPath: '/staff/research-development/patents'
+      preLoaderRoute: typeof StaffResearchDevelopmentPatentsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/phd-scholars': {
+      id: '/staff/research-development/phd-scholars'
+      path: '/phd-scholars'
+      fullPath: '/staff/research-development/phd-scholars'
+      preLoaderRoute: typeof StaffResearchDevelopmentPhdScholarsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/projects': {
+      id: '/staff/research-development/projects'
+      path: '/projects'
+      fullPath: '/staff/research-development/projects'
+      preLoaderRoute: typeof StaffResearchDevelopmentProjectsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/publication-reports': {
+      id: '/staff/research-development/publication-reports'
+      path: '/publication-reports'
+      fullPath: '/staff/research-development/publication-reports'
+      preLoaderRoute: typeof StaffResearchDevelopmentPublicationReportsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/publications-repo': {
+      id: '/staff/research-development/publications-repo'
+      path: '/publications-repo'
+      fullPath: '/staff/research-development/publications-repo'
+      preLoaderRoute: typeof StaffResearchDevelopmentPublicationsRepoRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/research-guides': {
+      id: '/staff/research-development/research-guides'
+      path: '/research-guides'
+      fullPath: '/staff/research-development/research-guides'
+      preLoaderRoute: typeof StaffResearchDevelopmentResearchGuidesRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/research-labs': {
+      id: '/staff/research-development/research-labs'
+      path: '/research-labs'
+      fullPath: '/staff/research-development/research-labs'
+      preLoaderRoute: typeof StaffResearchDevelopmentResearchLabsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/research-reports': {
+      id: '/staff/research-development/research-reports'
+      path: '/research-reports'
+      fullPath: '/staff/research-development/research-reports'
+      preLoaderRoute: typeof StaffResearchDevelopmentResearchReportsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/scholar-progress': {
+      id: '/staff/research-development/scholar-progress'
+      path: '/scholar-progress'
+      fullPath: '/staff/research-development/scholar-progress'
+      preLoaderRoute: typeof StaffResearchDevelopmentScholarProgressRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/scholar-reports': {
+      id: '/staff/research-development/scholar-reports'
+      path: '/scholar-reports'
+      fullPath: '/staff/research-development/scholar-reports'
+      preLoaderRoute: typeof StaffResearchDevelopmentScholarReportsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/scholars': {
+      id: '/staff/research-development/scholars'
+      path: '/scholars'
+      fullPath: '/staff/research-development/scholars'
+      preLoaderRoute: typeof StaffResearchDevelopmentScholarsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/seminars': {
+      id: '/staff/research-development/seminars'
+      path: '/seminars'
+      fullPath: '/staff/research-development/seminars'
+      preLoaderRoute: typeof StaffResearchDevelopmentSeminarsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/settings': {
+      id: '/staff/research-development/settings'
+      path: '/settings'
+      fullPath: '/staff/research-development/settings'
+      preLoaderRoute: typeof StaffResearchDevelopmentSettingsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/sponsored-projects': {
+      id: '/staff/research-development/sponsored-projects'
+      path: '/sponsored-projects'
+      fullPath: '/staff/research-development/sponsored-projects'
+      preLoaderRoute: typeof StaffResearchDevelopmentSponsoredProjectsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/substitution-history': {
+      id: '/staff/research-development/substitution-history'
+      path: '/substitution-history'
+      fullPath: '/staff/research-development/substitution-history'
+      preLoaderRoute: typeof StaffResearchDevelopmentSubstitutionHistoryRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/thesis-repo': {
+      id: '/staff/research-development/thesis-repo'
+      path: '/thesis-repo'
+      fullPath: '/staff/research-development/thesis-repo'
+      preLoaderRoute: typeof StaffResearchDevelopmentThesisRepoRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/timetable': {
+      id: '/staff/research-development/timetable'
+      path: '/timetable'
+      fullPath: '/staff/research-development/timetable'
+      preLoaderRoute: typeof StaffResearchDevelopmentTimetableRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/research-development/workshops': {
+      id: '/staff/research-development/workshops'
+      path: '/workshops'
+      fullPath: '/staff/research-development/workshops'
+      preLoaderRoute: typeof StaffResearchDevelopmentWorkshopsRouteImport
+      parentRoute: typeof StaffResearchDevelopmentRoute
+    }
+    '/staff/student-dean/': {
+      id: '/staff/student-dean/'
+      path: '/'
+      fullPath: '/staff/student-dean/'
+      preLoaderRoute: typeof StaffStudentDeanIndexRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/attendance': {
+      id: '/staff/student-dean/attendance'
+      path: '/attendance'
+      fullPath: '/staff/student-dean/attendance'
+      preLoaderRoute: typeof StaffStudentDeanAttendanceRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/attendance-history': {
+      id: '/staff/student-dean/attendance-history'
+      path: '/attendance-history'
+      fullPath: '/staff/student-dean/attendance-history'
+      preLoaderRoute: typeof StaffStudentDeanAttendanceHistoryRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/attendance-reports': {
+      id: '/staff/student-dean/attendance-reports'
+      path: '/attendance-reports'
+      fullPath: '/staff/student-dean/attendance-reports'
+      preLoaderRoute: typeof StaffStudentDeanAttendanceReportsRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/certificates': {
+      id: '/staff/student-dean/certificates'
+      path: '/certificates'
+      fullPath: '/staff/student-dean/certificates'
+      preLoaderRoute: typeof StaffStudentDeanCertificatesRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/clubs-events': {
+      id: '/staff/student-dean/clubs-events'
+      path: '/clubs-events'
+      fullPath: '/staff/student-dean/clubs-events'
+      preLoaderRoute: typeof StaffStudentDeanClubsEventsRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/counselling': {
+      id: '/staff/student-dean/counselling'
+      path: '/counselling'
+      fullPath: '/staff/student-dean/counselling'
+      preLoaderRoute: typeof StaffStudentDeanCounsellingRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/discipline': {
+      id: '/staff/student-dean/discipline'
+      path: '/discipline'
+      fullPath: '/staff/student-dean/discipline'
+      preLoaderRoute: typeof StaffStudentDeanDisciplineRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/grievances': {
+      id: '/staff/student-dean/grievances'
+      path: '/grievances'
+      fullPath: '/staff/student-dean/grievances'
+      preLoaderRoute: typeof StaffStudentDeanGrievancesRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/hostel': {
+      id: '/staff/student-dean/hostel'
+      path: '/hostel'
+      fullPath: '/staff/student-dean/hostel'
+      preLoaderRoute: typeof StaffStudentDeanHostelRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/mentoring': {
+      id: '/staff/student-dean/mentoring'
+      path: '/mentoring'
+      fullPath: '/staff/student-dean/mentoring'
+      preLoaderRoute: typeof StaffStudentDeanMentoringRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/notifications': {
+      id: '/staff/student-dean/notifications'
+      path: '/notifications'
+      fullPath: '/staff/student-dean/notifications'
+      preLoaderRoute: typeof StaffStudentDeanNotificationsRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/profiles': {
+      id: '/staff/student-dean/profiles'
+      path: '/profiles'
+      fullPath: '/staff/student-dean/profiles'
+      preLoaderRoute: typeof StaffStudentDeanProfilesRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/reports': {
+      id: '/staff/student-dean/reports'
+      path: '/reports'
+      fullPath: '/staff/student-dean/reports'
+      preLoaderRoute: typeof StaffStudentDeanReportsRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/scholarship-reports': {
+      id: '/staff/student-dean/scholarship-reports'
+      path: '/scholarship-reports'
+      fullPath: '/staff/student-dean/scholarship-reports'
+      preLoaderRoute: typeof StaffStudentDeanScholarshipReportsRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/scholarships': {
+      id: '/staff/student-dean/scholarships'
+      path: '/scholarships'
+      fullPath: '/staff/student-dean/scholarships'
+      preLoaderRoute: typeof StaffStudentDeanScholarshipsRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/settings': {
+      id: '/staff/student-dean/settings'
+      path: '/settings'
+      fullPath: '/staff/student-dean/settings'
+      preLoaderRoute: typeof StaffStudentDeanSettingsRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/student-activities': {
+      id: '/staff/student-dean/student-activities'
+      path: '/student-activities'
+      fullPath: '/staff/student-dean/student-activities'
+      preLoaderRoute: typeof StaffStudentDeanStudentActivitiesRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/student-profiles': {
+      id: '/staff/student-dean/student-profiles'
+      path: '/student-profiles'
+      fullPath: '/staff/student-dean/student-profiles'
+      preLoaderRoute: typeof StaffStudentDeanStudentProfilesRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/student-reports': {
+      id: '/staff/student-dean/student-reports'
+      path: '/student-reports'
+      fullPath: '/staff/student-dean/student-reports'
+      preLoaderRoute: typeof StaffStudentDeanStudentReportsRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/student-requests': {
+      id: '/staff/student-dean/student-requests'
+      path: '/student-requests'
+      fullPath: '/staff/student-dean/student-requests'
+      preLoaderRoute: typeof StaffStudentDeanStudentRequestsRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/students': {
+      id: '/staff/student-dean/students'
+      path: '/students'
+      fullPath: '/staff/student-dean/students'
+      preLoaderRoute: typeof StaffStudentDeanStudentsRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student-dean/timetable': {
+      id: '/staff/student-dean/timetable'
+      path: '/timetable'
+      fullPath: '/staff/student-dean/timetable'
+      preLoaderRoute: typeof StaffStudentDeanTimetableRouteImport
+      parentRoute: typeof StaffStudentDeanRoute
+    }
+    '/staff/student_dean/$': {
+      id: '/staff/student_dean/$'
+      path: '/$'
+      fullPath: '/staff/student_dean/$'
+      preLoaderRoute: typeof StaffStudent_deanSplatRouteImport
+      parentRoute: typeof StaffStudent_deanRoute
+    }
     '/super-admin/academics/faculty-status': {
       id: '/super-admin/academics/faculty-status'
       path: '/faculty-status'
@@ -5102,50 +12371,6 @@ const DeanRouteChildren: DeanRouteChildren = {
 
 const DeanRouteWithChildren = DeanRoute._addFileChildren(DeanRouteChildren)
 
-interface ExamcellRouteChildren {
-  ExamcellAnalyticsRoute: typeof ExamcellAnalyticsRoute
-  ExamcellBloomstickRoute: typeof ExamcellBloomstickRoute
-  ExamcellCorrectionAnalysisRoute: typeof ExamcellCorrectionAnalysisRoute
-  ExamcellCorrectionRequestsRoute: typeof ExamcellCorrectionRequestsRoute
-  ExamcellCorrectionsRoute: typeof ExamcellCorrectionsRoute
-  ExamcellCourseEnrollRoute: typeof ExamcellCourseEnrollRoute
-  ExamcellDashboardRoute: typeof ExamcellDashboardRoute
-  ExamcellHallTicketsRoute: typeof ExamcellHallTicketsRoute
-  ExamcellNotificationsRoute: typeof ExamcellNotificationsRoute
-  ExamcellQuestionsRoute: typeof ExamcellQuestionsRoute
-  ExamcellResultsRoute: typeof ExamcellResultsRoute
-  ExamcellScheduleRoute: typeof ExamcellScheduleRoute
-  ExamcellSettingsRoute: typeof ExamcellSettingsRoute
-  ExamcellSupplementaryRoute: typeof ExamcellSupplementaryRoute
-  ExamcellTimetableRoute: typeof ExamcellTimetableRoute
-  ExamcellUpdatesRoute: typeof ExamcellUpdatesRoute
-  ExamcellIndexRoute: typeof ExamcellIndexRoute
-}
-
-const ExamcellRouteChildren: ExamcellRouteChildren = {
-  ExamcellAnalyticsRoute: ExamcellAnalyticsRoute,
-  ExamcellBloomstickRoute: ExamcellBloomstickRoute,
-  ExamcellCorrectionAnalysisRoute: ExamcellCorrectionAnalysisRoute,
-  ExamcellCorrectionRequestsRoute: ExamcellCorrectionRequestsRoute,
-  ExamcellCorrectionsRoute: ExamcellCorrectionsRoute,
-  ExamcellCourseEnrollRoute: ExamcellCourseEnrollRoute,
-  ExamcellDashboardRoute: ExamcellDashboardRoute,
-  ExamcellHallTicketsRoute: ExamcellHallTicketsRoute,
-  ExamcellNotificationsRoute: ExamcellNotificationsRoute,
-  ExamcellQuestionsRoute: ExamcellQuestionsRoute,
-  ExamcellResultsRoute: ExamcellResultsRoute,
-  ExamcellScheduleRoute: ExamcellScheduleRoute,
-  ExamcellSettingsRoute: ExamcellSettingsRoute,
-  ExamcellSupplementaryRoute: ExamcellSupplementaryRoute,
-  ExamcellTimetableRoute: ExamcellTimetableRoute,
-  ExamcellUpdatesRoute: ExamcellUpdatesRoute,
-  ExamcellIndexRoute: ExamcellIndexRoute,
-}
-
-const ExamcellRouteWithChildren = ExamcellRoute._addFileChildren(
-  ExamcellRouteChildren,
-)
-
 interface ExaminationRouteChildren {
   ExaminationDashboardRoute: typeof ExaminationDashboardRoute
   ExaminationIndexRoute: typeof ExaminationIndexRoute
@@ -5158,6 +12383,32 @@ const ExaminationRouteChildren: ExaminationRouteChildren = {
 
 const ExaminationRouteWithChildren = ExaminationRoute._addFileChildren(
   ExaminationRouteChildren,
+)
+
+interface ExaminationsRouteChildren {
+  ExaminationsAnalyticsRoute: typeof ExaminationsAnalyticsRoute
+  ExaminationsHallTicketsRoute: typeof ExaminationsHallTicketsRoute
+  ExaminationsInternalMarksRoute: typeof ExaminationsInternalMarksRoute
+  ExaminationsNotificationsRoute: typeof ExaminationsNotificationsRoute
+  ExaminationsReportsRoute: typeof ExaminationsReportsRoute
+  ExaminationsRevaluationRoute: typeof ExaminationsRevaluationRoute
+  ExaminationsScheduleRoute: typeof ExaminationsScheduleRoute
+  ExaminationsIndexRoute: typeof ExaminationsIndexRoute
+}
+
+const ExaminationsRouteChildren: ExaminationsRouteChildren = {
+  ExaminationsAnalyticsRoute: ExaminationsAnalyticsRoute,
+  ExaminationsHallTicketsRoute: ExaminationsHallTicketsRoute,
+  ExaminationsInternalMarksRoute: ExaminationsInternalMarksRoute,
+  ExaminationsNotificationsRoute: ExaminationsNotificationsRoute,
+  ExaminationsReportsRoute: ExaminationsReportsRoute,
+  ExaminationsRevaluationRoute: ExaminationsRevaluationRoute,
+  ExaminationsScheduleRoute: ExaminationsScheduleRoute,
+  ExaminationsIndexRoute: ExaminationsIndexRoute,
+}
+
+const ExaminationsRouteWithChildren = ExaminationsRoute._addFileChildren(
+  ExaminationsRouteChildren,
 )
 
 interface ExternalUserRouteChildren {
@@ -5179,13 +12430,10 @@ interface FacultyRouteChildren {
   FacultyAssignmentsRoute: typeof FacultyAssignmentsRoute
   FacultyAttendanceRoute: typeof FacultyAttendanceRoute
   FacultyDashboardRoute: typeof FacultyDashboardRoute
-  FacultyEvaluationAndMarksRoute: typeof FacultyEvaluationAndMarksRoute
-  FacultyEvaluationsRoute: typeof FacultyEvaluationsRoute
   FacultyExaminationsRoute: typeof FacultyExaminationsRoute
   FacultyLeaveRoute: typeof FacultyLeaveRoute
   FacultyLessonPlanRoute: typeof FacultyLessonPlanRoute
   FacultyLmsRoute: typeof FacultyLmsRoute
-  FacultyMarksRoute: typeof FacultyMarksRoute
   FacultyMaterialsRoute: typeof FacultyMaterialsRoute
   FacultyNotificationsRoute: typeof FacultyNotificationsRoute
   FacultyPayrollRoute: typeof FacultyPayrollRoute
@@ -5205,13 +12453,10 @@ const FacultyRouteChildren: FacultyRouteChildren = {
   FacultyAssignmentsRoute: FacultyAssignmentsRoute,
   FacultyAttendanceRoute: FacultyAttendanceRoute,
   FacultyDashboardRoute: FacultyDashboardRoute,
-  FacultyEvaluationAndMarksRoute: FacultyEvaluationAndMarksRoute,
-  FacultyEvaluationsRoute: FacultyEvaluationsRoute,
   FacultyExaminationsRoute: FacultyExaminationsRoute,
   FacultyLeaveRoute: FacultyLeaveRoute,
   FacultyLessonPlanRoute: FacultyLessonPlanRoute,
   FacultyLmsRoute: FacultyLmsRoute,
-  FacultyMarksRoute: FacultyMarksRoute,
   FacultyMaterialsRoute: FacultyMaterialsRoute,
   FacultyNotificationsRoute: FacultyNotificationsRoute,
   FacultyPayrollRoute: FacultyPayrollRoute,
@@ -5467,6 +12712,981 @@ const PlacementRouteWithChildren = PlacementRoute._addFileChildren(
   PlacementRouteChildren,
 )
 
+interface StaffAcademicDeanRouteChildren {
+  StaffAcademicDeanAcademicAuditRoute: typeof StaffAcademicDeanAcademicAuditRoute
+  StaffAcademicDeanAcademicCalendarRoute: typeof StaffAcademicDeanAcademicCalendarRoute
+  StaffAcademicDeanAcademicCouncilRoute: typeof StaffAcademicDeanAcademicCouncilRoute
+  StaffAcademicDeanAcademicPerformanceRoute: typeof StaffAcademicDeanAcademicPerformanceRoute
+  StaffAcademicDeanAcademicReportsRoute: typeof StaffAcademicDeanAcademicReportsRoute
+  StaffAcademicDeanAccreditationRoute: typeof StaffAcademicDeanAccreditationRoute
+  StaffAcademicDeanApprovalsRoute: typeof StaffAcademicDeanApprovalsRoute
+  StaffAcademicDeanAssignSubstituteRoute: typeof StaffAcademicDeanAssignSubstituteRoute
+  StaffAcademicDeanAttendanceMonitoringRoute: typeof StaffAcademicDeanAttendanceMonitoringRoute
+  StaffAcademicDeanAttendanceReportsRoute: typeof StaffAcademicDeanAttendanceReportsRoute
+  StaffAcademicDeanBosMeetingsRoute: typeof StaffAcademicDeanBosMeetingsRoute
+  StaffAcademicDeanCircularsRoute: typeof StaffAcademicDeanCircularsRoute
+  StaffAcademicDeanClassMonitoringRoute: typeof StaffAcademicDeanClassMonitoringRoute
+  StaffAcademicDeanClassroomAllocationRoute: typeof StaffAcademicDeanClassroomAllocationRoute
+  StaffAcademicDeanCopoMappingRoute: typeof StaffAcademicDeanCopoMappingRoute
+  StaffAcademicDeanCourseAllocationRoute: typeof StaffAcademicDeanCourseAllocationRoute
+  StaffAcademicDeanCourseManagementRoute: typeof StaffAcademicDeanCourseManagementRoute
+  StaffAcademicDeanCourseOutcomesRoute: typeof StaffAcademicDeanCourseOutcomesRoute
+  StaffAcademicDeanCurriculumRoute: typeof StaffAcademicDeanCurriculumRoute
+  StaffAcademicDeanDepartmentReportsRoute: typeof StaffAcademicDeanDepartmentReportsRoute
+  StaffAcademicDeanDepartmentsRoute: typeof StaffAcademicDeanDepartmentsRoute
+  StaffAcademicDeanDeptWorkloadRoute: typeof StaffAcademicDeanDeptWorkloadRoute
+  StaffAcademicDeanFacultyManagementRoute: typeof StaffAcademicDeanFacultyManagementRoute
+  StaffAcademicDeanFacultyPerformanceRoute: typeof StaffAcademicDeanFacultyPerformanceRoute
+  StaffAcademicDeanFacultyReportsRoute: typeof StaffAcademicDeanFacultyReportsRoute
+  StaffAcademicDeanFacultyTimetableRoute: typeof StaffAcademicDeanFacultyTimetableRoute
+  StaffAcademicDeanFacultyTimetablesRoute: typeof StaffAcademicDeanFacultyTimetablesRoute
+  StaffAcademicDeanFacultyWorkloadRoute: typeof StaffAcademicDeanFacultyWorkloadRoute
+  StaffAcademicDeanMyClassesRoute: typeof StaffAcademicDeanMyClassesRoute
+  StaffAcademicDeanMyTimetableRoute: typeof StaffAcademicDeanMyTimetableRoute
+  StaffAcademicDeanNotificationsRoute: typeof StaffAcademicDeanNotificationsRoute
+  StaffAcademicDeanObeManagementRoute: typeof StaffAcademicDeanObeManagementRoute
+  StaffAcademicDeanProgramsRoute: typeof StaffAcademicDeanProgramsRoute
+  StaffAcademicDeanSettingsRoute: typeof StaffAcademicDeanSettingsRoute
+  StaffAcademicDeanSlowLearnersRoute: typeof StaffAcademicDeanSlowLearnersRoute
+  StaffAcademicDeanStudentReportsRoute: typeof StaffAcademicDeanStudentReportsRoute
+  StaffAcademicDeanSubjectAllocationRoute: typeof StaffAcademicDeanSubjectAllocationRoute
+  StaffAcademicDeanSubstituteFacultyRoute: typeof StaffAcademicDeanSubstituteFacultyRoute
+  StaffAcademicDeanSubstitutionHistoryRoute: typeof StaffAcademicDeanSubstitutionHistoryRoute
+  StaffAcademicDeanTeachingLoadRoute: typeof StaffAcademicDeanTeachingLoadRoute
+  StaffAcademicDeanTimetableRoute: typeof StaffAcademicDeanTimetableRoute
+  StaffAcademicDeanTimetableHistoryRoute: typeof StaffAcademicDeanTimetableHistoryRoute
+  StaffAcademicDeanTimetableReportsRoute: typeof StaffAcademicDeanTimetableReportsRoute
+  StaffAcademicDeanTopPerformersRoute: typeof StaffAcademicDeanTopPerformersRoute
+  StaffAcademicDeanIndexRoute: typeof StaffAcademicDeanIndexRoute
+}
+
+const StaffAcademicDeanRouteChildren: StaffAcademicDeanRouteChildren = {
+  StaffAcademicDeanAcademicAuditRoute: StaffAcademicDeanAcademicAuditRoute,
+  StaffAcademicDeanAcademicCalendarRoute:
+    StaffAcademicDeanAcademicCalendarRoute,
+  StaffAcademicDeanAcademicCouncilRoute: StaffAcademicDeanAcademicCouncilRoute,
+  StaffAcademicDeanAcademicPerformanceRoute:
+    StaffAcademicDeanAcademicPerformanceRoute,
+  StaffAcademicDeanAcademicReportsRoute: StaffAcademicDeanAcademicReportsRoute,
+  StaffAcademicDeanAccreditationRoute: StaffAcademicDeanAccreditationRoute,
+  StaffAcademicDeanApprovalsRoute: StaffAcademicDeanApprovalsRoute,
+  StaffAcademicDeanAssignSubstituteRoute:
+    StaffAcademicDeanAssignSubstituteRoute,
+  StaffAcademicDeanAttendanceMonitoringRoute:
+    StaffAcademicDeanAttendanceMonitoringRoute,
+  StaffAcademicDeanAttendanceReportsRoute:
+    StaffAcademicDeanAttendanceReportsRoute,
+  StaffAcademicDeanBosMeetingsRoute: StaffAcademicDeanBosMeetingsRoute,
+  StaffAcademicDeanCircularsRoute: StaffAcademicDeanCircularsRoute,
+  StaffAcademicDeanClassMonitoringRoute: StaffAcademicDeanClassMonitoringRoute,
+  StaffAcademicDeanClassroomAllocationRoute:
+    StaffAcademicDeanClassroomAllocationRoute,
+  StaffAcademicDeanCopoMappingRoute: StaffAcademicDeanCopoMappingRoute,
+  StaffAcademicDeanCourseAllocationRoute:
+    StaffAcademicDeanCourseAllocationRoute,
+  StaffAcademicDeanCourseManagementRoute:
+    StaffAcademicDeanCourseManagementRoute,
+  StaffAcademicDeanCourseOutcomesRoute: StaffAcademicDeanCourseOutcomesRoute,
+  StaffAcademicDeanCurriculumRoute: StaffAcademicDeanCurriculumRoute,
+  StaffAcademicDeanDepartmentReportsRoute:
+    StaffAcademicDeanDepartmentReportsRoute,
+  StaffAcademicDeanDepartmentsRoute: StaffAcademicDeanDepartmentsRoute,
+  StaffAcademicDeanDeptWorkloadRoute: StaffAcademicDeanDeptWorkloadRoute,
+  StaffAcademicDeanFacultyManagementRoute:
+    StaffAcademicDeanFacultyManagementRoute,
+  StaffAcademicDeanFacultyPerformanceRoute:
+    StaffAcademicDeanFacultyPerformanceRoute,
+  StaffAcademicDeanFacultyReportsRoute: StaffAcademicDeanFacultyReportsRoute,
+  StaffAcademicDeanFacultyTimetableRoute:
+    StaffAcademicDeanFacultyTimetableRoute,
+  StaffAcademicDeanFacultyTimetablesRoute:
+    StaffAcademicDeanFacultyTimetablesRoute,
+  StaffAcademicDeanFacultyWorkloadRoute: StaffAcademicDeanFacultyWorkloadRoute,
+  StaffAcademicDeanMyClassesRoute: StaffAcademicDeanMyClassesRoute,
+  StaffAcademicDeanMyTimetableRoute: StaffAcademicDeanMyTimetableRoute,
+  StaffAcademicDeanNotificationsRoute: StaffAcademicDeanNotificationsRoute,
+  StaffAcademicDeanObeManagementRoute: StaffAcademicDeanObeManagementRoute,
+  StaffAcademicDeanProgramsRoute: StaffAcademicDeanProgramsRoute,
+  StaffAcademicDeanSettingsRoute: StaffAcademicDeanSettingsRoute,
+  StaffAcademicDeanSlowLearnersRoute: StaffAcademicDeanSlowLearnersRoute,
+  StaffAcademicDeanStudentReportsRoute: StaffAcademicDeanStudentReportsRoute,
+  StaffAcademicDeanSubjectAllocationRoute:
+    StaffAcademicDeanSubjectAllocationRoute,
+  StaffAcademicDeanSubstituteFacultyRoute:
+    StaffAcademicDeanSubstituteFacultyRoute,
+  StaffAcademicDeanSubstitutionHistoryRoute:
+    StaffAcademicDeanSubstitutionHistoryRoute,
+  StaffAcademicDeanTeachingLoadRoute: StaffAcademicDeanTeachingLoadRoute,
+  StaffAcademicDeanTimetableRoute: StaffAcademicDeanTimetableRoute,
+  StaffAcademicDeanTimetableHistoryRoute:
+    StaffAcademicDeanTimetableHistoryRoute,
+  StaffAcademicDeanTimetableReportsRoute:
+    StaffAcademicDeanTimetableReportsRoute,
+  StaffAcademicDeanTopPerformersRoute: StaffAcademicDeanTopPerformersRoute,
+  StaffAcademicDeanIndexRoute: StaffAcademicDeanIndexRoute,
+}
+
+const StaffAcademicDeanRouteWithChildren =
+  StaffAcademicDeanRoute._addFileChildren(StaffAcademicDeanRouteChildren)
+
+interface StaffExaminationDeanRouteChildren {
+  StaffExaminationDeanAcademicCalendarRoute: typeof StaffExaminationDeanAcademicCalendarRoute
+  StaffExaminationDeanAnswerScriptAllocationRoute: typeof StaffExaminationDeanAnswerScriptAllocationRoute
+  StaffExaminationDeanAssignSubstituteRoute: typeof StaffExaminationDeanAssignSubstituteRoute
+  StaffExaminationDeanCgpaCalculationRoute: typeof StaffExaminationDeanCgpaCalculationRoute
+  StaffExaminationDeanCommitteeReportsRoute: typeof StaffExaminationDeanCommitteeReportsRoute
+  StaffExaminationDeanCompletedDrivesRoute: typeof StaffExaminationDeanCompletedDrivesRoute
+  StaffExaminationDeanConfidentialStorageRoute: typeof StaffExaminationDeanConfidentialStorageRoute
+  StaffExaminationDeanDownloadHistoryRoute: typeof StaffExaminationDeanDownloadHistoryRoute
+  StaffExaminationDeanEvaluationRoute: typeof StaffExaminationDeanEvaluationRoute
+  StaffExaminationDeanExamReportsRoute: typeof StaffExaminationDeanExamReportsRoute
+  StaffExaminationDeanExamScheduleRoute: typeof StaffExaminationDeanExamScheduleRoute
+  StaffExaminationDeanExamSchedulesRoute: typeof StaffExaminationDeanExamSchedulesRoute
+  StaffExaminationDeanFacultyTimetablesRoute: typeof StaffExaminationDeanFacultyTimetablesRoute
+  StaffExaminationDeanGenerateHallTicketsRoute: typeof StaffExaminationDeanGenerateHallTicketsRoute
+  StaffExaminationDeanGradeModerationRoute: typeof StaffExaminationDeanGradeModerationRoute
+  StaffExaminationDeanGradeSheetsRoute: typeof StaffExaminationDeanGradeSheetsRoute
+  StaffExaminationDeanHallAllocationRoute: typeof StaffExaminationDeanHallAllocationRoute
+  StaffExaminationDeanHallTicketReportsRoute: typeof StaffExaminationDeanHallTicketReportsRoute
+  StaffExaminationDeanHallTicketStatusRoute: typeof StaffExaminationDeanHallTicketStatusRoute
+  StaffExaminationDeanHallTicketsRoute: typeof StaffExaminationDeanHallTicketsRoute
+  StaffExaminationDeanInternalExamsRoute: typeof StaffExaminationDeanInternalExamsRoute
+  StaffExaminationDeanInvigilatorAllocationRoute: typeof StaffExaminationDeanInvigilatorAllocationRoute
+  StaffExaminationDeanInvigilatorReportsRoute: typeof StaffExaminationDeanInvigilatorReportsRoute
+  StaffExaminationDeanInvigilatorsRoute: typeof StaffExaminationDeanInvigilatorsRoute
+  StaffExaminationDeanMalpracticeCasesRoute: typeof StaffExaminationDeanMalpracticeCasesRoute
+  StaffExaminationDeanMalpracticeReportsRoute: typeof StaffExaminationDeanMalpracticeReportsRoute
+  StaffExaminationDeanMarksEntryRoute: typeof StaffExaminationDeanMarksEntryRoute
+  StaffExaminationDeanMarksVerificationRoute: typeof StaffExaminationDeanMarksVerificationRoute
+  StaffExaminationDeanMidExamsRoute: typeof StaffExaminationDeanMidExamsRoute
+  StaffExaminationDeanMyClassesRoute: typeof StaffExaminationDeanMyClassesRoute
+  StaffExaminationDeanMyTimetableRoute: typeof StaffExaminationDeanMyTimetableRoute
+  StaffExaminationDeanNotificationsRoute: typeof StaffExaminationDeanNotificationsRoute
+  StaffExaminationDeanPaperDistributionRoute: typeof StaffExaminationDeanPaperDistributionRoute
+  StaffExaminationDeanPracticalExamsRoute: typeof StaffExaminationDeanPracticalExamsRoute
+  StaffExaminationDeanPunishmentHistoryRoute: typeof StaffExaminationDeanPunishmentHistoryRoute
+  StaffExaminationDeanQuestionPaperApprovalRoute: typeof StaffExaminationDeanQuestionPaperApprovalRoute
+  StaffExaminationDeanQuestionPaperUploadRoute: typeof StaffExaminationDeanQuestionPaperUploadRoute
+  StaffExaminationDeanQuestionPapersRoute: typeof StaffExaminationDeanQuestionPapersRoute
+  StaffExaminationDeanRankListRoute: typeof StaffExaminationDeanRankListRoute
+  StaffExaminationDeanRecountingRoute: typeof StaffExaminationDeanRecountingRoute
+  StaffExaminationDeanReportsRoute: typeof StaffExaminationDeanReportsRoute
+  StaffExaminationDeanResultProcessingRoute: typeof StaffExaminationDeanResultProcessingRoute
+  StaffExaminationDeanResultPublicationRoute: typeof StaffExaminationDeanResultPublicationRoute
+  StaffExaminationDeanResultReportsRoute: typeof StaffExaminationDeanResultReportsRoute
+  StaffExaminationDeanResultsRoute: typeof StaffExaminationDeanResultsRoute
+  StaffExaminationDeanRevaluationRoute: typeof StaffExaminationDeanRevaluationRoute
+  StaffExaminationDeanRevaluationRequestsRoute: typeof StaffExaminationDeanRevaluationRequestsRoute
+  StaffExaminationDeanRevaluationStatusRoute: typeof StaffExaminationDeanRevaluationStatusRoute
+  StaffExaminationDeanScheduleRoute: typeof StaffExaminationDeanScheduleRoute
+  StaffExaminationDeanSemesterExamsRoute: typeof StaffExaminationDeanSemesterExamsRoute
+  StaffExaminationDeanSettingsRoute: typeof StaffExaminationDeanSettingsRoute
+  StaffExaminationDeanSubstitutionHistoryRoute: typeof StaffExaminationDeanSubstitutionHistoryRoute
+  StaffExaminationDeanSupplementaryExamsRoute: typeof StaffExaminationDeanSupplementaryExamsRoute
+  StaffExaminationDeanTimetableRoute: typeof StaffExaminationDeanTimetableRoute
+  StaffExaminationDeanTimetableGenerationRoute: typeof StaffExaminationDeanTimetableGenerationRoute
+  StaffExaminationDeanTranscriptsRoute: typeof StaffExaminationDeanTranscriptsRoute
+  StaffExaminationDeanUpdatedResultsRoute: typeof StaffExaminationDeanUpdatedResultsRoute
+  StaffExaminationDeanValuationStatusRoute: typeof StaffExaminationDeanValuationStatusRoute
+  StaffExaminationDeanIndexRoute: typeof StaffExaminationDeanIndexRoute
+}
+
+const StaffExaminationDeanRouteChildren: StaffExaminationDeanRouteChildren = {
+  StaffExaminationDeanAcademicCalendarRoute:
+    StaffExaminationDeanAcademicCalendarRoute,
+  StaffExaminationDeanAnswerScriptAllocationRoute:
+    StaffExaminationDeanAnswerScriptAllocationRoute,
+  StaffExaminationDeanAssignSubstituteRoute:
+    StaffExaminationDeanAssignSubstituteRoute,
+  StaffExaminationDeanCgpaCalculationRoute:
+    StaffExaminationDeanCgpaCalculationRoute,
+  StaffExaminationDeanCommitteeReportsRoute:
+    StaffExaminationDeanCommitteeReportsRoute,
+  StaffExaminationDeanCompletedDrivesRoute:
+    StaffExaminationDeanCompletedDrivesRoute,
+  StaffExaminationDeanConfidentialStorageRoute:
+    StaffExaminationDeanConfidentialStorageRoute,
+  StaffExaminationDeanDownloadHistoryRoute:
+    StaffExaminationDeanDownloadHistoryRoute,
+  StaffExaminationDeanEvaluationRoute: StaffExaminationDeanEvaluationRoute,
+  StaffExaminationDeanExamReportsRoute: StaffExaminationDeanExamReportsRoute,
+  StaffExaminationDeanExamScheduleRoute: StaffExaminationDeanExamScheduleRoute,
+  StaffExaminationDeanExamSchedulesRoute:
+    StaffExaminationDeanExamSchedulesRoute,
+  StaffExaminationDeanFacultyTimetablesRoute:
+    StaffExaminationDeanFacultyTimetablesRoute,
+  StaffExaminationDeanGenerateHallTicketsRoute:
+    StaffExaminationDeanGenerateHallTicketsRoute,
+  StaffExaminationDeanGradeModerationRoute:
+    StaffExaminationDeanGradeModerationRoute,
+  StaffExaminationDeanGradeSheetsRoute: StaffExaminationDeanGradeSheetsRoute,
+  StaffExaminationDeanHallAllocationRoute:
+    StaffExaminationDeanHallAllocationRoute,
+  StaffExaminationDeanHallTicketReportsRoute:
+    StaffExaminationDeanHallTicketReportsRoute,
+  StaffExaminationDeanHallTicketStatusRoute:
+    StaffExaminationDeanHallTicketStatusRoute,
+  StaffExaminationDeanHallTicketsRoute: StaffExaminationDeanHallTicketsRoute,
+  StaffExaminationDeanInternalExamsRoute:
+    StaffExaminationDeanInternalExamsRoute,
+  StaffExaminationDeanInvigilatorAllocationRoute:
+    StaffExaminationDeanInvigilatorAllocationRoute,
+  StaffExaminationDeanInvigilatorReportsRoute:
+    StaffExaminationDeanInvigilatorReportsRoute,
+  StaffExaminationDeanInvigilatorsRoute: StaffExaminationDeanInvigilatorsRoute,
+  StaffExaminationDeanMalpracticeCasesRoute:
+    StaffExaminationDeanMalpracticeCasesRoute,
+  StaffExaminationDeanMalpracticeReportsRoute:
+    StaffExaminationDeanMalpracticeReportsRoute,
+  StaffExaminationDeanMarksEntryRoute: StaffExaminationDeanMarksEntryRoute,
+  StaffExaminationDeanMarksVerificationRoute:
+    StaffExaminationDeanMarksVerificationRoute,
+  StaffExaminationDeanMidExamsRoute: StaffExaminationDeanMidExamsRoute,
+  StaffExaminationDeanMyClassesRoute: StaffExaminationDeanMyClassesRoute,
+  StaffExaminationDeanMyTimetableRoute: StaffExaminationDeanMyTimetableRoute,
+  StaffExaminationDeanNotificationsRoute:
+    StaffExaminationDeanNotificationsRoute,
+  StaffExaminationDeanPaperDistributionRoute:
+    StaffExaminationDeanPaperDistributionRoute,
+  StaffExaminationDeanPracticalExamsRoute:
+    StaffExaminationDeanPracticalExamsRoute,
+  StaffExaminationDeanPunishmentHistoryRoute:
+    StaffExaminationDeanPunishmentHistoryRoute,
+  StaffExaminationDeanQuestionPaperApprovalRoute:
+    StaffExaminationDeanQuestionPaperApprovalRoute,
+  StaffExaminationDeanQuestionPaperUploadRoute:
+    StaffExaminationDeanQuestionPaperUploadRoute,
+  StaffExaminationDeanQuestionPapersRoute:
+    StaffExaminationDeanQuestionPapersRoute,
+  StaffExaminationDeanRankListRoute: StaffExaminationDeanRankListRoute,
+  StaffExaminationDeanRecountingRoute: StaffExaminationDeanRecountingRoute,
+  StaffExaminationDeanReportsRoute: StaffExaminationDeanReportsRoute,
+  StaffExaminationDeanResultProcessingRoute:
+    StaffExaminationDeanResultProcessingRoute,
+  StaffExaminationDeanResultPublicationRoute:
+    StaffExaminationDeanResultPublicationRoute,
+  StaffExaminationDeanResultReportsRoute:
+    StaffExaminationDeanResultReportsRoute,
+  StaffExaminationDeanResultsRoute: StaffExaminationDeanResultsRoute,
+  StaffExaminationDeanRevaluationRoute: StaffExaminationDeanRevaluationRoute,
+  StaffExaminationDeanRevaluationRequestsRoute:
+    StaffExaminationDeanRevaluationRequestsRoute,
+  StaffExaminationDeanRevaluationStatusRoute:
+    StaffExaminationDeanRevaluationStatusRoute,
+  StaffExaminationDeanScheduleRoute: StaffExaminationDeanScheduleRoute,
+  StaffExaminationDeanSemesterExamsRoute:
+    StaffExaminationDeanSemesterExamsRoute,
+  StaffExaminationDeanSettingsRoute: StaffExaminationDeanSettingsRoute,
+  StaffExaminationDeanSubstitutionHistoryRoute:
+    StaffExaminationDeanSubstitutionHistoryRoute,
+  StaffExaminationDeanSupplementaryExamsRoute:
+    StaffExaminationDeanSupplementaryExamsRoute,
+  StaffExaminationDeanTimetableRoute: StaffExaminationDeanTimetableRoute,
+  StaffExaminationDeanTimetableGenerationRoute:
+    StaffExaminationDeanTimetableGenerationRoute,
+  StaffExaminationDeanTranscriptsRoute: StaffExaminationDeanTranscriptsRoute,
+  StaffExaminationDeanUpdatedResultsRoute:
+    StaffExaminationDeanUpdatedResultsRoute,
+  StaffExaminationDeanValuationStatusRoute:
+    StaffExaminationDeanValuationStatusRoute,
+  StaffExaminationDeanIndexRoute: StaffExaminationDeanIndexRoute,
+}
+
+const StaffExaminationDeanRouteWithChildren =
+  StaffExaminationDeanRoute._addFileChildren(StaffExaminationDeanRouteChildren)
+
+interface StaffFinanceDeanRouteChildren {
+  StaffFinanceDeanAccountsRoute: typeof StaffFinanceDeanAccountsRoute
+  StaffFinanceDeanAllowancesDeductionsRoute: typeof StaffFinanceDeanAllowancesDeductionsRoute
+  StaffFinanceDeanAnnualBudgetRoute: typeof StaffFinanceDeanAnnualBudgetRoute
+  StaffFinanceDeanAssignSubstituteRoute: typeof StaffFinanceDeanAssignSubstituteRoute
+  StaffFinanceDeanAuditRoute: typeof StaffFinanceDeanAuditRoute
+  StaffFinanceDeanAuditComplianceRoute: typeof StaffFinanceDeanAuditComplianceRoute
+  StaffFinanceDeanAuditHistoryRoute: typeof StaffFinanceDeanAuditHistoryRoute
+  StaffFinanceDeanAuditReportsRoute: typeof StaffFinanceDeanAuditReportsRoute
+  StaffFinanceDeanAuditsRoute: typeof StaffFinanceDeanAuditsRoute
+  StaffFinanceDeanBudgetRoute: typeof StaffFinanceDeanBudgetRoute
+  StaffFinanceDeanBudgetAllocationRoute: typeof StaffFinanceDeanBudgetAllocationRoute
+  StaffFinanceDeanBudgetReportsRoute: typeof StaffFinanceDeanBudgetReportsRoute
+  StaffFinanceDeanBudgetUtilizationRoute: typeof StaffFinanceDeanBudgetUtilizationRoute
+  StaffFinanceDeanDailyExpensesRoute: typeof StaffFinanceDeanDailyExpensesRoute
+  StaffFinanceDeanDepartmentBudgetsRoute: typeof StaffFinanceDeanDepartmentBudgetsRoute
+  StaffFinanceDeanDeptBudgetsRoute: typeof StaffFinanceDeanDeptBudgetsRoute
+  StaffFinanceDeanDeptExpensesRoute: typeof StaffFinanceDeanDeptExpensesRoute
+  StaffFinanceDeanExpensesRoute: typeof StaffFinanceDeanExpensesRoute
+  StaffFinanceDeanExternalAuditRoute: typeof StaffFinanceDeanExternalAuditRoute
+  StaffFinanceDeanFacultyPayrollRoute: typeof StaffFinanceDeanFacultyPayrollRoute
+  StaffFinanceDeanFacultyTimetablesRoute: typeof StaffFinanceDeanFacultyTimetablesRoute
+  StaffFinanceDeanFeeCollectionRoute: typeof StaffFinanceDeanFeeCollectionRoute
+  StaffFinanceDeanFeeCollectionsRoute: typeof StaffFinanceDeanFeeCollectionsRoute
+  StaffFinanceDeanFeeReportsRoute: typeof StaffFinanceDeanFeeReportsRoute
+  StaffFinanceDeanFeesRoute: typeof StaffFinanceDeanFeesRoute
+  StaffFinanceDeanFinancialReportsRoute: typeof StaffFinanceDeanFinancialReportsRoute
+  StaffFinanceDeanGrantsRoute: typeof StaffFinanceDeanGrantsRoute
+  StaffFinanceDeanInternalAuditRoute: typeof StaffFinanceDeanInternalAuditRoute
+  StaffFinanceDeanInvoiceManagementRoute: typeof StaffFinanceDeanInvoiceManagementRoute
+  StaffFinanceDeanMyClassesRoute: typeof StaffFinanceDeanMyClassesRoute
+  StaffFinanceDeanMyTimetableRoute: typeof StaffFinanceDeanMyTimetableRoute
+  StaffFinanceDeanNotificationsRoute: typeof StaffFinanceDeanNotificationsRoute
+  StaffFinanceDeanPayrollRoute: typeof StaffFinanceDeanPayrollRoute
+  StaffFinanceDeanPayrollReportsRoute: typeof StaffFinanceDeanPayrollReportsRoute
+  StaffFinanceDeanPendingFeesRoute: typeof StaffFinanceDeanPendingFeesRoute
+  StaffFinanceDeanPurchaseOrdersRoute: typeof StaffFinanceDeanPurchaseOrdersRoute
+  StaffFinanceDeanPurchasePaymentsRoute: typeof StaffFinanceDeanPurchasePaymentsRoute
+  StaffFinanceDeanPurchaseRequestsRoute: typeof StaffFinanceDeanPurchaseRequestsRoute
+  StaffFinanceDeanPurchasesRoute: typeof StaffFinanceDeanPurchasesRoute
+  StaffFinanceDeanRefundManagementRoute: typeof StaffFinanceDeanRefundManagementRoute
+  StaffFinanceDeanReportsRoute: typeof StaffFinanceDeanReportsRoute
+  StaffFinanceDeanSalaryHistoryRoute: typeof StaffFinanceDeanSalaryHistoryRoute
+  StaffFinanceDeanScholarshipsConcessionsRoute: typeof StaffFinanceDeanScholarshipsConcessionsRoute
+  StaffFinanceDeanSettingsRoute: typeof StaffFinanceDeanSettingsRoute
+  StaffFinanceDeanStaffPayrollRoute: typeof StaffFinanceDeanStaffPayrollRoute
+  StaffFinanceDeanSubstitutionHistoryRoute: typeof StaffFinanceDeanSubstitutionHistoryRoute
+  StaffFinanceDeanTimetableRoute: typeof StaffFinanceDeanTimetableRoute
+  StaffFinanceDeanVendorManagementRoute: typeof StaffFinanceDeanVendorManagementRoute
+  StaffFinanceDeanVendorPaymentsRoute: typeof StaffFinanceDeanVendorPaymentsRoute
+  StaffFinanceDeanIndexRoute: typeof StaffFinanceDeanIndexRoute
+}
+
+const StaffFinanceDeanRouteChildren: StaffFinanceDeanRouteChildren = {
+  StaffFinanceDeanAccountsRoute: StaffFinanceDeanAccountsRoute,
+  StaffFinanceDeanAllowancesDeductionsRoute:
+    StaffFinanceDeanAllowancesDeductionsRoute,
+  StaffFinanceDeanAnnualBudgetRoute: StaffFinanceDeanAnnualBudgetRoute,
+  StaffFinanceDeanAssignSubstituteRoute: StaffFinanceDeanAssignSubstituteRoute,
+  StaffFinanceDeanAuditRoute: StaffFinanceDeanAuditRoute,
+  StaffFinanceDeanAuditComplianceRoute: StaffFinanceDeanAuditComplianceRoute,
+  StaffFinanceDeanAuditHistoryRoute: StaffFinanceDeanAuditHistoryRoute,
+  StaffFinanceDeanAuditReportsRoute: StaffFinanceDeanAuditReportsRoute,
+  StaffFinanceDeanAuditsRoute: StaffFinanceDeanAuditsRoute,
+  StaffFinanceDeanBudgetRoute: StaffFinanceDeanBudgetRoute,
+  StaffFinanceDeanBudgetAllocationRoute: StaffFinanceDeanBudgetAllocationRoute,
+  StaffFinanceDeanBudgetReportsRoute: StaffFinanceDeanBudgetReportsRoute,
+  StaffFinanceDeanBudgetUtilizationRoute:
+    StaffFinanceDeanBudgetUtilizationRoute,
+  StaffFinanceDeanDailyExpensesRoute: StaffFinanceDeanDailyExpensesRoute,
+  StaffFinanceDeanDepartmentBudgetsRoute:
+    StaffFinanceDeanDepartmentBudgetsRoute,
+  StaffFinanceDeanDeptBudgetsRoute: StaffFinanceDeanDeptBudgetsRoute,
+  StaffFinanceDeanDeptExpensesRoute: StaffFinanceDeanDeptExpensesRoute,
+  StaffFinanceDeanExpensesRoute: StaffFinanceDeanExpensesRoute,
+  StaffFinanceDeanExternalAuditRoute: StaffFinanceDeanExternalAuditRoute,
+  StaffFinanceDeanFacultyPayrollRoute: StaffFinanceDeanFacultyPayrollRoute,
+  StaffFinanceDeanFacultyTimetablesRoute:
+    StaffFinanceDeanFacultyTimetablesRoute,
+  StaffFinanceDeanFeeCollectionRoute: StaffFinanceDeanFeeCollectionRoute,
+  StaffFinanceDeanFeeCollectionsRoute: StaffFinanceDeanFeeCollectionsRoute,
+  StaffFinanceDeanFeeReportsRoute: StaffFinanceDeanFeeReportsRoute,
+  StaffFinanceDeanFeesRoute: StaffFinanceDeanFeesRoute,
+  StaffFinanceDeanFinancialReportsRoute: StaffFinanceDeanFinancialReportsRoute,
+  StaffFinanceDeanGrantsRoute: StaffFinanceDeanGrantsRoute,
+  StaffFinanceDeanInternalAuditRoute: StaffFinanceDeanInternalAuditRoute,
+  StaffFinanceDeanInvoiceManagementRoute:
+    StaffFinanceDeanInvoiceManagementRoute,
+  StaffFinanceDeanMyClassesRoute: StaffFinanceDeanMyClassesRoute,
+  StaffFinanceDeanMyTimetableRoute: StaffFinanceDeanMyTimetableRoute,
+  StaffFinanceDeanNotificationsRoute: StaffFinanceDeanNotificationsRoute,
+  StaffFinanceDeanPayrollRoute: StaffFinanceDeanPayrollRoute,
+  StaffFinanceDeanPayrollReportsRoute: StaffFinanceDeanPayrollReportsRoute,
+  StaffFinanceDeanPendingFeesRoute: StaffFinanceDeanPendingFeesRoute,
+  StaffFinanceDeanPurchaseOrdersRoute: StaffFinanceDeanPurchaseOrdersRoute,
+  StaffFinanceDeanPurchasePaymentsRoute: StaffFinanceDeanPurchasePaymentsRoute,
+  StaffFinanceDeanPurchaseRequestsRoute: StaffFinanceDeanPurchaseRequestsRoute,
+  StaffFinanceDeanPurchasesRoute: StaffFinanceDeanPurchasesRoute,
+  StaffFinanceDeanRefundManagementRoute: StaffFinanceDeanRefundManagementRoute,
+  StaffFinanceDeanReportsRoute: StaffFinanceDeanReportsRoute,
+  StaffFinanceDeanSalaryHistoryRoute: StaffFinanceDeanSalaryHistoryRoute,
+  StaffFinanceDeanScholarshipsConcessionsRoute:
+    StaffFinanceDeanScholarshipsConcessionsRoute,
+  StaffFinanceDeanSettingsRoute: StaffFinanceDeanSettingsRoute,
+  StaffFinanceDeanStaffPayrollRoute: StaffFinanceDeanStaffPayrollRoute,
+  StaffFinanceDeanSubstitutionHistoryRoute:
+    StaffFinanceDeanSubstitutionHistoryRoute,
+  StaffFinanceDeanTimetableRoute: StaffFinanceDeanTimetableRoute,
+  StaffFinanceDeanVendorManagementRoute: StaffFinanceDeanVendorManagementRoute,
+  StaffFinanceDeanVendorPaymentsRoute: StaffFinanceDeanVendorPaymentsRoute,
+  StaffFinanceDeanIndexRoute: StaffFinanceDeanIndexRoute,
+}
+
+const StaffFinanceDeanRouteWithChildren =
+  StaffFinanceDeanRoute._addFileChildren(StaffFinanceDeanRouteChildren)
+
+interface StaffImaRouteChildren {
+  StaffImaAmcWarrantyRoute: typeof StaffImaAmcWarrantyRoute
+  StaffImaApprovedPurchasesRoute: typeof StaffImaApprovedPurchasesRoute
+  StaffImaAssetAuditRoute: typeof StaffImaAssetAuditRoute
+  StaffImaAssetDisposalRoute: typeof StaffImaAssetDisposalRoute
+  StaffImaAssetRegisterRoute: typeof StaffImaAssetRegisterRoute
+  StaffImaAssetTransferRoute: typeof StaffImaAssetTransferRoute
+  StaffImaAssignSubstituteRoute: typeof StaffImaAssignSubstituteRoute
+  StaffImaCampusProjectsRoute: typeof StaffImaCampusProjectsRoute
+  StaffImaComplianceRoute: typeof StaffImaComplianceRoute
+  StaffImaDepartmentAssetsRoute: typeof StaffImaDepartmentAssetsRoute
+  StaffImaEquipmentAllocationRoute: typeof StaffImaEquipmentAllocationRoute
+  StaffImaEquipmentHistoryRoute: typeof StaffImaEquipmentHistoryRoute
+  StaffImaEquipmentInventoryRoute: typeof StaffImaEquipmentInventoryRoute
+  StaffImaEquipmentReportsRoute: typeof StaffImaEquipmentReportsRoute
+  StaffImaEquipmentRequestsRoute: typeof StaffImaEquipmentRequestsRoute
+  StaffImaFacultyTimetablesRoute: typeof StaffImaFacultyTimetablesRoute
+  StaffImaGuestLecturesRoute: typeof StaffImaGuestLecturesRoute
+  StaffImaIndustrialVisitsRoute: typeof StaffImaIndustrialVisitsRoute
+  StaffImaInfrastructureRoute: typeof StaffImaInfrastructureRoute
+  StaffImaInternshipsRoute: typeof StaffImaInternshipsRoute
+  StaffImaInventoryReportsRoute: typeof StaffImaInventoryReportsRoute
+  StaffImaLabBookingRoute: typeof StaffImaLabBookingRoute
+  StaffImaLabDetailsRoute: typeof StaffImaLabDetailsRoute
+  StaffImaLabTimetableRoute: typeof StaffImaLabTimetableRoute
+  StaffImaLaboratoriesRoute: typeof StaffImaLaboratoriesRoute
+  StaffImaLaboratoryReportsRoute: typeof StaffImaLaboratoryReportsRoute
+  StaffImaMaintenanceReportsRoute: typeof StaffImaMaintenanceReportsRoute
+  StaffImaMaintenanceRequestsRoute: typeof StaffImaMaintenanceRequestsRoute
+  StaffImaMaintenanceScheduleRoute: typeof StaffImaMaintenanceScheduleRoute
+  StaffImaMouRoute: typeof StaffImaMouRoute
+  StaffImaMyClassesRoute: typeof StaffImaMyClassesRoute
+  StaffImaMyTimetableRoute: typeof StaffImaMyTimetableRoute
+  StaffImaNotificationsRoute: typeof StaffImaNotificationsRoute
+  StaffImaPartnersRoute: typeof StaffImaPartnersRoute
+  StaffImaPolicyDirectivesRoute: typeof StaffImaPolicyDirectivesRoute
+  StaffImaPurchaseOrdersRoute: typeof StaffImaPurchaseOrdersRoute
+  StaffImaPurchaseReportsRoute: typeof StaffImaPurchaseReportsRoute
+  StaffImaPurchaseRequestsRoute: typeof StaffImaPurchaseRequestsRoute
+  StaffImaPurchaseVendorsRoute: typeof StaffImaPurchaseVendorsRoute
+  StaffImaReportsRoute: typeof StaffImaReportsRoute
+  StaffImaSettingsRoute: typeof StaffImaSettingsRoute
+  StaffImaSubstitutionHistoryRoute: typeof StaffImaSubstitutionHistoryRoute
+  StaffImaTimetableRoute: typeof StaffImaTimetableRoute
+  StaffImaVendorsRoute: typeof StaffImaVendorsRoute
+  StaffImaWorkshopsRoute: typeof StaffImaWorkshopsRoute
+  StaffImaIndexRoute: typeof StaffImaIndexRoute
+}
+
+const StaffImaRouteChildren: StaffImaRouteChildren = {
+  StaffImaAmcWarrantyRoute: StaffImaAmcWarrantyRoute,
+  StaffImaApprovedPurchasesRoute: StaffImaApprovedPurchasesRoute,
+  StaffImaAssetAuditRoute: StaffImaAssetAuditRoute,
+  StaffImaAssetDisposalRoute: StaffImaAssetDisposalRoute,
+  StaffImaAssetRegisterRoute: StaffImaAssetRegisterRoute,
+  StaffImaAssetTransferRoute: StaffImaAssetTransferRoute,
+  StaffImaAssignSubstituteRoute: StaffImaAssignSubstituteRoute,
+  StaffImaCampusProjectsRoute: StaffImaCampusProjectsRoute,
+  StaffImaComplianceRoute: StaffImaComplianceRoute,
+  StaffImaDepartmentAssetsRoute: StaffImaDepartmentAssetsRoute,
+  StaffImaEquipmentAllocationRoute: StaffImaEquipmentAllocationRoute,
+  StaffImaEquipmentHistoryRoute: StaffImaEquipmentHistoryRoute,
+  StaffImaEquipmentInventoryRoute: StaffImaEquipmentInventoryRoute,
+  StaffImaEquipmentReportsRoute: StaffImaEquipmentReportsRoute,
+  StaffImaEquipmentRequestsRoute: StaffImaEquipmentRequestsRoute,
+  StaffImaFacultyTimetablesRoute: StaffImaFacultyTimetablesRoute,
+  StaffImaGuestLecturesRoute: StaffImaGuestLecturesRoute,
+  StaffImaIndustrialVisitsRoute: StaffImaIndustrialVisitsRoute,
+  StaffImaInfrastructureRoute: StaffImaInfrastructureRoute,
+  StaffImaInternshipsRoute: StaffImaInternshipsRoute,
+  StaffImaInventoryReportsRoute: StaffImaInventoryReportsRoute,
+  StaffImaLabBookingRoute: StaffImaLabBookingRoute,
+  StaffImaLabDetailsRoute: StaffImaLabDetailsRoute,
+  StaffImaLabTimetableRoute: StaffImaLabTimetableRoute,
+  StaffImaLaboratoriesRoute: StaffImaLaboratoriesRoute,
+  StaffImaLaboratoryReportsRoute: StaffImaLaboratoryReportsRoute,
+  StaffImaMaintenanceReportsRoute: StaffImaMaintenanceReportsRoute,
+  StaffImaMaintenanceRequestsRoute: StaffImaMaintenanceRequestsRoute,
+  StaffImaMaintenanceScheduleRoute: StaffImaMaintenanceScheduleRoute,
+  StaffImaMouRoute: StaffImaMouRoute,
+  StaffImaMyClassesRoute: StaffImaMyClassesRoute,
+  StaffImaMyTimetableRoute: StaffImaMyTimetableRoute,
+  StaffImaNotificationsRoute: StaffImaNotificationsRoute,
+  StaffImaPartnersRoute: StaffImaPartnersRoute,
+  StaffImaPolicyDirectivesRoute: StaffImaPolicyDirectivesRoute,
+  StaffImaPurchaseOrdersRoute: StaffImaPurchaseOrdersRoute,
+  StaffImaPurchaseReportsRoute: StaffImaPurchaseReportsRoute,
+  StaffImaPurchaseRequestsRoute: StaffImaPurchaseRequestsRoute,
+  StaffImaPurchaseVendorsRoute: StaffImaPurchaseVendorsRoute,
+  StaffImaReportsRoute: StaffImaReportsRoute,
+  StaffImaSettingsRoute: StaffImaSettingsRoute,
+  StaffImaSubstitutionHistoryRoute: StaffImaSubstitutionHistoryRoute,
+  StaffImaTimetableRoute: StaffImaTimetableRoute,
+  StaffImaVendorsRoute: StaffImaVendorsRoute,
+  StaffImaWorkshopsRoute: StaffImaWorkshopsRoute,
+  StaffImaIndexRoute: StaffImaIndexRoute,
+}
+
+const StaffImaRouteWithChildren = StaffImaRoute._addFileChildren(
+  StaffImaRouteChildren,
+)
+
+interface StaffIqacRouteChildren {
+  StaffIqacAcademicAuditRoute: typeof StaffIqacAcademicAuditRoute
+  StaffIqacAlumniFeedbackRoute: typeof StaffIqacAlumniFeedbackRoute
+  StaffIqacAqarRoute: typeof StaffIqacAqarRoute
+  StaffIqacAqarReportsRoute: typeof StaffIqacAqarReportsRoute
+  StaffIqacAssignSubstituteRoute: typeof StaffIqacAssignSubstituteRoute
+  StaffIqacAtrRoute: typeof StaffIqacAtrRoute
+  StaffIqacAuditRoute: typeof StaffIqacAuditRoute
+  StaffIqacAuditReportsRoute: typeof StaffIqacAuditReportsRoute
+  StaffIqacBenchmarkingRoute: typeof StaffIqacBenchmarkingRoute
+  StaffIqacBestPracticesRoute: typeof StaffIqacBestPracticesRoute
+  StaffIqacComplianceTrackerRoute: typeof StaffIqacComplianceTrackerRoute
+  StaffIqacCriteriaRoute: typeof StaffIqacCriteriaRoute
+  StaffIqacCriteriaDocsRoute: typeof StaffIqacCriteriaDocsRoute
+  StaffIqacDeptQualityMetricsRoute: typeof StaffIqacDeptQualityMetricsRoute
+  StaffIqacDocumentRepoRoute: typeof StaffIqacDocumentRepoRoute
+  StaffIqacDocumentsRoute: typeof StaffIqacDocumentsRoute
+  StaffIqacEmployerFeedbackRoute: typeof StaffIqacEmployerFeedbackRoute
+  StaffIqacEventsRoute: typeof StaffIqacEventsRoute
+  StaffIqacEvidenceUploadsRoute: typeof StaffIqacEvidenceUploadsRoute
+  StaffIqacFacultyFeedbackRoute: typeof StaffIqacFacultyFeedbackRoute
+  StaffIqacFacultyTimetablesRoute: typeof StaffIqacFacultyTimetablesRoute
+  StaffIqacFeedbackRoute: typeof StaffIqacFeedbackRoute
+  StaffIqacFeedbackAnalyticsRoute: typeof StaffIqacFeedbackAnalyticsRoute
+  StaffIqacFeedbackReportsRoute: typeof StaffIqacFeedbackReportsRoute
+  StaffIqacInternalQualityAuditRoute: typeof StaffIqacInternalQualityAuditRoute
+  StaffIqacKpiDashboardRoute: typeof StaffIqacKpiDashboardRoute
+  StaffIqacKpiReportsRoute: typeof StaffIqacKpiReportsRoute
+  StaffIqacMeetingsRoute: typeof StaffIqacMeetingsRoute
+  StaffIqacMetricsRoute: typeof StaffIqacMetricsRoute
+  StaffIqacMyClassesRoute: typeof StaffIqacMyClassesRoute
+  StaffIqacMyTimetableRoute: typeof StaffIqacMyTimetableRoute
+  StaffIqacNaacRoute: typeof StaffIqacNaacRoute
+  StaffIqacNaacReportsRoute: typeof StaffIqacNaacReportsRoute
+  StaffIqacNbaRoute: typeof StaffIqacNbaRoute
+  StaffIqacNotificationsRoute: typeof StaffIqacNotificationsRoute
+  StaffIqacPerformanceAnalysisRoute: typeof StaffIqacPerformanceAnalysisRoute
+  StaffIqacQualityAuditsRoute: typeof StaffIqacQualityAuditsRoute
+  StaffIqacQualityImprovementRoute: typeof StaffIqacQualityImprovementRoute
+  StaffIqacQualityMetricsRoute: typeof StaffIqacQualityMetricsRoute
+  StaffIqacReportsRoute: typeof StaffIqacReportsRoute
+  StaffIqacSettingsRoute: typeof StaffIqacSettingsRoute
+  StaffIqacSsrRoute: typeof StaffIqacSsrRoute
+  StaffIqacStudentFeedbackRoute: typeof StaffIqacStudentFeedbackRoute
+  StaffIqacSubstitutionHistoryRoute: typeof StaffIqacSubstitutionHistoryRoute
+  StaffIqacTimetableRoute: typeof StaffIqacTimetableRoute
+  StaffIqacWorkshopsRoute: typeof StaffIqacWorkshopsRoute
+  StaffIqacIndexRoute: typeof StaffIqacIndexRoute
+}
+
+const StaffIqacRouteChildren: StaffIqacRouteChildren = {
+  StaffIqacAcademicAuditRoute: StaffIqacAcademicAuditRoute,
+  StaffIqacAlumniFeedbackRoute: StaffIqacAlumniFeedbackRoute,
+  StaffIqacAqarRoute: StaffIqacAqarRoute,
+  StaffIqacAqarReportsRoute: StaffIqacAqarReportsRoute,
+  StaffIqacAssignSubstituteRoute: StaffIqacAssignSubstituteRoute,
+  StaffIqacAtrRoute: StaffIqacAtrRoute,
+  StaffIqacAuditRoute: StaffIqacAuditRoute,
+  StaffIqacAuditReportsRoute: StaffIqacAuditReportsRoute,
+  StaffIqacBenchmarkingRoute: StaffIqacBenchmarkingRoute,
+  StaffIqacBestPracticesRoute: StaffIqacBestPracticesRoute,
+  StaffIqacComplianceTrackerRoute: StaffIqacComplianceTrackerRoute,
+  StaffIqacCriteriaRoute: StaffIqacCriteriaRoute,
+  StaffIqacCriteriaDocsRoute: StaffIqacCriteriaDocsRoute,
+  StaffIqacDeptQualityMetricsRoute: StaffIqacDeptQualityMetricsRoute,
+  StaffIqacDocumentRepoRoute: StaffIqacDocumentRepoRoute,
+  StaffIqacDocumentsRoute: StaffIqacDocumentsRoute,
+  StaffIqacEmployerFeedbackRoute: StaffIqacEmployerFeedbackRoute,
+  StaffIqacEventsRoute: StaffIqacEventsRoute,
+  StaffIqacEvidenceUploadsRoute: StaffIqacEvidenceUploadsRoute,
+  StaffIqacFacultyFeedbackRoute: StaffIqacFacultyFeedbackRoute,
+  StaffIqacFacultyTimetablesRoute: StaffIqacFacultyTimetablesRoute,
+  StaffIqacFeedbackRoute: StaffIqacFeedbackRoute,
+  StaffIqacFeedbackAnalyticsRoute: StaffIqacFeedbackAnalyticsRoute,
+  StaffIqacFeedbackReportsRoute: StaffIqacFeedbackReportsRoute,
+  StaffIqacInternalQualityAuditRoute: StaffIqacInternalQualityAuditRoute,
+  StaffIqacKpiDashboardRoute: StaffIqacKpiDashboardRoute,
+  StaffIqacKpiReportsRoute: StaffIqacKpiReportsRoute,
+  StaffIqacMeetingsRoute: StaffIqacMeetingsRoute,
+  StaffIqacMetricsRoute: StaffIqacMetricsRoute,
+  StaffIqacMyClassesRoute: StaffIqacMyClassesRoute,
+  StaffIqacMyTimetableRoute: StaffIqacMyTimetableRoute,
+  StaffIqacNaacRoute: StaffIqacNaacRoute,
+  StaffIqacNaacReportsRoute: StaffIqacNaacReportsRoute,
+  StaffIqacNbaRoute: StaffIqacNbaRoute,
+  StaffIqacNotificationsRoute: StaffIqacNotificationsRoute,
+  StaffIqacPerformanceAnalysisRoute: StaffIqacPerformanceAnalysisRoute,
+  StaffIqacQualityAuditsRoute: StaffIqacQualityAuditsRoute,
+  StaffIqacQualityImprovementRoute: StaffIqacQualityImprovementRoute,
+  StaffIqacQualityMetricsRoute: StaffIqacQualityMetricsRoute,
+  StaffIqacReportsRoute: StaffIqacReportsRoute,
+  StaffIqacSettingsRoute: StaffIqacSettingsRoute,
+  StaffIqacSsrRoute: StaffIqacSsrRoute,
+  StaffIqacStudentFeedbackRoute: StaffIqacStudentFeedbackRoute,
+  StaffIqacSubstitutionHistoryRoute: StaffIqacSubstitutionHistoryRoute,
+  StaffIqacTimetableRoute: StaffIqacTimetableRoute,
+  StaffIqacWorkshopsRoute: StaffIqacWorkshopsRoute,
+  StaffIqacIndexRoute: StaffIqacIndexRoute,
+}
+
+const StaffIqacRouteWithChildren = StaffIqacRoute._addFileChildren(
+  StaffIqacRouteChildren,
+)
+
+interface StaffPlacementDeanRouteChildren {
+  StaffPlacementDeanAptitudeTrainingRoute: typeof StaffPlacementDeanAptitudeTrainingRoute
+  StaffPlacementDeanAssignSubstituteRoute: typeof StaffPlacementDeanAssignSubstituteRoute
+  StaffPlacementDeanCodingTrainingRoute: typeof StaffPlacementDeanCodingTrainingRoute
+  StaffPlacementDeanCompaniesRoute: typeof StaffPlacementDeanCompaniesRoute
+  StaffPlacementDeanCompanyHiringRoute: typeof StaffPlacementDeanCompanyHiringRoute
+  StaffPlacementDeanCompanyProfilesRoute: typeof StaffPlacementDeanCompanyProfilesRoute
+  StaffPlacementDeanCompanyReportsRoute: typeof StaffPlacementDeanCompanyReportsRoute
+  StaffPlacementDeanCompanyVisitsRoute: typeof StaffPlacementDeanCompanyVisitsRoute
+  StaffPlacementDeanCompletedDrivesRoute: typeof StaffPlacementDeanCompletedDrivesRoute
+  StaffPlacementDeanDeptPlacementsRoute: typeof StaffPlacementDeanDeptPlacementsRoute
+  StaffPlacementDeanDrivesRoute: typeof StaffPlacementDeanDrivesRoute
+  StaffPlacementDeanEligibleStudentsRoute: typeof StaffPlacementDeanEligibleStudentsRoute
+  StaffPlacementDeanFacultyTimetablesRoute: typeof StaffPlacementDeanFacultyTimetablesRoute
+  StaffPlacementDeanInternshipOpportunitiesRoute: typeof StaffPlacementDeanInternshipOpportunitiesRoute
+  StaffPlacementDeanInternshipReportsRoute: typeof StaffPlacementDeanInternshipReportsRoute
+  StaffPlacementDeanInternshipReportsListRoute: typeof StaffPlacementDeanInternshipReportsListRoute
+  StaffPlacementDeanInternshipTrackingRoute: typeof StaffPlacementDeanInternshipTrackingRoute
+  StaffPlacementDeanInternshipsRoute: typeof StaffPlacementDeanInternshipsRoute
+  StaffPlacementDeanMockInterviewsRoute: typeof StaffPlacementDeanMockInterviewsRoute
+  StaffPlacementDeanMousRoute: typeof StaffPlacementDeanMousRoute
+  StaffPlacementDeanMyClassesRoute: typeof StaffPlacementDeanMyClassesRoute
+  StaffPlacementDeanMyTimetableRoute: typeof StaffPlacementDeanMyTimetableRoute
+  StaffPlacementDeanNotificationsRoute: typeof StaffPlacementDeanNotificationsRoute
+  StaffPlacementDeanOffCampusDrivesRoute: typeof StaffPlacementDeanOffCampusDrivesRoute
+  StaffPlacementDeanOfferLettersRoute: typeof StaffPlacementDeanOfferLettersRoute
+  StaffPlacementDeanOffersRoute: typeof StaffPlacementDeanOffersRoute
+  StaffPlacementDeanOngoingDrivesRoute: typeof StaffPlacementDeanOngoingDrivesRoute
+  StaffPlacementDeanPackageAnalysisRoute: typeof StaffPlacementDeanPackageAnalysisRoute
+  StaffPlacementDeanPackageAnalyticsRoute: typeof StaffPlacementDeanPackageAnalyticsRoute
+  StaffPlacementDeanPackagesRoute: typeof StaffPlacementDeanPackagesRoute
+  StaffPlacementDeanPlacedStudentsRoute: typeof StaffPlacementDeanPlacedStudentsRoute
+  StaffPlacementDeanPlacementReportsRoute: typeof StaffPlacementDeanPlacementReportsRoute
+  StaffPlacementDeanPlacementStatisticsRoute: typeof StaffPlacementDeanPlacementStatisticsRoute
+  StaffPlacementDeanRecruitmentPartnersRoute: typeof StaffPlacementDeanRecruitmentPartnersRoute
+  StaffPlacementDeanRegisteredStudentsRoute: typeof StaffPlacementDeanRegisteredStudentsRoute
+  StaffPlacementDeanReportsRoute: typeof StaffPlacementDeanReportsRoute
+  StaffPlacementDeanResumeReviewsRoute: typeof StaffPlacementDeanResumeReviewsRoute
+  StaffPlacementDeanSelectedStudentsRoute: typeof StaffPlacementDeanSelectedStudentsRoute
+  StaffPlacementDeanSettingsRoute: typeof StaffPlacementDeanSettingsRoute
+  StaffPlacementDeanShortlistedStudentsRoute: typeof StaffPlacementDeanShortlistedStudentsRoute
+  StaffPlacementDeanSoftSkillsRoute: typeof StaffPlacementDeanSoftSkillsRoute
+  StaffPlacementDeanStudentReportsRoute: typeof StaffPlacementDeanStudentReportsRoute
+  StaffPlacementDeanSubstitutionHistoryRoute: typeof StaffPlacementDeanSubstitutionHistoryRoute
+  StaffPlacementDeanTimetableRoute: typeof StaffPlacementDeanTimetableRoute
+  StaffPlacementDeanTrainingRoute: typeof StaffPlacementDeanTrainingRoute
+  StaffPlacementDeanTrainingReportsRoute: typeof StaffPlacementDeanTrainingReportsRoute
+  StaffPlacementDeanUpcomingDrivesRoute: typeof StaffPlacementDeanUpcomingDrivesRoute
+  StaffPlacementDeanIndexRoute: typeof StaffPlacementDeanIndexRoute
+}
+
+const StaffPlacementDeanRouteChildren: StaffPlacementDeanRouteChildren = {
+  StaffPlacementDeanAptitudeTrainingRoute:
+    StaffPlacementDeanAptitudeTrainingRoute,
+  StaffPlacementDeanAssignSubstituteRoute:
+    StaffPlacementDeanAssignSubstituteRoute,
+  StaffPlacementDeanCodingTrainingRoute: StaffPlacementDeanCodingTrainingRoute,
+  StaffPlacementDeanCompaniesRoute: StaffPlacementDeanCompaniesRoute,
+  StaffPlacementDeanCompanyHiringRoute: StaffPlacementDeanCompanyHiringRoute,
+  StaffPlacementDeanCompanyProfilesRoute:
+    StaffPlacementDeanCompanyProfilesRoute,
+  StaffPlacementDeanCompanyReportsRoute: StaffPlacementDeanCompanyReportsRoute,
+  StaffPlacementDeanCompanyVisitsRoute: StaffPlacementDeanCompanyVisitsRoute,
+  StaffPlacementDeanCompletedDrivesRoute:
+    StaffPlacementDeanCompletedDrivesRoute,
+  StaffPlacementDeanDeptPlacementsRoute: StaffPlacementDeanDeptPlacementsRoute,
+  StaffPlacementDeanDrivesRoute: StaffPlacementDeanDrivesRoute,
+  StaffPlacementDeanEligibleStudentsRoute:
+    StaffPlacementDeanEligibleStudentsRoute,
+  StaffPlacementDeanFacultyTimetablesRoute:
+    StaffPlacementDeanFacultyTimetablesRoute,
+  StaffPlacementDeanInternshipOpportunitiesRoute:
+    StaffPlacementDeanInternshipOpportunitiesRoute,
+  StaffPlacementDeanInternshipReportsRoute:
+    StaffPlacementDeanInternshipReportsRoute,
+  StaffPlacementDeanInternshipReportsListRoute:
+    StaffPlacementDeanInternshipReportsListRoute,
+  StaffPlacementDeanInternshipTrackingRoute:
+    StaffPlacementDeanInternshipTrackingRoute,
+  StaffPlacementDeanInternshipsRoute: StaffPlacementDeanInternshipsRoute,
+  StaffPlacementDeanMockInterviewsRoute: StaffPlacementDeanMockInterviewsRoute,
+  StaffPlacementDeanMousRoute: StaffPlacementDeanMousRoute,
+  StaffPlacementDeanMyClassesRoute: StaffPlacementDeanMyClassesRoute,
+  StaffPlacementDeanMyTimetableRoute: StaffPlacementDeanMyTimetableRoute,
+  StaffPlacementDeanNotificationsRoute: StaffPlacementDeanNotificationsRoute,
+  StaffPlacementDeanOffCampusDrivesRoute:
+    StaffPlacementDeanOffCampusDrivesRoute,
+  StaffPlacementDeanOfferLettersRoute: StaffPlacementDeanOfferLettersRoute,
+  StaffPlacementDeanOffersRoute: StaffPlacementDeanOffersRoute,
+  StaffPlacementDeanOngoingDrivesRoute: StaffPlacementDeanOngoingDrivesRoute,
+  StaffPlacementDeanPackageAnalysisRoute:
+    StaffPlacementDeanPackageAnalysisRoute,
+  StaffPlacementDeanPackageAnalyticsRoute:
+    StaffPlacementDeanPackageAnalyticsRoute,
+  StaffPlacementDeanPackagesRoute: StaffPlacementDeanPackagesRoute,
+  StaffPlacementDeanPlacedStudentsRoute: StaffPlacementDeanPlacedStudentsRoute,
+  StaffPlacementDeanPlacementReportsRoute:
+    StaffPlacementDeanPlacementReportsRoute,
+  StaffPlacementDeanPlacementStatisticsRoute:
+    StaffPlacementDeanPlacementStatisticsRoute,
+  StaffPlacementDeanRecruitmentPartnersRoute:
+    StaffPlacementDeanRecruitmentPartnersRoute,
+  StaffPlacementDeanRegisteredStudentsRoute:
+    StaffPlacementDeanRegisteredStudentsRoute,
+  StaffPlacementDeanReportsRoute: StaffPlacementDeanReportsRoute,
+  StaffPlacementDeanResumeReviewsRoute: StaffPlacementDeanResumeReviewsRoute,
+  StaffPlacementDeanSelectedStudentsRoute:
+    StaffPlacementDeanSelectedStudentsRoute,
+  StaffPlacementDeanSettingsRoute: StaffPlacementDeanSettingsRoute,
+  StaffPlacementDeanShortlistedStudentsRoute:
+    StaffPlacementDeanShortlistedStudentsRoute,
+  StaffPlacementDeanSoftSkillsRoute: StaffPlacementDeanSoftSkillsRoute,
+  StaffPlacementDeanStudentReportsRoute: StaffPlacementDeanStudentReportsRoute,
+  StaffPlacementDeanSubstitutionHistoryRoute:
+    StaffPlacementDeanSubstitutionHistoryRoute,
+  StaffPlacementDeanTimetableRoute: StaffPlacementDeanTimetableRoute,
+  StaffPlacementDeanTrainingRoute: StaffPlacementDeanTrainingRoute,
+  StaffPlacementDeanTrainingReportsRoute:
+    StaffPlacementDeanTrainingReportsRoute,
+  StaffPlacementDeanUpcomingDrivesRoute: StaffPlacementDeanUpcomingDrivesRoute,
+  StaffPlacementDeanIndexRoute: StaffPlacementDeanIndexRoute,
+}
+
+const StaffPlacementDeanRouteWithChildren =
+  StaffPlacementDeanRoute._addFileChildren(StaffPlacementDeanRouteChildren)
+
+interface StaffResearchDevelopmentRouteChildren {
+  StaffResearchDevelopmentAssignSubstituteRoute: typeof StaffResearchDevelopmentAssignSubstituteRoute
+  StaffResearchDevelopmentBookChaptersRoute: typeof StaffResearchDevelopmentBookChaptersRoute
+  StaffResearchDevelopmentCompletedProjectsRoute: typeof StaffResearchDevelopmentCompletedProjectsRoute
+  StaffResearchDevelopmentConferencePublicationsRoute: typeof StaffResearchDevelopmentConferencePublicationsRoute
+  StaffResearchDevelopmentConferencesRoute: typeof StaffResearchDevelopmentConferencesRoute
+  StaffResearchDevelopmentConsultancyProjectsRoute: typeof StaffResearchDevelopmentConsultancyProjectsRoute
+  StaffResearchDevelopmentCopyrightsRoute: typeof StaffResearchDevelopmentCopyrightsRoute
+  StaffResearchDevelopmentFacultyTimetablesRoute: typeof StaffResearchDevelopmentFacultyTimetablesRoute
+  StaffResearchDevelopmentFdpsRoute: typeof StaffResearchDevelopmentFdpsRoute
+  StaffResearchDevelopmentFundingAgenciesRoute: typeof StaffResearchDevelopmentFundingAgenciesRoute
+  StaffResearchDevelopmentGovtGrantsRoute: typeof StaffResearchDevelopmentGovtGrantsRoute
+  StaffResearchDevelopmentGrantReportsRoute: typeof StaffResearchDevelopmentGrantReportsRoute
+  StaffResearchDevelopmentGrantUtilizationRoute: typeof StaffResearchDevelopmentGrantUtilizationRoute
+  StaffResearchDevelopmentGrantsRoute: typeof StaffResearchDevelopmentGrantsRoute
+  StaffResearchDevelopmentIncubationRoute: typeof StaffResearchDevelopmentIncubationRoute
+  StaffResearchDevelopmentIndustryGrantsRoute: typeof StaffResearchDevelopmentIndustryGrantsRoute
+  StaffResearchDevelopmentInnovationRoute: typeof StaffResearchDevelopmentInnovationRoute
+  StaffResearchDevelopmentInnovationsRoute: typeof StaffResearchDevelopmentInnovationsRoute
+  StaffResearchDevelopmentJournalPublicationsRoute: typeof StaffResearchDevelopmentJournalPublicationsRoute
+  StaffResearchDevelopmentLabBookingRoute: typeof StaffResearchDevelopmentLabBookingRoute
+  StaffResearchDevelopmentLabEquipmentRoute: typeof StaffResearchDevelopmentLabEquipmentRoute
+  StaffResearchDevelopmentLabUtilizationRoute: typeof StaffResearchDevelopmentLabUtilizationRoute
+  StaffResearchDevelopmentMyClassesRoute: typeof StaffResearchDevelopmentMyClassesRoute
+  StaffResearchDevelopmentMyTimetableRoute: typeof StaffResearchDevelopmentMyTimetableRoute
+  StaffResearchDevelopmentNotificationsRoute: typeof StaffResearchDevelopmentNotificationsRoute
+  StaffResearchDevelopmentOngoingProjectsRoute: typeof StaffResearchDevelopmentOngoingProjectsRoute
+  StaffResearchDevelopmentPatentReportsRoute: typeof StaffResearchDevelopmentPatentReportsRoute
+  StaffResearchDevelopmentPatentsRoute: typeof StaffResearchDevelopmentPatentsRoute
+  StaffResearchDevelopmentPhdScholarsRoute: typeof StaffResearchDevelopmentPhdScholarsRoute
+  StaffResearchDevelopmentProjectsRoute: typeof StaffResearchDevelopmentProjectsRoute
+  StaffResearchDevelopmentPublicationReportsRoute: typeof StaffResearchDevelopmentPublicationReportsRoute
+  StaffResearchDevelopmentPublicationsRepoRoute: typeof StaffResearchDevelopmentPublicationsRepoRoute
+  StaffResearchDevelopmentResearchGuidesRoute: typeof StaffResearchDevelopmentResearchGuidesRoute
+  StaffResearchDevelopmentResearchLabsRoute: typeof StaffResearchDevelopmentResearchLabsRoute
+  StaffResearchDevelopmentResearchReportsRoute: typeof StaffResearchDevelopmentResearchReportsRoute
+  StaffResearchDevelopmentScholarProgressRoute: typeof StaffResearchDevelopmentScholarProgressRoute
+  StaffResearchDevelopmentScholarReportsRoute: typeof StaffResearchDevelopmentScholarReportsRoute
+  StaffResearchDevelopmentScholarsRoute: typeof StaffResearchDevelopmentScholarsRoute
+  StaffResearchDevelopmentSeminarsRoute: typeof StaffResearchDevelopmentSeminarsRoute
+  StaffResearchDevelopmentSettingsRoute: typeof StaffResearchDevelopmentSettingsRoute
+  StaffResearchDevelopmentSponsoredProjectsRoute: typeof StaffResearchDevelopmentSponsoredProjectsRoute
+  StaffResearchDevelopmentSubstitutionHistoryRoute: typeof StaffResearchDevelopmentSubstitutionHistoryRoute
+  StaffResearchDevelopmentThesisRepoRoute: typeof StaffResearchDevelopmentThesisRepoRoute
+  StaffResearchDevelopmentTimetableRoute: typeof StaffResearchDevelopmentTimetableRoute
+  StaffResearchDevelopmentWorkshopsRoute: typeof StaffResearchDevelopmentWorkshopsRoute
+  StaffResearchDevelopmentIndexRoute: typeof StaffResearchDevelopmentIndexRoute
+}
+
+const StaffResearchDevelopmentRouteChildren: StaffResearchDevelopmentRouteChildren =
+  {
+    StaffResearchDevelopmentAssignSubstituteRoute:
+      StaffResearchDevelopmentAssignSubstituteRoute,
+    StaffResearchDevelopmentBookChaptersRoute:
+      StaffResearchDevelopmentBookChaptersRoute,
+    StaffResearchDevelopmentCompletedProjectsRoute:
+      StaffResearchDevelopmentCompletedProjectsRoute,
+    StaffResearchDevelopmentConferencePublicationsRoute:
+      StaffResearchDevelopmentConferencePublicationsRoute,
+    StaffResearchDevelopmentConferencesRoute:
+      StaffResearchDevelopmentConferencesRoute,
+    StaffResearchDevelopmentConsultancyProjectsRoute:
+      StaffResearchDevelopmentConsultancyProjectsRoute,
+    StaffResearchDevelopmentCopyrightsRoute:
+      StaffResearchDevelopmentCopyrightsRoute,
+    StaffResearchDevelopmentFacultyTimetablesRoute:
+      StaffResearchDevelopmentFacultyTimetablesRoute,
+    StaffResearchDevelopmentFdpsRoute: StaffResearchDevelopmentFdpsRoute,
+    StaffResearchDevelopmentFundingAgenciesRoute:
+      StaffResearchDevelopmentFundingAgenciesRoute,
+    StaffResearchDevelopmentGovtGrantsRoute:
+      StaffResearchDevelopmentGovtGrantsRoute,
+    StaffResearchDevelopmentGrantReportsRoute:
+      StaffResearchDevelopmentGrantReportsRoute,
+    StaffResearchDevelopmentGrantUtilizationRoute:
+      StaffResearchDevelopmentGrantUtilizationRoute,
+    StaffResearchDevelopmentGrantsRoute: StaffResearchDevelopmentGrantsRoute,
+    StaffResearchDevelopmentIncubationRoute:
+      StaffResearchDevelopmentIncubationRoute,
+    StaffResearchDevelopmentIndustryGrantsRoute:
+      StaffResearchDevelopmentIndustryGrantsRoute,
+    StaffResearchDevelopmentInnovationRoute:
+      StaffResearchDevelopmentInnovationRoute,
+    StaffResearchDevelopmentInnovationsRoute:
+      StaffResearchDevelopmentInnovationsRoute,
+    StaffResearchDevelopmentJournalPublicationsRoute:
+      StaffResearchDevelopmentJournalPublicationsRoute,
+    StaffResearchDevelopmentLabBookingRoute:
+      StaffResearchDevelopmentLabBookingRoute,
+    StaffResearchDevelopmentLabEquipmentRoute:
+      StaffResearchDevelopmentLabEquipmentRoute,
+    StaffResearchDevelopmentLabUtilizationRoute:
+      StaffResearchDevelopmentLabUtilizationRoute,
+    StaffResearchDevelopmentMyClassesRoute:
+      StaffResearchDevelopmentMyClassesRoute,
+    StaffResearchDevelopmentMyTimetableRoute:
+      StaffResearchDevelopmentMyTimetableRoute,
+    StaffResearchDevelopmentNotificationsRoute:
+      StaffResearchDevelopmentNotificationsRoute,
+    StaffResearchDevelopmentOngoingProjectsRoute:
+      StaffResearchDevelopmentOngoingProjectsRoute,
+    StaffResearchDevelopmentPatentReportsRoute:
+      StaffResearchDevelopmentPatentReportsRoute,
+    StaffResearchDevelopmentPatentsRoute: StaffResearchDevelopmentPatentsRoute,
+    StaffResearchDevelopmentPhdScholarsRoute:
+      StaffResearchDevelopmentPhdScholarsRoute,
+    StaffResearchDevelopmentProjectsRoute:
+      StaffResearchDevelopmentProjectsRoute,
+    StaffResearchDevelopmentPublicationReportsRoute:
+      StaffResearchDevelopmentPublicationReportsRoute,
+    StaffResearchDevelopmentPublicationsRepoRoute:
+      StaffResearchDevelopmentPublicationsRepoRoute,
+    StaffResearchDevelopmentResearchGuidesRoute:
+      StaffResearchDevelopmentResearchGuidesRoute,
+    StaffResearchDevelopmentResearchLabsRoute:
+      StaffResearchDevelopmentResearchLabsRoute,
+    StaffResearchDevelopmentResearchReportsRoute:
+      StaffResearchDevelopmentResearchReportsRoute,
+    StaffResearchDevelopmentScholarProgressRoute:
+      StaffResearchDevelopmentScholarProgressRoute,
+    StaffResearchDevelopmentScholarReportsRoute:
+      StaffResearchDevelopmentScholarReportsRoute,
+    StaffResearchDevelopmentScholarsRoute:
+      StaffResearchDevelopmentScholarsRoute,
+    StaffResearchDevelopmentSeminarsRoute:
+      StaffResearchDevelopmentSeminarsRoute,
+    StaffResearchDevelopmentSettingsRoute:
+      StaffResearchDevelopmentSettingsRoute,
+    StaffResearchDevelopmentSponsoredProjectsRoute:
+      StaffResearchDevelopmentSponsoredProjectsRoute,
+    StaffResearchDevelopmentSubstitutionHistoryRoute:
+      StaffResearchDevelopmentSubstitutionHistoryRoute,
+    StaffResearchDevelopmentThesisRepoRoute:
+      StaffResearchDevelopmentThesisRepoRoute,
+    StaffResearchDevelopmentTimetableRoute:
+      StaffResearchDevelopmentTimetableRoute,
+    StaffResearchDevelopmentWorkshopsRoute:
+      StaffResearchDevelopmentWorkshopsRoute,
+    StaffResearchDevelopmentIndexRoute: StaffResearchDevelopmentIndexRoute,
+  }
+
+const StaffResearchDevelopmentRouteWithChildren =
+  StaffResearchDevelopmentRoute._addFileChildren(
+    StaffResearchDevelopmentRouteChildren,
+  )
+
+interface StaffStudentDeanRouteChildren {
+  StaffStudentDeanAttendanceRoute: typeof StaffStudentDeanAttendanceRoute
+  StaffStudentDeanAttendanceHistoryRoute: typeof StaffStudentDeanAttendanceHistoryRoute
+  StaffStudentDeanAttendanceReportsRoute: typeof StaffStudentDeanAttendanceReportsRoute
+  StaffStudentDeanCertificatesRoute: typeof StaffStudentDeanCertificatesRoute
+  StaffStudentDeanClubsEventsRoute: typeof StaffStudentDeanClubsEventsRoute
+  StaffStudentDeanCounsellingRoute: typeof StaffStudentDeanCounsellingRoute
+  StaffStudentDeanDisciplineRoute: typeof StaffStudentDeanDisciplineRoute
+  StaffStudentDeanGrievancesRoute: typeof StaffStudentDeanGrievancesRoute
+  StaffStudentDeanHostelRoute: typeof StaffStudentDeanHostelRoute
+  StaffStudentDeanMentoringRoute: typeof StaffStudentDeanMentoringRoute
+  StaffStudentDeanNotificationsRoute: typeof StaffStudentDeanNotificationsRoute
+  StaffStudentDeanProfilesRoute: typeof StaffStudentDeanProfilesRoute
+  StaffStudentDeanReportsRoute: typeof StaffStudentDeanReportsRoute
+  StaffStudentDeanScholarshipReportsRoute: typeof StaffStudentDeanScholarshipReportsRoute
+  StaffStudentDeanScholarshipsRoute: typeof StaffStudentDeanScholarshipsRoute
+  StaffStudentDeanSettingsRoute: typeof StaffStudentDeanSettingsRoute
+  StaffStudentDeanStudentActivitiesRoute: typeof StaffStudentDeanStudentActivitiesRoute
+  StaffStudentDeanStudentProfilesRoute: typeof StaffStudentDeanStudentProfilesRoute
+  StaffStudentDeanStudentReportsRoute: typeof StaffStudentDeanStudentReportsRoute
+  StaffStudentDeanStudentRequestsRoute: typeof StaffStudentDeanStudentRequestsRoute
+  StaffStudentDeanStudentsRoute: typeof StaffStudentDeanStudentsRoute
+  StaffStudentDeanTimetableRoute: typeof StaffStudentDeanTimetableRoute
+  StaffStudentDeanIndexRoute: typeof StaffStudentDeanIndexRoute
+}
+
+const StaffStudentDeanRouteChildren: StaffStudentDeanRouteChildren = {
+  StaffStudentDeanAttendanceRoute: StaffStudentDeanAttendanceRoute,
+  StaffStudentDeanAttendanceHistoryRoute:
+    StaffStudentDeanAttendanceHistoryRoute,
+  StaffStudentDeanAttendanceReportsRoute:
+    StaffStudentDeanAttendanceReportsRoute,
+  StaffStudentDeanCertificatesRoute: StaffStudentDeanCertificatesRoute,
+  StaffStudentDeanClubsEventsRoute: StaffStudentDeanClubsEventsRoute,
+  StaffStudentDeanCounsellingRoute: StaffStudentDeanCounsellingRoute,
+  StaffStudentDeanDisciplineRoute: StaffStudentDeanDisciplineRoute,
+  StaffStudentDeanGrievancesRoute: StaffStudentDeanGrievancesRoute,
+  StaffStudentDeanHostelRoute: StaffStudentDeanHostelRoute,
+  StaffStudentDeanMentoringRoute: StaffStudentDeanMentoringRoute,
+  StaffStudentDeanNotificationsRoute: StaffStudentDeanNotificationsRoute,
+  StaffStudentDeanProfilesRoute: StaffStudentDeanProfilesRoute,
+  StaffStudentDeanReportsRoute: StaffStudentDeanReportsRoute,
+  StaffStudentDeanScholarshipReportsRoute:
+    StaffStudentDeanScholarshipReportsRoute,
+  StaffStudentDeanScholarshipsRoute: StaffStudentDeanScholarshipsRoute,
+  StaffStudentDeanSettingsRoute: StaffStudentDeanSettingsRoute,
+  StaffStudentDeanStudentActivitiesRoute:
+    StaffStudentDeanStudentActivitiesRoute,
+  StaffStudentDeanStudentProfilesRoute: StaffStudentDeanStudentProfilesRoute,
+  StaffStudentDeanStudentReportsRoute: StaffStudentDeanStudentReportsRoute,
+  StaffStudentDeanStudentRequestsRoute: StaffStudentDeanStudentRequestsRoute,
+  StaffStudentDeanStudentsRoute: StaffStudentDeanStudentsRoute,
+  StaffStudentDeanTimetableRoute: StaffStudentDeanTimetableRoute,
+  StaffStudentDeanIndexRoute: StaffStudentDeanIndexRoute,
+}
+
+const StaffStudentDeanRouteWithChildren =
+  StaffStudentDeanRoute._addFileChildren(StaffStudentDeanRouteChildren)
+
+interface StaffStudent_deanRouteChildren {
+  StaffStudent_deanSplatRoute: typeof StaffStudent_deanSplatRoute
+}
+
+const StaffStudent_deanRouteChildren: StaffStudent_deanRouteChildren = {
+  StaffStudent_deanSplatRoute: StaffStudent_deanSplatRoute,
+}
+
+const StaffStudent_deanRouteWithChildren =
+  StaffStudent_deanRoute._addFileChildren(StaffStudent_deanRouteChildren)
+
+interface StaffRouteChildren {
+  StaffAcademicDeanRoute: typeof StaffAcademicDeanRouteWithChildren
+  StaffExaminationDeanRoute: typeof StaffExaminationDeanRouteWithChildren
+  StaffFinanceDeanRoute: typeof StaffFinanceDeanRouteWithChildren
+  StaffImaRoute: typeof StaffImaRouteWithChildren
+  StaffIqacRoute: typeof StaffIqacRouteWithChildren
+  StaffPlacementDeanRoute: typeof StaffPlacementDeanRouteWithChildren
+  StaffResearchDevelopmentRoute: typeof StaffResearchDevelopmentRouteWithChildren
+  StaffStudentDeanRoute: typeof StaffStudentDeanRouteWithChildren
+  StaffStudent_deanRoute: typeof StaffStudent_deanRouteWithChildren
+  StaffIndexRoute: typeof StaffIndexRoute
+}
+
+const StaffRouteChildren: StaffRouteChildren = {
+  StaffAcademicDeanRoute: StaffAcademicDeanRouteWithChildren,
+  StaffExaminationDeanRoute: StaffExaminationDeanRouteWithChildren,
+  StaffFinanceDeanRoute: StaffFinanceDeanRouteWithChildren,
+  StaffImaRoute: StaffImaRouteWithChildren,
+  StaffIqacRoute: StaffIqacRouteWithChildren,
+  StaffPlacementDeanRoute: StaffPlacementDeanRouteWithChildren,
+  StaffResearchDevelopmentRoute: StaffResearchDevelopmentRouteWithChildren,
+  StaffStudentDeanRoute: StaffStudentDeanRouteWithChildren,
+  StaffStudent_deanRoute: StaffStudent_deanRouteWithChildren,
+  StaffIndexRoute: StaffIndexRoute,
+}
+
+const StaffRouteWithChildren = StaffRoute._addFileChildren(StaffRouteChildren)
+
 interface StudentRouteChildren {
   StudentAttendanceRoute: typeof StudentAttendanceRoute
   StudentCoursesRoute: typeof StudentCoursesRoute
@@ -5615,9 +13835,8 @@ const rootRouteChildren: RootRouteChildren = {
   DepartmentsRoute: DepartmentsRoute,
   EmergencyRoute: EmergencyRoute,
   EmployeeManagementRoute: EmployeeManagementRoute,
-  ExamcellRoute: ExamcellRouteWithChildren,
   ExaminationRoute: ExaminationRouteWithChildren,
-  ExaminationsRoute: ExaminationsRoute,
+  ExaminationsRoute: ExaminationsRouteWithChildren,
   ExternalUserRoute: ExternalUserRouteWithChildren,
   FacultyRoute: FacultyRouteWithChildren,
   FacultyManagementRoute: FacultyManagementRoute,
@@ -5647,6 +13866,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResultsRoute: ResultsRoute,
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
+  StaffRoute: StaffRouteWithChildren,
   StudentRoute: StudentRouteWithChildren,
   StudentsRoute: StudentsRoute,
   SubjectManagementRoute: SubjectManagementRoute,
@@ -5654,7 +13874,12 @@ const rootRouteChildren: RootRouteChildren = {
   TimetableRoute: TimetableRoute,
   TransportRoute: TransportRouteWithChildren,
   VerifyEmailRoute: VerifyEmailRoute,
+  DriveApplyRoute: DriveApplyRoute,
   ExamTakeRoute: ExamTakeRoute,
+  ExamcellAnalyticsRoute: ExamcellAnalyticsRoute,
+  ExamcellCorrectionAnalysisRoute: ExamcellCorrectionAnalysisRoute,
+  ExamcellHallTicketsRoute: ExamcellHallTicketsRoute,
+  ExamcellResultsRoute: ExamcellResultsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

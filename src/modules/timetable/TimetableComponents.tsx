@@ -513,26 +513,6 @@ export function TimetableModuleView() {
             </div>
           </div>
 
-          <WeeklyGrid
-            entries={filteredMasterEntries}
-            conflicts={conflicts}
-            onSelectSlot={(slot) => {
-              setSelectedSlot(slot);
-              setIsSlotDetailsOpen(true);
-            }}
-          />
-        </div>
-      )}
-                <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
-                  <SelectItem value="CSE">CSE</SelectItem>
-                  <SelectItem value="ECE">ECE</SelectItem>
-                  <SelectItem value="ME">ME</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
           <div className="overflow-x-auto border rounded-xl no-scrollbar">
             <table className="w-full border-collapse text-left table-fixed min-w-[1000px] xl:min-w-[1100px]">
               <thead>
