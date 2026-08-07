@@ -49,6 +49,16 @@ import {
 
 import type { LoginRole } from "@/config/roles";
 import { hasPermission, type UserPermissionContext } from "@/lib/permissions";
+import { ACADEMIC_DEAN_NAVIGATION } from "./navigation/academic-dean";
+import { STUDENT_DEAN_NAVIGATION } from "./navigation/student-dean";
+import { IQAC_NAVIGATION } from "./navigation/iqac";
+import { IMA_NAVIGATION } from "./navigation/ima";
+import { RESEARCH_NAVIGATION } from "./navigation/research";
+import { FINANCE_NAVIGATION } from "./navigation/finance";
+import { EXAMINATION_NAVIGATION } from "./navigation/examination";
+import { PLACEMENT_NAVIGATION } from "./navigation/placement";
+
+export const DEAN_NAVIGATION = ACADEMIC_DEAN_NAVIGATION;
 
 export interface NavItem {
   title: string;

@@ -44,9 +44,14 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { navigationForUser } from "@/config/navigation";
@@ -64,7 +69,6 @@ export function AppSidebar() {
   const href = useRouterState({ select: (r) => r.location.href });
   const navigate = useNavigate();
 
-<<<<<<< HEAD
   const isLibrarian =
     role === "librarian" ||
     (role === "staff" && flags.includes("isLibraryAdmin")) ||
@@ -588,10 +592,7 @@ export function AppSidebar() {
   }
 
   // Standard Sidebar for other roles
-  const sections = navigationForUser({ role, flags, department, externalPersona, featureFlags })
-=======
   const sections = navigationForUser({ role, flags, department, externalPersona, featureFlags }, pathname)
->>>>>>> origin/feat/dean-erp-modules
     .map((section) => ({
       ...section,
       items: section.items.filter((item) =>
