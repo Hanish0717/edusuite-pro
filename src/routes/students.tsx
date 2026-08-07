@@ -9,7 +9,7 @@ export const Route = createFileRoute("/students")({
   component: StudentsPage,
 });
 
-export function StudentsPage() {
+function StudentsPage() {
   return (
     <DashboardLayout>
       <StudentsModuleView />

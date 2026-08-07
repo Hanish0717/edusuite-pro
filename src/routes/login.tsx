@@ -77,7 +77,7 @@ const institutionLevelRoles = [
   "dean",
 ];
 
-export function LoginPage() {
+function LoginPage() {
   const { setRole, setFlags, setDepartment, setExternalPersona } = useRole();
   const navigate = useNavigate();
 
@@ -186,11 +186,11 @@ export function LoginPage() {
     if (resolved.department) setDepartment(resolved.department);
     if (resolved.externalPersona) setExternalPersona(resolved.externalPersona);
 
-    toast.success(resolved.toastMessage);
     if (step1CoreRole === "staff" && DEAN_ROUTE_MAP[step2Designation]) {
       navigate({ to: DEAN_ROUTE_MAP[step2Designation] as any });
     } else {
-      navigate({ to: "/dashboard" });
+      const target = resolved.targetRoute || (step2Designation === "admission_desk" ? "/dashboard/admission" : "/dashboard");
+      navigate({ to: target });
     }
   };
 

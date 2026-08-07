@@ -6,6 +6,6 @@ export const Route = createFileRoute("/examinations/internal-marks")({
   component: InternalMarksPage,
 });
 
-export function InternalMarksPage() {
+function InternalMarksPage() {
   return <InternalMarksView />;
 }

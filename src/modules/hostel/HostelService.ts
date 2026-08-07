@@ -35,6 +35,7 @@ export interface GatePassRequest {
   status: "Pending" | "Approved" | "Rejected" | "Resolved";
 }
 
+// Default initial datasets as memory fallback and seed values
 export interface HostelBlockInfo {
   id: string;
   name: string;
@@ -582,7 +583,6 @@ export const INITIAL_PASSES: GatePassRequest[] = [
   },
 ];
 
-export const DEFAULT_HOSTEL_CONFIG: HostelConfig = {
   feeStructure: {
     singleAc: 120000,
     doubleAc: 95000,
@@ -710,6 +710,7 @@ export const INITIAL_ACTIVITIES: HostelActivityLog[] = [
   },
 ];
 
+>>>>>>> origin/feature/student-portal-complete-sync
 export const DEFAULT_STAFF_SUMMARY: HostelStaffSummary = {
   chiefWarden: "Dr. Rajesh Kumar (Prof. Mechanical)",
   assistantWardensCount: 6,
@@ -728,6 +729,7 @@ export const DEFAULT_POLICY_COMPLIANCE: PolicyComplianceStatus = {
   insuranceStatus: "Active Comprehensive Cover",
   lastAuditDate: "2026-07-28",
 };
+// Warden API Implementations
 
 export async function fetchHostelRooms(): Promise<HostelRoom[]> {
   try {

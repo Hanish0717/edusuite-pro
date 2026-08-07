@@ -9,7 +9,7 @@ export const Route = createFileRoute("/subject-management")({
   component: SubjectManagementPage,
 });
 
-export function SubjectManagementPage() {
+function SubjectManagementPage() {
   return (
     <DashboardLayout>
       <SubjectManagement />

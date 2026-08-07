@@ -15,7 +15,7 @@ export const Route = createFileRoute("/academic-calendar")({
   component: AcademicCalendarPage,
 });
 
-export function AcademicCalendarPage() {
+function AcademicCalendarPage() {
   return (
     <DashboardLayout>
       <AcademicCalendarModuleView />
