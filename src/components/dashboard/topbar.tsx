@@ -149,13 +149,13 @@ export function Topbar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[#E2E8F0] bg-white dark:bg-slate-950/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
       <div className="flex items-center justify-between gap-3 px-4 py-2.5 min-w-0">
         <div className="flex min-w-0 items-center gap-2 shrink-0">
-          <SidebarTrigger className="shrink-0 text-[#2563EB]" />
+          <SidebarTrigger className="shrink-0" />
           <div className="relative hidden xl:block min-w-0">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#2563EB]" />
-            <Input placeholder="Search students, staff..." className="h-8 w-44 lg:w-56 text-xs pl-8 border-[#BFDBFE] focus-visible:ring-1 focus-visible:ring-[#2563EB]" />
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Search students, staff..." className="h-8 w-44 lg:w-56 text-xs pl-8" />
           </div>
         </div>
 
@@ -253,13 +253,13 @@ export function Topbar() {
             aria-label="Toggle theme"
             onClick={() => setDark((d) => !d)}
           >
-            {dark ? <Sun className="size-4 text-[#2563EB]" /> : <Moon className="size-4 text-[#2563EB]" />}
+            {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </Button>
 
           <Sheet open={isNotifOpen} onOpenChange={setIsNotifOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
-                <Bell className="size-4 text-[#2563EB]" />
+                <Bell className="size-4 text-slate-700 dark:text-slate-200" />
                 {unread > 0 && (
                   <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-red-600 text-[0.6rem] font-bold text-white shadow-xs animate-pulse">
                     {unread}
@@ -392,7 +392,7 @@ export function Topbar() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#E2E8F0] px-4 py-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/60 px-4 py-2">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -407,9 +407,7 @@ export function Topbar() {
                   {c.last ? (
                     <BreadcrumbPage>{c.label}</BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink asChild>
-                      <Link to={c.href}>{c.label}</Link>
-                    </BreadcrumbLink>
+                    <BreadcrumbLink href={c.href}>{c.label}</BreadcrumbLink>
                   )}
                 </BreadcrumbItem>
               </span>
