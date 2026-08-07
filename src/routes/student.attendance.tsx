@@ -132,7 +132,6 @@ function StudentAttendancePage() {
 
   const tabsConfig = [
     { id: "summary", label: "Attendance Summary", icon: CalendarCheck },
-    { id: "calendar", label: "Academic Calendar", icon: Calendar },
     { id: "subject-attendance", label: "Subject Attendance", icon: BookOpen },
     { id: "history", label: "Attendance History", icon: Clock },
     { id: "leave-management", label: "Leave Management", icon: FileText },
@@ -187,13 +186,7 @@ function StudentAttendancePage() {
         </div>
       </div>
 
-      {/* 2. DYNAMIC ACADEMIC ATTENDANCE CALENDAR (TOP HERO SECTION) */}
-      <AttendanceCalendar
-        selectedYear={selectedYear}
-        selectedSemester={selectedSemester}
-      />
-
-      {/* 3. SUBMODULE TABS NAVIGATION */}
+      {/* 2. SUBMODULE TABS NAVIGATION */}
       <div className="border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
         <div className="flex items-center space-x-6 min-w-max">
           {tabsConfig.map((tab) => {
@@ -217,7 +210,7 @@ function StudentAttendancePage() {
         </div>
       </div>
 
-      {/* 4. ACTIVE SUBMODULE TAB CONTENT */}
+      {/* 3. ACTIVE SUBMODULE TAB CONTENT */}
       <div>
         {activeTab === "summary" && (
           <AttendanceSummary
@@ -227,12 +220,6 @@ function StudentAttendancePage() {
             onOpenLeaveModal={() => setIsLeaveModalOpen(true)}
             onSelectTab={setActiveTab}
           />
-        )}
-
-        {activeTab === "calendar" && (
-          <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm text-xs text-slate-500">
-            You are viewing the Academic Attendance Calendar above. Click on any date tile for detailed daily attendance breakdowns.
-          </div>
         )}
 
         {activeTab === "subject-attendance" && (
