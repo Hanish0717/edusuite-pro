@@ -7,9 +7,12 @@ import { Download, Printer, Award, CheckCircle2, ChevronLeft, ChevronRight, Refr
 import { toast } from "sonner";
 
 interface GradeCardModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  result: SemesterResultItem | null;
+  open?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
+  result?: SemesterResultItem | null;
+  selectedSemesterResult?: SemesterResultItem | null;
   allResults?: SemesterResultItem[];
   profile: StudentExamProfile;
   onNavigateSemester?: (sem: number) => void;
@@ -18,16 +21,23 @@ interface GradeCardModalProps {
 
 export function GradeCardModal({
   open,
+  isOpen,
   onOpenChange,
+  onClose,
   result,
+  selectedSemesterResult,
   allResults = [],
   profile,
   onNavigateSemester,
   onApplyRevaluation,
 }: GradeCardModalProps) {
-  if (!result) return null;
+  const actualResult = result || selectedSemesterResult;
+  const actualOpen = open ?? isOpen ?? false;
+  const actualOnOpenChange = onOpenChange || ((o: boolean) => { if (!o && onClose) onClose(); });
 
-  const currentSemIndex = allResults.findIndex((r) => r.semester === result.semester);
+  if (!actualResult) return null;
+
+  const currentSemIndex = allResults.findIndex((r) => r.semester === actualResult.semester);
   const prevResult = currentSemIndex > 0 ? allResults[currentSemIndex - 1] : null;
   const nextResult = currentSemIndex >= 0 && currentSemIndex < allResults.length - 1 ? allResults[currentSemIndex + 1] : null;
 
@@ -36,17 +46,17 @@ export function GradeCardModal({
 =====================================================
 OFFICIAL ACADEMIC TRANSCRIPT & MARKS MEMORANDUM
 =====================================================
-Memo Number: ${result.memoNumber || `MEMO-2026-SEM${result.semester}-0542`}
-Published Date: ${result.publishedDate || "28 Jun 2026"}
+Memo Number: ${actualResult.memoNumber || `MEMO-2026-SEM${actualResult.semester}-0542`}
+Published Date: ${actualResult.publishedDate || "28 Jun 2026"}
 Student Name: ${profile.name} (Roll No: ${profile.rollNumber})
 Degree & Program: ${profile.degree} - ${profile.branch} (${profile.section})
-Semester: ${result.semester} | Academic Year: ${result.academicYear}
+Semester: ${actualResult.semester} | Academic Year: ${actualResult.academicYear}
 
 SUBJECT-WISE GRADES & MARKS BREAKDOWN:
 ----------------------------------------------------------------------------------
 Code   | Subject Title                          | Int(40) | Ext(60) | Total | Grade | Credits | Result
 ----------------------------------------------------------------------------------
-${result.subjects
+${actualResult.subjects
   .map(
     (s) =>
       `${s.code.padEnd(6)} | ${s.name.padEnd(38)} | ${String(s.internal).padStart(7)} | ${String(s.external).padStart(7)} | ${String(s.total).padStart(5)} | ${s.grade.padStart(5)} | ${String(s.credits).padStart(7)} | ${s.status}`
@@ -55,28 +65,28 @@ ${result.subjects
 ----------------------------------------------------------------------------------
 
 SEMESTER SUMMARY METRICS:
-- Credits Attempted: ${result.creditsAttempted} | Credits Earned: ${result.creditsEarned}
-- Semester Grade Point Average (SGPA): ${result.sgpa.toFixed(2)}
-- Cumulative Grade Point Average (CGPA): ${result.cgpa.toFixed(2)}
+- Credits Attempted: ${actualResult.creditsAttempted} | Credits Earned: ${actualResult.creditsEarned}
+- Semester Grade Point Average (SGPA): ${actualResult.sgpa.toFixed(2)}
+- Cumulative Grade Point Average (CGPA): ${actualResult.cgpa.toFixed(2)}
 - Overall Result: PASSED FIRST CLASS WITH DISTINCTION
 
-Verification QR Hash: QR-CERT-SEM${result.semester}-VERIFIED-2026
+Verification QR Hash: QR-CERT-SEM${actualResult.semester}-VERIFIED-2026
 Controller of Examinations Signature — EduSuite Academic Board`;
 
     const blob = new Blob([memoText], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `Official_Memo_Semester_${result.semester}.pdf`;
+    link.download = `Official_Memo_Semester_${actualResult.semester}.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast.success(`Downloaded Official Marks Memo for Semester ${result.semester}`);
+    toast.success(`Downloaded Official Marks Memo for Semester ${actualResult.semester}`);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={actualOpen} onOpenChange={actualOnOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl">
         
         {/* HEADER WITH SEMESTER CYCLING */}
@@ -88,17 +98,17 @@ Controller of Examinations Signature — EduSuite Academic Board`;
               </div>
               <div>
                 <DialogTitle className="text-base font-bold flex items-center gap-2">
-                  Official Grade Sheet & Marks Memo — Semester {result.semester}
+                  Official Grade Sheet & Marks Memo — Semester {actualResult.semester}
                 </DialogTitle>
                 <DialogDescription className="text-xs text-slate-500 font-mono">
-                  Memo No: <strong className="text-blue-600">{result.memoNumber || `MEMO-2026-SEM${result.semester}-0542`}</strong> &middot; Published: {result.publishedDate || "28 Jun 2026"}
+                  Memo No: <strong className="text-blue-600">{actualResult.memoNumber || `MEMO-2026-SEM${actualResult.semester}-0542`}</strong> &middot; Published: {actualResult.publishedDate || "28 Jun 2026"}
                 </DialogDescription>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-bold text-xs px-2.5 py-1 font-mono">
-                SGPA: {result.sgpa.toFixed(2)} (PASSED)
+                SGPA: {actualResult.sgpa.toFixed(2)} (PASSED)
               </Badge>
             </div>
           </div>

@@ -827,3 +827,16 @@ export async function applyManagementQuotaApplication(payload: any): Promise<Adm
 export function verifyDocument(app: AdmissionApplication, docKey: string, verified: boolean): AdmissionApplication {
   return updateGranularDocumentStatus(app, docKey, verified ? "Verified" : "Pending");
 }
+
+export async function createAdmissionApplication(payload: any): Promise<AdmissionApplication> {
+  return submitCategoryAConvenerApplication(payload);
+}
+
+export function updateAdmissionStatus(app: AdmissionApplication, status: any): AdmissionApplication {
+  return { ...app, status };
+}
+
+export function deleteAdmissionApplication(id: string): boolean {
+  return true;
+}
+

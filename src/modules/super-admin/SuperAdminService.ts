@@ -56,6 +56,64 @@ export interface RolePermissionMatrixItem {
   canExportData: boolean;
 }
 
+export interface DelegationRule {
+  id: string;
+  moduleName: string;
+  delegatedRole: "Principal" | "Dean" | "HOD" | "Faculty" | "Finance Manager" | "HR Manager" | "Exam Controller";
+  assignedPerson: string;
+  scope: string;
+  status: "Active Delegation" | "Pending Review";
+  permissions: string[];
+}
+
+export const MOCK_DELEGATION_RULES: DelegationRule[] = [
+  {
+    id: "DEL-101",
+    moduleName: "Academic Operations & Class Scheduling",
+    delegatedRole: "Dean",
+    assignedPerson: "Dr. S. K. Gupta (Dean Academics)",
+    scope: "Curriculum approval, semester timetable generation, faculty workload balance",
+    status: "Active Delegation",
+    permissions: ["Generate Timetable", "Approve Curriculum", "Manage Course Catalog"],
+  },
+  {
+    id: "DEL-102",
+    moduleName: "Departmental Faculty & Student Supervision",
+    delegatedRole: "HOD",
+    assignedPerson: "Dr. Rajesh Sharma (HOD CSE)",
+    scope: "Departmental student roster, proxy faculty allocation, lesson plan review",
+    status: "Active Delegation",
+    permissions: ["Approve Lesson Plans", "Assign Proxy Faculty", "Track Syllabus Progress"],
+  },
+  {
+    id: "DEL-103",
+    moduleName: "Institutional Examinations & Grading",
+    delegatedRole: "Exam Controller",
+    assignedPerson: "Dr. Meera Nambiar (Controller of Exams)",
+    scope: "Exam timetable scheduling, hall tickets issuance, internal marks lock",
+    status: "Active Delegation",
+    permissions: ["Schedule Examinations", "Publish Results", "Lock Grade Sheets"],
+  },
+  {
+    id: "DEL-104",
+    moduleName: "Financial Operations & Fee Governance",
+    delegatedRole: "Finance Manager",
+    assignedPerson: "Vikram Malhotra (Chief Finance Officer)",
+    scope: "Student fee collection, payroll disbursement, vendor procurement approvals",
+    status: "Active Delegation",
+    permissions: ["Manage Student Fees", "Process Staff Payroll", "Approve POs"],
+  },
+  {
+    id: "DEL-105",
+    moduleName: "Talent Management & Faculty Leave Governance",
+    delegatedRole: "HR Manager",
+    assignedPerson: "Priya Sundaram (HR Director)",
+    scope: "Faculty leave approvals, staff recruitment, performance appraisal records",
+    status: "Active Delegation",
+    permissions: ["Approve Faculty Leaves", "Manage Employee Records", "Process Appraisals"],
+  },
+];
+
 // ----------------------------------------------------------------------
 // STATIC MOCK FALLBACK DATASETS
 // ----------------------------------------------------------------------
@@ -519,3 +577,28 @@ export async function triggerBackup(): Promise<{
     timestamp,
   };
 }
+
+let delegationRulesStateStore: DelegationRule[] = [...MOCK_DELEGATION_RULES];
+
+export async function fetchDelegationRules(): Promise<DelegationRule[]> {
+  try {
+    const res = await api.get("/api/super-admin/delegation-rules");
+    if (res && Array.isArray(res.data) && res.data.length > 0) {
+      delegationRulesStateStore = res.data;
+      return res.data;
+    }
+  } catch (err) {}
+  return delegationRulesStateStore;
+}
+
+export async function updateDelegationRule(
+  id: string,
+  updated: Partial<DelegationRule>
+): Promise<DelegationRule[]> {
+  delegationRulesStateStore = delegationRulesStateStore.map((rule) =>
+    rule.id === id ? { ...rule, ...updated } : rule
+  );
+  addAuditRecord(`Updated Operational Delegation Rule ${id}`, "Operational Delegation");
+  return delegationRulesStateStore;
+}
+

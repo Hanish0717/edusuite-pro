@@ -352,6 +352,7 @@ aside::-webkit-scrollbar {
   width: 0px !important;
   height: 0px !important;
 }
+
 .no-scrollbar,
 [data-sidebar="content"],
 aside {

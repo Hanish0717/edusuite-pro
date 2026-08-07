@@ -42,12 +42,13 @@ import { toast } from "sonner";
 interface ResultsProps {
   profile: StudentExamProfile;
   semesterResults: SemesterResultItem[];
-  resultStatus: ResultWorkflowStatus;
+  resultStatus?: ResultWorkflowStatus;
   selectedYear: AcademicYearOption;
   selectedSemester: number;
   onYearChange: (year: AcademicYearOption) => void;
   onSemesterChange: (sem: number) => void;
   onOpenGradeCardModal: (result: SemesterResultItem) => void;
+  onOpenRevaluationModal?: () => void;
   onApplyRevaluation?: () => void;
   onTogglePublishResults?: () => void;
 }

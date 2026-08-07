@@ -679,31 +679,21 @@ export function AppSidebar() {
                               {item.children.map((child) => {
                                 const childCleanPath = (child.url || "").split("?")[0] || "";
                                 const hasSubParam = child.url.includes("?");
-                                let isSubActive = false;
-
-                                if (hasSubParam) {
-                                  if (href.includes("?tab=")) {
-                                    isSubActive = href.includes(child.url);
-                                  } else {
-                                     isSubActive =
-                                       (href.includes("/examinations") && child.url.includes("tab=schedule")) ||
-                                       (href.includes("/alumni") && child.url.includes("tab=dashboard")) ||
-                                       (href.includes("/settings") && child.url.includes("tab=rbac"));
-                                  }
-                                } else {
-                                  isSubActive = currentCleanPath === childCleanPath;
-                                }
+                                const isSubActive = hasSubParam
+                                  ? href.includes(child.url) ||
+                                    (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard")) ||
+                                    (href.includes("/examinations") && child.url.includes("tab=schedule"))
+                                  : currentCleanPath === childCleanPath || (childCleanPath !== "/" && currentCleanPath.startsWith(childCleanPath));
                                 return (
-                                  <Link
-                                    key={child.title}
-                                    to={child.url}
-                                    className={cn(
-                                      "flex w-full items-center px-3 py-1.5 text-[14px] font-normal leading-[24px] text-white bg-transparent hover:bg-white/[0.04] transition-colors duration-150 cursor-pointer border-0 shadow-none outline-none rounded-none",
-                                      isSubActive && "bg-white/[0.07] text-white"
-                                    )}
-                                  >
-                                    <span className="truncate">{child.title}</span>
-                                  </Link>
+                                  <SidebarMenuSubItem key={child.title}>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      isActive={isSubActive}
+                                      className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#4D78FF] data-[active=true]:bg-[#1A285D] rounded-[10px] px-3 py-1.5 transition-all duration-200"
+                                    >
+                                      <Link to={child.url}>{child.title}</Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
                                 );
                               })}
                             </div>

@@ -7,14 +7,18 @@ import { CheckCircle2, ShieldCheck, AlertCircle, Clock, Zap } from "lucide-react
 import { toast } from "sonner";
 
 interface RegistrationModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  selectedCourses: AvailableCourseItem[];
+  open?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
+  selectedCourses?: AvailableCourseItem[];
   onConfirm: () => void;
 }
 
-export function RegistrationModal({ open, onOpenChange, selectedCourses = [], onConfirm }: RegistrationModalProps) {
+export function RegistrationModal({ open, isOpen, onOpenChange, onClose, selectedCourses = [], onConfirm }: RegistrationModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const actualOpen = open ?? isOpen ?? false;
+  const actualOnOpenChange = onOpenChange || ((o: boolean) => { if (!o && onClose) onClose(); });
 
   const safeCourses = selectedCourses || [];
   const totalCredits = safeCourses.reduce((sum, c) => sum + (c?.credits || 0), 0);
@@ -24,13 +28,13 @@ export function RegistrationModal({ open, onOpenChange, selectedCourses = [], on
     setTimeout(() => {
       setIsSubmitting(false);
       onConfirm();
-      onOpenChange(false);
+      actualOnOpenChange(false);
       toast.success("Semester Course Registration submitted to Faculty Advisor for approval!");
     }, 700);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={actualOpen} onOpenChange={actualOnOpenChange}>
       <DialogContent className="max-w-lg rounded-2xl p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-xl">
         <DialogHeader className="space-y-1 text-left">
           <DialogTitle className="text-base font-bold flex items-center gap-2">

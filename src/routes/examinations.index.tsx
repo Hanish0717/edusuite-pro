@@ -5,6 +5,6 @@ export const Route = createFileRoute("/examinations/")({
   component: ExaminationsIndexPage,
 });
 
-function ExaminationsIndexPage() {
+export function ExaminationsIndexPage() {
   return <ExaminationsModuleView />;
 }

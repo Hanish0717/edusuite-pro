@@ -6,6 +6,6 @@ export const Route = createFileRoute("/examinations/hall-tickets")({
   component: HallTicketsPage,
 });
 
-function HallTicketsPage() {
+export function HallTicketsPage() {
   return <HallTicketsView />;
 }

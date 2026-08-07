@@ -7,18 +7,24 @@ import { BookOpen, User, Clock, MapPin, CheckCircle2, AlertCircle, ShieldCheck }
 import { toast } from "sonner";
 
 interface CourseDetailsDrawerProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
   course: AvailableCourseItem | null;
-  onRegister: (course: AvailableCourseItem) => void;
-  onDrop: (course: AvailableCourseItem) => void;
+  onRegister?: (course: AvailableCourseItem) => void;
+  onRegisterCourse?: (courseId: string) => void;
+  onDrop?: (course: AvailableCourseItem) => void;
 }
 
-export function CourseDetailsDrawer({ open, onOpenChange, course, onRegister, onDrop }: CourseDetailsDrawerProps) {
+export function CourseDetailsDrawer({ open, isOpen, onOpenChange, onClose, course, onRegister, onRegisterCourse, onDrop }: CourseDetailsDrawerProps) {
+  const actualOpen = open ?? isOpen ?? false;
+  const actualOnOpenChange = onOpenChange || ((o: boolean) => { if (!o && onClose) onClose(); });
+
   if (!course) return null;
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={actualOpen} onOpenChange={actualOnOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-md p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white space-y-6 overflow-y-auto">
         <SheetHeader className="text-left space-y-1 border-b pb-4 border-slate-100 dark:border-slate-800">
           <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20 text-[10px] w-fit">

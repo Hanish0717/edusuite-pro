@@ -165,7 +165,6 @@ function ClassCard({
         isUpcoming && "ring-2 ring-offset-1 ring-blue-500/40 shadow-glow"
       )}
     >
-
       {/* Top row: type badge + ongoing / upcoming pill */}
       <div className="flex items-center justify-between gap-1 flex-wrap">
         <Badge

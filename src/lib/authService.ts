@@ -69,14 +69,14 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
     primaryScope: "Operations & Student Conduct",
     personaName: "Prof. V. K. Murthy",
   },
-  {
-    canonicalRole: "dean",
-    roleName: "Academic Dean",
-    email: "dean@college.com",
-    defaultPassword: "password123",
-    primaryScope: "Academic Leadership",
-    personaName: "Prof. Anand Kumar (Dean)",
-  },
+  { canonicalRole: "academic_dean", roleName: "Academic Dean", email: "academic_dean@college.com", defaultPassword: "password123", primaryScope: "Academic Leadership", personaName: "Prof. Anand Kumar (Academic Dean)" },
+  { canonicalRole: "student_dean", roleName: "Student Dean", email: "student_dean@college.com", defaultPassword: "password123", primaryScope: "Student Affairs", personaName: "Prof. Student Dean (Student Dean)" },
+  { canonicalRole: "iqac_dean", roleName: "IQAC Dean", email: "iqac_dean@college.com", defaultPassword: "password123", primaryScope: "Quality Assurance", personaName: "Prof. IQAC Dean (IQAC Dean)" },
+  { canonicalRole: "ima_dean", roleName: "IMA Dean", email: "ima_dean@college.com", defaultPassword: "password123", primaryScope: "Industry & Alumni Relations", personaName: "Prof. IMA Dean (IMA Dean)" },
+  { canonicalRole: "research_dean", roleName: "Research & Development Dean", email: "research_dean@college.com", defaultPassword: "password123", primaryScope: "Research & Innovation", personaName: "Prof. Research Dean (Research Dean)" },
+  { canonicalRole: "finance_dean", roleName: "Finance Dean", email: "finance_dean@college.com", defaultPassword: "password123", primaryScope: "Financial Management", personaName: "Prof. Finance Dean (Finance Dean)" },
+  { canonicalRole: "examination_dean", roleName: "Examination Dean", email: "examination_dean@college.com", defaultPassword: "password123", primaryScope: "Exam Administration", personaName: "Prof. Examination Dean (Examination Dean)" },
+  { canonicalRole: "placement_dean", roleName: "Placement Dean", email: "placement_dean@college.com", defaultPassword: "password123", primaryScope: "Career Services", personaName: "Prof. Placement Dean (Placement Dean)" },
   {
     canonicalRole: "hod",
     roleName: "Head of Department (HOD)",
@@ -196,7 +196,14 @@ export const DESIGNATION_OPTIONS_MAP: Record<CoreRoleKey, DesignationOption[]> =
   ],
   staff: [
     { id: "hod", label: "HOD (Head of Department)" },
-    { id: "dean", label: "Academic Dean" },
+    { id: "academic_dean", label: "Academic Dean" },
+    { id: "student_dean", label: "Student Dean" },
+    { id: "iqac_dean", label: "IQAC" },
+    { id: "ima_dean", label: "IMA" },
+    { id: "research_dean", label: "Research & Development" },
+    { id: "finance_dean", label: "Finance Dean" },
+    { id: "examination_dean", label: "Examination Dean" },
+    { id: "placement_dean", label: "Placement Dean" },
     { id: "faculty", label: "Faculty / Teacher (Default)" },
     // ── Academic Management: institution-level, no branch/dept required ──
     { id: "academic_management", label: "Academic Management" },
@@ -306,6 +313,18 @@ export function getScopeOptionsForDesignation(coreRole: CoreRoleKey, designation
   return [{ value: "Default Scope", label: "Scope: Default" }];
 }
 
+export const DEAN_ROUTE_MAP: Record<string, string> = {
+  academic_dean: "/staff/academic-dean",
+  student_dean: "/staff/student-dean",
+  iqac_dean: "/staff/iqac",
+  ima_dean: "/staff/ima",
+  research_dean: "/staff/research-development",
+  finance_dean: "/staff/finance-dean",
+  examination_dean: "/staff/examination-dean",
+  placement_dean: "/staff/placement-dean",
+  dean: "/staff/academic-dean",
+};
+
 export function getDefaultCredentialsForSelection(
   coreRole: CoreRoleKey,
   designation?: string,
@@ -328,7 +347,7 @@ export function getDefaultCredentialsForSelection(
   } else if (coreRole === "staff") {
     if (designation === "admin") email = "admin@college.com";
     else if (designation === "hod") email = "hod@college.com";
-    else if (designation === "dean") email = "dean@college.com";
+    else if (designation === "dean" || (designation && designation.includes("_dean"))) email = "dean@college.com";
     else if (designation === "principal") email = "principal@college.com";
     else if (designation === "vice_principal") email = "vice_principal@college.com";
     else if (designation === "exam_controller") email = "examcell@college.com";
@@ -366,8 +385,6 @@ export function resolveRoleContextFromSelection(
 
   if (coreRole === "staff") {
     // ── Academic Management: institution-wide, no department scope required ──
-    // TODO (Backend): Replace this block with a dedicated API call when
-    //   the academic_management role is provisioned in the auth service.
     if (designation === "academic_management") {
       return {
         role: "academic_management",
@@ -388,7 +405,7 @@ export function resolveRoleContextFromSelection(
 
     let flag = "isHod";
     if (designation === "hod") flag = "isHod";
-    else if (designation === "dean") flag = "isDean";
+    else if (designation === "dean" || designation.includes("_dean")) flag = "isDean";
     else if (designation === "exam_controller") flag = "isExamController";
     else if (designation === "placement_officer") flag = "isPlacementOfficer";
     else if (designation === "transport_officer") flag = "isTransportOfficer";
@@ -400,8 +417,13 @@ export function resolveRoleContextFromSelection(
     else if (designation === "vice_principal") flag = "isVicePrincipal";
     else flag = "isMentor";
 
+    // Determine role for dean designations
+    let role: LoginRole = "staff";
+    if (designation === "dean") role = "academic_dean";
+    else if (designation.includes("_dean")) role = designation as LoginRole;
+
     return {
-      role: "staff",
+      role,
       flags: [flag, "isClassAdvisor", "isMentor"],
       department: deptCode,
       toastMessage: `Logged in as Staff: ${designation.toUpperCase()} — Branch: ${deptCode}`,

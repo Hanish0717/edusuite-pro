@@ -7,9 +7,11 @@ import { FileCheck, AlertCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 interface RevaluationModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  semesterResults: SemesterResultItem[];
+  open?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
+  semesterResults?: SemesterResultItem[];
   defaultSemester?: number;
   onSubmitRevaluation?: (data: {
     semester: number;
@@ -23,11 +25,15 @@ interface RevaluationModalProps {
 
 export function RevaluationModal({
   open,
+  isOpen,
   onOpenChange,
+  onClose,
   semesterResults = [],
   defaultSemester = 5,
   onSubmitRevaluation,
 }: RevaluationModalProps) {
+  const actualOpen = open ?? isOpen ?? false;
+  const actualOnOpenChange = onOpenChange || ((o: boolean) => { if (!o && onClose) onClose(); });
   const safeSemesterResults = semesterResults || [];
   const [selectedSem, setSelectedSem] = useState<number>(defaultSemester);
   const currentResult = safeSemesterResults.find((r) => r?.semester === selectedSem) || safeSemesterResults[0];
@@ -62,11 +68,11 @@ export function RevaluationModal({
     }
 
     toast.success(`Request Submitted Successfully! Ref ID: ${refId}`);
-    onOpenChange(false);
+    actualOnOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={actualOpen} onOpenChange={actualOnOpenChange}>
       <DialogContent className="max-w-md rounded-2xl p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl">
         <DialogHeader className="border-b pb-3 border-slate-100 dark:border-slate-800 text-left">
           <DialogTitle className="text-base font-bold flex items-center gap-2">

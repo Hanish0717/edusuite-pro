@@ -17,7 +17,7 @@ export const Route = createFileRoute("/super-admin")({
 
 function SuperAdminLayout() {
   const { role } = useRole();
-  const isSuperAdmin = role === "super-admin" || role === "super_admin";
+  const isSuperAdmin = role === "super_admin" || (role as string) === "super-admin";
 
   if (!isSuperAdmin) {
     return (

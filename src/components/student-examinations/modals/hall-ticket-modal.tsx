@@ -7,11 +7,14 @@ import { Download, Printer, Share2, QrCode, CheckCircle2, MapPin, Clock, AlertCi
 import { toast } from "sonner";
 
 interface HallTicketModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
   profile: StudentExamProfile;
   exams: UpcomingExamItem[];
   hallTicketRecord?: HallTicketRecordItem | null;
+  selectedRecord?: HallTicketRecordItem | null;
 }
 
 const STATUS_BADGE: Record<string, React.ReactNode> = {
@@ -23,7 +26,10 @@ const STATUS_BADGE: Record<string, React.ReactNode> = {
   "Not Released": <Badge className="bg-slate-500/10 text-slate-600 border-slate-500/20 text-[10px] font-mono px-2 py-0.5">NOT RELEASED</Badge>,
 };
 
-export function HallTicketModal({ open, onOpenChange, profile, exams, hallTicketRecord }: HallTicketModalProps) {
+export function HallTicketModal({ open, isOpen, onOpenChange, onClose, profile, exams, hallTicketRecord, selectedRecord }: HallTicketModalProps) {
+  const actualOpen = open ?? isOpen ?? false;
+  const actualOnOpenChange = onOpenChange || ((o: boolean) => { if (!o && onClose) onClose(); });
+  const actualRecord = hallTicketRecord || selectedRecord;
   // Use hallTicketRecord data if available, otherwise fall back to exams prop
   const displayExams = hallTicketRecord && hallTicketRecord.subjects.length > 0
     ? hallTicketRecord.subjects
@@ -89,7 +95,7 @@ Controller of Examinations — EduSuite Pro Academic Board`;
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={actualOpen} onOpenChange={actualOnOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl">
 
         {/* HEADER */}
@@ -249,7 +255,7 @@ Controller of Examinations — EduSuite Pro Academic Board`;
             >
               <Download className="h-3.5 w-3.5" /> Download PDF
             </Button>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="rounded-xl text-xs border-slate-200 dark:border-slate-700 cursor-pointer">
+            <Button type="button" variant="outline" onClick={() => actualOnOpenChange(false)} className="rounded-xl text-xs border-slate-200 dark:border-slate-700 cursor-pointer">
               Close
             </Button>
           </div>

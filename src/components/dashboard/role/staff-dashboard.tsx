@@ -47,14 +47,6 @@ export function StaffDashboard() {
   // Dynamic department-aware data
   const dashboardData = (FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"]) as FacultyDashboardData;
   
-  // Format current greeting based on time of day
-  const getGreeting = () => {
-    const hrs = new Date().getHours();
-    if (hrs < 12) return "Good Morning";
-    if (hrs < 17) return "Good Afternoon";
-    return "Good Evening";
-  };
-
   const handleQuickAction = (action: string) => {
     toast.success(`Quick Action triggered: ${action}`, {
       description: "Frontend mock interaction active.",
@@ -67,6 +59,13 @@ export function StaffDashboard() {
     { name: "Absent", value: dashboardData.attendance.absent },
     { name: "Pending", value: dashboardData.attendance.pending },
   ];
+
+  const getGreeting = () => {
+    const hr = new Date().getHours();
+    if (hr < 12) return "Good Morning";
+    if (hr < 18) return "Good Afternoon";
+    return "Good Evening";
+  };
 
   return (
     <div className="space-y-6 w-full max-w-[1600px] mx-auto min-w-0">

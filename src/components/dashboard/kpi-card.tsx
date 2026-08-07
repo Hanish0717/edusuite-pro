@@ -10,8 +10,9 @@ interface KpiCardProps {
   icon: LucideIcon;
   delta?: string;
   trend?: "up" | "down";
-  tone?: "primary" | "success" | "warning" | "info" | "destructive";
+  tone?: "primary" | "success" | "warning" | "info" | "destructive" | "purple";
   className?: string;
+  onClick?: () => void;
 }
 
 const toneMap = {
@@ -20,6 +21,7 @@ const toneMap = {
   warning: "bg-warning/15 text-warning",
   info: "bg-info/10 text-info",
   destructive: "bg-destructive/10 text-destructive",
+  purple: "bg-purple-500/10 text-purple-600",
 };
 
 export function KpiCard({
@@ -30,9 +32,10 @@ export function KpiCard({
   trend = "up",
   tone = "primary",
   className,
+  onClick,
 }: KpiCardProps) {
   return (
-    <Card className={cn("animate-fade-up gap-0 border-border/70 py-0 shadow-card transition-shadow hover:shadow-elevated h-full", className)}>
+    <Card onClick={onClick} className={cn("animate-fade-up gap-0 border-border/70 py-0 shadow-card transition-shadow hover:shadow-elevated h-full", onClick && "cursor-pointer", className)}>
       <CardContent className="flex items-start justify-between gap-3 p-4 sm:p-5 h-full">
         <div className="min-w-0 flex-1 flex flex-col justify-between h-full">
           <p className="text-xs sm:text-sm font-semibold text-muted-foreground leading-snug break-words" title={label}>{label}</p>

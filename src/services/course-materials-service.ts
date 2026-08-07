@@ -31,10 +31,18 @@ export interface MockStudentUser {
   role: "student";
 }
 
+const FALLBACK_DEPT_DATA = {
+  profileData: { id: "FAC-CSE-101", employeeId: "EMP-CSE-101", name: "Dr. CSE Faculty Lead", designation: "Associate Professor", academicInfo: { assignedSubjects: ["Cloud Computing"], sections: ["CSE-A"] } },
+  subjectsList: [{ name: "Cloud Computing" }],
+  studyMaterialsList: [] as StudyMaterialItem[],
+  semester: "5",
+  academicYear: "2026-27",
+};
+
 // 1. MOCK AUTHENTICATION CONTEXT GENERATORS
 export function getCurrentFacultyUser(deptCode: string = "CSE"): MockFacultyUser {
-  const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"];
-  const profile = deptData.profileData;
+  const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"] || FALLBACK_DEPT_DATA;
+  const profile = deptData.profileData || FALLBACK_DEPT_DATA.profileData;
 
   const assignedSubjects = profile.academicInfo?.assignedSubjects || deptData.subjectsList.map((s) => s.name);
   const assignedSections = profile.academicInfo?.sections || [`${deptCode}-A`, `${deptCode}-B`];
@@ -55,7 +63,7 @@ export function getCurrentFacultyUser(deptCode: string = "CSE"): MockFacultyUser
 }
 
 export function getCurrentStudentUser(deptCode: string = "CSE", semester: string = "5", section: string = "A"): MockStudentUser {
-  const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"];
+  const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"] || FALLBACK_DEPT_DATA;
   const enrolledSubjects = deptData.subjectsList.map((s) => s.name);
 
   return {
@@ -77,7 +85,7 @@ const mockRepositoryStore: Record<string, StudyMaterialItem[]> = {};
 
 function getRawDepartmentMaterials(deptCode: string): StudyMaterialItem[] {
   if (!mockRepositoryStore[deptCode]) {
-    const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"];
+    const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"] || FALLBACK_DEPT_DATA;
     mockRepositoryStore[deptCode] = [...(deptData.studyMaterialsList || [])];
   }
   return mockRepositoryStore[deptCode];
