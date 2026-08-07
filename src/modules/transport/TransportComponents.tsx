@@ -1179,9 +1179,3 @@ export function TransportModuleView() {
     </div>
   );
 }
-
-export const TransportVerificationView = TransportModuleView;
-export const TransportDashboardView = TransportModuleView;
-export const TransportNotificationsView = TransportModuleView;
-export const TransportSettingsView = TransportModuleView;
-export const TransportFeesManagementView = TransportModuleView;
