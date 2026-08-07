@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useAcademic } from "@/context/academic-context";
 import { getDashboardData, type AcademicDashboardData } from "./AcademicsDashboardService";
 import {
