@@ -382,7 +382,7 @@ export function Topbar() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/settings?tab=account-profile">Settings</Link>
+                <Link to="/settings">Settings</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/login">Sign out</Link>
