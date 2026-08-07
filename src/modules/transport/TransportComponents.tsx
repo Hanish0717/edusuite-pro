@@ -103,31 +103,31 @@ const FLEET_HEALTH_DATA = [
 
 const TRANSPORT_ALERTS = [
   { id: 1, type: "warning", icon: "wrench", title: "Maintenance Due", detail: "TS-09-UB-3341 — Service overdue by 12 days", time: "2h ago" },
-  { id: 2, type: "danger", icon: "shield", title: "Insurance Expiring", detail: "TS-09-UB-7812 — Insurance expires in 26 days", time: "Today" },
-  { id: 3, type: "danger", icon: "shield", title: "Permit Expiring", detail: "TS-09-UB-3341 — Permit expires Aug 12, 2026", time: "Today" },
-  { id: 4, type: "danger", icon: "radio", title: "GPS Offline", detail: "TS-09-UB-3341 — GPS signal lost since 06:40 AM", time: "6h ago" },
-  { id: 5, type: "warning", icon: "fuel", title: "High Fuel Consumption", detail: "Route 2 — 18% above monthly average", time: "Yesterday" },
-  { id: 6, type: "info", icon: "clock", title: "Route Delay", detail: "Route 1 — Morning trip delayed by 14 min", time: "Today" },
+  { id: 2, type: "danger",  icon: "shield", title: "Insurance Expiring", detail: "TS-09-UB-7812 — Insurance expires in 26 days", time: "Today" },
+  { id: 3, type: "danger",  icon: "shield", title: "Permit Expiring",    detail: "TS-09-UB-3341 — Permit expires Aug 12, 2026", time: "Today" },
+  { id: 4, type: "danger",  icon: "radio",  title: "GPS Offline",        detail: "TS-09-UB-3341 — GPS signal lost since 06:40 AM", time: "6h ago" },
+  { id: 5, type: "warning", icon: "fuel",   title: "High Fuel Consumption", detail: "Route 2 — 18% above monthly average", time: "Yesterday" },
+  { id: 6, type: "info",    icon: "clock",  title: "Route Delay",        detail: "Route 1 — Morning trip delayed by 14 min", time: "Today" },
 ];
 
 const RECENT_ACTIVITIES = [
   { id: 1, date: "2026-08-04", user: "Transport Manager", action: "Fleet Inspection Completed — All 3 active buses cleared" },
   { id: 2, date: "2026-08-03", user: "Transport Manager", action: "Vehicle Serviced — TS-09-UB-4589 engine oil & filters changed" },
-  { id: 3, date: "2026-08-02", user: "System", action: "GPS Activated — New GPS unit installed on TS-09-UB-7812" },
+  { id: 3, date: "2026-08-02", user: "System",            action: "GPS Activated — New GPS unit installed on TS-09-UB-7812" },
   { id: 4, date: "2026-08-01", user: "Transport Manager", action: "Permit Renewed — TS-09-UB-2109 permit renewed till Feb 2027" },
   { id: 5, date: "2026-07-30", user: "Transport Manager", action: "Maintenance Completed — TS-09-UB-2109 brake system overhauled" },
   { id: 6, date: "2026-07-28", user: "Transport Manager", action: "Fuel Audit Completed — Q2 fuel consumption ₹3.84 L total" },
 ];
 
 const STAFF_SUMMARY = [
-  { role: "Transport Manager", name: "Mr. P. Kishore Kumar", status: "On Duty", contact: "+91 9848055566" },
-  { role: "Fleet Supervisor", name: "Mr. D. Srinivasa Rao", status: "On Duty", contact: "+91 9848011122" },
-  { role: "Fleet Supervisor", name: "Mrs. T. Padmavathi", status: "On Leave", contact: "+91 9848033344" },
-  { role: "Driver", name: "M. Ramakrishna", status: "On Duty", contact: "+91 9848012345" },
-  { role: "Driver", name: "S. Venkatesh", status: "On Duty", contact: "+91 9848098765" },
-  { role: "Driver", name: "K. Nageswara Rao", status: "On Duty", contact: "+91 9848033344" },
-  { role: "Mechanic", name: "B. Raju", status: "On Duty", contact: "+91 9848077788" },
-  { role: "Support Staff", name: "G. Lakshmi", status: "On Duty", contact: "+91 9848099900" },
+  { role: "Transport Manager",   name: "Mr. P. Kishore Kumar",  status: "On Duty",  contact: "+91 9848055566" },
+  { role: "Fleet Supervisor",    name: "Mr. D. Srinivasa Rao",  status: "On Duty",  contact: "+91 9848011122" },
+  { role: "Fleet Supervisor",    name: "Mrs. T. Padmavathi",    status: "On Leave",  contact: "+91 9848033344" },
+  { role: "Driver",              name: "M. Ramakrishna",        status: "On Duty",  contact: "+91 9848012345" },
+  { role: "Driver",              name: "S. Venkatesh",          status: "On Duty",  contact: "+91 9848098765" },
+  { role: "Driver",              name: "K. Nageswara Rao",      status: "On Duty",  contact: "+91 9848033344" },
+  { role: "Mechanic",            name: "B. Raju",               status: "On Duty",  contact: "+91 9848077788" },
+  { role: "Support Staff",       name: "G. Lakshmi",            status: "On Duty",  contact: "+91 9848099900" },
 ];
 
 // ─── Dynamic Transport Configuration Panels ───────────────────────────────
@@ -346,16 +346,16 @@ export function TransportModuleView() {
   const [loading, setLoading] = useState(false);
 
   // Filter states
-  const [filterDept, setFilterDept] = useState("all");
-  const [filterYear, setFilterYear] = useState("all");
-  const [filterRoute, setFilterRoute] = useState("all");
+  const [filterDept, setFilterDept]     = useState("all");
+  const [filterYear, setFilterYear]     = useState("all");
+  const [filterRoute, setFilterRoute]   = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
 
   // Modal states
-  const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [isReportOpen, setIsReportOpen] = useState(false);
-  const [activePanel, setActivePanel] = useState<ConfigPanel | null>(null);
-  const [configData, setConfigData] = useState<Record<string, string>>(() => {
+  const [isConfigOpen, setIsConfigOpen]   = useState(false);
+  const [isReportOpen, setIsReportOpen]   = useState(false);
+  const [activePanel, setActivePanel]     = useState<ConfigPanel | null>(null);
+  const [configData, setConfigData]       = useState<Record<string, string>>(() => {
     const defaults: Record<string, string> = {};
     TRANSPORT_CONFIG_PANELS.forEach(panel => {
       panel.fields.forEach(field => {
@@ -376,21 +376,21 @@ export function TransportModuleView() {
   useEffect(() => { loadData(); }, []);
 
   // ── Derived KPI values ───────────────────────────────────────────────────
-  const totalVehicles = routes.length + 1; // +1 for maintenance bus
-  const vehiclesInService = routes.filter(r => r.status === "Active").length;
-  const vehiclesMaintenance = FLEET_HEALTH_DATA.filter(v => v.status === "Maintenance").length;
-  const totalPassHolders = routes.reduce((s, r) => s + r.passHoldersCount, 0);
-  const totalCapacity = routes.reduce((s, r) => s + r.capacity, 0);
-  const avgOccupancy = totalCapacity > 0 ? ((totalPassHolders / totalCapacity) * 100).toFixed(1) : "0";
-  const gpsOnline = FLEET_HEALTH_DATA.filter(v => v.gpsStatus === "Online").length;
-  const maintenanceDue = FLEET_HEALTH_DATA.filter(v => v.status === "Maintenance").length;
+  const totalVehicles        = routes.length + 1; // +1 for maintenance bus
+  const vehiclesInService    = routes.filter(r => r.status === "Active").length;
+  const vehiclesMaintenance  = FLEET_HEALTH_DATA.filter(v => v.status === "Maintenance").length;
+  const totalPassHolders     = routes.reduce((s, r) => s + r.passHoldersCount, 0);
+  const totalCapacity        = routes.reduce((s, r) => s + r.capacity, 0);
+  const avgOccupancy         = totalCapacity > 0 ? ((totalPassHolders / totalCapacity) * 100).toFixed(1) : "0";
+  const gpsOnline            = FLEET_HEALTH_DATA.filter(v => v.gpsStatus === "Online").length;
+  const maintenanceDue       = FLEET_HEALTH_DATA.filter(v => v.status === "Maintenance").length;
 
   // ── Pass monitoring derived ───────────────────────────────────────────────
-  const passStudents = passes.filter(p => p.rollNo.match(/^[0-9]{2}/)).length;
-  const passFaculty = passes.length - passStudents;
-  const passPaid = passes.filter(p => p.paymentStatus === "Paid").length;
-  const passPending = passes.filter(p => p.paymentStatus === "Pending" || p.paymentStatus === "Partial").length;
-  const passRevenue = passes.reduce((s, p) => s + p.annualFee, 0);
+  const passStudents  = passes.filter(p => p.rollNo.match(/^[0-9]{2}/)).length;
+  const passFaculty   = passes.length - passStudents;
+  const passPaid      = passes.filter(p => p.paymentStatus === "Paid").length;
+  const passPending   = passes.filter(p => p.paymentStatus === "Pending" || p.paymentStatus === "Partial").length;
+  const passRevenue   = passes.reduce((s, p) => s + p.annualFee, 0);
 
   // ── Fleet route table rows ────────────────────────────────────────────────
   const fleetRows = routes.map((r, idx) => {
@@ -407,8 +407,8 @@ export function TransportModuleView() {
   );
 
   const filteredPasses = passes.filter(p => {
-    const matchDept = filterDept === "all" || p.department === filterDept;
-    const matchRoute = filterRoute === "all" || p.routeNo === filterRoute;
+    const matchDept   = filterDept === "all"   || p.department === filterDept;
+    const matchRoute  = filterRoute === "all"  || p.routeNo === filterRoute;
     const matchStatus = filterStatus === "all" || p.paymentStatus === filterStatus;
     return matchDept && matchRoute && matchStatus;
   });
@@ -430,24 +430,24 @@ export function TransportModuleView() {
   // ─── UI helpers ───────────────────────────────────────────────────────────
   const alertTypeColor = (t: string) =>
     t === "danger" ? "text-red-500 bg-red-500/10 border-red-500/20"
-      : t === "warning" ? "text-amber-500 bg-amber-500/10 border-amber-500/20"
-        : "text-blue-500 bg-blue-500/10 border-blue-500/20";
+    : t === "warning" ? "text-amber-500 bg-amber-500/10 border-amber-500/20"
+    : "text-blue-500 bg-blue-500/10 border-blue-500/20";
 
   const healthBadge = (score: number) =>
     score >= 90 ? <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Grade A+</Badge>
-      : score >= 75 ? <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">Grade B</Badge>
-        : <Badge className="bg-red-500/10 text-red-600 text-[0.65rem]">Grade C</Badge>;
+    : score >= 75 ? <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">Grade B</Badge>
+    : <Badge className="bg-red-500/10 text-red-600 text-[0.65rem]">Grade C</Badge>;
 
   const docBadge = (expiry: string) => {
     const days = Math.ceil((new Date(expiry).getTime() - Date.now()) / 86400000);
-    if (days < 0) return <Badge className="bg-red-500/10 text-red-600 text-[0.65rem]">Expired</Badge>;
+    if (days < 0)  return <Badge className="bg-red-500/10 text-red-600 text-[0.65rem]">Expired</Badge>;
     if (days < 30) return <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">Expiring {days}d</Badge>;
     return <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Valid</Badge>;
   };
 
   const staffStatus = (s: string) =>
     s === "On Duty" ? <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">On Duty</Badge>
-      : <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">On Leave</Badge>;
+    : <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">On Leave</Badge>;
 
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
@@ -484,15 +484,14 @@ export function TransportModuleView() {
           <Button size="sm" variant="outline" onClick={() => setIsReportOpen(true)} className="h-9 border-primary/30 text-primary gap-2 text-xs font-semibold">
             <BarChart3 className="size-4" /> Fleet Reports
           </Button>
-<<<<<<< Updated upstream
-  <Button size="sm" onClick={() => setIsConfigOpen(true)} className="h-9 bg-brand-gradient text-white gap-2 text-xs font-semibold shadow-glow">
-    <Settings className="size-4" /> Transport Configuration
-  </Button>
-        </div >
-      </div >
+          <Button size="sm" onClick={() => setIsConfigOpen(true)} className="h-9 bg-brand-gradient text-white gap-2 text-xs font-semibold shadow-glow">
+            <Settings className="size-4" /> Transport Configuration
+          </Button>
+        </div>
+      </div>
 
-    {/* ── KPI Row 1 — Existing ──────────────────────────────────────────── */ }
-    < div className = "grid grid-cols-2 lg:grid-cols-4 gap-3.5" >
+      {/* ── KPI Row 1 — Existing ──────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
             <span>Fleet Buses</span>
@@ -528,32 +527,30 @@ export function TransportModuleView() {
           <p className="text-2xl font-bold font-mono text-purple-600">100% Verified</p>
           <p className="text-[0.68rem] text-purple-600 font-medium">RTO Commercial Licenses</p>
         </div>
-      </div >
+      </div>
 
-    {/* ── KPI Row 2 — New Governance Row ───────────────────────────────── */ }
-    < div className = "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3" >
-    {
-      [
-      { label: "In Service", value: vehiclesInService, unit: "Buses", color: "text-emerald-600", icon: <Bus className="size-4 text-emerald-500" /> },
-      { label: "Under Maintenance", value: vehiclesMaintenance, unit: "Buses", color: "text-amber-600", icon: <Wrench className="size-4 text-amber-500" /> },
-      { label: "Avg Occupancy", value: `${avgOccupancy}%`, unit: "", color: "text-blue-600", icon: <Gauge className="size-4 text-blue-500" /> },
-      { label: "Fuel Consumed", value: "₹3.84L", unit: "", color: "text-orange-600", icon: <Fuel className="size-4 text-orange-500" /> },
-      { label: "Trips Today", value: 6, unit: "Trips", color: "text-primary", icon: <Activity className="size-4 text-primary" /> },
-      { label: "Drivers On Duty", value: 3, unit: "Drivers", color: "text-teal-600", icon: <UserCheck className="size-4 text-teal-500" /> },
-      { label: "GPS Active", value: gpsOnline, unit: "Vehs", color: "text-violet-600", icon: <Radio className="size-4 text-violet-500" /> },
-      { label: "Transport Revenue", value: `₹${(passRevenue / 100000).toFixed(2)}L`, unit: "", color: "text-rose-600", icon: <TrendingUp className="size-4 text-rose-500" /> },
+      {/* ── KPI Row 2 — New Governance Row ───────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        {[
+          { label: "In Service",        value: vehiclesInService,       unit: "Buses",  color: "text-emerald-600", icon: <Bus className="size-4 text-emerald-500" /> },
+          { label: "Under Maintenance", value: vehiclesMaintenance,     unit: "Buses",  color: "text-amber-600",   icon: <Wrench className="size-4 text-amber-500" /> },
+          { label: "Avg Occupancy",     value: `${avgOccupancy}%`,      unit: "",       color: "text-blue-600",    icon: <Gauge className="size-4 text-blue-500" /> },
+          { label: "Fuel Consumed",     value: "₹3.84L",                unit: "",       color: "text-orange-600",  icon: <Fuel className="size-4 text-orange-500" /> },
+          { label: "Trips Today",       value: 6,                       unit: "Trips",  color: "text-primary",     icon: <Activity className="size-4 text-primary" /> },
+          { label: "Drivers On Duty",   value: 3,                       unit: "Drivers",color: "text-teal-600",    icon: <UserCheck className="size-4 text-teal-500" /> },
+          { label: "GPS Active",        value: gpsOnline,               unit: "Vehs",   color: "text-violet-600",  icon: <Radio className="size-4 text-violet-500" /> },
+          { label: "Transport Revenue", value: `₹${(passRevenue/100000).toFixed(2)}L`, unit: "", color: "text-rose-600", icon: <TrendingUp className="size-4 text-rose-500" /> },
         ].map((k, i) => (
-        <div key={i} className="p-3 rounded-xl bg-card border border-border/70 shadow-sm space-y-1">
-          <div className="flex items-center justify-between">{k.icon}<span className="text-[0.6rem] font-semibold text-muted-foreground uppercase leading-tight text-right">{k.label}</span></div>
-          <p className={`text-lg font-bold font-mono ${k.color}`}>{k.value}</p>
-          {k.unit && <p className="text-[0.6rem] text-muted-foreground">{k.unit}</p>}
-        </div>
-      ))
-    }
-      </div >
+          <div key={i} className="p-3 rounded-xl bg-card border border-border/70 shadow-sm space-y-1">
+            <div className="flex items-center justify-between">{k.icon}<span className="text-[0.6rem] font-semibold text-muted-foreground uppercase leading-tight text-right">{k.label}</span></div>
+            <p className={`text-lg font-bold font-mono ${k.color}`}>{k.value}</p>
+            {k.unit && <p className="text-[0.6rem] text-muted-foreground">{k.unit}</p>}
+          </div>
+        ))}
+      </div>
 
-    {/* ── Transport Alerts ─────────────────────────────────────────────── */ }
-    < div className = "rounded-2xl border border-border/80 bg-card p-4 shadow-sm space-y-3" >
+      {/* ── Transport Alerts ─────────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><AlertTriangle className="size-4 text-amber-500" /> Transport Alerts</h2>
           <Badge variant="outline" className="text-[0.65rem] font-mono">{TRANSPORT_ALERTS.filter(a => a.type === "danger").length} Critical</Badge>
@@ -570,975 +567,372 @@ export function TransportModuleView() {
             </div>
           ))}
         </div>
-      </div >
+      </div>
 
-    {/* ── Tab Switcher ─────────────────────────────────────────────────── */ }
-    < div className = "flex items-center gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border/80 flex-wrap" >
-    {
-      [
-      { key: "routes", label: `1. Fleet Overview & Route Analytics (${routes.length})` },
-      { key: "passes", label: `2. Transport Pass Monitoring (${passes.length})` },
-      { key: "health", label: "3. Fleet Health & Compliance" },
+      {/* ── Tab Switcher ─────────────────────────────────────────────────── */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border/80 flex-wrap">
+        {[
+          { key: "routes", label: `1. Fleet Overview & Route Analytics (${routes.length})` },
+          { key: "passes", label: `2. Transport Pass Monitoring (${passes.length})` },
+          { key: "health", label: "3. Fleet Health & Compliance" },
         ].map(tab => (
-        <button
-          key={tab.key}
-          onClick={() => setActiveTab(tab.key as typeof activeTab)}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === tab.key ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}
-        >
-          {tab.label}
-        </button>
-      ))
-    }
-      </div >
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key as typeof activeTab)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === tab.key ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-  {/* ══════════════════════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════════════════════
           TAB 1: FLEET OVERVIEW & ROUTE ANALYTICS
       ══════════════════════════════════════════════════════════════════════ */}
-=======
-        </div>
-      </div>
-
-      {/* EXECUTIVE TABS SWITCHER (5 TABS) */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab("routes")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-            activeTab === "routes" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
-          }`}
-        >
-          1. Fleet Overview & Route Analytics ({routes.length})
-        </button>
-        <button
-          onClick={() => setActiveTab("passes")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-            activeTab === "passes" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
-          }`}
-        >
-          2. Transport Pass Holders Directory ({passes.length})
-        </button>
-        <button
-          onClick={() => setActiveTab("health")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-            activeTab === "health" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
-          }`}
-        >
-          3. Fleet Health & Vehicle Compliance
-        </button>
-        <button
-          onClick={() => setActiveTab("analytics")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-            activeTab === "analytics" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
-          }`}
-        >
-          4. Transport Executive Analytics
-        </button>
-        <button
-          onClick={() => setActiveTab("governance")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
-            activeTab === "governance" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
-          }`}
-        >
-          5. Transport Policy & Governance
-        </button>
-      </div>
-
-      {/* TAB 1: FLEET OVERVIEW & ROUTE ANALYTICS */}
->>>>>>> Stashed changes
-  {
-    activeTab === "routes" && (
-      <div className="space-y-4">
-        {/* Fleet Summary Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {[
-            { label: "Fleet Size", value: totalVehicles, color: "text-primary" },
-            { label: "Routes Active", value: routes.length, color: "text-emerald-600" },
-            { label: "Drivers", value: STAFF_SUMMARY.filter(s => s.role === "Driver").length, color: "text-blue-600" },
-            { label: "GPS Online", value: gpsOnline, color: "text-violet-600" },
-            { label: "Maintenance Due", value: maintenanceDue, color: "text-amber-600" },
-            { label: "Avg Occupancy", value: `${avgOccupancy}%`, color: "text-teal-600" },
-          ].map((c, i) => (
-            <div key={i} className="p-3 rounded-xl bg-card border border-border/70 shadow-sm text-center space-y-1">
-              <p className={`text-xl font-bold font-mono ${c.color}`}>{c.value}</p>
-              <p className="text-[0.65rem] text-muted-foreground font-semibold uppercase">{c.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Search bar */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-            <Input placeholder="Search routes, buses, drivers…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-9 text-xs" />
-          </div>
-        </div>
-
-        {/* Fleet Table */}
-        <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
-                <tr>
-                  <th className="py-3 px-3">Route</th>
-                  <th className="py-3 px-3">Vehicle</th>
-                  <th className="py-3 px-3">Driver</th>
-                  <th className="py-3 px-3">Capacity</th>
-                  <th className="py-3 px-3">Occupancy %</th>
-                  <th className="py-3 px-3">Distance</th>
-                  <th className="py-3 px-3">Fuel Efficiency</th>
-                  <th className="py-3 px-3">GPS Status</th>
-                  <th className="py-3 px-3">Vehicle Health</th>
-                  <th className="py-3 px-3">Maintenance Due</th>
-                  <th className="py-3 px-3">Inspection</th>
-                  <th className="py-3 px-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/60">
-                {filteredRoutes.map(r => (
-                  <tr key={r.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="py-3 px-3">
-                      <p className="font-mono font-bold text-primary">{r.routeNo}</p>
-                      <p className="text-[0.65rem] text-muted-foreground leading-tight">{r.routeName}</p>
-                    </td>
-                    <td className="py-3 px-3 font-mono text-foreground font-semibold">{r.busRegNo}</td>
-                    <td className="py-3 px-3 font-medium text-foreground">{r.driverName}</td>
-                    <td className="py-3 px-3 font-mono font-bold">{r.capacity} Seats</td>
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
-                          <div className="h-full rounded-full bg-emerald-500" style={{ width: `${r.occupancy}%` }} />
-                        </div>
-                        <span className="font-mono font-bold text-foreground">{r.occupancy}%</span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-3 font-mono text-muted-foreground">{r.distance}</td>
-                    <td className="py-3 px-3 font-mono text-foreground">{r.fuelEff}</td>
-                    <td className="py-3 px-3">
-                      <Badge className={r.gpsStatus === "Online" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-red-500/10 text-red-600 text-[0.65rem]"}>
-                        {r.gpsStatus}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-1">
-                        <span className="font-mono font-bold text-foreground">{r.healthScore}/100</span>
-                        {healthBadge(r.healthScore)}
-                      </div>
-                    </td>
-                    <td className="py-3 px-3 font-mono text-muted-foreground text-[0.65rem]">{r.maintenanceDue}</td>
-                    <td className="py-3 px-3">
-                      <Badge className={r.inspectionStatus === "Passed" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
-                        {r.inspectionStatus}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-3">
-                      <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">{r.status}</Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Transport Analytics */}
-        <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><BarChart3 className="size-4 text-primary" /> Transport Analytics</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {activeTab === "routes" && (
+        <div className="space-y-4">
+          {/* Fleet Summary Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { title: "Route Utilization", value: `${avgOccupancy}%`, sub: "Average across all routes", trend: "up", color: "text-emerald-600" },
-              { title: "Peak Route", value: "Route 2", sub: "LB Nagar — 100% occupied", trend: "up", color: "text-blue-600" },
-              { title: "Low Usage Route", value: "Route 3", sub: "84% occupancy this month", trend: "down", color: "text-amber-600" },
-              { title: "Monthly Fuel Cost", value: "₹1.28 Lakh", sub: "Aug 2026 estimate", trend: "up", color: "text-orange-600" },
-              { title: "Monthly Maintenance", value: "₹0.42 Lakh", sub: "Aug 2026 estimate", trend: "down", color: "text-teal-600" },
-              { title: "Transport Revenue", value: `₹${(passRevenue / 100000).toFixed(2)} L`, sub: "Active pass collections", trend: "up", color: "text-rose-600" },
-              { title: "Student Usage", value: `${passStudents} Students`, sub: "Active pass holders", trend: "up", color: "text-primary" },
-              { title: "Faculty Usage", value: `${passFaculty} Faculty`, sub: "Active pass holders", trend: "neutral", color: "text-violet-600" },
-              { title: "Trips Completed", value: "6 Today", sub: "3 AM + 3 PM trips", trend: "up", color: "text-emerald-600" },
-              { title: "Vehicle Downtime", value: "1 Bus", sub: "TS-09-UB-3341 — Maintenance", trend: "down", color: "text-amber-600" },
-              { title: "Avg Occupancy", value: `${avgOccupancy}%`, sub: "Fleet-wide average", trend: "up", color: "text-blue-600" },
-              { title: "GPS Coverage", value: `${gpsOnline}/${totalVehicles} Vehs`, sub: "Online GPS units", trend: gpsOnline === totalVehicles ? "up" : "down", color: "text-violet-600" },
-            ].map((a, i) => (
-              <div key={i} className="flex items-start justify-between p-3 rounded-xl border border-border/60 bg-muted/20">
-                <div>
-                  <p className="text-[0.68rem] text-muted-foreground font-semibold uppercase">{a.title}</p>
-                  <p className={`text-base font-bold font-mono ${a.color}`}>{a.value}</p>
-                  <p className="text-[0.62rem] text-muted-foreground">{a.sub}</p>
-                </div>
-                {a.trend === "up" && <TrendingUp className="size-4 text-emerald-500 mt-1 shrink-0" />}
-                {a.trend === "down" && <TrendingDown className="size-4 text-amber-500 mt-1 shrink-0" />}
+              { label: "Fleet Size",        value: totalVehicles,              color: "text-primary" },
+              { label: "Routes Active",     value: routes.length,              color: "text-emerald-600" },
+              { label: "Drivers",           value: STAFF_SUMMARY.filter(s => s.role === "Driver").length, color: "text-blue-600" },
+              { label: "GPS Online",        value: gpsOnline,                  color: "text-violet-600" },
+              { label: "Maintenance Due",   value: maintenanceDue,             color: "text-amber-600" },
+              { label: "Avg Occupancy",     value: `${avgOccupancy}%`,         color: "text-teal-600" },
+            ].map((c, i) => (
+              <div key={i} className="p-3 rounded-xl bg-card border border-border/70 shadow-sm text-center space-y-1">
+                <p className={`text-xl font-bold font-mono ${c.color}`}>{c.value}</p>
+                <p className="text-[0.65rem] text-muted-foreground font-semibold uppercase">{c.label}</p>
               </div>
             ))}
           </div>
-        </div>
-      </div>
-    )
-  }
 
-  {/* ══════════════════════════════════════════════════════════════════════
+          {/* Search bar */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+              <Input placeholder="Search routes, buses, drivers…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-9 text-xs" />
+            </div>
+          </div>
+
+          {/* Fleet Table */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                  <tr>
+                    <th className="py-3 px-3">Route</th>
+                    <th className="py-3 px-3">Vehicle</th>
+                    <th className="py-3 px-3">Driver</th>
+                    <th className="py-3 px-3">Capacity</th>
+                    <th className="py-3 px-3">Occupancy %</th>
+                    <th className="py-3 px-3">Distance</th>
+                    <th className="py-3 px-3">Fuel Efficiency</th>
+                    <th className="py-3 px-3">GPS Status</th>
+                    <th className="py-3 px-3">Vehicle Health</th>
+                    <th className="py-3 px-3">Maintenance Due</th>
+                    <th className="py-3 px-3">Inspection</th>
+                    <th className="py-3 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {filteredRoutes.map(r => (
+                    <tr key={r.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="py-3 px-3">
+                        <p className="font-mono font-bold text-primary">{r.routeNo}</p>
+                        <p className="text-[0.65rem] text-muted-foreground leading-tight">{r.routeName}</p>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-foreground font-semibold">{r.busRegNo}</td>
+                      <td className="py-3 px-3 font-medium text-foreground">{r.driverName}</td>
+                      <td className="py-3 px-3 font-mono font-bold">{r.capacity} Seats</td>
+                      <td className="py-3 px-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+                            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${r.occupancy}%` }} />
+                          </div>
+                          <span className="font-mono font-bold text-foreground">{r.occupancy}%</span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-muted-foreground">{r.distance}</td>
+                      <td className="py-3 px-3 font-mono text-foreground">{r.fuelEff}</td>
+                      <td className="py-3 px-3">
+                        <Badge className={r.gpsStatus === "Online" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-red-500/10 text-red-600 text-[0.65rem]"}>
+                          {r.gpsStatus}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-3">
+                        <div className="flex items-center gap-1">
+                          <span className="font-mono font-bold text-foreground">{r.healthScore}/100</span>
+                          {healthBadge(r.healthScore)}
+                        </div>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-muted-foreground text-[0.65rem]">{r.maintenanceDue}</td>
+                      <td className="py-3 px-3">
+                        <Badge className={r.inspectionStatus === "Passed" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
+                          {r.inspectionStatus}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">{r.status}</Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Transport Analytics */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm space-y-4">
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><BarChart3 className="size-4 text-primary" /> Transport Analytics</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { title: "Route Utilization",       value: `${avgOccupancy}%`,   sub: "Average across all routes",    trend: "up",   color: "text-emerald-600" },
+                { title: "Peak Route",              value: "Route 2",            sub: "LB Nagar — 100% occupied",     trend: "up",   color: "text-blue-600" },
+                { title: "Low Usage Route",         value: "Route 3",            sub: "84% occupancy this month",     trend: "down", color: "text-amber-600" },
+                { title: "Monthly Fuel Cost",       value: "₹1.28 Lakh",        sub: "Aug 2026 estimate",            trend: "up",   color: "text-orange-600" },
+                { title: "Monthly Maintenance",     value: "₹0.42 Lakh",        sub: "Aug 2026 estimate",            trend: "down", color: "text-teal-600" },
+                { title: "Transport Revenue",       value: `₹${(passRevenue / 100000).toFixed(2)} L`, sub: "Active pass collections", trend: "up", color: "text-rose-600" },
+                { title: "Student Usage",           value: `${passStudents} Students`, sub: "Active pass holders",   trend: "up",   color: "text-primary" },
+                { title: "Faculty Usage",           value: `${passFaculty} Faculty`,   sub: "Active pass holders",   trend: "neutral", color: "text-violet-600" },
+                { title: "Trips Completed",         value: "6 Today",            sub: "3 AM + 3 PM trips",            trend: "up",   color: "text-emerald-600" },
+                { title: "Vehicle Downtime",        value: "1 Bus",              sub: "TS-09-UB-3341 — Maintenance",  trend: "down", color: "text-amber-600" },
+                { title: "Avg Occupancy",           value: `${avgOccupancy}%`,   sub: "Fleet-wide average",           trend: "up",   color: "text-blue-600" },
+                { title: "GPS Coverage",            value: `${gpsOnline}/${totalVehicles} Vehs`, sub: "Online GPS units", trend: gpsOnline === totalVehicles ? "up" : "down", color: "text-violet-600" },
+              ].map((a, i) => (
+                <div key={i} className="flex items-start justify-between p-3 rounded-xl border border-border/60 bg-muted/20">
+                  <div>
+                    <p className="text-[0.68rem] text-muted-foreground font-semibold uppercase">{a.title}</p>
+                    <p className={`text-base font-bold font-mono ${a.color}`}>{a.value}</p>
+                    <p className="text-[0.62rem] text-muted-foreground">{a.sub}</p>
+                  </div>
+                  {a.trend === "up"   && <TrendingUp   className="size-4 text-emerald-500 mt-1 shrink-0" />}
+                  {a.trend === "down" && <TrendingDown  className="size-4 text-amber-500 mt-1 shrink-0" />}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════════════
           TAB 2: TRANSPORT PASS MONITORING
       ══════════════════════════════════════════════════════════════════════ */}
-  {
-    activeTab === "passes" && (
-      <div className="space-y-4">
-        {/* Pass Analytics Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-          {[
-            { label: "Total Pass Holders", value: passes.length, color: "text-primary" },
-            { label: "Students", value: passStudents, color: "text-blue-600" },
-            { label: "Faculty", value: passFaculty, color: "text-violet-600" },
-            { label: "Expired Passes", value: 0, color: "text-red-600" },
-            { label: "Renewal Due", value: 2, color: "text-amber-600" },
-            { label: "Blocked Passes", value: 0, color: "text-red-600" },
-            { label: "Pending Renewals", value: passPending, color: "text-orange-600" },
-            { label: "Pass Revenue", value: `₹${(passRevenue / 100000).toFixed(1)}L`, color: "text-emerald-600" },
-          ].map((c, i) => (
-            <div key={i} className="p-3 rounded-xl bg-card border border-border/70 shadow-sm text-center space-y-1">
-              <p className={`text-xl font-bold font-mono ${c.color}`}>{c.value}</p>
-              <p className="text-[0.6rem] text-muted-foreground font-semibold uppercase leading-tight">{c.label}</p>
-            </div>
-          ))}
-        </div>
+      {activeTab === "passes" && (
+        <div className="space-y-4">
+          {/* Pass Analytics Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+            {[
+              { label: "Total Pass Holders", value: passes.length,   color: "text-primary" },
+              { label: "Students",           value: passStudents,    color: "text-blue-600" },
+              { label: "Faculty",            value: passFaculty,     color: "text-violet-600" },
+              { label: "Expired Passes",     value: 0,               color: "text-red-600" },
+              { label: "Renewal Due",        value: 2,               color: "text-amber-600" },
+              { label: "Blocked Passes",     value: 0,               color: "text-red-600" },
+              { label: "Pending Renewals",   value: passPending,     color: "text-orange-600" },
+              { label: "Pass Revenue",       value: `₹${(passRevenue / 100000).toFixed(1)}L`, color: "text-emerald-600" },
+            ].map((c, i) => (
+              <div key={i} className="p-3 rounded-xl bg-card border border-border/70 shadow-sm text-center space-y-1">
+                <p className={`text-xl font-bold font-mono ${c.color}`}>{c.value}</p>
+                <p className="text-[0.6rem] text-muted-foreground font-semibold uppercase leading-tight">{c.label}</p>
+              </div>
+            ))}
+          </div>
 
-        {/* Filters */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <Search className="size-3.5 text-muted-foreground" />
-          <Select value={filterDept} onValueChange={setFilterDept}>
-            <SelectTrigger className="h-8 text-xs w-32"><SelectValue placeholder="Department" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Depts</SelectItem>
-              <SelectItem value="CSE">CSE</SelectItem>
-              <SelectItem value="ECE">ECE</SelectItem>
-              <SelectItem value="ME">ME</SelectItem>
-              <SelectItem value="CE">CE</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={filterYear} onValueChange={setFilterYear}>
-            <SelectTrigger className="h-8 text-xs w-28"><SelectValue placeholder="Year" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Years</SelectItem>
-              <SelectItem value="1">Year 1</SelectItem>
-              <SelectItem value="2">Year 2</SelectItem>
-              <SelectItem value="3">Year 3</SelectItem>
-              <SelectItem value="4">Year 4</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={filterRoute} onValueChange={setFilterRoute}>
-            <SelectTrigger className="h-8 text-xs w-32"><SelectValue placeholder="Route" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Routes</SelectItem>
-              {routes.map(r => <SelectItem key={r.id} value={r.routeNo}>{r.routeNo}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="h-8 text-xs w-32"><SelectValue placeholder="Status" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="Paid">Paid</SelectItem>
-              <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Partial">Partial</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          {/* Filters */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <Search className="size-3.5 text-muted-foreground" />
+            <Select value={filterDept} onValueChange={setFilterDept}>
+              <SelectTrigger className="h-8 text-xs w-32"><SelectValue placeholder="Department" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Depts</SelectItem>
+                <SelectItem value="CSE">CSE</SelectItem>
+                <SelectItem value="ECE">ECE</SelectItem>
+                <SelectItem value="ME">ME</SelectItem>
+                <SelectItem value="CE">CE</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterYear} onValueChange={setFilterYear}>
+              <SelectTrigger className="h-8 text-xs w-28"><SelectValue placeholder="Year" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Years</SelectItem>
+                <SelectItem value="1">Year 1</SelectItem>
+                <SelectItem value="2">Year 2</SelectItem>
+                <SelectItem value="3">Year 3</SelectItem>
+                <SelectItem value="4">Year 4</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterRoute} onValueChange={setFilterRoute}>
+              <SelectTrigger className="h-8 text-xs w-32"><SelectValue placeholder="Route" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Routes</SelectItem>
+                {routes.map(r => <SelectItem key={r.id} value={r.routeNo}>{r.routeNo}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="h-8 text-xs w-32"><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="Paid">Paid</SelectItem>
+                <SelectItem value="Pending">Pending</SelectItem>
+                <SelectItem value="Partial">Partial</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Pass Table */}
-        <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
-                <tr>
-                  <th className="py-3 px-3">Pass ID</th>
-                  <th className="py-3 px-3">Student Name</th>
-                  <th className="py-3 px-3">Department</th>
-                  <th className="py-3 px-3">Route &amp; Pickup Stop</th>
-                  <th className="py-3 px-3">Annual Fee</th>
-                  <th className="py-3 px-3">Payment Status</th>
-                  <th className="py-3 px-3">Pass Type</th>
-                  <th className="py-3 px-3">Validity</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/60">
-                {filteredPasses.map(p => (
-                  <tr key={p.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="py-3 px-3 font-mono font-bold text-foreground">{p.passId}</td>
-                    <td className="py-3 px-3 font-semibold text-foreground">{p.studentName} <span className="text-muted-foreground font-normal">({p.rollNo})</span></td>
-                    <td className="py-3 px-3">{p.department}</td>
-                    <td className="py-3 px-3 font-mono text-primary font-bold">{p.routeNo} · {p.pickupStop}</td>
-                    <td className="py-3 px-3 font-mono font-bold text-foreground">₹{p.annualFee.toLocaleString()}</td>
-                    <td className="py-3 px-3">
-                      <Badge className={p.paymentStatus === "Paid" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
-                        {p.paymentStatus}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-3"><Badge variant="outline" className="text-[0.65rem]">Student</Badge></td>
-                    <td className="py-3 px-3 font-mono text-muted-foreground text-[0.65rem]">AY 2026-27</td>
+          {/* Pass Table */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                  <tr>
+                    <th className="py-3 px-3">Pass ID</th>
+                    <th className="py-3 px-3">Student Name</th>
+                    <th className="py-3 px-3">Department</th>
+                    <th className="py-3 px-3">Route &amp; Pickup Stop</th>
+                    <th className="py-3 px-3">Annual Fee</th>
+                    <th className="py-3 px-3">Payment Status</th>
+                    <th className="py-3 px-3">Pass Type</th>
+                    <th className="py-3 px-3">Validity</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {filteredPasses.map(p => (
+                    <tr key={p.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="py-3 px-3 font-mono font-bold text-foreground">{p.passId}</td>
+                      <td className="py-3 px-3 font-semibold text-foreground">{p.studentName} <span className="text-muted-foreground font-normal">({p.rollNo})</span></td>
+                      <td className="py-3 px-3">{p.department}</td>
+                      <td className="py-3 px-3 font-mono text-primary font-bold">{p.routeNo} · {p.pickupStop}</td>
+                      <td className="py-3 px-3 font-mono font-bold text-foreground">₹{p.annualFee.toLocaleString()}</td>
+                      <td className="py-3 px-3">
+                        <Badge className={p.paymentStatus === "Paid" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
+                          {p.paymentStatus}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-3"><Badge variant="outline" className="text-[0.65rem]">Student</Badge></td>
+                      <td className="py-3 px-3 font-mono text-muted-foreground text-[0.65rem]">AY 2026-27</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-    )
-  }
+      )}
 
-  {/* ══════════════════════════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════════════════════════
           TAB 3: FLEET HEALTH & COMPLIANCE
       ══════════════════════════════════════════════════════════════════════ */}
-  {
-    activeTab === "health" && (
-      <div className="space-y-4">
-        {/* Fleet Health Summary */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: "Avg Health Score", value: `${Math.round(FLEET_HEALTH_DATA.reduce((s, v) => s + v.healthScore, 0) / FLEET_HEALTH_DATA.length)}/100`, color: "text-emerald-600" },
-            { label: "GPS Online", value: `${FLEET_HEALTH_DATA.filter(v => v.gpsStatus === "Online").length}/${FLEET_HEALTH_DATA.length}`, color: "text-violet-600" },
-            { label: "Compliance Issues", value: FLEET_HEALTH_DATA.filter(v => v.fireExtinguisher !== "OK" || v.emergencyKit !== "OK").length, color: "text-amber-600" },
-            { label: "Docs Expiring <30d", value: FLEET_HEALTH_DATA.filter(v => Math.ceil((new Date(v.insurance).getTime() - Date.now()) / 86400000) < 30).length, color: "text-red-600" },
-          ].map((c, i) => (
-            <div key={i} className="p-4 rounded-xl bg-card border border-border/70 shadow-sm space-y-1 text-center">
-              <p className={`text-2xl font-bold font-mono ${c.color}`}>{c.value}</p>
-              <p className="text-[0.65rem] text-muted-foreground font-semibold uppercase">{c.label}</p>
+      {activeTab === "health" && (
+        <div className="space-y-4">
+          {/* Fleet Health Summary */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: "Avg Health Score",  value: `${Math.round(FLEET_HEALTH_DATA.reduce((s, v) => s + v.healthScore, 0) / FLEET_HEALTH_DATA.length)}/100`, color: "text-emerald-600" },
+              { label: "GPS Online",        value: `${FLEET_HEALTH_DATA.filter(v => v.gpsStatus === "Online").length}/${FLEET_HEALTH_DATA.length}`,           color: "text-violet-600" },
+              { label: "Compliance Issues", value: FLEET_HEALTH_DATA.filter(v => v.fireExtinguisher !== "OK" || v.emergencyKit !== "OK").length,               color: "text-amber-600" },
+              { label: "Docs Expiring <30d",value: FLEET_HEALTH_DATA.filter(v => Math.ceil((new Date(v.insurance).getTime() - Date.now()) / 86400000) < 30).length, color: "text-red-600" },
+            ].map((c, i) => (
+              <div key={i} className="p-4 rounded-xl bg-card border border-border/70 shadow-sm space-y-1 text-center">
+                <p className={`text-2xl font-bold font-mono ${c.color}`}>{c.value}</p>
+                <p className="text-[0.65rem] text-muted-foreground font-semibold uppercase">{c.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Fleet Health Table */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
+            <h2 className="text-sm font-bold text-foreground flex items-center gap-2 mb-4"><Shield className="size-4 text-primary" /> Vehicle Compliance Registry</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                  <tr>
+                    <th className="py-3 px-3">Vehicle</th>
+                    <th className="py-3 px-3">Model</th>
+                    <th className="py-3 px-3">Health Score</th>
+                    <th className="py-3 px-3">Insurance</th>
+                    <th className="py-3 px-3">Permit</th>
+                    <th className="py-3 px-3">Pollution Cert</th>
+                    <th className="py-3 px-3">Fitness Cert</th>
+                    <th className="py-3 px-3">Road Tax</th>
+                    <th className="py-3 px-3">Maintenance</th>
+                    <th className="py-3 px-3">GPS</th>
+                    <th className="py-3 px-3">Emergency Kit</th>
+                    <th className="py-3 px-3">Fire Ext.</th>
+                    <th className="py-3 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {FLEET_HEALTH_DATA.map(v => (
+                    <tr key={v.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="py-3 px-3 font-mono font-bold text-primary">{v.regNo}</td>
+                      <td className="py-3 px-3 text-foreground font-medium">{v.model} <span className="text-muted-foreground">({v.year})</span></td>
+                      <td className="py-3 px-3">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono font-bold text-foreground">{v.healthScore}</span>
+                          {healthBadge(v.healthScore)}
+                        </div>
+                      </td>
+                      <td className="py-3 px-3">{docBadge(v.insurance)} <span className="text-[0.6rem] text-muted-foreground ml-1">{v.insurance}</span></td>
+                      <td className="py-3 px-3">{docBadge(v.permit)} <span className="text-[0.6rem] text-muted-foreground ml-1">{v.permit}</span></td>
+                      <td className="py-3 px-3">{docBadge(v.pollution)}</td>
+                      <td className="py-3 px-3">{docBadge(v.fitness)}</td>
+                      <td className="py-3 px-3">{docBadge(v.roadTax)}</td>
+                      <td className="py-3 px-3 font-mono text-muted-foreground text-[0.65rem]">{v.maintenance}</td>
+                      <td className="py-3 px-3">
+                        <Badge className={v.gpsStatus === "Online" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-red-500/10 text-red-600 text-[0.65rem]"}>
+                          {v.gpsStatus}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge className={v.emergencyKit === "OK" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-red-500/10 text-red-600 text-[0.65rem]"}>
+                          {v.emergencyKit}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge className={v.fireExtinguisher === "OK" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
+                          {v.fireExtinguisher}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge className={v.status === "Active" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
+                          {v.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Recent Activities ─────────────────────────────────────────────── */}
+      <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm space-y-3">
+        <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><Activity className="size-4 text-primary" /> Recent Activities</h2>
+        <div className="divide-y divide-border/40">
+          {RECENT_ACTIVITIES.map(act => (
+            <div key={act.id} className="flex items-start gap-3 py-2.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-foreground">{act.action}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[0.62rem] text-muted-foreground">{act.date}</span>
+                  <span className="text-[0.62rem] text-muted-foreground">·</span>
+                  <span className="text-[0.62rem] text-muted-foreground font-semibold">{act.user}</span>
+                </div>
+              </div>
             </div>
           ))}
         </div>
-
-        {/* Fleet Health Table */}
-        <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
-          <h2 className="text-sm font-bold text-foreground flex items-center gap-2 mb-4"><Shield className="size-4 text-primary" /> Vehicle Compliance Registry</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
-                <tr>
-                  <th className="py-3 px-3">Vehicle</th>
-                  <th className="py-3 px-3">Model</th>
-                  <th className="py-3 px-3">Health Score</th>
-                  <th className="py-3 px-3">Insurance</th>
-                  <th className="py-3 px-3">Permit</th>
-                  <th className="py-3 px-3">Pollution Cert</th>
-                  <th className="py-3 px-3">Fitness Cert</th>
-                  <th className="py-3 px-3">Road Tax</th>
-                  <th className="py-3 px-3">Maintenance</th>
-                  <th className="py-3 px-3">GPS</th>
-                  <th className="py-3 px-3">Emergency Kit</th>
-                  <th className="py-3 px-3">Fire Ext.</th>
-                  <th className="py-3 px-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/60">
-                {FLEET_HEALTH_DATA.map(v => (
-                  <tr key={v.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="py-3 px-3 font-mono font-bold text-primary">{v.regNo}</td>
-                    <td className="py-3 px-3 text-foreground font-medium">{v.model} <span className="text-muted-foreground">({v.year})</span></td>
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-mono font-bold text-foreground">{v.healthScore}</span>
-                        {healthBadge(v.healthScore)}
-                      </div>
-                    </td>
-                    <td className="py-3 px-3">{docBadge(v.insurance)} <span className="text-[0.6rem] text-muted-foreground ml-1">{v.insurance}</span></td>
-                    <td className="py-3 px-3">{docBadge(v.permit)} <span className="text-[0.6rem] text-muted-foreground ml-1">{v.permit}</span></td>
-                    <td className="py-3 px-3">{docBadge(v.pollution)}</td>
-                    <td className="py-3 px-3">{docBadge(v.fitness)}</td>
-                    <td className="py-3 px-3">{docBadge(v.roadTax)}</td>
-                    <td className="py-3 px-3 font-mono text-muted-foreground text-[0.65rem]">{v.maintenance}</td>
-                    <td className="py-3 px-3">
-                      <Badge className={v.gpsStatus === "Online" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-red-500/10 text-red-600 text-[0.65rem]"}>
-                        {v.gpsStatus}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-3">
-                      <Badge className={v.emergencyKit === "OK" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-red-500/10 text-red-600 text-[0.65rem]"}>
-                        {v.emergencyKit}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-3">
-                      <Badge className={v.fireExtinguisher === "OK" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
-                        {v.fireExtinguisher}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-3">
-                      <Badge className={v.status === "Active" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
-                        {v.status}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  {/* ── Recent Activities ─────────────────────────────────────────────── */ }
-  <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm space-y-3">
-    <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><Activity className="size-4 text-primary" /> Recent Activities</h2>
-    <div className="divide-y divide-border/40">
-      {RECENT_ACTIVITIES.map(act => (
-        <div key={act.id} className="flex items-start gap-3 py-2.5">
-          <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-foreground">{act.action}</p>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-[0.62rem] text-muted-foreground">{act.date}</span>
-              <span className="text-[0.62rem] text-muted-foreground">·</span>
-              <span className="text-[0.62rem] text-muted-foreground font-semibold">{act.user}</span>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-
-<<<<<<< Updated upstream
-  {/* ── Transport Staff Summary ───────────────────────────────────────── */ }
-  <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm space-y-3">
-    <div className="flex items-center justify-between">
-      <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><Users className="size-4 text-primary" /> Transport Staff Summary</h2>
-=======
-      {/* VIEW DETAILS MODAL: ROUTE TELEMETRY */}
-      <Dialog open={selectedRoute !== null} onOpenChange={() => setSelectedRoute(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <Bus className="size-4 text-primary" /> Route Telemetry & Performance Ledger
-            </DialogTitle>
-            <DialogDescription className="text-xs">
-              Read-only executive monitoring view for {selectedRoute?.routeNo} ({selectedRoute?.routeCode}).
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedRoute && (
-            <div className="space-y-2 text-xs pt-1">
-              <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Route Name:</span>
-                  <span className="font-semibold text-foreground text-[0.7rem]">{selectedRoute.routeName}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Assigned Bus / Driver:</span>
-                  <span className="font-mono font-bold text-foreground">{selectedRoute.busRegNo} ({selectedRoute.driverName})</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Passenger Breakdown:</span>
-                  <span className="font-mono font-semibold text-primary">{selectedRoute.studentCount} Students | {selectedRoute.facultyCount} Staff</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">On-Time Rate / Delay:</span>
-                  <span className="font-mono font-bold text-emerald-600">{selectedRoute.onTimePerformancePct}% (Avg {selectedRoute.avgDelay})</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">GPS Tracking Signal:</span>
-                  <span className="font-mono font-bold text-emerald-600">{selectedRoute.gpsStatus}</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-muted-foreground">Safety Rating / Complaints:</span>
-                  <span className="font-bold text-foreground">{selectedRoute.safetyRating} ({selectedRoute.complaintCount} Complaints)</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <DialogFooter className="pt-2">
-            <Button variant="outline" onClick={() => setSelectedRoute(null)} className="text-xs">
-              Close Telemetry
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* VIEW DETAILS MODAL: PASS HOLDER */}
-      <Dialog open={selectedPass !== null} onOpenChange={() => setSelectedPass(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <Users className="size-4 text-primary" /> Transport Pass Holder Record
-            </DialogTitle>
-            <DialogDescription className="text-xs">
-              Read-only pass details for {selectedPass?.studentName} ({selectedPass?.rollNo}).
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedPass && (
-            <div className="space-y-2 text-xs pt-1">
-              <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Pass Number:</span>
-                  <span className="font-mono font-bold text-foreground">{selectedPass.passId}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">User Type & Dept:</span>
-                  <span className="font-semibold text-foreground">{selectedPass.userType} - {selectedPass.department} ({selectedPass.year})</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Assigned Route & Stop:</span>
-                  <span className="font-mono font-bold text-primary">{selectedPass.routeNo} ({selectedPass.pickupStop})</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Pass Type & Fee:</span>
-                  <span className="font-bold text-emerald-600">{selectedPass.passType} - ₹{selectedPass.annualFee.toLocaleString()} ({selectedPass.paymentStatus})</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-muted-foreground">Validity & Status:</span>
-                  <span className="font-mono font-bold text-foreground">{selectedPass.expiryDate} ({selectedPass.passStatus})</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <DialogFooter className="pt-2">
-            <Button variant="outline" onClick={() => setSelectedPass(null)} className="text-xs">
-              Close Pass Record
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* VIEW DETAILS MODAL: VEHICLE COMPLIANCE */}
-      <Dialog open={selectedVehicle !== null} onOpenChange={() => setSelectedVehicle(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <Wrench className="size-4 text-amber-600" /> Vehicle Maintenance & Compliance Record
-            </DialogTitle>
-            <DialogDescription className="text-xs">
-              Read-only vehicle compliance and safety telemetry for {selectedVehicle?.vehicleNo}.
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedVehicle && (
-            <div className="space-y-2 text-xs pt-1">
-              <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Vehicle Reg No:</span>
-                  <span className="font-mono font-bold text-foreground">{selectedVehicle.vehicleNo}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Type & Model:</span>
-                  <span className="font-semibold text-foreground">{selectedVehicle.manufacturer} {selectedVehicle.model} ({selectedVehicle.purchaseYear})</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Insurance & Permit:</span>
-                  <span className="font-mono font-bold text-emerald-600">{selectedVehicle.insuranceStatus} / {selectedVehicle.permitStatus}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Tyre & Battery Health:</span>
-                  <span className="font-mono font-semibold text-foreground">{selectedVehicle.tyreHealth} | {selectedVehicle.batteryHealth}</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-muted-foreground">Overall Health Score:</span>
-                  <span className="font-mono font-bold text-primary text-sm">{selectedVehicle.overallComplianceScore}% (Safety: {selectedVehicle.safetyScore}%)</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <DialogFooter className="pt-2">
-            <Button variant="outline" onClick={() => setSelectedVehicle(null)} className="text-xs">
-              Close Vehicle Record
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* VIEW DOCUMENT MODAL */}
-      <Dialog open={selectedDoc !== null} onOpenChange={() => setSelectedDoc(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <FileCheck className="size-4 text-blue-600" /> Master Institutional Governance Document
-            </DialogTitle>
-            <DialogDescription className="text-xs">
-              Official university transport document repository viewer.
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedDoc && (
-            <div className="space-y-2 text-xs pt-1">
-              <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Document Title:</span>
-                  <span className="font-semibold text-foreground">{selectedDoc.title}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Category:</span>
-                  <span className="font-mono font-bold text-primary">{selectedDoc.category}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Document No:</span>
-                  <span className="font-mono font-bold text-foreground">{selectedDoc.docNo}</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-muted-foreground">Expiry Date:</span>
-                  <span className="font-mono font-bold text-foreground">{selectedDoc.expiry} ({selectedDoc.status})</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <DialogFooter className="pt-2">
-            <Button
-              variant="default"
-              onClick={() => {
-                toast.success(`Downloaded ${selectedDoc?.title}`);
-                setSelectedDoc(null);
-              }}
-              className="text-xs font-semibold gap-1"
-            >
-              <Download className="size-3.5" /> Download Document
-            </Button>
-            <Button variant="outline" onClick={() => setSelectedDoc(null)} className="text-xs">
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* QUICK ACTION MODALS (RETAINED & FULLY FUNCTIONAL) */}
-      <Dialog open={isConfigOpen} onOpenChange={setIsConfigOpen}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <Sliders className="size-5 text-primary" /> Transport Policy & Governance Configuration
-            </DialogTitle>
-            <DialogDescription className="text-xs">
-              Configure general transport settings, fee rules, vehicle/driver policies, student transport rules, GPS tracking, and notifications.
-            </DialogDescription>
-          </DialogHeader>
-
-          {/* Config Tabs Switcher */}
-          <div className="flex items-center gap-1.5 border-b border-border pb-2 pt-1 overflow-x-auto">
-            <button
-              type="button"
-              onClick={() => setConfigSubTab("general")}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "general" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              1. General Settings
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfigSubTab("fees")}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "fees" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              2. Transport Fees
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfigSubTab("vehicles")}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "vehicles" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              3. Vehicle Policies
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfigSubTab("drivers")}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "drivers" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              4. Driver Policies
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfigSubTab("students")}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "students" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              5. Student Policies
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfigSubTab("gps")}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "gps" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              6. GPS & Tracking
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfigSubTab("notifications")}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "notifications" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
-            >
-              7. Notifications
-            </button>
-          </div>
-
-          <form onSubmit={handleSaveConfig} className="space-y-4 pt-2">
-            {/* SUBTAB 1: GENERAL SETTINGS */}
-            {configSubTab === "general" && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">General Transport Operational Settings</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Transport Academic Year</Label>
-                    <Input value={configForm.academicYear || "2026 - 2027"} onChange={(e) => setConfigForm({ ...configForm, academicYear: e.target.value })} className="h-9 text-xs" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Transport Working Days</Label>
-                    <Input value={configForm.workingDays || "Mon - Sat (6 Days / Week)"} onChange={(e) => setConfigForm({ ...configForm, workingDays: e.target.value })} className="h-9 text-xs" />
-                  </div>
-                  <div className="space-y-1 md:col-span-2">
-                    <Label className="text-xs font-semibold">Holiday Transport Schedule</Label>
-                    <Textarea rows={2} value={configForm.holidaySchedule || ""} onChange={(e) => setConfigForm({ ...configForm, holidaySchedule: e.target.value })} className="text-xs" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SUBTAB 2: TRANSPORT FEE SETTINGS */}
-            {configSubTab === "fees" && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Transport Fee Structure & Policies</h4>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Single Zone Fee (Annual ₹)</Label>
-                    <Input type="number" value={configForm.feeStructure.singleZone} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, singleZone: Number(e.target.value) } })} className="h-9 text-xs font-mono" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Double Zone Fee (Annual ₹)</Label>
-                    <Input type="number" value={configForm.feeStructure.doubleZone} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, doubleZone: Number(e.target.value) } })} className="h-9 text-xs font-mono" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Full Zone Fee (Annual ₹)</Label>
-                    <Input type="number" value={configForm.feeStructure.fullZone} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, fullZone: Number(e.target.value) } })} className="h-9 text-xs font-mono" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Faculty Annual Fee (Annual ₹)</Label>
-                    <Input type="number" value={configForm.feeStructure.staffAnnualFee} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, staffAnnualFee: Number(e.target.value) } })} className="h-9 text-xs font-mono" />
-                  </div>
-                  <div className="space-y-1 col-span-2">
-                    <Label className="text-xs font-semibold">Installment Rules</Label>
-                    <Input value={configForm.feeStructure.installmentRules || ""} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, installmentRules: e.target.value } })} className="h-9 text-xs" />
-                  </div>
-                  <div className="space-y-1 col-span-2">
-                    <Label className="text-xs font-semibold">Refund Policy</Label>
-                    <Textarea rows={2} value={configForm.feeStructure.refundPolicy || ""} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, refundPolicy: e.target.value } })} className="text-xs" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SUBTAB 3: VEHICLE POLICIES */}
-            {configSubTab === "vehicles" && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Vehicle Maintenance & Fleet Standards</h4>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Standard Seating Capacity</Label>
-                    <Input type="number" value={configForm.seatingCapacity || 50} onChange={(e) => setConfigForm({ ...configForm, seatingCapacity: Number(e.target.value) })} className="h-9 text-xs font-mono" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Fuel Consumption Target (Kmpl)</Label>
-                    <Input value={configForm.fuelConsumptionStandards} onChange={(e) => setConfigForm({ ...configForm, fuelConsumptionStandards: e.target.value })} className="h-9 text-xs font-mono" />
-                  </div>
-                  <div className="space-y-1 col-span-2">
-                    <Label className="text-xs font-semibold">Preventive Maintenance Policy</Label>
-                    <Textarea rows={2} value={configForm.preventiveMaintenancePolicy || ""} onChange={(e) => setConfigForm({ ...configForm, preventiveMaintenancePolicy: e.target.value })} className="text-xs" />
-                  </div>
-                  <div className="space-y-1 col-span-2">
-                    <Label className="text-xs font-semibold">Vehicle Replacement Policy</Label>
-                    <Input value={configForm.vehicleReplacementPolicy || ""} onChange={(e) => setConfigForm({ ...configForm, vehicleReplacementPolicy: e.target.value })} className="h-9 text-xs" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SUBTAB 4: DRIVER POLICIES */}
-            {configSubTab === "drivers" && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Driver Eligibility & Health Regulations</h4>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="space-y-1 col-span-2">
-                    <Label className="text-xs font-semibold">Driver Eligibility Rules</Label>
-                    <Input value={configForm.driverEligibility || ""} onChange={(e) => setConfigForm({ ...configForm, driverEligibility: e.target.value })} className="h-9 text-xs" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">License Verification Frequency</Label>
-                    <Input value={configForm.licenseVerification || ""} onChange={(e) => setConfigForm({ ...configForm, licenseVerification: e.target.value })} className="h-9 text-xs" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Max Daily Working Hours</Label>
-                    <Input type="number" value={configForm.maxWorkingHours || 8} onChange={(e) => setConfigForm({ ...configForm, maxWorkingHours: Number(e.target.value) })} className="h-9 text-xs font-mono" />
-                  </div>
-                  <div className="space-y-1 col-span-2">
-                    <Label className="text-xs font-semibold">Health & Breathalyzer Check Schedule</Label>
-                    <Input value={configForm.healthCheckSchedule || ""} onChange={(e) => setConfigForm({ ...configForm, healthCheckSchedule: e.target.value })} className="h-9 text-xs" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SUBTAB 5: STUDENT POLICIES */}
-            {configSubTab === "students" && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Student & Pass Discipline Rules</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Boarding Point Rules</Label>
-                    <Input value={configForm.boardingRules || ""} onChange={(e) => setConfigForm({ ...configForm, boardingRules: e.target.value })} className="h-9 text-xs" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Lost Pass Policy</Label>
-                    <Input value={configForm.lostPassPolicy || ""} onChange={(e) => setConfigForm({ ...configForm, lostPassPolicy: e.target.value })} className="h-9 text-xs" />
-                  </div>
-                  <div className="space-y-1 md:col-span-2">
-                    <Label className="text-xs font-semibold">Bus Discipline Rules</Label>
-                    <Textarea rows={2} value={configForm.disciplineRules || ""} onChange={(e) => setConfigForm({ ...configForm, disciplineRules: e.target.value })} className="text-xs" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SUBTAB 6: GPS & TRACKING */}
-            {configSubTab === "gps" && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">AIS-140 GPS & Telematics Provider Settings</h4>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">GPS Provider</Label>
-                    <Input value={configForm.gpsProvider || ""} onChange={(e) => setConfigForm({ ...configForm, gpsProvider: e.target.value })} className="h-9 text-xs" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Speed Alert Limit (km/h)</Label>
-                    <Input type="number" value={configForm.speedAlertLimitKmvh || 55} onChange={(e) => setConfigForm({ ...configForm, speedAlertLimitKmvh: Number(e.target.value) })} className="h-9 text-xs font-mono" />
-                  </div>
-                  <div className="space-y-1 col-span-2">
-                    <Label className="text-xs font-semibold">SOS & Panic Button Tracking Integration</Label>
-                    <Input value={configForm.sosTracking || ""} onChange={(e) => setConfigForm({ ...configForm, sosTracking: e.target.value })} className="h-9 text-xs" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SUBTAB 7: NOTIFICATIONS */}
-            {configSubTab === "notifications" && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Notification & Delay Alert Rules</h4>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Route Delay Alert Threshold (Mins)</Label>
-                    <Input type="number" value={configForm.routeDelayAlertMin || 10} onChange={(e) => setConfigForm({ ...configForm, routeDelayAlertMin: Number(e.target.value) })} className="h-9 text-xs font-mono" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-semibold">Pass Expiry Warning (Days Prior)</Label>
-                    <Input type="number" value={configForm.passExpiryNotificationDays || 15} onChange={(e) => setConfigForm({ ...configForm, passExpiryNotificationDays: Number(e.target.value) })} className="h-9 text-xs font-mono" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <DialogFooter className="pt-3 border-t border-border flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsPreviewOpen(true)} className="text-xs gap-1">
-                  <Eye className="size-3.5 text-primary" /> Preview Changes
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsHistoryOpen(true)} className="text-xs gap-1">
-                  <History className="size-3.5 text-muted-foreground" /> Config History
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button type="button" variant="ghost" size="sm" onClick={handleResetConfig} className="text-xs">
-                  Reset
-                </Button>
-                <Button type="button" variant="outline" size="sm" onClick={() => setIsConfigOpen(false)} className="text-xs">
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="bg-brand-gradient text-white text-xs font-semibold gap-1.5">
-                  <CheckCircle2 className="size-3.5" /> Save Configuration
-                </Button>
-              </div>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </div>
-    );
-}
-
-    // ============================================================================
-    // 3. TRANSPORT FEES MANAGEMENT & STUDENT ACCOUNTS VIEW (For /transport/fees)
-    // ============================================================================
-    export function TransportFeesManagementView() {
-  const [passengerSearch, setPassengerSearch] = useState("");
-    const [selectedStudent, setSelectedStudent] = useState<{
-    name: string;
-    rollNo: string;
-  } | null>(null);
-
-    const [sourcePlace, setSourcePlace] = useState("Rajam Bypass");
-    const [destinationPlace, setDestinationPlace] = useState("College Campus");
-    const [distanceKm, setDistanceKm] = useState("15");
-    const [timeMins, setTimeMins] = useState("30");
-    const [yearlyFee, setYearlyFee] = useState("18000");
-
-    const [ledgerItems, setLedgerItems] = useState([
-    {
-      id: "ALLOC-01",
-    passenger: "Meka Tarun (22CSE045)",
-    routeLine: "Route 2: Rajam Bypass to Campus",
-    fareAmount: "₹18,000 / Year",
-    status: "Paid",
-    date: "Aug 01, 2026",
-    },
-    {
-      id: "ALLOC-02",
-    passenger: "Yelamanchili Akhil (22ECE012)",
-    routeLine: "Route 3: Ranasthalam to Campus",
-    fareAmount: "₹9,000 / Sem",
-    status: "Paid",
-    date: "Aug 03, 2026",
-    },
-    {
-      id: "ALLOC-03",
-    passenger: "Student Demo (CS100001)",
-    routeLine: "Route 1: Vizianagaram to Campus",
-    fareAmount: "₹22,000 / Year",
-    status: "Pending",
-    date: "Aug 05, 2026",
-    },
-    ]);
-
-  const handleAllocateAndCollect = () => {
-    const student = selectedStudent ? selectedStudent.name : passengerSearch.trim() || "Meka Tarun";
-    const newItem = {
-      id: `ALLOC-0${ledgerItems.length + 1}`,
-    passenger: `${student} (${selectedStudent?.rollNo || "22CSE045"})`,
-    routeLine: `${sourcePlace} to ${destinationPlace}`,
-    fareAmount: `₹${Number(yearlyFee || 18000).toLocaleString("en-IN")} / Year`,
-    status: "Paid",
-    date: "Aug 05, 2026",
-    };
-
-    setLedgerItems([newItem, ...ledgerItems]);
-    toast.success(`Allocated route & collected fee of ₹${yearlyFee} for ${student}!`);
-  };
-
-    return (
-    <div className="space-y-6 animate-fade-in-soft max-w-7xl mx-auto p-4 md:p-6 pb-20">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Fees Management & Student Accounts
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Enterprise-grade billing panel with automated late calculators, dynamic route fare allocation, and real-time ledger.
-          </p>
-        </div>
-
-        <Button
-          onClick={handleAllocateAndCollect}
-          className="bg-[#4f46e5] hover:bg-indigo-700 text-white font-extrabold text-xs rounded-full h-11 px-6 shadow-md cursor-pointer flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
-        >
-          <Plus className="size-4" /> Collect Fee
-        </Button>
       </div>
 
-      <div className="border-b border-slate-200/80">
-        <span className="inline-block font-extrabold text-xs sm:text-sm text-[#2563eb] pb-2.5 border-b-2 border-[#2563eb] cursor-pointer">
-          Transport Route Fees Allocation
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div className="lg:col-span-4 bg-white rounded-3xl p-6 border border-slate-100/90 shadow-2xs space-y-4">
->>>>>>> Stashed changes
+      {/* ── Transport Staff Summary ───────────────────────────────────────── */}
+      <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><Users className="size-4 text-primary" /> Transport Staff Summary</h2>
           <div className="flex items-center gap-2">
             <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">
               {STAFF_SUMMARY.filter(s => s.status === "On Duty").length}/{STAFF_SUMMARY.length} On Duty
@@ -1575,12 +969,12 @@ export function TransportModuleView() {
         <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><Sparkles className="size-4 text-primary" /> Executive Quick Actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
           {[
-            { label: "Transport Configuration", icon: <Settings className="size-4" />, action: () => setIsConfigOpen(true) },
-            { label: "Fleet Reports", icon: <BarChart3 className="size-4" />, action: () => setIsReportOpen(true) },
-            { label: "Download Transport Report", icon: <Download className="size-4" />, action: handleExportCSV },
-            { label: "Schedule Fleet Audit", icon: <Calendar className="size-4" />, action: () => toast.info("Fleet audit scheduling — contact Transport Manager") },
-            { label: "Vehicle Compliance", icon: <Shield className="size-4" />, action: () => setActiveTab("health") },
-            { label: "View Analytics", icon: <TrendingUp className="size-4" />, action: () => setActiveTab("routes") },
+            { label: "Transport Configuration", icon: <Settings className="size-4" />,    action: () => setIsConfigOpen(true) },
+            { label: "Fleet Reports",           icon: <BarChart3 className="size-4" />,   action: () => setIsReportOpen(true) },
+            { label: "Download Transport Report", icon: <Download className="size-4" />,  action: handleExportCSV },
+            { label: "Schedule Fleet Audit",    icon: <Calendar className="size-4" />,    action: () => toast.info("Fleet audit scheduling — contact Transport Manager") },
+            { label: "Vehicle Compliance",      icon: <Shield className="size-4" />,      action: () => setActiveTab("health") },
+            { label: "View Analytics",          icon: <TrendingUp className="size-4" />,  action: () => setActiveTab("routes") },
           ].map((qa, i) => (
             <button
               key={i}
@@ -1708,11 +1102,13 @@ export function TransportModuleView() {
                       <button
                         type="button"
                         onClick={() => setConfigData(prev => ({ ...prev, [stateKey]: prev[stateKey] === "true" ? "false" : "true" }))}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${value === "true" ? "bg-primary" : "bg-muted-foreground/30"
-                          }`}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                          value === "true" ? "bg-primary" : "bg-muted-foreground/30"
+                        }`}
                       >
-                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${value === "true" ? "translate-x-6" : "translate-x-1"
-                          }`} />
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                          value === "true" ? "translate-x-6" : "translate-x-1"
+                        }`} />
                       </button>
                     )}
                   </div>
@@ -1783,15 +1179,3 @@ export function TransportModuleView() {
     </div>
   );
 }
-<<<<<<< Updated upstream
-=======
-
-// Backward Compatibility Aliases
-export function TransportDashboardView() {
-  return <TransportModuleView />;
-}
-
-export function TransportVerificationView() {
-  return <TransportModuleView />;
-}
->>>>>>> Stashed changes

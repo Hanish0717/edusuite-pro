@@ -41,12 +41,9 @@ import {
   Info,
   Shield,
   Printer,
-<<<<<<< Updated upstream
   ChevronRight,
   BookOpen,
-=======
   X,
->>>>>>> Stashed changes
 } from "lucide-react";
 import { toast } from "sonner";
 
