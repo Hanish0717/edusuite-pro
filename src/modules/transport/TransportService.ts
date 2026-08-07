@@ -2,80 +2,61 @@ import api from "@/lib/api";
 
 export interface BusRoute {
   id: string;
-  routeNo?: string;
+  routeNo: string;
   routeName: string;
   busRegNo: string;
   driverName: string;
   driverPhone: string;
   capacity: number;
-  passHoldersCount?: number;
-  pickupStops?: string[];
-  status?: "Active" | "Maintenance" | "Inactive";
+  passHoldersCount: number;
+  pickupStops: string[];
+  status: "Active" | "Maintenance" | "Inactive";
 }
 
 export interface EnhancedBusRoute extends BusRoute {
-  routeCode?: string;
-  routeCategory?: string;
-  category?: string;
-  occupancyPercentage?: number;
-  studentCount?: number;
-  facultyCount?: number;
-  waitingList?: number;
-  activePassCount?: number;
-  totalCapacity?: number;
-  startPoint?: string;
-  endPoint?: string;
-  viaStops?: string[];
-  monthlyFee?: number | string;
-  estimatedTravelTime?: string;
-  onTimePerformancePct?: number;
-  avgDelay?: string;
-  distanceKm?: number;
-  fuelEfficiencyKmpl?: number;
-  dailyTrips?: number;
-  gpsStatus?: string;
-  vehicleHealth?: "Optimal" | "Servicing Due" | "Critical" | "Good";
-  lastMaintenanceDate?: string;
-  nextMaintenanceDue?: string;
-  maintenanceDue?: string;
-  inspectionStatus?: string;
-  safetyRating?: string;
-  complaintCount?: number;
+  routeCode: string;
+  routeCategory: string;
+  occupancyPercentage: number;
+  studentCount: number;
+  facultyCount: number;
+  waitingList: number;
+  estimatedTravelTime: string;
+  onTimePerformancePct: number;
+  avgDelay: string;
+  distanceKm: number;
+  fuelEfficiencyKmpl: number;
+  dailyTrips: number;
+  gpsStatus: string;
+  vehicleHealth: "Optimal" | "Servicing Due" | "Critical";
+  lastMaintenanceDate: string;
+  nextMaintenanceDue: string;
+  maintenanceDue: string;
+  inspectionStatus: string;
+  safetyRating: string;
+  complaintCount: number;
 }
 
 export interface TransportPass {
   id: string;
-  passId?: string;
-  rollNo?: string;
-  studentName?: string;
+  passId: string;
+  rollNo: string;
+  studentName: string;
   department: string;
-  routeNo?: string;
-  pickupStop?: string;
-  pickupPoint?: string;
-  annualFee?: number;
-  paymentStatus?: "Paid" | "Pending" | "Partial";
+  routeNo: string;
+  pickupStop: string;
+  annualFee: number;
+  paymentStatus: "Paid" | "Pending" | "Partial";
 }
 
 export interface EnhancedTransportPass extends TransportPass {
-  userType?: "Student" | "Faculty" | "Staff";
-  userName?: string;
-  userRollNo?: string;
-  passNumber?: string;
-  routeName?: string;
-  routeCode?: string;
-  year?: string;
-  dropPoint?: string;
-  passType?: string;
-  expiryDate?: string;
-  renewalStatus?: string;
-  academicYear?: string;
-  passStatus?: "Active" | "Expired" | "Renewal Due" | "Blocked";
-  feePaidAmount?: number;
-  totalFeeAmount?: number;
-  qrCodeData?: string;
-  issuedDate?: string;
-  validFrom?: string;
-  validTill?: string;
+  userType: "Student" | "Faculty";
+  year: string;
+  dropPoint: string;
+  passType: string;
+  expiryDate: string;
+  renewalStatus: string;
+  academicYear: string;
+  passStatus: "Active" | "Expired" | "Renewal Due" | "Blocked";
 }
 
 export interface TransportConfig {
@@ -129,9 +110,7 @@ export interface TransportConfig {
 export interface VehicleComplianceItem {
   id: string;
   vehicleNo: string;
-  busRegNo?: string;
   routeName: string;
-  routeCode?: string;
   vehicleType: string;
   manufacturer: string;
   model: string;
@@ -140,15 +119,12 @@ export interface VehicleComplianceItem {
   assignedDriver: string;
   insuranceStatus: "Compliant" | "Expiring Soon" | "Expired";
   insuranceExpiry: string;
-  insuranceExpiryDate?: string;
   permitStatus: "Compliant" | "Expiring Soon" | "Expired";
   permitExpiry: string;
   fitnessCertificate: "Compliant" | "Expiring Soon" | "Expired";
   fitnessExpiry: string;
-  fitnessExpiryDate?: string;
   pollutionCertificate: "Compliant" | "Expiring Soon" | "Expired";
   pollutionExpiry: string;
-  pollutionExpiryDate?: string;
   roadTaxStatus: "Compliant" | "Expiring Soon" | "Expired";
   fireExtinguisherStatus: "Compliant" | "Needs Refill";
   emergencyKitStatus: "Installed & Verified" | "Replenishment Due";
@@ -161,7 +137,6 @@ export interface VehicleComplianceItem {
   tyreHealth: string;
   batteryHealth: string;
   vehicleHealth: "Healthy" | "Warning" | "Critical";
-  status?: string;
   overallComplianceScore: number;
   safetyScore: number;
 }
@@ -189,10 +164,8 @@ export interface ExecutiveTransportAnalyticsData {
   peakRoutes: string;
   lowUsageRoutes: string;
   monthlyFuelCost: string;
-  monthlyFuelCostFormatted?: string;
   monthlyMaintenanceCost: string;
   monthlyRevenue: string;
-  annualRevenueFormatted?: string;
   pendingFees: string;
   revenueTrend: string;
   transportRevenue: string;
@@ -213,8 +186,6 @@ export interface ExecutiveTransportAnalyticsData {
   emergencyAlertsCount: number;
   gpsOfflineCount: number;
   securityIncidentsCount: number;
-  avgMileageKmpl?: number;
-  gpsUptimePct?: number;
   aiInsights: string[];
 }
 
@@ -251,12 +222,9 @@ export interface TransportAlert {
 
 export interface TransportActivityLog {
   id: string;
-  date?: string;
-  timestamp?: string;
-  user?: string;
+  date: string;
+  user: string;
   action: string;
-  performedBy?: string;
-  details?: string;
   category: string;
 }
 
@@ -268,20 +236,15 @@ export interface TransportStaffSummary {
   supportStaffCount: number;
   staffAvailability: string;
   pendingLeaveRequests: number;
-  totalFleetBuses?: number;
-  activePassHolders?: number;
-  verifiedStudents?: number;
-  verifiedFaculty?: number;
-  avgOccupancyRate?: number;
 }
 
 export const INITIAL_ENHANCED_ROUTES: EnhancedBusRoute[] = [
   {
     id: "TR-101",
     routeNo: "Route 1",
+    routeCode: "RT-CSE-01",
     routeName: "Secunderabad Station ──> Campus via Jubilee Hills",
     routeCategory: "City Express",
-    category: "City Express",
     busRegNo: "TS-09-UB-4589",
     driverName: "M. Ramakrishna",
     driverPhone: "+91 9848012345",
@@ -291,15 +254,11 @@ export const INITIAL_ENHANCED_ROUTES: EnhancedBusRoute[] = [
     studentCount: 42,
     facultyCount: 6,
     waitingList: 3,
-    startPoint: "Secunderabad Station",
-    endPoint: "Campus Gate 1",
-    viaStops: ["Secunderabad Stn", "Paradise Circle", "Begumpet", "Jubilee Hills Checkpost", "Campus Gate 1"],
     pickupStops: ["Secunderabad Stn", "Paradise Circle", "Begumpet", "Jubilee Hills Checkpost", "Campus Gate 1"],
     distanceKm: 32,
     estimatedTravelTime: "55 Mins",
     onTimePerformancePct: 98.4,
     avgDelay: "3.5 Mins",
-    monthlyFee: "₹2,200",
     fuelEfficiencyKmpl: 4.8,
     dailyTrips: 4,
     gpsStatus: "Online (100% Signal)",
@@ -315,9 +274,9 @@ export const INITIAL_ENHANCED_ROUTES: EnhancedBusRoute[] = [
   {
     id: "TR-102",
     routeNo: "Route 2",
+    routeCode: "RT-ECE-02",
     routeName: "LB Nagar ──> Campus via Dilsukhnagar & Malakpet",
     routeCategory: "Suburban Feeder",
-    category: "Suburban Feeder",
     busRegNo: "TS-09-UB-7812",
     driverName: "S. Venkatesh",
     driverPhone: "+91 9848098765",
@@ -327,15 +286,11 @@ export const INITIAL_ENHANCED_ROUTES: EnhancedBusRoute[] = [
     studentCount: 45,
     facultyCount: 5,
     waitingList: 8,
-    startPoint: "LB Nagar Ring Road",
-    endPoint: "Campus Gate 2",
-    viaStops: ["LB Nagar Ring Road", "Dilsukhnagar Metro", "Malakpet", "Koti", "Campus Gate 2"],
     pickupStops: ["LB Nagar Ring Road", "Dilsukhnagar Metro", "Malakpet", "Koti", "Campus Gate 2"],
     distanceKm: 28,
     estimatedTravelTime: "45 Mins",
     onTimePerformancePct: 99.1,
     avgDelay: "2.1 Mins",
-    monthlyFee: "₹2,000",
     fuelEfficiencyKmpl: 5.1,
     dailyTrips: 4,
     gpsStatus: "Online (100% Signal)",
@@ -351,9 +306,9 @@ export const INITIAL_ENHANCED_ROUTES: EnhancedBusRoute[] = [
   {
     id: "TR-103",
     routeNo: "Route 3",
+    routeCode: "RT-MECH-03",
     routeName: "Kukatpally Housing Board ──> Campus via Hitec City",
     routeCategory: "Metro Link",
-    category: "Metro Link",
     busRegNo: "TS-09-UB-2109",
     driverName: "K. Nageswara Rao",
     driverPhone: "+91 9848033344",
@@ -363,15 +318,11 @@ export const INITIAL_ENHANCED_ROUTES: EnhancedBusRoute[] = [
     studentCount: 38,
     facultyCount: 4,
     waitingList: 0,
-    startPoint: "KPHB Colony",
-    endPoint: "Campus Main Gate",
-    viaStops: ["KPHB Colony", "JNTU Metro", "Hitec City Phase 2", "Gachibowli", "Campus Main Gate"],
     pickupStops: ["KPHB Colony", "JNTU Metro", "Hitec City Phase 2", "Gachibowli", "Campus Main Gate"],
     distanceKm: 24,
     estimatedTravelTime: "40 Mins",
     onTimePerformancePct: 96.2,
     avgDelay: "5.4 Mins",
-    monthlyFee: "₹1,800",
     fuelEfficiencyKmpl: 4.5,
     dailyTrips: 4,
     gpsStatus: "Online (98% Signal)",
@@ -386,25 +337,20 @@ export const INITIAL_ENHANCED_ROUTES: EnhancedBusRoute[] = [
   },
 ];
 
-export const INITIAL_ROUTES = INITIAL_ENHANCED_ROUTES;
-
 export const INITIAL_ENHANCED_PASSES: EnhancedTransportPass[] = [
   {
     id: "TP-501",
     passId: "PASS-2026-001",
-    passNumber: "TP-2026-001",
     rollNo: "22CSE001",
-    userRollNo: "22CSE001",
     studentName: "Aarav Sharma",
-    userName: "Aarav Sharma",
     userType: "Student",
     department: "CSE",
+    year: "3rd Year",
     routeNo: "Route 1",
-    routeCode: "RT-CSE-01",
     pickupStop: "Jubilee Hills Checkpost",
+    dropPoint: "Campus Gate 1",
+    passType: "Annual Zone Pass",
     annualFee: 32000,
-    validFrom: "2026-08-01",
-    validTill: "2027-05-31",
     expiryDate: "2027-05-31",
     renewalStatus: "Renewed",
     academicYear: "2026 - 2027",
@@ -414,19 +360,16 @@ export const INITIAL_ENHANCED_PASSES: EnhancedTransportPass[] = [
   {
     id: "TP-502",
     passId: "PASS-2026-042",
-    passNumber: "TP-2026-042",
     rollNo: "22ECE042",
-    userRollNo: "22ECE042",
     studentName: "Ananya Iyer",
-    userName: "Ananya Iyer",
     userType: "Student",
     department: "ECE",
+    year: "3rd Year",
     routeNo: "Route 3",
-    routeCode: "RT-MECH-03",
     pickupStop: "Hitec City Phase 2",
+    dropPoint: "Campus Main Gate",
+    passType: "Full Zone Premium Pass",
     annualFee: 35000,
-    validFrom: "2026-08-01",
-    validTill: "2027-05-31",
     expiryDate: "2027-05-31",
     renewalStatus: "Renewed",
     academicYear: "2026 - 2027",
@@ -436,22 +379,16 @@ export const INITIAL_ENHANCED_PASSES: EnhancedTransportPass[] = [
   {
     id: "TP-503",
     passId: "PASS-2026-108",
-    passNumber: "TP-2026-108",
     rollNo: "FAC-8812",
-    userRollNo: "FAC-8812",
     studentName: "Dr. K. Srinivas",
-    userName: "Dr. K. Srinivas",
     userType: "Faculty",
     department: "Mechanical",
     year: "Faculty",
     routeNo: "Route 2",
-    routeCode: "RT-ECE-02",
     pickupStop: "Dilsukhnagar Metro",
     dropPoint: "Campus Gate 2",
     passType: "Staff Special Shuttle Pass",
     annualFee: 28000,
-    validFrom: "2026-08-01",
-    validTill: "2027-05-31",
     expiryDate: "2027-05-31",
     renewalStatus: "Renewed",
     academicYear: "2026 - 2027",
@@ -461,22 +398,16 @@ export const INITIAL_ENHANCED_PASSES: EnhancedTransportPass[] = [
   {
     id: "TP-504",
     passId: "PASS-2025-089",
-    passNumber: "TP-2025-089",
     rollNo: "21CIVIL004",
-    userRollNo: "21CIVIL004",
     studentName: "Manish Kumar",
-    userName: "Manish Kumar",
     userType: "Student",
     department: "Civil",
     year: "4th Year",
     routeNo: "Route 1",
-    routeCode: "RT-CSE-01",
     pickupStop: "Begumpet",
     dropPoint: "Campus Gate 1",
     passType: "Single Zone Standard Pass",
     annualFee: 32000,
-    validFrom: "2025-08-01",
-    validTill: "2026-07-31",
     expiryDate: "2026-07-31",
     renewalStatus: "Pending Renewal",
     academicYear: "2026 - 2027",
@@ -484,8 +415,6 @@ export const INITIAL_ENHANCED_PASSES: EnhancedTransportPass[] = [
     passStatus: "Renewal Due",
   },
 ];
-
-export const INITIAL_PASSES = INITIAL_ENHANCED_PASSES;
 
 export const DEFAULT_TRANSPORT_CONFIG: TransportConfig = {
   academicYear: "2026 - 2027",
@@ -539,9 +468,7 @@ export const INITIAL_VEHICLE_COMPLIANCE: VehicleComplianceItem[] = [
   {
     id: "VC-001",
     vehicleNo: "TS-09-UB-4589",
-    busRegNo: "TS-09-UB-4589",
     routeName: "Route 1 (Secunderabad)",
-    routeCode: "RT-CSE-01",
     vehicleType: "Heavy Commercial Bus 50-Seater",
     manufacturer: "Tata Motors",
     model: "Starbus Urban EX",
@@ -550,15 +477,12 @@ export const INITIAL_VEHICLE_COMPLIANCE: VehicleComplianceItem[] = [
     assignedDriver: "M. Ramakrishna",
     insuranceStatus: "Compliant",
     insuranceExpiry: "2027-03-31",
-    insuranceExpiryDate: "2027-03-31",
     permitStatus: "Compliant",
     permitExpiry: "2027-06-30",
     fitnessCertificate: "Compliant",
     fitnessExpiry: "2027-04-15",
-    fitnessExpiryDate: "2027-04-15",
     pollutionCertificate: "Compliant",
     pollutionExpiry: "2026-12-31",
-    pollutionExpiryDate: "2026-12-31",
     roadTaxStatus: "Compliant",
     fireExtinguisherStatus: "Compliant",
     emergencyKitStatus: "Installed & Verified",
@@ -571,16 +495,13 @@ export const INITIAL_VEHICLE_COMPLIANCE: VehicleComplianceItem[] = [
     tyreHealth: "92% Tread Depth",
     batteryHealth: "100% Optimal (12.8V)",
     vehicleHealth: "Healthy",
-    status: "Compliant",
     overallComplianceScore: 98,
     safetyScore: 99,
   },
   {
     id: "VC-002",
     vehicleNo: "TS-09-UB-7812",
-    busRegNo: "TS-09-UB-7812",
     routeName: "Route 2 (LB Nagar)",
-    routeCode: "RT-ECE-02",
     vehicleType: "Heavy Commercial Bus 50-Seater",
     manufacturer: "Ashok Leyland",
     model: "Viking 225 HP BS-VI",
@@ -589,15 +510,12 @@ export const INITIAL_VEHICLE_COMPLIANCE: VehicleComplianceItem[] = [
     assignedDriver: "S. Venkatesh",
     insuranceStatus: "Compliant",
     insuranceExpiry: "2027-02-28",
-    insuranceExpiryDate: "2027-02-28",
     permitStatus: "Compliant",
     permitExpiry: "2027-05-31",
     fitnessCertificate: "Compliant",
     fitnessExpiry: "2027-03-20",
-    fitnessExpiryDate: "2027-03-20",
     pollutionCertificate: "Compliant",
     pollutionExpiry: "2026-11-30",
-    pollutionExpiryDate: "2026-11-30",
     roadTaxStatus: "Compliant",
     fireExtinguisherStatus: "Compliant",
     emergencyKitStatus: "Installed & Verified",
@@ -610,16 +528,13 @@ export const INITIAL_VEHICLE_COMPLIANCE: VehicleComplianceItem[] = [
     tyreHealth: "95% Tread Depth",
     batteryHealth: "100% Optimal (12.8V)",
     vehicleHealth: "Healthy",
-    status: "Compliant",
     overallComplianceScore: 96,
     safetyScore: 98,
   },
   {
     id: "VC-003",
     vehicleNo: "TS-09-UB-2109",
-    busRegNo: "TS-09-UB-2109",
     routeName: "Route 3 (KPHB)",
-    routeCode: "RT-MECH-03",
     vehicleType: "Heavy Commercial Bus 50-Seater",
     manufacturer: "Eicher Motors",
     model: "Skyline Pro 3009",
@@ -628,15 +543,12 @@ export const INITIAL_VEHICLE_COMPLIANCE: VehicleComplianceItem[] = [
     assignedDriver: "K. Nageswara Rao",
     insuranceStatus: "Expiring Soon",
     insuranceExpiry: "2026-09-15",
-    insuranceExpiryDate: "2026-09-15",
     permitStatus: "Compliant",
     permitExpiry: "2027-01-31",
     fitnessCertificate: "Expiring Soon",
     fitnessExpiry: "2026-09-01",
-    fitnessExpiryDate: "2026-09-01",
     pollutionCertificate: "Compliant",
     pollutionExpiry: "2026-10-31",
-    pollutionExpiryDate: "2026-10-31",
     roadTaxStatus: "Compliant",
     fireExtinguisherStatus: "Compliant",
     emergencyKitStatus: "Replenishment Due",
@@ -649,7 +561,6 @@ export const INITIAL_VEHICLE_COMPLIANCE: VehicleComplianceItem[] = [
     tyreHealth: "78% Tread Depth",
     batteryHealth: "88% Good (12.4V)",
     vehicleHealth: "Warning",
-    status: "Expiring Soon",
     overallComplianceScore: 85,
     safetyScore: 92,
   },
@@ -678,10 +589,8 @@ export const DEFAULT_ANALYTICS: ExecutiveTransportAnalyticsData = {
   peakRoutes: "Route 1 (Secunderabad - 96%) & Route 2 (LB Nagar - 100%)",
   lowUsageRoutes: "Route 5 (Outer Ring Road - 68%)",
   monthlyFuelCost: "₹4.25 Lakhs",
-  monthlyFuelCostFormatted: "4.25 Lakhs",
   monthlyMaintenanceCost: "₹1.15 Lakhs",
   monthlyRevenue: "₹3.58 Cr",
-  annualRevenueFormatted: "3.58 Cr",
   pendingFees: "₹8.4 Lakhs",
   revenueTrend: "+14.2% YoY Realization",
   transportRevenue: "₹3.58 Cr",
@@ -702,8 +611,6 @@ export const DEFAULT_ANALYTICS: ExecutiveTransportAnalyticsData = {
   emergencyAlertsCount: 0,
   gpsOfflineCount: 0,
   securityIncidentsCount: 0,
-  avgMileageKmpl: 4.8,
-  gpsUptimePct: 100,
   aiInsights: [
     "Route 5 utilization is below average (68%). Recommend optimizing feeder stop intervals.",
     "Fuel consumption increased by 12% on Route 1 due to peak hour traffic congestion.",
@@ -777,45 +684,35 @@ export const INITIAL_ACTIVITIES: TransportActivityLog[] = [
   {
     id: "ACT-201",
     date: "2026-08-04 16:00",
-    timestamp: "2026-08-04 16:00",
     user: "Mr. K. V. Subba Rao (Transport Manager)",
-    performedBy: "Mr. K. V. Subba Rao (Transport Manager)",
     action: "Fleet Inspection Completed (All 24 Buses Verified)",
     category: "Inspection",
   },
   {
     id: "ACT-202",
     date: "2026-08-03 14:15",
-    timestamp: "2026-08-03 14:15",
     user: "Safety & RTO Auditor",
-    performedBy: "Safety & RTO Auditor",
     action: "RTO Fitness Certificate Renewed for Route 2 Bus",
     category: "Compliance",
   },
   {
     id: "ACT-203",
     date: "2026-08-02 11:30",
-    timestamp: "2026-08-02 11:30",
     user: "Fleet Mechanics Lead",
-    performedBy: "Fleet Mechanics Lead",
     action: "Vehicle Serviced & Oil Changed (TS-09-UB-4589)",
     category: "Maintenance",
   },
   {
     id: "ACT-204",
     date: "2026-08-01 09:00",
-    timestamp: "2026-08-01 09:00",
     user: "GPS Telecom Lead",
-    performedBy: "GPS Telecom Lead",
     action: "AIS-140 GPS Activated & Calibrated",
     category: "Technology",
   },
   {
     id: "ACT-205",
     date: "2026-07-31 16:45",
-    timestamp: "2026-07-31 16:45",
     user: "Accounts Officer",
-    performedBy: "Accounts Officer",
     action: "Fuel Audit Completed & Monthly Allowance Approved",
     category: "Audit",
   },
@@ -829,27 +726,22 @@ export const DEFAULT_STAFF_SUMMARY: TransportStaffSummary = {
   supportStaffCount: 8,
   staffAvailability: "100% On Duty (All routes covered)",
   pendingLeaveRequests: 1,
-  totalFleetBuses: 24,
-  activePassHolders: 1240,
-  verifiedStudents: 1120,
-  verifiedFaculty: 120,
-  avgOccupancyRate: 94.2,
 };
 
-export async function fetchBusRoutes(): Promise<EnhancedBusRoute[]> {
+export async function fetchBusRoutes(): Promise<BusRoute[]> {
   try {
     const res = await api.get("/api/transport/routes");
     if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
   } catch {}
-  return INITIAL_ROUTES;
+  return INITIAL_ENHANCED_ROUTES;
 }
 
-export async function fetchTransportPasses(): Promise<EnhancedTransportPass[]> {
+export async function fetchTransportPasses(): Promise<TransportPass[]> {
   try {
     const res = await api.get("/api/transport/passes");
     if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
   } catch {}
-  return INITIAL_PASSES;
+  return INITIAL_ENHANCED_PASSES;
 }
 
 export async function createBusRoute(data: Partial<BusRoute>): Promise<BusRoute> {

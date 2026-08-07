@@ -1,16 +1,44 @@
 import React, { useEffect, useState } from "react";
 import {
   MessageSquare,
+  Plus,
   Search,
   RefreshCw,
+  Download,
+  Bell,
+  Send,
+  Megaphone,
+  CheckCircle2,
+  Calendar,
+  AlertTriangle,
+  UserCheck,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 import {
   fetchCampusNotices,
+  publishCampusNotice,
   INITIAL_NOTICES,
   type CampusNotice,
 } from "./CommunicationService";
@@ -19,6 +47,15 @@ export function CommunicationModuleView() {
   const [notices, setNotices] = useState<CampusNotice[]>(INITIAL_NOTICES);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+
+  const [isPublishOpen, setIsPublishOpen] = useState(false);
+  const [form, setForm] = useState<Partial<CampusNotice>>({
+    title: "Odd Semester Course Registration Announcement",
+    category: "Academic",
+    audience: "All Students",
+    priority: "Normal",
+    description: "Course registrations for the upcoming semester will open online via the student portal on August 10, 2026.",
+  });
 
   const loadData = async () => {
     setLoading(true);
@@ -37,6 +74,15 @@ export function CommunicationModuleView() {
       n.category.toLowerCase().includes(search.toLowerCase()) ||
       n.audience.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handlePublishSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title || !form.description) return toast.error("Enter notice title and description");
+    const created = await publishCampusNotice(form);
+    setNotices((prev) => [created, ...prev]);
+    setIsPublishOpen(false);
+    toast.success(`Notice "${created.title}" broadcasted to ${created.audience}!`);
+  };
 
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
@@ -63,6 +109,9 @@ export function CommunicationModuleView() {
         <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
           <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="h-9 gap-2 text-xs font-medium">
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
+          </Button>
+          <Button size="sm" onClick={() => setIsPublishOpen(true)} className="h-9 bg-brand-gradient text-white gap-2 text-xs font-semibold shadow-glow">
+            <Megaphone className="size-4" /> Publish Broadcast Notice
           </Button>
         </div>
       </div>
@@ -128,6 +177,17 @@ export function CommunicationModuleView() {
           ))}
         </div>
       </div>
+
+      <Dialog open={isPublishOpen} onOpenChange={setIsPublishOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="text-lg font-bold">Publish Broadcast Announcement</DialogTitle></DialogHeader>
+          <form onSubmit={handlePublishSubmit} className="space-y-3 pt-2">
+            <div className="space-y-1"><Label className="text-xs font-semibold">Announcement Title *</Label><Input required placeholder="Odd Semester Registration Open" value={form.title || ""} onChange={(e) => setForm({ ...form, title: e.target.value })} className="h-9 text-xs" /></div>
+            <div className="space-y-1"><Label className="text-xs font-semibold">Notice Description *</Label><Textarea required placeholder="Enter details..." value={form.description || ""} onChange={(e) => setForm({ ...form, description: e.target.value })} className="text-xs min-h-[80px]" /></div>
+            <DialogFooter className="pt-2"><Button type="button" variant="outline" onClick={() => setIsPublishOpen(false)} className="text-xs">Cancel</Button><Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold">Publish & Broadcast</Button></DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

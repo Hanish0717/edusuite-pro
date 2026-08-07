@@ -41,7 +41,7 @@ const palette = [
 ];
 
 interface SeriesChartProps {
-  data: object[];
+  data: Record<string, unknown>[];
   xKey: string;
   series: { key: string; label: string }[];
   height?: number;
@@ -127,34 +127,18 @@ export function GroupedBarChart({ data, xKey, series, height = 240 }: SeriesChar
 }
 
 interface DonutProps {
-  data: any[];
+  data: { name: string; value: number }[];
   height?: number;
   centerLabel?: string;
-  categoryKey?: string;
-  valueKey?: string;
-  nameKey?: string;
 }
 
-export function DonutChart({ data, height = 220, centerLabel, categoryKey, valueKey, nameKey }: DonutProps) {
-  const actualNameKey = nameKey || categoryKey || "name";
-  const actualValueKey = valueKey || "value";
-
-  const normalizedData = (data || []).map((item) => {
-    const rawName = item[actualNameKey] ?? item.name ?? item.category ?? "Item";
-    const rawVal = item[actualValueKey] ?? item.value ?? item.percentage ?? 0;
-    return {
-      ...item,
-      name: String(rawName),
-      value: Number(rawVal) || 0,
-    };
-  });
-
+export function DonutChart({ data, height = 220, centerLabel }: DonutProps) {
   return (
     <div className="relative">
       <ResponsiveContainer width="100%" height={height}>
         <PieChart>
           <Pie
-            data={normalizedData}
+            data={data}
             dataKey="value"
             nameKey="name"
             innerRadius="62%"
@@ -162,8 +146,8 @@ export function DonutChart({ data, height = 220, centerLabel, categoryKey, value
             paddingAngle={2}
             stroke="none"
           >
-            {normalizedData.map((entry, i) => (
-              <Cell key={entry.name || i} fill={palette[i % palette.length]} />
+            {data.map((entry, i) => (
+              <Cell key={entry.name} fill={palette[i % palette.length]} />
             ))}
           </Pie>
           <Tooltip {...tooltipStyle} />
@@ -182,12 +166,12 @@ export function ChartLegend({ items }: { items: { name: string }[] }) {
   return (
     <ul className="mt-3 space-y-1.5">
       {items.map((item, i) => (
-        <li key={item.name || i} className="flex items-center gap-2 text-sm text-muted-foreground">
+        <li key={item.name} className="flex items-center gap-2 text-sm text-muted-foreground">
           <span
-            className="size-2.5 rounded-full shrink-0"
+            className="size-2.5 rounded-full"
             style={{ backgroundColor: palette[i % palette.length] }}
           />
-          <span className="truncate">{item.name}</span>
+          {item.name}
         </li>
       ))}
     </ul>

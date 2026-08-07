@@ -6,7 +6,6 @@ export interface StudentIdCardData {
   studentId: string;
   rollNumber: string;
   registrationNumber: string;
-  admissionNumber?: string;
   name: string;
   avatarUrl: string;
   initials: string;

@@ -13,7 +13,6 @@ export type LoginRole =
   | "admin"
   | "principal"
   | "vice_principal"
-  | "dean"
   // Core staff roles
   | "staff"
   | "hod"
@@ -30,13 +29,20 @@ export type LoginRole =
   | "alumni_coordinator"
   | "alumni"
   | "super-admin"
-  | "staff"
   | "external-user"
-  | "academic_management";
+  // Specific dean roles
+  | "academic_dean"
+  | "student_dean"
+  | "iqac_dean"
+  | "ima_dean"
+  | "research_dean"
+  | "finance_dean"
+  | "examination_dean"
+  | "placement_dean";
 
 export type CoreRoleKey = "super-admin" | "staff" | "student" | "parent" | "external-user";
 
-export type ExternalPersona = "applicant" | "alumni" | "recruiter" | "vendor" | "guest-faculty";
+export type ExternalPersona = "applicant" | "alumni" | "recruiter" | "vendor" | "guest-faculty" | "parent-portal";
 
 export type DepartmentCode = "CSE" | "ECE" | "EEE" | "ME" | "Civil" | "MBA";
 
@@ -233,6 +239,70 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     initials: "DN",
     flags: ["isDean"],
   },
+  academic_dean: {
+    id: "academic_dean",
+    label: "Academic Dean",
+    personaName: "Prof. Anand Kumar",
+    personaMeta: "Academic Leadership & Curriculum",
+    initials: "AD",
+    flags: ["isDean"],
+  },
+  student_dean: {
+    id: "student_dean",
+    label: "Student Dean",
+    personaName: "Prof. Student Dean",
+    personaMeta: "Student Affairs & Services",
+    initials: "SD",
+    flags: ["isDean"],
+  },
+  iqac_dean: {
+    id: "iqac_dean",
+    label: "IQAC Dean",
+    personaName: "Prof. IQAC Dean",
+    personaMeta: "Quality Assurance",
+    initials: "ID",
+    flags: ["isDean"],
+  },
+  ima_dean: {
+    id: "ima_dean",
+    label: "IMA Dean",
+    personaName: "Prof. IMA Dean",
+    personaMeta: "Industry & Alumni Relations",
+    initials: "IMAD",
+    flags: ["isDean"],
+  },
+  research_dean: {
+    id: "research_dean",
+    label: "Research & Development Dean",
+    personaName: "Prof. Research Dean",
+    personaMeta: "Research & Innovation",
+    initials: "RD",
+    flags: ["isDean"],
+  },
+  finance_dean: {
+    id: "finance_dean",
+    label: "Finance Dean",
+    personaName: "Prof. Finance Dean",
+    personaMeta: "Financial Management",
+    initials: "FD",
+    flags: ["isDean"],
+  },
+  examination_dean: {
+    id: "examination_dean",
+    label: "Examination Dean",
+    personaName: "Prof. Examination Dean",
+    personaMeta: "Exam Administration",
+    initials: "ED",
+    flags: ["isDean"],
+  },
+  placement_dean: {
+    id: "placement_dean",
+    label: "Placement Dean",
+    personaName: "Prof. Placement Dean",
+    personaMeta: "Career Services",
+    initials: "PD",
+    flags: ["isDean"],
+  },
   hod: {
     id: "hod",
     label: "Head of Department (HOD)",
@@ -255,7 +325,7 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     id: "student",
     label: "Student",
     personaName: "K. Sai Teja",
-    personaMeta: "B.Tech CSE - Adm No. 22CS101",
+    personaMeta: "B.Tech CSE - Roll No. 22CS101",
     initials: "ST",
     flags: [],
     department: "CSE",
@@ -264,7 +334,7 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     id: "parent",
     label: "Parent / Guardian",
     personaName: "S. Anitha",
-    personaMeta: "Parent of Sai Teja (Adm No: 22CS101)",
+    personaMeta: "Parent of Sai Teja (22CS101)",
     initials: "PT",
     flags: [],
   },
@@ -350,11 +420,11 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
   },
   staff: {
     id: "staff",
-    label: "Staff (Faculty)",
-    personaName: "Dr. Ravi Kumar",
-    personaMeta: "Faculty - Computer Science & Engineering",
-    initials: "RK",
-    flags: ["isMentor", "isClassAdvisor"],
+    label: "Staff (Placement Officer)",
+    personaName: "Mr. Karthik Nair",
+    personaMeta: "Placement Officer - Training & Placement Cell",
+    initials: "KN",
+    flags: ["isPlacementOfficer"],
     department: "CSE",
   },
   "external-user": {
@@ -366,14 +436,6 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     flags: [],
     externalPersona: "recruiter",
   },
-  academic_management: {
-    id: "academic_management",
-    label: "Academic Manager",
-    personaName: "Dr. S. R. Krishnan",
-    personaMeta: "Academic Management & Operations",
-    initials: "AM",
-    flags: ["isAcademicManagement"],
-  },
 };
 
 export const roleOrder: LoginRole[] = [
@@ -381,7 +443,15 @@ export const roleOrder: LoginRole[] = [
   "admin",
   "principal",
   "vice_principal",
-  "dean",
+  // Specific dean roles
+  "academic_dean",
+  "student_dean",
+  "iqac_dean",
+  "ima_dean",
+  "research_dean",
+  "finance_dean",
+  "examination_dean",
+  "placement_dean",
   "hod",
   "faculty",
   "student",

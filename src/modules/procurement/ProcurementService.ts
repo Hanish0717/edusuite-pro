@@ -93,7 +93,7 @@ export async function createPurchaseOrder(poData: Partial<PurchaseOrder>): Promi
     department: poData.department || "CSE",
     itemsDescription: poData.itemsDescription || "Equipment & Supplies Purchase",
     totalAmount: Number(poData.totalAmount) || 150000,
-    requestDate: new Date().toISOString().split("T")[0] || "",
+    requestDate: new Date().toISOString().split("T")[0],
     deliveryDate: poData.deliveryDate || "2026-08-30",
     approvalStatus: "Submitted",
   };

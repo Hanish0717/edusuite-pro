@@ -39,7 +39,6 @@ function FacultyLessonPlanPage() {
   // Detail Drawer state
   const [selectedPlan, setSelectedPlan] = useState<LessonPlanItem | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [defaultTab, setDefaultTab] = useState("session-planner");
 
   // Extract unique subject names for filter
   const uniqueSubjects = Array.from(new Set(originalPlans.map((p) => p.name)));
@@ -65,7 +64,6 @@ function FacultyLessonPlanPage() {
 
   const handleSelectPlan = (plan: LessonPlanItem) => {
     setSelectedPlan(plan);
-    setDefaultTab("session-planner");
     setDrawerOpen(true);
   };
 
@@ -116,12 +114,10 @@ function FacultyLessonPlanPage() {
 
       {/* 5. Lesson Plan Details sliding Drawer */}
       <LessonPlanDrawer
-        plan={selectedPlan ? { ...selectedPlan, department: deptCode } as any : null}
+        plan={selectedPlan}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
-        defaultTab={defaultTab}
       />
     </div>
   );
 }
-

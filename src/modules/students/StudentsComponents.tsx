@@ -73,15 +73,7 @@ const YEARS = [
 
 const FEE_STATUSES = ["All Fee Status", "Paid", "Pending", "Partial"] as const;
 
-interface StudentsModuleViewProps {
-  title?: string;
-  description?: string;
-}
-
-export function StudentsModuleView({
-  title = "Student Directory & Records",
-  description = "View, manage, and audit all enrolled students across departments",
-}: StudentsModuleViewProps = {}) {
+export function StudentsModuleView() {
   const { selectedDepartment, setSelectedDepartment } = useAcademic();
   const [students, setStudents] = useState<StudentRecord[]>(INITIAL_STUDENTS);
   const [search, setSearch] = useState("");
@@ -272,14 +264,14 @@ export function StudentsModuleView({
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold font-display tracking-tight text-foreground">
-                {title}
+                Students & Student Lifecycle Management
               </h1>
               <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">
-                Central Registry
+                Super Admin Central Registry
               </Badge>
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-              {description}
+              Comprehensive student roster, academic GPA tracking, attendance alerts, and fee ledgers.
             </p>
           </div>
         </div>

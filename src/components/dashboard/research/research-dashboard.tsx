@@ -7,12 +7,12 @@ interface ResearchDashboardProps {
 
 export function ResearchDashboard({ summary }: ResearchDashboardProps) {
   const items = [
-    { label: "Publications This Year", value: summary.publicationsThisYear, icon: BookOpen },
-    { label: "Accepted Papers", value: summary.acceptedPapers, icon: Award },
-    { label: "Under Review", value: summary.underReview, icon: Clock },
-    { label: "Ongoing Projects", value: summary.ongoingProjects, icon: Briefcase },
-    { label: "Completed Projects", value: summary.completedProjects, icon: CheckCircle },
-    { label: "Grants Received", value: summary.grantsReceived, icon: FileText }
+    { label: "Publications This Year", value: summary.publicationsThisYear, icon: BookOpen, color: "text-blue-500 bg-blue-500/10" },
+    { label: "Accepted Papers", value: summary.acceptedPapers, icon: Award, color: "text-indigo-500 bg-indigo-500/10" },
+    { label: "Under Review", value: summary.underReview, icon: Clock, color: "text-amber-500 bg-amber-500/10" },
+    { label: "Ongoing Projects", value: summary.ongoingProjects, icon: Briefcase, color: "text-sky-500 bg-sky-500/10" },
+    { label: "Completed Projects", value: summary.completedProjects, icon: CheckCircle, color: "text-emerald-500 bg-emerald-500/10" },
+    { label: "Grants Received", value: summary.grantsReceived, icon: FileText, color: "text-rose-500 bg-rose-500/10" }
   ];
 
   return (
@@ -22,13 +22,13 @@ export function ResearchDashboard({ summary }: ResearchDashboardProps) {
         return (
           <div
             key={item.label}
-            className="relative overflow-hidden flex items-center gap-3 p-4 rounded-2xl border border-blue-500/20 dark:border-blue-500/30 bg-blue-500/8 hover:shadow-md hover:shadow-blue-500/10 hover:border-blue-500/30 hover:-translate-y-0.5 transition-all duration-300 cursor-default"
+            className="flex items-center gap-3 p-4 rounded-2xl border border-border/40 bg-card hover:bg-muted/10 transition-colors"
           >
-            <div className="size-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br from-blue-500 to-indigo-600">
-              <Icon className="size-5 text-white" />
+            <div className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${item.color}`}>
+              <Icon className="size-5" />
             </div>
             <div>
-              <p className="text-xl font-extrabold tabular-nums text-blue-600 dark:text-blue-400">{item.value}</p>
+              <p className="text-lg font-black text-foreground">{item.value}</p>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide leading-tight mt-0.5">{item.label}</p>
             </div>
           </div>

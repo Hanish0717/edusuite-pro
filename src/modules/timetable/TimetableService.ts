@@ -87,22 +87,12 @@ export const MOCK_SUBJECTS_BY_BRANCH_SEM: Record<string, { code: string; name: s
     { code: "AD502L", name: "Computer Vision & PyTorch Lab", faculty: "Prof. Arvind Swaminathan", facultyId: "FAC-103", room: "Lab - AI Center", isLab: true },
   ],
 };
-interface SchedulePatternItem {
-  code: string;
-  name: string;
-  faculty: string;
-  isLab?: boolean;
-}
 
-export function generateInitialSchedule(
-  branch: string = "CSE",
-  semester: number = 5,
-  section: string = "Section A"
-): TimetablePeriod[] {
+export function generateInitialSchedule(branch: string = "CSE", semester: number = 5, section: string = "Section A"): TimetablePeriod[] {
   const periods: TimetablePeriod[] = [];
   let idCounter = 100;
 
-  const defaultPatternNormal: SchedulePatternItem[] = [
+  const defaultPatternNormal = [
     { code: "CS501", name: "Machine Learning & Neural Nets", faculty: "Teja" },
     { code: "CS502", name: "Compiler Design & Lexical Parsing", faculty: "Varma" },
     { code: "CS503", name: "Database Systems & SQL Optimization", faculty: "Sharma" },
@@ -112,7 +102,7 @@ export function generateInitialSchedule(
     { code: "CS503", name: "Database Systems & SQL Optimization", faculty: "Sharma" },
   ];
 
-  const defaultPatternTueThu: SchedulePatternItem[] = [
+  const defaultPatternTueThu = [
     { code: "CS501", name: "Machine Learning & Neural Nets", faculty: "Teja" },
     { code: "CS502", name: "Compiler Design & Lexical Parsing", faculty: "Varma" },
     { code: "CS503", name: "Database Systems & SQL Optimization", faculty: "Sharma" },
@@ -127,12 +117,7 @@ export function generateInitialSchedule(
     const pattern = isTueOrThu ? defaultPatternTueThu : defaultPatternNormal;
 
     PERIOD_SLOTS.forEach((slot, slotIdx) => {
-      const item: SchedulePatternItem = pattern[slotIdx] || pattern[0] || {
-        code: "CS501",
-        name: "Machine Learning & Neural Nets",
-        faculty: "Teja",
-      };
-
+      const item = pattern[slotIdx] || pattern[0];
       periods.push({
         id: `TT-${idCounter++}`,
         day,

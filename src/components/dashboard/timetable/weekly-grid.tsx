@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 
 interface WeeklyGridProps {
   slots: WeeklySlot[];
-  onCardClick?: (slot: WeeklySlot) => void;
 }
 
 // ─── Colour config per class type ────────────────────────────────────────────
@@ -139,33 +138,20 @@ function isTimeSlotActive(timeSlot: string): boolean {
 }
 
 // ─── Class card inside a cell ─────────────────────────────────────────────────
-function ClassCard({
-  cell,
-  ongoing,
-  isUpcoming,
-  onClick,
-}: {
-  cell: WeeklySlot;
-  ongoing: boolean;
-  isUpcoming: boolean;
-  onClick?: () => void;
-}) {
+function ClassCard({ cell, ongoing, isUpcoming }: { cell: WeeklySlot; ongoing: boolean; isUpcoming: boolean }) {
   const cfg = TYPE_CONFIG[cell.type] ?? TYPE_CONFIG.Theory;
   const Icon = cfg.icon;
 
   return (
     <div
-      onClick={onClick}
-      title="Click to view section timetable"
       className={cn(
-        "rounded-xl p-2.5 h-full flex flex-col gap-1 transition-all duration-300 cursor-pointer hover:scale-[1.02] hover:shadow-lg hover:border-primary/50 select-none border group relative",
+        "rounded-xl p-2.5 h-full flex flex-col gap-1 transition-all duration-300 cursor-default select-none border",
         cfg.bg,
         cfg.border,
         ongoing && "ring-2 ring-offset-1 ring-primary/60 shadow-glow",
         isUpcoming && "ring-2 ring-offset-1 ring-blue-500/40 shadow-glow"
       )}
     >
-
       {/* Top row: type badge + ongoing / upcoming pill */}
       <div className="flex items-center justify-between gap-1 flex-wrap">
         <Badge
@@ -188,7 +174,7 @@ function ClassCard({
       </div>
 
       {/* Subject name */}
-      <h5 className={cn("font-extrabold leading-tight text-[0.68rem] line-clamp-2 group-hover:underline", cfg.text)}>
+      <h5 className={cn("font-extrabold leading-tight text-[0.68rem] line-clamp-2", cfg.text)}>
         {cell.subject}
       </h5>
 
@@ -203,8 +189,9 @@ function ClassCard({
           <MapPin className="size-2.5 shrink-0" />
           {cell.room}
         </span>
-        <span className="flex items-center gap-0.5 truncate max-w-[50%] text-primary font-bold">
-          Section Viewer &rarr;
+        <span className="flex items-center gap-0.5 truncate max-w-[50%]">
+          <Building2 className="size-2.5 shrink-0" />
+          {cell.building.replace("Block ", "")}
         </span>
       </div>
     </div>
@@ -433,16 +420,10 @@ export function WeeklyGrid({ slots }: WeeklyGridProps) {
                             isOngoing={lunchOngoing}
                           />
                         ) : cell ? (
-                          <ClassCard
-                            cell={cell}
-                            ongoing={ongoing}
-                            isUpcoming={isUpcoming}
-                            onClick={() => onCardClick && onCardClick(cell)}
-                          />
+                          <ClassCard cell={cell} ongoing={ongoing} isUpcoming={isUpcoming} />
                         ) : (
                           <FreePeriodCell day={day} timeSlot={timeSlot} />
                         )}
-
                       </div>
                     );
                   })}

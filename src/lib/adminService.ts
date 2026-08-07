@@ -3,7 +3,7 @@ export interface AdminKpiConfig {
   label: string;
   value: string;
   iconName: string;
-  tone?: "primary" | "info" | "warning" | "success";
+  tone?: "default" | "info" | "warning" | "success";
   delta?: string;
 }
 
@@ -86,7 +86,7 @@ export interface PaginatedResult<T> {
 
 // MOCK DATASETS
 export const MOCK_ADMIN_KPI_CONFIGS: AdminKpiConfig[] = [
-  { id: "kpi-1", label: "Student Roster", value: "5,246 Active", iconName: "Users", tone: "primary", delta: "+3.2%" },
+  { id: "kpi-1", label: "Student Roster", value: "5,246 Active", iconName: "Users", tone: "default", delta: "+3.2%" },
   { id: "kpi-2", label: "Faculty Roster", value: "623 Staff", iconName: "UserCog", tone: "info", delta: "+1.5%" },
   { id: "kpi-3", label: "Admissions Pending", value: "142 Applicants", iconName: "GraduationCap", tone: "warning", delta: "-4.1%" },
   { id: "kpi-4", label: "Fee Collections Today", value: "₹18.4 Lakhs", iconName: "Wallet", tone: "success", delta: "+12.8%" },

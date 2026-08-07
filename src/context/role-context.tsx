@@ -237,34 +237,8 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   return <RoleContext.Provider value={value}>{children}</RoleContext.Provider>;
 }
 
-const defaultRoleContextValue: RoleContextValue = {
-  role: "super-admin",
-  setRole: () => {},
-  profile: {
-    ...roleProfiles["super-admin"],
-    flags: roleProfiles["super-admin"].defaultFlags,
-    department: undefined,
-    externalPersona: undefined,
-    featureFlags: defaultFeatureFlags,
-    personaName: "Super Admin",
-    personaMeta: "Platform Superuser & System Administrator",
-    email: "admin@edusuite.pro",
-  },
-  flags: roleProfiles["super-admin"].defaultFlags,
-  setFlags: () => {},
-  department: undefined,
-  setDepartment: () => {},
-  externalPersona: undefined,
-  setExternalPersona: () => {},
-  featureFlags: defaultFeatureFlags,
-  setFeatureFlags: () => {},
-  hasFlag: () => true,
-  canAccessModule: () => true,
-  canAccessRoute: () => true,
-};
-
 export function useRole() {
   const ctx = useContext(RoleContext);
-  if (!ctx) return defaultRoleContextValue;
+  if (!ctx) throw new Error("useRole must be used within a RoleProvider");
   return ctx;
 }

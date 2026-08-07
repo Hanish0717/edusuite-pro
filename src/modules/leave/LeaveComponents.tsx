@@ -453,7 +453,7 @@ export function LeaveModuleView() {
       ) : (
         <>
           {/* Summary Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 2xl:grid-cols-6 gap-3.5">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
             {[
               { label: "Casual Leave", val: stats.casualText, icon: Plane, bg: "bg-blue-500/10 text-blue-600 border-blue-500/10" },
               { label: "Sick Leave", val: stats.sickText, icon: Heart, bg: "bg-emerald-500/10 text-emerald-600 border-emerald-500/10" },
@@ -466,21 +466,19 @@ export function LeaveModuleView() {
               return (
                 <div
                   key={i}
-                  className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-sm space-y-1 hover:border-primary/30 transition-colors duration-300 min-w-0 flex flex-col justify-between h-full"
+                  className="rounded-2xl border border-border/80 bg-card p-4.5 shadow-sm space-y-1 hover:border-primary/30 transition-colors duration-300"
                 >
-                  <div className="flex items-start justify-between text-[0.68rem] font-semibold text-muted-foreground uppercase tracking-wider gap-1.5">
-                    <span className="leading-snug break-words block" title={card.label}>{card.label}</span>
+                  <div className="flex items-center justify-between text-[0.68rem] font-semibold text-muted-foreground uppercase tracking-wider">
+                    <span>{card.label}</span>
                     <span className={cn("p-1 rounded-lg shrink-0", card.bg)}>
                       <Icon className="size-3.5" />
                     </span>
                   </div>
-                  <p className="font-display text-lg font-bold text-foreground mt-1.5 whitespace-nowrap">{card.val}</p>
+                  <p className="font-display text-lg font-bold text-foreground mt-1.5">{card.val}</p>
                 </div>
-
               );
             })}
           </div>
-
 
           {/* Main Layout Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -826,9 +824,8 @@ export function LeaveModuleView() {
                 ) : (
                   <div className="overflow-x-auto rounded-xl border border-border/60">
                     {/* Desktop table view */}
-                    <table className="w-full text-left text-xs hidden md:table min-w-[800px]">
+                    <table className="w-full text-left text-xs hidden md:table">
                       <thead className="bg-muted/40 text-muted-foreground font-mono text-[0.68rem] uppercase border-b border-border/60">
-
                         <tr>
                           <th className="py-3 px-3.5">Leave ID</th>
                           <th className="py-3 px-3.5">Leave Category</th>

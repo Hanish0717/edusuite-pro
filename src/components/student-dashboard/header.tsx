@@ -21,7 +21,6 @@ import {
   IdCard,
 } from "lucide-react";
 import { toast } from "sonner";
-import { getTimeBasedGreeting } from "./dashboard-header";
 
 interface StudentDashboardHeaderProps {
   student: StudentInfo;
@@ -43,7 +42,6 @@ export function StudentDashboardHeader({
   onGenerateBonafide,
 }: StudentDashboardHeaderProps) {
   const [currentDateTime, setCurrentDateTime] = useState<string>("");
-  const [greeting, setGreeting] = useState<string>(() => getTimeBasedGreeting(student.name));
 
   useEffect(() => {
     const updateTime = () => {
@@ -59,13 +57,12 @@ export function StudentDashboardHeader({
         hour12: true,
       };
       setCurrentDateTime(now.toLocaleString("en-US", options));
-      setGreeting(getTimeBasedGreeting(student.name));
     };
 
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  }, [student.name]);
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -88,7 +85,7 @@ export function StudentDashboardHeader({
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                {greeting}
+                Welcome back, {student.name}
               </h1>
               <Badge className="bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20 font-mono text-[11px] px-2 py-0.5">
                 {student.rollNumber}

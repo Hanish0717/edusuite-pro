@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   Lock,
   Download,
-  RotateCcw
 } from "lucide-react";
 
 import { KpiCard } from "@/components/dashboard/kpi-card";
@@ -20,18 +19,6 @@ import { fetchExamCellStats, fetchExamBatches } from "@/lib/roleDashboardService
 export function ExamCellDashboard() {
   const stats = useMemo(() => fetchExamCellStats(), []);
   const batches = useMemo(() => fetchExamBatches(), []);
-
-  const handleResetDemoData = () => {
-    localStorage.removeItem("mock_students_db_v3");
-    localStorage.removeItem("mock_answer_copy_roster_v3");
-    localStorage.removeItem("mock_scheduled_exams_v3");
-    localStorage.removeItem("mock_timetables_v3");
-    localStorage.removeItem("mock_offered_courses_v3");
-    toast.success("Exam cell demo data reset successfully! Reloading page...");
-    setTimeout(() => {
-      window.location.reload();
-    }, 1200);
-  };
 
   const renderIcon = (name: string) => {
     switch (name) {
@@ -48,7 +35,6 @@ export function ExamCellDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4">
         <div>
           <h2 className="font-display text-2xl font-extrabold tracking-tight">
@@ -58,22 +44,11 @@ export function ExamCellDashboard() {
             Scope: Examination Management, Scheduling, Hall Tickets, Gradebooks, Results, Revaluation.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleResetDemoData}
-            className="h-8 text-[10px] font-black border-rose-250 text-rose-700 hover:bg-rose-50 flex items-center gap-1 cursor-pointer rounded-xl"
-          >
-            <RotateCcw className="size-3" /> Reset Demo Data
-          </Button>
-          <Badge className="bg-brand-gradient text-white w-fit font-mono">
-            EXAM CONTROLLER (EXAM CELL)
-          </Badge>
-        </div>
+        <Badge className="bg-brand-gradient text-white w-fit font-mono">
+          EXAM CONTROLLER (EXAM CELL)
+        </Badge>
       </div>
 
-      {/* KPI Cards Grid */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((kpi, idx) => {
           const IconComp = renderIcon(kpi.iconName);

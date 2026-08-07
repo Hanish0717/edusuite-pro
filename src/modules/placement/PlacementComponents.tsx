@@ -103,10 +103,7 @@ export function PlacementModuleView() {
 
   const handleAddDriveSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!driveForm.companyName || !driveForm.jobRole) {
-      toast.error("Enter company name and job role");
-      return;
-    }
+    if (!driveForm.companyName || !driveForm.jobRole) return toast.error("Enter company name and job role");
     const created = await createPlacementDrive(driveForm);
     setDrives((prev) => [created, ...prev]);
     setIsAddDriveOpen(false);
@@ -115,10 +112,7 @@ export function PlacementModuleView() {
 
   const handleAddOfferSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!offerForm.rollNo || !offerForm.studentName) {
-      toast.error("Enter student roll number and name");
-      return;
-    }
+    if (!offerForm.rollNo || !offerForm.studentName) return toast.error("Enter student roll number and name");
     const created = await addPlacedStudentOffer(offerForm);
     setPlaced((prev) => [created, ...prev]);
     setIsAddOfferOpen(false);

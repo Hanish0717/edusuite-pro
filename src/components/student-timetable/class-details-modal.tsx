@@ -210,9 +210,9 @@ export function ClassDetailsModal({
               else toast.info("Opening LMS Course Hub...");
               onClose();
             }}
-            className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold flex items-center justify-center"
+            className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs gap-1 font-semibold"
           >
-            Open LMS
+            Open LMS <ExternalLink className="h-3.5 w-3.5" />
           </Button>
         </DialogFooter>
       </DialogContent>

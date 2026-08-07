@@ -67,59 +67,59 @@
 }
 
 :root {
-  --radius: 16px;
+  --radius: 0.875rem;
 
-  --background: #EFF6FF;
-  --foreground: #0F172A;
-  --card: #FFFFFF;
-  --card-foreground: #0F172A;
-  --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
+  --background: oklch(0.985 0.004 250);
+  --foreground: oklch(0.22 0.05 262);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.05 262);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.22 0.05 262);
 
-  --primary: #2563EB;
-  --primary-foreground: #FFFFFF;
-  --primary-soft: #DBEAFE;
+  --primary: oklch(0.53 0.212 262);
+  --primary-foreground: oklch(0.99 0.005 250);
+  --primary-soft: oklch(0.95 0.03 258);
 
-  --brand-deep: #1E40AF;
-  --brand-deep-foreground: #FFFFFF;
+  --brand-deep: oklch(0.27 0.095 265);
+  --brand-deep-foreground: oklch(0.98 0.008 250);
 
-  --secondary: #EFF6FF;
-  --secondary-foreground: #2563EB;
-  --muted: #EFF6FF;
-  --muted-foreground: #64748B;
-  --accent: #DBEAFE;
-  --accent-foreground: #2563EB;
+  --secondary: oklch(0.962 0.012 253);
+  --secondary-foreground: oklch(0.3 0.07 264);
+  --muted: oklch(0.962 0.012 253);
+  --muted-foreground: oklch(0.55 0.035 258);
+  --accent: oklch(0.945 0.03 256);
+  --accent-foreground: oklch(0.33 0.12 262);
 
-  --destructive: #EF4444;
-  --destructive-foreground: #FFFFFF;
-  --success: #10B981;
-  --success-foreground: #FFFFFF;
-  --warning: #F59E0B;
-  --warning-foreground: #FFFFFF;
-  --info: #2563EB;
-  --info-foreground: #FFFFFF;
+  --destructive: oklch(0.58 0.22 25);
+  --destructive-foreground: oklch(0.99 0.005 250);
+  --success: oklch(0.62 0.15 155);
+  --success-foreground: oklch(0.99 0.005 250);
+  --warning: oklch(0.76 0.15 75);
+  --warning-foreground: oklch(0.25 0.05 75);
+  --info: oklch(0.65 0.14 235);
+  --info-foreground: oklch(0.99 0.005 250);
 
-  --border: #BFDBFE;
-  --input: #BFDBFE;
-  --ring: #2563EB;
+  --border: oklch(0.915 0.012 255);
+  --input: oklch(0.915 0.012 255);
+  --ring: oklch(0.53 0.212 262);
 
-  --chart-1: #2563EB;
-  --chart-2: #3B82F6;
-  --chart-3: #60A5FA;
-  --chart-4: #BFDBFE;
-  --chart-5: #1D4ED8;
+  --chart-1: oklch(0.53 0.212 262);
+  --chart-2: oklch(0.68 0.15 235);
+  --chart-3: oklch(0.62 0.15 155);
+  --chart-4: oklch(0.76 0.15 75);
+  --chart-5: oklch(0.35 0.12 268);
 
-  --sidebar: #172554;
+  --sidebar: #0F1B44;
   --sidebar-foreground: #F5F7FF;
-  --sidebar-primary: #2563EB;
+  --sidebar-primary: #4D78FF;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #1E3A8A;
+  --sidebar-accent: #162B63;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #1E3A8A;
-  --sidebar-ring: #2563EB;
+  --sidebar-border: #24356B;
+  --sidebar-ring: #4D78FF;
 
-  --gradient-brand: linear-gradient(135deg, #2563EB, #1D4ED8);
-  --gradient-brand-soft: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+  --gradient-brand: linear-gradient(135deg, oklch(0.35 0.15 266), oklch(0.56 0.21 259));
+  --gradient-brand-soft: linear-gradient(135deg, oklch(0.97 0.02 255), oklch(0.93 0.05 254));
   --gradient-sheen: linear-gradient(
     120deg,
     color-mix(in oklab, var(--primary) 0%, transparent),
@@ -128,10 +128,10 @@
   );
 
   --shadow-card:
-    0 4px 6px -1px rgba(37, 99, 235, 0.05), 0 2px 4px -1px rgba(37, 99, 235, 0.03);
+    0 1px 2px oklch(0.27 0.095 265 / 0.06), 0 8px 24px -12px oklch(0.27 0.095 265 / 0.18);
   --shadow-elevated:
-    0 10px 15px -3px rgba(37, 99, 235, 0.1), 0 4px 6px -2px rgba(37, 99, 235, 0.05);
-  --shadow-glow: 0 0 15px rgba(37, 99, 235, 0.3);
+    0 2px 4px oklch(0.27 0.095 265 / 0.06), 0 24px 48px -20px oklch(0.27 0.095 265 / 0.28);
+  --shadow-glow: 0 18px 40px -18px color-mix(in oklab, var(--primary) 55%, transparent);
 }
 
 .dark {
@@ -211,30 +211,6 @@
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
-
-  /* Custom sleek scrollbar & hide default browser scrollbars */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: color-mix(in oklab, var(--foreground) 20%, transparent);
-    border-radius: 9999px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: color-mix(in oklab, var(--foreground) 40%, transparent);
-  }
-
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: color-mix(in oklab, var(--foreground) 20%, transparent) transparent;
-  }
 }
 
 @utility bg-brand-gradient {
@@ -277,37 +253,6 @@
   animation: fade-in-soft 0.4s ease-out both;
 }
 
-@utility no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
-  }
-}
-
-/* Hide inner scrollbars for sidebar navigation containers across all browsers */
-[data-sidebar="content"],
-[data-sidebar="sidebar"],
-[data-sidebar="group-content"],
-aside,
-.no-scrollbar {
-  -ms-overflow-style: none !important; /* IE and Edge */
-  scrollbar-width: none !important; /* Firefox */
-}
-
-[data-sidebar="content"]::-webkit-scrollbar,
-[data-sidebar="sidebar"]::-webkit-scrollbar,
-[data-sidebar="group-content"]::-webkit-scrollbar,
-aside::-webkit-scrollbar,
-.no-scrollbar::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari and Opera */
-  width: 0 !important;
-  height: 0 !important;
-}
-
-
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -328,27 +273,18 @@ aside::-webkit-scrollbar,
   }
 }
 
-/* Custom scrollbar styling for the entire application to prevent ugly default white scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.2);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.4);
+/* Hide default browser scrollbars on sidebar & overflow containers */
+.no-scrollbar::-webkit-scrollbar,
+[data-sidebar="content"]::-webkit-scrollbar,
+aside::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
 }
 
-/* Hide scrollbar in sidebar content to keep it clean */
-[data-sidebar="content"]::-webkit-scrollbar {
-  display: none;
-}
-[data-sidebar="content"] {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+.no-scrollbar,
+[data-sidebar="content"],
+aside {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }

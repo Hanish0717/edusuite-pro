@@ -1,48 +1,42 @@
 import React, { useEffect, useState } from "react";
 import {
   Building,
-  Search,
   RefreshCw,
   Download,
-  Filter,
-  Eye,
   Users,
   Bed,
-  ShieldCheck,
-  CheckCircle2,
-  AlertCircle,
-  FileText,
   KeyRound,
-  Calendar,
-  Sparkles,
-  Settings,
-  Activity,
-  Zap,
-  Clock,
-  Wrench,
-  ShieldAlert,
-  SlidersHorizontal,
-  Globe,
-  Award,
-  UserCheck,
-  Utensils,
-  Bell,
+  ShieldCheck,
   AlertTriangle,
-  Flame,
+  Activity,
+  Calendar,
+  Zap,
+  Droplet,
+  Wifi,
+  Video,
   FileCheck,
-  BarChart3,
+  Clock,
+  Sliders,
+  CheckCircle2,
+  FileText,
   PieChart,
-  TrendingUp,
-  HeartPulse,
+  Wrench,
+  BellRing,
+  UserCheck,
+  ShieldAlert,
+  BarChart3,
+  Filter,
   FileSpreadsheet,
-  UserX,
-  CheckSquare,
-  XCircle,
-  Info,
-  Shield,
+  HeartPulse,
+  Sparkles,
+  Search,
+  Eye,
+  Loader2,
+  TrendingUp,
+  PhoneCall,
+  Flame,
+  Lock,
   Printer,
-  ChevronRight,
-  BookOpen,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -50,6 +44,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -65,72 +62,120 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 
 import {
   fetchHostelRooms,
   fetchHostelResidents,
   fetchGatePasses,
+  INITIAL_BLOCKS,
   INITIAL_ROOMS,
-  INITIAL_RESIDENTS,
+  ENHANCED_RESIDENTS,
   INITIAL_PASSES,
+  INITIAL_GATE_PASS_DETAILS,
+  INITIAL_COMPLAINT_DETAILS,
+  DEFAULT_SECURITY_METRICS,
+  DEFAULT_COMPLAINT_COMPLIANCE,
+  DEFAULT_ANALYTICS,
+  DEFAULT_HOSTEL_CONFIG,
+  DEFAULT_HOSTEL_HEALTH,
+  DEFAULT_MAINTENANCE_SUMMARY,
+  INITIAL_ALERTS,
+  INITIAL_ACTIVITIES,
+  DEFAULT_STAFF_SUMMARY,
+  DEFAULT_POLICY_COMPLIANCE,
   type HostelRoom,
-  type ResidentStudent,
+  type HostelBlockInfo,
+  type EnhancedResidentStudent,
   type GatePassRequest,
+  type GatePassDetailItem,
+  type HostelComplaintDetailItem,
+  type GatePassSecurityMetrics,
+  type ComplaintComplianceSummary,
+  type ExecutiveHostelAnalyticsData,
+  type HostelConfig,
+  type HostelHealthStatus,
+  type MaintenanceSummary,
+  type HostelAlert,
+  type HostelActivityLog,
+  type HostelStaffSummary,
+  type PolicyComplianceStatus,
 } from "./HostelService";
 
-const BLOCKS = ["All Blocks", "Block A (Boys)", "Block B (Girls)", "Block C (PG Scholars)"] as const;
-const DEPARTMENTS = ["All Departments", "CSE", "ECE", "Mechanical", "Civil", "EEE"] as const;
-const YEARS = ["All Years", "1st Year", "2nd Year", "3rd Year", "4th Year", "PG Scholar"] as const;
-const RESIDENT_STATUSES = ["All Statuses", "Present", "On Leave", "Weekend Outing", "Suspended"] as const;
-const FEE_STATUSES = ["All Fee Statuses", "Paid", "Pending", "Exemption"] as const;
-const MEDICAL_FLAGS = ["All Flags", "Normal", "Medical Alert"] as const;
+import { useLocation } from "@tanstack/react-router";
 
 export function HostelModuleView() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const tabFromUrl = searchParams.get("tab");
+
+  const [blocks] = useState<HostelBlockInfo[]>(INITIAL_BLOCKS);
   const [rooms, setRooms] = useState<HostelRoom[]>(INITIAL_ROOMS);
-  const [residents, setResidents] = useState<ResidentStudent[]>(INITIAL_RESIDENTS);
+  const [residents, setResidents] = useState<EnhancedResidentStudent[]>(ENHANCED_RESIDENTS);
   const [passes, setPasses] = useState<GatePassRequest[]>(INITIAL_PASSES);
+  const [activeTab, setActiveTab] = useState<"blocks" | "residents" | "compliance" | "analytics">("blocks");
 
-  // Tabs: governance, rooms, residents, passes, analytics, staff
-  const [activeTab, setActiveTab] = useState<"governance" | "rooms" | "residents" | "passes" | "analytics" | "staff">("governance");
+  useEffect(() => {
+    if (tabFromUrl === "rooms" || tabFromUrl === "blocks") setActiveTab("blocks");
+    else if (tabFromUrl === "residents") setActiveTab("residents");
+    else if (tabFromUrl === "compliance" || tabFromUrl === "passes") setActiveTab("compliance");
+    else if (tabFromUrl === "analytics") setActiveTab("analytics");
+  }, [tabFromUrl]);
 
-  // Filters for Resident Roster
-  const [residentSearch, setResidentSearch] = useState("");
-  const [deptFilter, setDeptFilter] = useState("All Departments");
-  const [yearFilter, setYearFilter] = useState("All Years");
-  const [blockFilter, setBlockFilter] = useState("All Blocks");
-  const [statusFilter, setStatusFilter] = useState("All Statuses");
-  const [feeFilter, setFeeFilter] = useState("All Fee Statuses");
-  const [medicalFilter, setMedicalFilter] = useState("All Flags");
-
-  // Room Search & Filter
-  const [search, setSearch] = useState("");
-  const [selectedBlock, setSelectedBlock] = useState<string>("All Blocks");
   const [loading, setLoading] = useState(false);
 
-  // Executive Dialog States
-  const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [isReportsOpen, setIsReportsOpen] = useState(false);
-  const [isInspectionOpen, setIsInspectionOpen] = useState(false);
+  // Filters state for Resident Roster
+  const [residentSearch, setResidentSearch] = useState("");
+  const [filterDept, setFilterDept] = useState("All");
+  const [filterYear, setFilterYear] = useState("All");
+  const [filterBlock, setFilterBlock] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterFee, setFilterFee] = useState("All");
+  const [filterMedicalOnly, setFilterMedicalOnly] = useState(false);
 
-  // Policy Config Form State
-  const [configForm, setConfigForm] = useState({
-    feeStructure: "₹85,000 - ₹1,20,000 per academic year (includes mess & utilities)",
-    roomCategories: "Single AC, 2-Sharing AC, 2-Sharing Non-AC, 3-Sharing Standard",
-    occupancyRules: "Mandatory 85% minimum academic attendance for hostel continuation",
-    checkInPolicy: "First-come-first-serve via online ERP allocation portal",
-    checkOutPolicy: "No-dues clearance certificate required from Warden & Library",
-    visitorPolicy: "Visitors allowed in reception lounge 04:00 PM - 07:00 PM with ID proof",
-    gatePassPolicy: "ERP e-GatePass required for outstation or late entry > 08:30 PM",
-    lateEntryPolicy: "Maximum 3 late entries per month; fine of ₹200 per entry thereafter",
-    hostelTimings: "Main Gate Close: 09:00 PM (Summer) / 08:30 PM (Winter)",
-    messTimings: "Breakfast: 07:30-09:00 AM | Lunch: 12:30-02:00 PM | Dinner: 07:30-09:00 PM",
-    fineRules: "Late entry: ₹200 | Room Damage: Actual Cost + 15% Overhead | Noise Violation: ₹500",
-    maintenanceSchedule: "Weekly preventive maintenance check on all blocks every Saturday",
-    emergencyContacts: "Chief Warden: +91 98765 43210 | Security Control: Ext 108",
-    notificationRules: "Automated SMS to parents upon gate pass approval and late entry scan",
+  // Executive Dialogs State
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [configTab, setConfigTab] = useState<"fees" | "policies" | "timings" | "operations">("fees");
+  const [configForm, setConfigForm] = useState<HostelConfig>(DEFAULT_HOSTEL_CONFIG);
+
+  // Tab 3 Super Admin Compliance & Security State
+  const [isViewDetailsOpen, setIsViewDetailsOpen] = useState(false);
+  const [viewDetailsTab, setViewDetailsTab] = useState<"gatepass" | "complaints">("gatepass");
+  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
+  const [isSecurityReportOpen, setIsSecurityReportOpen] = useState(false);
+  const [isComplaintAnalyticsOpen, setIsComplaintAnalyticsOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const [auditForm, setAuditForm] = useState({
+    auditDate: "2026-08-20",
+    auditTime: "10:00",
+    auditScope: "Fire Safety & Perimeter Security Inspection",
+    inspector: "Super Admin Safety Audit Cell",
+    remarks: "Quarterly comprehensive hostel building compliance inspection.",
   });
+
+  // Governance Telemetry & Lists
+  const [gatePassDetails] = useState<GatePassDetailItem[]>(INITIAL_GATE_PASS_DETAILS);
+  const [complaintDetails] = useState<HostelComplaintDetailItem[]>(INITIAL_COMPLAINT_DETAILS);
+  const [healthStatus] = useState<HostelHealthStatus>(DEFAULT_HOSTEL_HEALTH);
+  const [maintenanceSummary] = useState<MaintenanceSummary>(DEFAULT_MAINTENANCE_SUMMARY);
+  const [alerts, setAlerts] = useState<HostelAlert[]>(INITIAL_ALERTS);
+  const [activities, setActivities] = useState<HostelActivityLog[]>(INITIAL_ACTIVITIES);
+  const [staffSummary] = useState<HostelStaffSummary>(DEFAULT_STAFF_SUMMARY);
+  const [compliance] = useState<PolicyComplianceStatus>(DEFAULT_POLICY_COMPLIANCE);
+  const [securityMetrics] = useState<GatePassSecurityMetrics>(DEFAULT_SECURITY_METRICS);
+  const [complaintCompliance] = useState<ComplaintComplianceSummary>(DEFAULT_COMPLAINT_COMPLIANCE);
+  const [analytics] = useState<ExecutiveHostelAnalyticsData>(DEFAULT_ANALYTICS);
+
+  const addActivityLog = (action: string, category: string) => {
+    const newLog: HostelActivityLog = {
+      id: `ACT-${Date.now()}`,
+      date: new Date().toISOString().replace("T", " ").substring(0, 16),
+      user: "Super Admin (Executive)",
+      action,
+      category,
+    };
+    setActivities((prev) => [newLog, ...prev]);
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -140,71 +185,77 @@ export function HostelModuleView() {
       fetchGatePasses(),
     ]);
     setRooms(rm);
-    setResidents(res);
-    setPasses(ps);
     setLoading(false);
-    toast.success("Hostel governance metrics updated with live campus data!");
+    toast.success("Hostel Executive Governance console synced");
   };
 
   useEffect(() => {
     loadData();
   }, []);
 
-  const filteredRooms = rooms.filter((r) => {
+  // Filtered residents logic
+  const filteredResidents = residents.filter((r) => {
     const matchesSearch =
-      r.roomNo.toLowerCase().includes(search.toLowerCase()) ||
-      r.type.toLowerCase().includes(search.toLowerCase());
-    const matchesBlock = selectedBlock === "All Blocks" || r.block === selectedBlock;
-    return matchesSearch && matchesBlock;
+      r.name.toLowerCase().includes(residentSearch.toLowerCase()) ||
+      r.rollNo.toLowerCase().includes(residentSearch.toLowerCase()) ||
+      r.roomNo.toLowerCase().includes(residentSearch.toLowerCase());
+    const matchesDept = filterDept === "All" || r.department === filterDept;
+    const matchesYear = filterYear === "All" || r.year === filterYear;
+    const matchesBlock = filterBlock === "All" || r.block === filterBlock;
+    const matchesStatus = filterStatus === "All" || r.residentStatus === filterStatus;
+    const matchesFee = filterFee === "All" || r.feeStatus === filterFee;
+    const matchesMedical = !filterMedicalOnly || (r.medicalAlerts && r.medicalAlerts !== "None");
+
+    return matchesSearch && matchesDept && matchesYear && matchesBlock && matchesStatus && matchesFee && matchesMedical;
   });
 
-  // Filtered Residents List
-  const filteredResidents = residents.filter((res) => {
-    const matchesSearch =
-      res.name.toLowerCase().includes(residentSearch.toLowerCase()) ||
-      res.rollNo.toLowerCase().includes(residentSearch.toLowerCase()) ||
-      res.roomNo.toLowerCase().includes(residentSearch.toLowerCase());
-
-    const matchesDept = deptFilter === "All Departments" || res.department === deptFilter;
-    const matchesBlock = blockFilter === "All Blocks" || res.block === blockFilter;
-    const matchesStatus = statusFilter === "All Statuses" || (res.status || "Present") === statusFilter;
-    const matchesFee = feeFilter === "All Fee Statuses" || res.feeStatus === feeFilter;
-
-    return matchesSearch && matchesDept && matchesBlock && matchesStatus && matchesFee;
-  });
+  const handleSaveConfig = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsConfigOpen(false);
+    addActivityLog("Updated Hostel Policy Configuration", "Configuration");
+    toast.success("Hostel Governance & Policy Configuration updated!");
+  };
 
   const handleExportCSV = () => {
-    const headers = ["Room ID", "Room No", "Block", "Type", "Capacity", "Occupancy", "Annual Fee (INR)", "Status"];
-    const rows = filteredRooms.map((r) => [r.id, r.roomNo, `"${r.block}"`, `"${r.type}"`, r.capacity, r.occupancy, r.annualFee, r.status]);
+    const headers = ["Block ID", "Block Name", "Capacity", "Occupied Rooms", "Vacant Rooms", "Under Maintenance", "Occupancy %", "Annual Revenue (INR)", "Warden", "Health Status"];
+    const rows = blocks.map((b) => [b.id, `"${b.name}"`, b.capacity, b.occupiedRooms, b.vacantRooms, b.underMaintenance, `${b.occupancyPercentage}%`, b.annualRevenue, `"${b.currentWarden}"`, b.healthStatus]);
     const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Hostel_Occupancy_Report_${new Date().toISOString().split("T")[0]}.csv`);
+    link.setAttribute("download", `Hostel_Block_Governance_Report_${new Date().toISOString().split("T")[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success("Exported hostel occupancy ledger to CSV!");
+    addActivityLog("Exported Block Inventory Report to CSV", "Export");
+    toast.success("Exported block inventory report to CSV!");
   };
 
-  const handleExportAnalyticsExcel = () => {
-    toast.success("Exported Hostel Governance Analytics to Excel workbook!");
+  const handleExportPDF = () => {
+    addActivityLog("Generated Executive Hostel Analytics PDF Report", "Reports");
+    toast.success("Hostel Analytics Executive Report (PDF) compiled and downloaded.");
   };
 
-  const handleExportAnalyticsPDF = () => {
-    toast.success("Generated Hostel Executive Analytics PDF Report!");
+  const handleExportExcel = () => {
+    addActivityLog("Exported Hostel Master Ledger to Excel", "Reports");
+    toast.success("Hostel Analytics Master Ledger (Excel) generated.");
   };
 
-  const handleSaveConfig = (e: React.FormEvent) => {
+  const handleScheduleAuditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Hostel institutional configuration & policies updated!");
-    setIsConfigOpen(false);
-  };
+    setIsAuditModalOpen(false);
+    addActivityLog(`Scheduled Hostel Security Audit (${auditForm.auditScope}) for ${auditForm.auditDate}`, "Audit");
+    
+    const newAlert: HostelAlert = {
+      id: `ALT-${Date.now()}`,
+      severity: "medium",
+      title: "Hostel Security Audit Scheduled",
+      description: `Scheduled for ${auditForm.auditDate} at ${auditForm.auditTime}. Scope: ${auditForm.auditScope}`,
+      timestamp: "Just now",
+    };
+    setAlerts((prev) => [newAlert, ...prev]);
 
-  const handleScheduleInspection = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success("Hostel safety & hygiene inspection scheduled!");
-    setIsInspectionOpen(false);
+    toast.success(`Hostel Security Audit scheduled for ${auditForm.auditDate}!`);
   };
 
   return (
@@ -218,380 +269,276 @@ export function HostelModuleView() {
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold font-display tracking-tight text-foreground">
-                Hostel Governance & Resident Welfare Cockpit
+                Hostel & Residential Infrastructure Governance
               </h1>
               <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">
-                Super Admin Oversight Console
+                Super Admin Executive Console
               </Badge>
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-              Executive occupancy monitoring, infrastructure health, staff governance, policy compliance, and safety audits.
+              Super Admin monitoring console for block occupancy, resident rosters, compliance, security telemetry, and complaint analytics.
             </p>
           </div>
         </div>
 
-        {/* Action Buttons - Top Right Corner (EXECUTIVE ACTIONS ONLY - NO OPERATIONAL BUTTONS) */}
+        {/* Action Buttons - Executive Governance */}
         <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto flex-wrap">
-          <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent">
+          <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="h-9 gap-2 text-xs font-medium">
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
           </Button>
-
-          <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent">
-            <Download className="size-3.5" /> Download Occupancy Report
+          <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-9 gap-2 text-xs font-medium">
+            <Download className="size-3.5" /> Export Blocks
           </Button>
-
-          <Button size="sm" onClick={() => setIsReportsOpen(true)} variant="outline" className="h-9 border-primary/30 text-primary gap-2 text-xs font-semibold hover:bg-primary/10">
-            <FileText className="size-4" /> View Hostel Reports
-          </Button>
-
-          <Button size="sm" onClick={() => setIsConfigOpen(true)} className="h-9 bg-brand-gradient text-white gap-2 text-xs font-semibold shadow-glow hover:opacity-95">
-            <Settings className="size-4" /> Hostel Configuration
+          <Button size="sm" onClick={() => setIsConfigOpen(true)} className="h-9 bg-brand-gradient text-white gap-2 text-xs font-semibold shadow-glow">
+            <Sliders className="size-4" /> Hostel Configuration
           </Button>
         </div>
       </div>
 
-      {/* TOP KPI SECTION - ROW 1 & ROW 2 */}
+      {/* TOP KPI SECTION - ROW 1: PRIMARY KPIS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Total Rooms</span>
-            <Building className="size-4 text-primary" />
+            <span>Total Capacity & Occupancy</span>
+            <Users className="size-4 text-primary" />
           </div>
-          <p className="text-2xl font-bold font-mono text-primary">{rooms.length} Rooms</p>
-          <p className="text-[0.68rem] text-muted-foreground">Blocks A, B & C</p>
+          <p className="text-2xl font-bold font-mono text-primary">944 / 1,000</p>
+          <p className="text-[0.68rem] text-emerald-600 font-medium">94.4% Overall Occupancy Rate</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Resident Students</span>
-            <Users className="size-4 text-emerald-500" />
+            <span>Annual Revenue Realized</span>
+            <Bed className="size-4 text-emerald-500" />
           </div>
-          <p className="text-2xl font-bold font-mono text-emerald-600">850 Residents</p>
-          <p className="text-[0.68rem] text-emerald-600 font-medium">Active hostel scholars</p>
+          <p className="text-2xl font-bold font-mono text-emerald-600">₹8.78 Cr</p>
+          <p className="text-[0.68rem] text-muted-foreground">98.2% Fee Realization Rate</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Available Slots</span>
-            <Bed className="size-4 text-blue-500" />
+            <span>Active Outings & Passes</span>
+            <KeyRound className="size-4 text-blue-500" />
           </div>
-          <p className="text-2xl font-bold font-mono text-blue-600">45 Vacant Beds</p>
-          <p className="text-[0.68rem] text-muted-foreground">Ready for allocation</p>
+          <p className="text-2xl font-bold font-mono text-blue-600">{securityMetrics.approved} Active Passes</p>
+          <p className="text-[0.68rem] text-muted-foreground">{securityMetrics.requestsToday} total pass requests today</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Pending Gate Passes</span>
-            <KeyRound className="size-4 text-amber-500" />
+            <span>Open Maintenance & Complaints</span>
+            <Wrench className="size-4 text-amber-500" />
           </div>
-          <p className="text-2xl font-bold font-mono text-amber-600">{passes.filter((p) => p.status === "Pending").length} Passes</p>
-          <p className="text-[0.68rem] text-muted-foreground font-medium">Under warden review</p>
+          <p className="text-2xl font-bold font-mono text-amber-600">{complaintCompliance.complaints.open + complaintCompliance.complaints.inProgress} Pending</p>
+          <p className="text-[0.68rem] text-muted-foreground">Avg SLA: 24 Hours Resolution</p>
         </div>
       </div>
 
-      {/* ADDITIONAL KPI METRICS ROW */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 text-xs">
-        <div className="p-3 rounded-xl bg-muted/40 border border-border/60 space-y-1">
-          <span className="text-muted-foreground block text-[0.65rem] uppercase font-medium">Occupied Beds</span>
-          <span className="font-mono font-bold text-foreground text-sm block">850 Beds</span>
+      {/* EXECUTIVE GOVERNANCE WIDGET: HEALTH STATUS TELEMETRY */}
+      <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+            <Activity className="size-4 text-emerald-500" /> Hostel Health & Infrastructure Telemetry
+          </h3>
+          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-mono text-xs">
+            Health Score: {healthStatus.overallHealthScore} / 100
+          </Badge>
         </div>
 
-        <div className="p-3 rounded-xl bg-muted/40 border border-border/60 space-y-1">
-          <span className="text-muted-foreground block text-[0.65rem] uppercase font-medium">Vacant Beds</span>
-          <span className="font-mono font-bold text-emerald-600 text-sm block">45 Beds</span>
+        <div className="space-y-2">
+          <div className="flex justify-between text-xs font-semibold">
+            <span className="text-muted-foreground">Overall Residential Infrastructure & Utility Health Score</span>
+            <span className="text-emerald-600 font-mono font-bold">{healthStatus.overallHealthScore}% Operational Uptime</span>
+          </div>
+          <Progress value={healthStatus.overallHealthScore} className="h-2 bg-muted" />
         </div>
 
-        <div className="p-3 rounded-xl bg-muted/40 border border-border/60 space-y-1">
-          <span className="text-muted-foreground block text-[0.65rem] uppercase font-medium">Occupancy %</span>
-          <span className="font-mono font-bold text-primary text-sm block">95.0%</span>
-        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 pt-1">
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Users className="size-3.5 text-primary" /> Occupancy
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.occupancyStatus}</p>
+          </div>
 
-        <div className="p-3 rounded-xl bg-muted/40 border border-border/60 space-y-1">
-          <span className="text-muted-foreground block text-[0.65rem] uppercase font-medium">Hostel Blocks</span>
-          <span className="font-mono font-bold text-foreground text-sm block">3 Blocks</span>
-        </div>
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Zap className="size-3.5 text-amber-500" /> Grid Electricity
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.electricityStatus}</p>
+          </div>
 
-        <div className="p-3 rounded-xl bg-muted/40 border border-border/60 space-y-1">
-          <span className="text-muted-foreground block text-[0.65rem] uppercase font-medium">Maintenance Req</span>
-          <span className="font-mono font-bold text-amber-600 text-sm block">4 Pending</span>
-        </div>
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Droplet className="size-3.5 text-blue-500" /> Water Supply
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.waterSupply}</p>
+          </div>
 
-        <div className="p-3 rounded-xl bg-muted/40 border border-border/60 space-y-1">
-          <span className="text-muted-foreground block text-[0.65rem] uppercase font-medium">Gate Passes</span>
-          <span className="font-mono font-bold text-blue-600 text-sm block">12 Active</span>
-        </div>
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Wifi className="size-3.5 text-purple-500" /> Campus Wi-Fi
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.wifiStatus}</p>
+          </div>
 
-        <div className="p-3 rounded-xl bg-muted/40 border border-border/60 space-y-1">
-          <span className="text-muted-foreground block text-[0.65rem] uppercase font-medium">Mess Capacity</span>
-          <span className="font-mono font-bold text-purple-600 text-sm block">1,200 / session</span>
-        </div>
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Video className="size-3.5 text-emerald-500" /> CCTV Network
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.cctvStatus}</p>
+          </div>
 
-        <div className="p-3 rounded-xl bg-muted/40 border border-border/60 space-y-1">
-          <span className="text-muted-foreground block text-[0.65rem] uppercase font-medium">Hostel Revenue</span>
-          <span className="font-mono font-bold text-emerald-600 text-sm block">₹8.07 Cr / yr</span>
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <FileCheck className="size-3.5 text-blue-600" /> Fire Safety
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.fireSafetyCompliance}</p>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <ShieldCheck className="size-3.5 text-emerald-500" /> Security Duty
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.securityStatus}</p>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-1">
+            <span className="text-[0.68rem] text-muted-foreground font-semibold flex items-center gap-1.5">
+              <Wrench className="size-3.5 text-amber-500" /> Maintenance
+            </span>
+            <p className="text-xs font-bold text-foreground">{healthStatus.maintenanceStatus}</p>
+          </div>
         </div>
       </div>
 
-      {/* EXECUTIVE TABS SWITCHER */}
+      {/* EXECUTIVE VIEW TABS SWITCHER */}
       <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
-        <button onClick={() => setActiveTab("governance")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === "governance" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
-          1. Executive Cockpit
+        <button
+          onClick={() => setActiveTab("blocks")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "blocks" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          1. Hostel Blocks Overview ({blocks.length} Blocks)
         </button>
-        <button onClick={() => setActiveTab("rooms")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === "rooms" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
-          2. Room Inventory & Block Overview ({rooms.length})
+        <button
+          onClick={() => setActiveTab("residents")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "residents" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          2. Resident Roster & Directory ({residents.length})
         </button>
-        <button onClick={() => setActiveTab("residents")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === "residents" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
-          3. Resident Roster ({residents.length})
+        <button
+          onClick={() => setActiveTab("compliance")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "compliance" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          3. Compliance, Security & Gate Pass Monitoring
         </button>
-        <button onClick={() => setActiveTab("passes")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === "passes" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
-          4. Compliance, Security & Gate Passes ({passes.length})
-        </button>
-        <button onClick={() => setActiveTab("analytics")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === "analytics" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
-          5. Hostel Analytics & Reports
-        </button>
-        <button onClick={() => setActiveTab("staff")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === "staff" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
-          6. Warden & Staff Summary
+        <button
+          onClick={() => setActiveTab("analytics")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "analytics" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          4. Hostel Analytics & Reports
         </button>
       </div>
 
-      {/* --------------------------------------------------------------------- */}
-      {/* TAB 1: EXECUTIVE COCKPIT (HEALTH, ALERTS, QUICK ACTIONS, COMPLIANCE) */}
-      {/* --------------------------------------------------------------------- */}
-      {activeTab === "governance" && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* HOSTEL HEALTH CARD */}
-            <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-4 shadow-sm lg:col-span-2">
-              <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                  <Activity className="size-5 text-emerald-500" /> Infrastructure & Health Score
-                </h3>
-                <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-mono text-xs">
-                  Overall Health: 95 / 100 (Optimal)
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-                <div className="p-3 rounded-xl bg-muted/40 border border-border space-y-1">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-muted-foreground">Occupancy Rate</span>
-                    <span className="text-emerald-600 font-mono">95.0%</span>
+      {/* TAB 1: HOSTEL BLOCKS OVERVIEW */}
+      {activeTab === "blocks" && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {blocks.map((b) => (
+              <div key={b.id} className="p-5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <div>
+                    <span className="font-mono text-[0.65rem] text-muted-foreground block">{b.id}</span>
+                    <h3 className="font-bold text-base text-foreground">{b.name}</h3>
                   </div>
-                  <Progress value={95} className="h-2" />
-                  <p className="text-[0.65rem] text-muted-foreground mt-1">850 / 895 Beds Occupied</p>
+                  <Badge className={b.healthStatus === "Healthy" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}>
+                    {b.quickStatusBadge}
+                  </Badge>
                 </div>
 
-                <div className="p-3 rounded-xl bg-muted/40 border border-border space-y-1">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-muted-foreground">Electricity Grid</span>
-                    <span className="text-emerald-600 font-mono">100%</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs font-semibold">
+                    <span className="text-muted-foreground">Occupancy Capacity</span>
+                    <span className="font-mono text-primary">{b.occupiedRooms} / {b.capacity} Students ({b.occupancyPercentage}%)</span>
                   </div>
-                  <Progress value={100} className="h-2" />
-                  <p className="text-[0.65rem] text-muted-foreground mt-1">Dual 500kVA DG Backup Active</p>
+                  <Progress value={b.occupancyPercentage} className="h-2 bg-muted" />
                 </div>
 
-                <div className="p-3 rounded-xl bg-muted/40 border border-border space-y-1">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-muted-foreground">Water Supply</span>
-                    <span className="text-emerald-600 font-mono">100%</span>
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground uppercase block font-semibold">Vacant</span>
+                    <span className="font-mono font-bold text-emerald-600">{b.vacantRooms}</span>
                   </div>
-                  <Progress value={100} className="h-2" />
-                  <p className="text-[0.65rem] text-muted-foreground mt-1">24x7 RO Hydro System Active</p>
-                </div>
-
-                <div className="p-3 rounded-xl bg-muted/40 border border-border space-y-1">
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-muted-foreground">Campus Wi-Fi</span>
-                    <span className="text-blue-600 font-mono">98.5%</span>
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground uppercase block font-semibold">Maintenance</span>
+                    <span className="font-mono font-bold text-amber-600">{b.underMaintenance}</span>
                   </div>
-                  <Progress value={98.5} className="h-2" />
-                  <p className="text-[0.65rem] text-muted-foreground mt-1">1 Gbps Fiber Core Active</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 border-t border-border/60 text-xs">
-                <div className="p-2.5 rounded-xl bg-card border border-border/60 flex items-center justify-between">
-                  <span className="text-muted-foreground font-medium">CCTV Cameras:</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">64 / 64 Online</Badge>
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground uppercase block font-semibold">Revenue</span>
+                    <span className="font-mono font-bold text-primary">₹{(b.annualRevenue / 100000).toFixed(1)}L</span>
+                  </div>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-card border border-border/60 flex items-center justify-between">
-                  <span className="text-muted-foreground font-medium">Fire Safety:</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Certified Active</Badge>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-card border border-border/60 flex items-center justify-between">
-                  <span className="text-muted-foreground font-medium">Security Guarding:</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">24x7 Guarded</Badge>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-card border border-border/60 flex items-center justify-between">
-                  <span className="text-muted-foreground font-medium">Maintenance SLA:</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Normal SLA</Badge>
+                <div className="space-y-1 text-xs border-t border-border/60 pt-3">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Chief Warden:</span>
+                    <span className="font-semibold text-foreground">{b.currentWarden}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Maintenance Due:</span>
+                    <span className="font-mono text-muted-foreground">{b.maintenanceDue}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Last Inspected:</span>
+                    <span className="font-mono text-muted-foreground">{b.inspectionDate}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* COMPACT HOSTEL ALERTS CARD */}
-            <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-4 shadow-sm">
-              <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                  <AlertCircle className="size-5 text-amber-500" /> Executive Hostel Alerts
-                </h3>
-                <Badge variant="secondary" className="font-mono text-xs">6 Active Alerts</Badge>
-              </div>
-
-              <div className="space-y-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 space-y-0.5">
-                  <div className="flex items-center justify-between font-bold text-red-600">
-                    <span>Block A at 98% Occupancy</span>
-                    <Badge className="bg-red-500/20 text-red-700 text-[0.65rem]">Critical</Badge>
-                  </div>
-                  <p className="text-muted-foreground text-[0.7rem]">Boys Hostel nearing max capacity. Reserve remaining beds.</p>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-0.5">
-                  <div className="flex items-center justify-between font-bold text-amber-600">
-                    <span>Fire Safety Inspection Due</span>
-                    <Badge className="bg-amber-500/20 text-amber-700 text-[0.65rem]">Compliance</Badge>
-                  </div>
-                  <p className="text-muted-foreground text-[0.7rem]">Annual Fire Audit by Municipal Authority due in 15 days.</p>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20 space-y-0.5">
-                  <div className="flex items-center justify-between font-bold text-yellow-700 dark:text-yellow-300">
-                    <span>Water Maintenance Scheduled</span>
-                    <Badge className="bg-yellow-500/20 text-yellow-800 text-[0.65rem]">Maintenance</Badge>
-                  </div>
-                  <p className="text-muted-foreground text-[0.7rem]">Overhead Tank 2 cleaning scheduled Sunday 06:00 AM.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* --------------------------------------------------------------------- */}
-      {/* TAB 2: ROOM INVENTORY & BLOCK OVERVIEW */}
-      {/* --------------------------------------------------------------------- */}
-      {activeTab === "rooms" && (
-        <div className="space-y-6">
-          {/* SUMMARY CARDS FOR TAB 1 */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
-            <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-muted-foreground text-[0.65rem] uppercase font-medium">Total Blocks</span>
-              <p className="text-xl font-bold font-mono text-foreground">3 Blocks</p>
-              <p className="text-[0.65rem] text-muted-foreground">A, B & C</p>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-muted-foreground text-[0.65rem] uppercase font-medium">Total Rooms</span>
-              <p className="text-xl font-bold font-mono text-primary">380 Rooms</p>
-              <p className="text-[0.65rem] text-muted-foreground">895 Capacity</p>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-muted-foreground text-[0.65rem] uppercase font-medium">Occupied Rooms</span>
-              <p className="text-xl font-bold font-mono text-emerald-600">360 Rooms</p>
-              <p className="text-[0.65rem] text-emerald-600 font-medium">850 Residents</p>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-muted-foreground text-[0.65rem] uppercase font-medium">Vacant Rooms</span>
-              <p className="text-xl font-bold font-mono text-blue-600">18 Rooms</p>
-              <p className="text-[0.65rem] text-muted-foreground">45 Vacant Beds</p>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-muted-foreground text-[0.65rem] uppercase font-medium">Under Maintenance</span>
-              <p className="text-xl font-bold font-mono text-amber-600">2 Rooms</p>
-              <p className="text-[0.65rem] text-amber-600 font-medium">Repair in progress</p>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-muted-foreground text-[0.65rem] uppercase font-medium">Overall Occupancy</span>
-              <p className="text-xl font-bold font-mono text-emerald-600">95.0%</p>
-              <p className="text-[0.65rem] text-emerald-600 font-medium">Optimal Level</p>
-            </div>
+            ))}
           </div>
 
-          {/* BLOCK MONITORING GRID / TABLE */}
+          {/* ROOM TYPES OVERVIEW TABLE */}
           <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-3">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <Building className="size-5 text-primary" /> Block-wise Infrastructure & Capacity Ledger
+                <Bed className="size-4 text-primary" /> Room Categories & Fee Tier Overview
               </h3>
-
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1 min-w-[180px]">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                  <Input placeholder="Search room, type..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 h-9 text-xs" />
-                </div>
-
-                <Select value={selectedBlock} onValueChange={setSelectedBlock}>
-                  <SelectTrigger className="h-9 w-[180px] text-xs">
-                    <SelectValue placeholder="Block Filter" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {BLOCKS.map((b) => (
-                      <SelectItem key={b} value={b} className="text-xs">{b}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <span className="text-xs text-muted-foreground">Governance Inventory View</span>
             </div>
 
-            {/* BLOCK OVERVIEW CARDS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { block: "Block A (Boys)", warden: "Mr. K. Ramesh", cap: 468, occ: 450, vac: 18, maint: 1, occPct: 96.2, rev: "₹4.27 Cr", status: "Healthy", date: "Aug 15, 2026", maintDue: "Sat 10:00 AM" },
-                { block: "Block B (Girls)", warden: "Mrs. P. Shanthi", cap: 338, occ: 320, vac: 18, maint: 1, occPct: 94.8, rev: "₹3.04 Cr", status: "Healthy", date: "Aug 18, 2026", maintDue: "Sat 02:00 PM" },
-                { block: "Block C (PG Scholars)", warden: "Dr. S. R. Varma", cap: 86, occ: 80, vac: 6, maint: 0, occPct: 93.0, rev: "₹0.76 Cr", status: "Warning", date: "Aug 22, 2026", maintDue: "Sun 11:00 AM" },
-              ].map((blk, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-3">
-                  <div className="flex items-center justify-between border-b border-border/60 pb-2">
-                    <span className="font-bold text-sm text-foreground">{blk.block}</span>
-                    <Badge className={blk.status === "Healthy" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}>
-                      {blk.status}
-                    </Badge>
-                  </div>
-
-                  <div className="space-y-1.5 text-xs font-mono">
-                    <div className="flex justify-between"><span>Current Warden:</span><strong className="text-foreground font-sans">{blk.warden}</strong></div>
-                    <div className="flex justify-between"><span>Block Capacity:</span><strong>{blk.cap} Beds ({blk.occ} Occupied)</strong></div>
-                    <div className="flex justify-between"><span>Vacant / Maint:</span><strong className="text-blue-600">{blk.vac} Vacant / {blk.maint} Repair</strong></div>
-                    <div className="flex justify-between"><span>Occupancy Rate:</span><strong className="text-emerald-600">{blk.occPct}%</strong></div>
-                    <div className="flex justify-between"><span>Annual Revenue:</span><strong className="text-primary">{blk.rev}</strong></div>
-                    <div className="flex justify-between"><span>Next Inspection:</span><span className="text-muted-foreground">{blk.date}</span></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* ROOM TABLE */}
-            <div className="overflow-x-auto pt-2">
+            <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
                   <tr>
                     <th className="py-3 px-3">Room No</th>
-                    <th className="py-3 px-3">Block</th>
-                    <th className="py-3 px-3">Room Type</th>
-                    <th className="py-3 px-3">Capacity / Occupancy</th>
-                    <th className="py-3 px-3">Annual Fee</th>
-                    <th className="py-3 px-3">Occupancy Status</th>
+                    <th className="py-3 px-3">Hostel Block</th>
+                    <th className="py-3 px-3">Category Type</th>
+                    <th className="py-3 px-3">Capacity</th>
+                    <th className="py-3 px-3">Occupancy</th>
+                    <th className="py-3 px-3">Annual Fee (INR)</th>
+                    <th className="py-3 px-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/60 font-mono">
-                  {filteredRooms.map((r) => (
-                    <tr key={r.id} className="hover:bg-muted/20 transition-colors font-sans">
-                      <td className="py-3 px-3 font-mono font-bold text-foreground">{r.roomNo}</td>
-                      <td className="py-3 px-3 font-medium text-foreground">{r.block}</td>
-                      <td className="py-3 px-3">{r.type}</td>
-                      <td className="py-3 px-3 font-mono font-bold text-primary">{r.occupancy} / {r.capacity} Occupied</td>
-                      <td className="py-3 px-3 font-mono font-bold text-foreground">₹{r.annualFee.toLocaleString()}</td>
+                <tbody className="divide-y divide-border/60">
+                  {rooms.map((rm) => (
+                    <tr key={rm.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="py-3 px-3 font-mono font-bold text-foreground">{rm.roomNo}</td>
+                      <td className="py-3 px-3 font-semibold text-foreground">{rm.block}</td>
+                      <td className="py-3 px-3"><Badge variant="outline" className="font-mono text-xs">{rm.type}</Badge></td>
+                      <td className="py-3 px-3 font-mono">{rm.capacity} Beds</td>
+                      <td className="py-3 px-3 font-mono font-semibold text-primary">{rm.occupancy} / {rm.capacity} Occupied</td>
+                      <td className="py-3 px-3 font-mono font-bold text-emerald-600">₹{rm.annualFee.toLocaleString()}</td>
                       <td className="py-3 px-3">
-                        <Badge className={r.status === "Available" ? "bg-emerald-500/10 text-emerald-600" : r.status === "Full" ? "bg-blue-500/10 text-blue-600" : "bg-amber-500/10 text-amber-600"}>
-                          {r.status}
+                        <Badge className={rm.status === "Available" ? "bg-emerald-500/10 text-emerald-600" : rm.status === "Full" ? "bg-blue-500/10 text-blue-600" : "bg-amber-500/10 text-amber-600"}>
+                          {rm.status}
                         </Badge>
                       </td>
                     </tr>
@@ -600,155 +547,81 @@ export function HostelModuleView() {
               </table>
             </div>
           </div>
-
-          {/* BLOCK INFRASTRUCTURE HEALTH SECTION */}
-          <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <Activity className="size-5 text-emerald-500" /> Block Infrastructure & Utility Health Breakdown
-              </h3>
-              <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-mono text-xs">
-                Overall Score: 95 / 100
-              </Badge>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 text-xs">
-              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Electricity Grid</span>
-                <span className="font-mono font-bold text-emerald-600 text-sm block">100% Active</span>
-                <span className="text-[0.65rem] text-muted-foreground">Dual DG Backup</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Water Supply</span>
-                <span className="font-mono font-bold text-emerald-600 text-sm block">100% Purified</span>
-                <span className="text-[0.65rem] text-muted-foreground">24x7 Hydro RO</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Internet Wi-Fi</span>
-                <span className="font-mono font-bold text-blue-600 text-sm block">98.5% Active</span>
-                <span className="text-[0.65rem] text-muted-foreground">1 Gbps Fiber</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">CCTV Cameras</span>
-                <span className="font-mono font-bold text-emerald-600 text-sm block">64 / 64 Online</span>
-                <span className="text-[0.65rem] text-muted-foreground">24x7 Record</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Fire Safety</span>
-                <span className="font-mono font-bold text-emerald-600 text-sm block">Certified</span>
-                <span className="text-[0.65rem] text-muted-foreground">Valid Jul 2027</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
-                <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Housekeeping</span>
-                <span className="font-mono font-bold text-emerald-600 text-sm block">95.0% Pass</span>
-                <span className="text-[0.65rem] text-muted-foreground">Daily Audit</span>
-              </div>
-
-              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1 col-span-2 sm:col-span-1">
-                <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Overall Score</span>
-                <span className="font-mono font-bold text-primary text-sm block">95 / 100</span>
-                <span className="text-[0.65rem] text-emerald-600 font-medium">Grade A+</span>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
-      {/* --------------------------------------------------------------------- */}
-      {/* TAB 3: RESIDENT ROSTER */}
-      {/* --------------------------------------------------------------------- */}
+      {/* TAB 2: RESIDENT ROSTER & DIRECTORY */}
       {activeTab === "residents" && (
-        <div className="space-y-6">
-          {/* RESIDENT ANALYTICS CARDS */}
-          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2.5 text-xs">
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center space-y-0.5">
-              <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Total Scholars</span>
-              <span className="font-mono font-bold text-foreground text-sm block">850</span>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center space-y-0.5">
-              <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Boys Hostel</span>
-              <span className="font-mono font-bold text-primary text-sm block">450</span>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center space-y-0.5">
-              <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Girls Hostel</span>
-              <span className="font-mono font-bold text-purple-600 text-sm block">320</span>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center space-y-0.5">
-              <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">PG Scholars</span>
-              <span className="font-mono font-bold text-indigo-600 text-sm block">80</span>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center space-y-0.5">
-              <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">International</span>
-              <span className="font-mono font-bold text-blue-600 text-sm block">15</span>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center space-y-0.5">
-              <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Scholarship</span>
-              <span className="font-mono font-bold text-emerald-600 text-sm block">120</span>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center space-y-0.5">
-              <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Pending Fees</span>
-              <span className="font-mono font-bold text-amber-600 text-sm block">18</span>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center space-y-0.5">
-              <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">On Leave</span>
-              <span className="font-mono font-bold text-blue-600 text-sm block">12</span>
-            </div>
-
-            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm text-center space-y-0.5">
-              <span className="text-muted-foreground text-[0.65rem] uppercase block font-medium">Medical Cases</span>
-              <span className="font-mono font-bold text-red-600 text-sm block">4</span>
-            </div>
-          </div>
-
-          {/* QUICK FILTERS BAR */}
+        <div className="space-y-4">
+          {/* SEARCH & FILTERS ROW */}
           <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
-                <Filter className="size-4 text-primary" /> Filter Resident Roster
-              </span>
-              <Badge variant="outline" className="font-mono text-xs">{filteredResidents.length} Results</Badge>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <Filter className="size-4 text-primary" /> Filter Resident Student Directory
+              </h3>
+              <span className="text-xs font-mono text-muted-foreground">{filteredResidents.length} Residents Found</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                <Input placeholder="Search name, roll no..." value={residentSearch} onChange={(e) => setResidentSearch(e.target.value)} className="pl-9 h-9 text-xs" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2.5">
+              <div className="relative col-span-1 sm:col-span-2">
+                <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search name, roll no, room..."
+                  value={residentSearch}
+                  onChange={(e) => setResidentSearch(e.target.value)}
+                  className="pl-8 h-8 text-xs"
+                />
               </div>
 
-              <Select value={deptFilter} onValueChange={setDeptFilter}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Department" /></SelectTrigger>
-                <SelectContent>{DEPARTMENTS.map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}</SelectContent>
+              <Select value={filterDept} onValueChange={setFilterDept}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Department" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Departments</SelectItem>
+                  <SelectItem value="CSE">CSE</SelectItem>
+                  <SelectItem value="ECE">ECE</SelectItem>
+                  <SelectItem value="Mechanical">Mechanical</SelectItem>
+                  <SelectItem value="Civil">Civil</SelectItem>
+                </SelectContent>
               </Select>
 
-              <Select value={blockFilter} onValueChange={setBlockFilter}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Hostel Block" /></SelectTrigger>
-                <SelectContent>{BLOCKS.map((b) => (<SelectItem key={b} value={b} className="text-xs">{b}</SelectItem>))}</SelectContent>
+              <Select value={filterBlock} onValueChange={setFilterBlock}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Block" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Blocks</SelectItem>
+                  <SelectItem value="Block A (Boys)">Block A (Boys)</SelectItem>
+                  <SelectItem value="Block B (Girls)">Block B (Girls)</SelectItem>
+                  <SelectItem value="Block C (PG Scholars)">Block C (PG)</SelectItem>
+                </SelectContent>
               </Select>
 
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Resident Status" /></SelectTrigger>
-                <SelectContent>{RESIDENT_STATUSES.map((s) => (<SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>))}</SelectContent>
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Status" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Statuses</SelectItem>
+                  <SelectItem value="Present">Present</SelectItem>
+                  <SelectItem value="On Leave">On Leave</SelectItem>
+                  <SelectItem value="Weekend Outing">Weekend Outing</SelectItem>
+                  <SelectItem value="Suspended">Suspended</SelectItem>
+                </SelectContent>
               </Select>
 
-              <Select value={feeFilter} onValueChange={setFeeFilter}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Fee Status" /></SelectTrigger>
-                <SelectContent>{FEE_STATUSES.map((f) => (<SelectItem key={f} value={f} className="text-xs">{f}</SelectItem>))}</SelectContent>
+              <Select value={filterFee} onValueChange={setFilterFee}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Fee Status" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Fee Status</SelectItem>
+                  <SelectItem value="Paid">Paid</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Partial">Partial</SelectItem>
+                </SelectContent>
               </Select>
 
-              <Button variant="outline" size="sm" onClick={() => { setResidentSearch(""); setDeptFilter("All Departments"); setBlockFilter("All Blocks"); setStatusFilter("All Statuses"); setFeeFilter("All Fee Statuses"); }} className="h-9 text-xs">
-                Reset Filters
+              <Button
+                variant={filterMedicalOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterMedicalOnly(!filterMedicalOnly)}
+                className="h-8 text-xs gap-1 font-semibold"
+              >
+                <HeartPulse className="size-3 text-destructive" /> Medical Cases
               </Button>
             </div>
           </div>
@@ -760,32 +633,34 @@ export function HostelModuleView() {
                 <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
                   <tr>
                     <th className="py-3 px-3">Roll No</th>
-                    <th className="py-3 px-3">Resident Name</th>
-                    <th className="py-3 px-3">Department & Year</th>
+                    <th className="py-3 px-3">Student Name</th>
+                    <th className="py-3 px-3">Dept & Year</th>
                     <th className="py-3 px-3">Room & Block</th>
                     <th className="py-3 px-3">Check-in Date</th>
                     <th className="py-3 px-3">Fee Status</th>
                     <th className="py-3 px-3">Attendance</th>
                     <th className="py-3 px-3">Disciplinary</th>
                     <th className="py-3 px-3">Emergency Contact</th>
+                    <th className="py-3 px-3">Medical Alert</th>
                     <th className="py-3 px-3">Resident Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/60 font-mono">
+                <tbody className="divide-y divide-border/60">
                   {filteredResidents.map((res) => (
-                    <tr key={res.id} className="hover:bg-muted/20 transition-colors font-sans">
+                    <tr key={res.id} className="hover:bg-muted/20 transition-colors">
                       <td className="py-3 px-3 font-mono font-bold text-foreground">{res.rollNo}</td>
                       <td className="py-3 px-3 font-semibold text-foreground">{res.name}</td>
-                      <td className="py-3 px-3">{res.department} (3rd Year)</td>
+                      <td className="py-3 px-3">{res.department} ({res.year})</td>
                       <td className="py-3 px-3 font-mono text-primary font-bold">{res.roomNo} ({res.block})</td>
-                      <td className="py-3 px-3 font-mono text-muted-foreground">Jul 15, 2025</td>
-                      <td className="py-3 px-3"><Badge className="bg-emerald-500/10 text-emerald-600">{res.feeStatus}</Badge></td>
-                      <td className="py-3 px-3 font-mono font-bold text-emerald-600">94.2%</td>
-                      <td className="py-3 px-3"><Badge variant="outline" className="text-[0.65rem] text-emerald-600 border-emerald-500/30">Clean Record</Badge></td>
+                      <td className="py-3 px-3 font-mono text-muted-foreground">{res.checkInDate}</td>
+                      <td className="py-3 px-3"><Badge className={res.feeStatus === "Paid" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}>{res.feeStatus}</Badge></td>
+                      <td className="py-3 px-3 font-mono font-semibold text-emerald-600">{res.attendanceStatus}</td>
+                      <td className="py-3 px-3 text-muted-foreground">{res.disciplinaryStatus}</td>
                       <td className="py-3 px-3 font-mono text-muted-foreground">{res.emergencyContact}</td>
+                      <td className="py-3 px-3 text-muted-foreground font-medium">{res.medicalAlerts}</td>
                       <td className="py-3 px-3">
-                        <Badge className="bg-emerald-500/10 text-emerald-600">
-                          {res.status || "Present"}
+                        <Badge className={res.residentStatus === "Present" ? "bg-emerald-500/10 text-emerald-600" : res.residentStatus === "On Leave" ? "bg-blue-500/10 text-blue-600" : "bg-amber-500/10 text-amber-600"}>
+                          {res.residentStatus}
                         </Badge>
                       </td>
                     </tr>
@@ -797,439 +672,1004 @@ export function HostelModuleView() {
         </div>
       )}
 
-      {/* --------------------------------------------------------------------- */}
-      {/* TAB 4: COMPLIANCE, SECURITY & GATE PASS MONITORING */}
-      {/* --------------------------------------------------------------------- */}
-      {activeTab === "passes" && (
+      {/* TAB 3: COMPLIANCE, SECURITY & GATE PASS MONITORING */}
+      {activeTab === "compliance" && (
         <div className="space-y-6">
-          {/* COMPLIANCE & GATE PASS TELEMETRY SUMMARY */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-            <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-muted-foreground text-[0.68rem] uppercase font-semibold block">Gate Pass Requests Today</span>
-              <p className="text-2xl font-bold font-mono text-primary">28 Total Passes</p>
-              <p className="text-[0.68rem] text-emerald-600 font-medium">14 Approved &middot; 12 Pending &middot; 2 Rejected</p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-muted-foreground text-[0.68rem] uppercase font-semibold block">Security Incidents</span>
-              <p className="text-2xl font-bold font-mono text-emerald-600">0 Incidents</p>
-              <p className="text-[0.68rem] text-muted-foreground">24x7 Guard & CCTV Patrol Active</p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-muted-foreground text-[0.68rem] uppercase font-semibold block">Late Entries Today</span>
-              <p className="text-2xl font-bold font-mono text-amber-600">4 Scanned</p>
-              <p className="text-[0.68rem] text-muted-foreground">Automated Parent SMS Dispatched</p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-              <span className="text-muted-foreground text-[0.68rem] uppercase font-semibold block">Visitor Records Logged</span>
-              <p className="text-2xl font-bold font-mono text-purple-600">28 Visitors</p>
-              <p className="text-[0.68rem] text-muted-foreground">Reception ID Verification Passed</p>
-            </div>
-          </div>
-
-          {/* COMPLAINT & STATUTORY COMPLIANCE CARDS */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* COMPLAINT SUMMARY CARD */}
-            <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-4 shadow-sm">
-              <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                  <Wrench className="size-5 text-amber-500" /> Resident Complaint & Repair Resolution Status
-                </h3>
-                <Badge variant="secondary" className="font-mono text-xs">44 Complaints This Month</Badge>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs text-center">
-                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-0.5">
-                  <span className="text-muted-foreground text-[0.65rem] uppercase block">Open</span>
-                  <span className="font-mono font-bold text-amber-600 text-lg block">2</span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 space-y-0.5">
-                  <span className="text-muted-foreground text-[0.65rem] uppercase block">In Progress</span>
-                  <span className="font-mono font-bold text-blue-600 text-lg block">4</span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-0.5">
-                  <span className="text-muted-foreground text-[0.65rem] uppercase block">Resolved</span>
-                  <span className="font-mono font-bold text-emerald-600 text-lg block">38</span>
-                </div>
-
-                <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 space-y-0.5">
-                  <span className="text-muted-foreground text-[0.65rem] uppercase block">Escalated</span>
-                  <span className="font-mono font-bold text-purple-600 text-lg block">0</span>
-                </div>
-              </div>
-            </div>
-
-            {/* STATUTORY COMPLIANCE SUMMARY CARD */}
-            <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-4 shadow-sm">
-              <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                  <ShieldCheck className="size-5 text-indigo-500" /> Statutory & Regulatory Compliance Audit
-                </h3>
-                <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-mono text-xs">
-                  100% Compliant
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 flex justify-between items-center">
-                  <span className="text-muted-foreground font-sans">Fire Safety:</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Certified (Jul 2027)</Badge>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 flex justify-between items-center">
-                  <span className="text-muted-foreground font-sans">Hostel Rules:</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Strict Enforcement</Badge>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 flex justify-between items-center">
-                  <span className="text-muted-foreground font-sans">Visitor Register:</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Digitized & Verified</Badge>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 flex justify-between items-center">
-                  <span className="text-muted-foreground font-sans">Security Audit:</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Passed Aug 2026</Badge>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 flex justify-between items-center">
-                  <span className="text-muted-foreground font-sans">Hygiene Inspection:</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Grade A+ Passed</Badge>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 flex justify-between items-center">
-                  <span className="text-muted-foreground font-sans">UGC Compliance:</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">100% Compliant</Badge>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* GATE PASS AUDIT TABLE (READ ONLY OVERVIEW) */}
+          {/* SECTION 1: EXECUTIVE SUMMARY */}
           <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
               <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <KeyRound className="size-5 text-amber-500" /> Outstation Gate Pass & Outing Audit Ledger
+                <Activity className="size-4 text-primary" /> Executive Summary & Security KPI Telemetry
               </h3>
-              <Badge variant="secondary" className="font-mono text-xs">{passes.length} Records</Badge>
+              <Badge variant="outline" className="font-mono text-xs text-primary">Super Admin Monitoring</Badge>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
-                  <tr>
-                    <th className="py-3 px-3">Pass ID</th>
-                    <th className="py-3 px-3">Student Name</th>
-                    <th className="py-3 px-3">Room</th>
-                    <th className="py-3 px-3">Pass Type & Reason</th>
-                    <th className="py-3 px-3">Approved Dates</th>
-                    <th className="py-3 px-3">Pass Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60 font-mono">
-                  {passes.map((p) => (
-                    <tr key={p.id} className="hover:bg-muted/20 transition-colors font-sans">
-                      <td className="py-3 px-3 font-mono font-bold text-foreground">{p.id}</td>
-                      <td className="py-3 px-3 font-semibold text-foreground">{p.studentName} ({p.rollNo})</td>
-                      <td className="py-3 px-3 font-mono">{p.roomNo}</td>
-                      <td className="py-3 px-3">
-                        <div className="font-bold text-primary">{p.passType}</div>
-                        <div className="text-[0.68rem] text-muted-foreground">{p.reason}</div>
-                      </td>
-                      <td className="py-3 px-3 font-mono text-muted-foreground">{p.fromDate} to {p.toDate}</td>
-                      <td className="py-3 px-3">
-                        <Badge className={p.status === "Approved" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}>
-                          {p.status}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-3">
+              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Passes Today</span>
+                <span className="text-lg font-bold font-mono text-primary">{securityMetrics.requestsToday}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-emerald-700 uppercase block truncate">Approved Passes</span>
+                <span className="text-lg font-bold font-mono text-emerald-700">{securityMetrics.approved}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-amber-700 uppercase block truncate">Pending Passes</span>
+                <span className="text-lg font-bold font-mono text-amber-700">{securityMetrics.pending}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-red-700 uppercase block truncate">Rejected Passes</span>
+                <span className="text-lg font-bold font-mono text-red-700">{securityMetrics.rejected}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-purple-700 uppercase block truncate">Emergency Passes</span>
+                <span className="text-lg font-bold font-mono text-purple-700">{securityMetrics.emergencyPasses || 3}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-amber-800 uppercase block truncate">Late Return Cases</span>
+                <span className="text-lg font-bold font-mono text-amber-800">{securityMetrics.lateEntries}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-muted/40 border border-border/60 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Total Complaints</span>
+                <span className="text-lg font-bold font-mono text-foreground">{complaintCompliance.complaints.open + complaintCompliance.complaints.inProgress + complaintCompliance.complaints.resolved}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-amber-700 uppercase block truncate">Open Complaints</span>
+                <span className="text-lg font-bold font-mono text-amber-700">{complaintCompliance.complaints.open}</span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-1">
+                <span className="text-[0.62rem] font-semibold text-emerald-700 uppercase block truncate">Resolved Complaints</span>
+                <span className="text-lg font-bold font-mono text-emerald-700">{complaintCompliance.complaints.resolved}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 2 & SECTION 3: GATE PASS & COMPLAINT ANALYTICS GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* SECTION 2: GATE PASS ANALYTICS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <KeyRound className="size-4 text-primary" /> Gate Pass Analytics & Outing Statistics
+                </h3>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setViewDetailsTab("gatepass");
+                    setIsViewDetailsOpen(true);
+                  }}
+                  className="h-8 text-xs font-semibold gap-1.5"
+                >
+                  <Eye className="size-3.5 text-primary" /> View Details
+                </Button>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                {/* Trends grid */}
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="p-2.5 rounded-xl bg-muted/30 border border-border/50">
+                    <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Daily Trend</span>
+                    <span className="font-mono font-bold text-primary">18 Passes</span>
+                    <span className="text-[0.62rem] text-emerald-600 block">+12% vs Yesterday</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-muted/30 border border-border/50">
+                    <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Weekly Trend</span>
+                    <span className="font-mono font-bold text-foreground">112 Passes</span>
+                    <span className="text-[0.62rem] text-emerald-600 block">Normal Outing Peak</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-muted/30 border border-border/50">
+                    <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Monthly Trend</span>
+                    <span className="font-mono font-bold text-primary">428 Passes</span>
+                    <span className="text-[0.62rem] text-muted-foreground block">Aug 2026 Total</span>
+                  </div>
+                </div>
+
+                {/* Department-wise & Hostel split */}
+                <div className="space-y-2 pt-1">
+                  <div className="space-y-1">
+                    <div className="flex justify-between font-semibold">
+                      <span>Boys Hostel vs Girls Hostel Requests</span>
+                      <span className="font-mono text-primary">58% Boys | 42% Girls</span>
+                    </div>
+                    <Progress value={58} className="h-1.5 bg-muted" />
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="flex justify-between font-semibold">
+                      <span>Department Requests Breakdown (Top: CSE 38%, ECE 26%)</span>
+                      <span className="font-mono text-emerald-600">38% CSE Share</span>
+                    </div>
+                    <Progress value={38} className="h-1.5 bg-muted" />
+                  </div>
+                </div>
+
+                {/* Peak Hours & Weekend Stats */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Peak Exit & Return Hours</span>
+                    <p className="font-bold text-foreground text-xs">Exit: 4:30 - 6:30 PM</p>
+                    <p className="font-bold text-foreground text-xs">Return: 7:30 - 9:00 PM</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Weekend Outing Stats</span>
+                    <p className="font-bold text-primary text-xs">148 Weekend Outings</p>
+                    <p className="font-bold text-emerald-600 text-xs">96.4% On-Time Return</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 3: COMPLAINT ANALYTICS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <Wrench className="size-4 text-amber-500" /> Resident Complaint Analytics & SLA Status
+                </h3>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setViewDetailsTab("complaints");
+                    setIsViewDetailsOpen(true);
+                  }}
+                  className="h-8 text-xs font-semibold gap-1.5"
+                >
+                  <Eye className="size-3.5 text-amber-600" /> View Details
+                </Button>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                {/* Category breakdown */}
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                    <span className="text-[0.62rem] font-semibold text-amber-700 uppercase block">Plumbing</span>
+                    <span className="font-mono font-bold text-amber-800">35%</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                    <span className="text-[0.62rem] font-semibold text-blue-700 uppercase block">Electrical</span>
+                    <span className="font-mono font-bold text-blue-800">28%</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                    <span className="text-[0.62rem] font-semibold text-purple-700 uppercase block">Wi-Fi / Net</span>
+                    <span className="font-mono font-bold text-purple-800">22%</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block">Furniture</span>
+                    <span className="font-mono font-bold text-foreground">15%</span>
+                  </div>
+                </div>
+
+                {/* Hostel breakdown */}
+                <div className="space-y-1">
+                  <div className="flex justify-between font-semibold">
+                    <span>Hostel-wise Complaints Share</span>
+                    <span className="font-mono text-primary">Block A: 42% | Block B: 38% | Block C: 20%</span>
+                  </div>
+                  <Progress value={42} className="h-1.5 bg-muted" />
+                </div>
+
+                {/* SLA, High Priority & Repeated */}
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Avg Resolution SLA</span>
+                    <p className="font-bold text-emerald-600 text-xs">24 Hours SLA</p>
+                    <p className="text-[0.68rem] text-muted-foreground">94.2% On SLA</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20">
+                    <span className="text-[0.65rem] text-red-700 font-semibold uppercase block">High Priority</span>
+                    <p className="font-bold text-red-700 text-xs">1 Active Ticket</p>
+                    <p className="text-[0.68rem] text-red-600">Leakage in C-304</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                    <span className="text-[0.65rem] text-amber-700 font-semibold uppercase block">Repeated Complaints</span>
+                    <p className="font-bold text-amber-800 text-xs">2 Repeated</p>
+                    <p className="text-[0.68rem] text-amber-700">Block B Wi-Fi 2F</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 4 & SECTION 5: SECURITY MONITORING & COMPLIANCE STATUS GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* SECTION 4: SECURITY MONITORING */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <Video className="size-4 text-emerald-500" /> Security & Infrastructure Monitoring
+                </h3>
+                <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">24/7 Security Active</Badge>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                  <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Incidents Today</span>
+                  <span className="font-mono font-bold text-emerald-600 text-sm">0 Critical</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                  <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Visitors Logged Today</span>
+                  <span className="font-mono font-bold text-primary text-sm">{securityMetrics.visitorRecords} Logged</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                  <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">Unauthorized Entry</span>
+                  <span className="font-mono font-bold text-emerald-600 text-sm">0 Breach Attempts</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                  <span className="text-[0.65rem] text-muted-foreground font-semibold uppercase block">CCTV Health</span>
+                  <span className="font-mono font-bold text-emerald-600 text-sm">128/128 Active</span>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-xs pt-1 border-t border-border/60">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Fire Safety System Status:</span>
+                  <span className="font-bold text-emerald-600">Smoke Detectors & Hydrants Certified</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Emergency Contacts:</span>
+                  <span className="font-mono font-semibold text-foreground">Chief Warden: +91 99000 11223 | Security: Ext. 101</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">Hostel Inspection Status:</span>
+                  <span className="font-bold text-emerald-600">Grade A+ (Passed Municipal Audit)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 5: COMPLIANCE STATUS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <ShieldCheck className="size-4 text-primary" /> Institutional Compliance Status & Audit Schedule
+                </h3>
+                <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">100% Compliant</Badge>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Fire Safety Compliance</span>
+                  <span className="font-bold text-emerald-600">{complaintCompliance.compliance.fireSafety}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Building Safety Compliance</span>
+                  <span className="font-bold text-foreground">{compliance.buildingSafetyCertificate}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Hostel Policy Compliance</span>
+                  <span className="font-bold text-foreground">{complaintCompliance.compliance.hostelRules}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Visitor Register Compliance</span>
+                  <span className="font-bold text-primary">{complaintCompliance.compliance.visitorRegister}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Security Audit Status</span>
+                  <span className="font-bold text-emerald-600">{complaintCompliance.compliance.securityAudit}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Last Inspection Date</span>
+                  <span className="font-mono font-bold text-foreground">{compliance.lastAuditDate}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground font-medium">Next Inspection Due</span>
+                  <span className="font-mono font-bold text-amber-600">2026-08-28 (23 Days)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 6 & SECTION 8: ALERTS & RECENT ACTIVITIES GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* SECTION 6: ALERTS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <BellRing className="size-4 text-amber-500" /> Active Security & Compliance Alerts
+                </h3>
+                <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">{alerts.length} Active</Badge>
+              </div>
+
+              <div className="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+                {alerts.map((alt) => (
+                  <div key={alt.id} className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        {alt.severity === "high" ? (
+                          <span className="inline-block size-2 rounded-full bg-red-600 shrink-0" />
+                        ) : alt.severity === "medium" ? (
+                          <span className="inline-block size-2 rounded-full bg-amber-500 shrink-0" />
+                        ) : (
+                          <span className="inline-block size-2 rounded-full bg-blue-500 shrink-0" />
+                        )}
+                        {alt.title}
+                      </span>
+                      <Badge className={alt.severity === "high" ? "bg-red-500/10 text-red-600 text-[0.6rem]" : alt.severity === "medium" ? "bg-amber-500/10 text-amber-600 text-[0.6rem]" : "bg-blue-500/10 text-blue-600 text-[0.6rem]"}>
+                        {alt.severity.toUpperCase()}
+                      </Badge>
+                    </div>
+                    <p className="text-[0.72rem] text-muted-foreground leading-snug">{alt.description}</p>
+                    <span className="text-[0.62rem] text-muted-foreground font-mono block text-right">{alt.timestamp}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* SECTION 8: RECENT ACTIVITIES TIMELINE */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <Clock className="size-4 text-primary" /> Security Audit Trail & Activity Timeline
+                </h3>
+                <Badge variant="outline" className="text-[0.65rem] font-mono">{activities.length} Logs</Badge>
+              </div>
+
+              <div className="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+                {activities.map((act) => (
+                  <div key={act.id} className="p-2.5 rounded-xl bg-muted/30 border border-border/60 space-y-0.5">
+                    <div className="flex justify-between text-[0.68rem] text-muted-foreground">
+                      <span className="font-mono">{act.date}</span>
+                      <Badge variant="secondary" className="text-[0.6rem] px-1.5 py-0">{act.category}</Badge>
+                    </div>
+                    <p className="text-xs font-semibold text-foreground">{act.action}</p>
+                    <p className="text-[0.68rem] text-muted-foreground">By: {act.user}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 9: EXECUTIVE QUICK ACTIONS */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <Zap className="size-4 text-primary" /> Executive Governance Quick Actions
+              </h3>
+              <span className="text-xs text-muted-foreground">Read-Only Super Admin Monitoring Console</span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+              <Button
+                variant="outline"
+                onClick={() => setIsSecurityReportOpen(true)}
+                className="justify-start gap-2 h-10 text-xs font-semibold"
+              >
+                <Video className="size-4 text-primary shrink-0" /> View Security Report
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setActionLoading("comp-report");
+                  setTimeout(() => {
+                    const text = `INSTITUTIONAL HOSTEL COMPLIANCE REPORT\nDate: ${new Date().toISOString().split("T")[0]}\nFire Safety: Certified\nBuilding Safety: Certified\nSecurity Audit: Grade A+ Passed`;
+                    const blob = new Blob([text], { type: "application/pdf" });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `Hostel_Compliance_Report_${new Date().toISOString().split("T")[0]}.pdf`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    setActionLoading(null);
+                    addActivityLog("Generated Institutional Hostel Compliance Report", "Compliance");
+                    toast.success("Hostel Compliance Report generated & downloaded!");
+                  }, 400);
+                }}
+                disabled={actionLoading === "comp-report"}
+                className="justify-start gap-2 h-10 text-xs font-semibold text-emerald-700 border-emerald-500/30"
+              >
+                {actionLoading === "comp-report" ? <Loader2 className="size-4 animate-spin shrink-0" /> : <FileCheck className="size-4 text-emerald-600 shrink-0" />}
+                Generate Compliance Report
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setActionLoading("gate-analytics");
+                  setTimeout(() => {
+                    const csv = `GATE PASS ANALYTICS REPORT\nDate,Requests,Approved,Rejected,Pending,Late\n2026-08-05,18,14,2,2,4\n`;
+                    const blob = new Blob([csv], { type: "text/csv" });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `Gate_Pass_Analytics_${new Date().toISOString().split("T")[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    setActionLoading(null);
+                    addActivityLog("Downloaded Gate Pass Analytics & Trend Ledger", "Analytics");
+                    toast.success("Gate Pass Analytics CSV exported successfully!");
+                  }, 400);
+                }}
+                disabled={actionLoading === "gate-analytics"}
+                className="justify-start gap-2 h-10 text-xs font-semibold"
+              >
+                {actionLoading === "gate-analytics" ? <Loader2 className="size-4 animate-spin shrink-0" /> : <Download className="size-4 text-blue-600 shrink-0" />}
+                Download Gate Pass Analytics
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => setIsAuditModalOpen(true)}
+                className="justify-start gap-2 h-10 text-xs font-semibold"
+              >
+                <ShieldCheck className="size-4 text-purple-600 shrink-0" /> Schedule Security Audit
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => setIsComplaintAnalyticsOpen(true)}
+                className="justify-start gap-2 h-10 text-xs font-semibold"
+              >
+                <Wrench className="size-4 text-amber-600 shrink-0" /> View Complaint Analytics
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setActionLoading("export-comp");
+                  setTimeout(() => {
+                    const csv = `INSTITUTIONAL HOSTEL COMPLIANCE LEDGER\nFire Safety: Certified\nBuilding Safety: Certified\nVisitor Register: Biometric Logged\n`;
+                    const blob = new Blob([csv], { type: "text/csv" });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `Hostel_Compliance_Ledger_${new Date().toISOString().split("T")[0]}.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    setActionLoading(null);
+                    addActivityLog("Exported Institutional Compliance Report to CSV", "Export");
+                    toast.success("Compliance Report exported to CSV!");
+                  }, 400);
+                }}
+                disabled={actionLoading === "export-comp"}
+                className="justify-start gap-2 h-10 text-xs font-semibold"
+              >
+                {actionLoading === "export-comp" ? <Loader2 className="size-4 animate-spin shrink-0" /> : <FileSpreadsheet className="size-4 text-emerald-600 shrink-0" />}
+                Export Compliance Report
+              </Button>
             </div>
           </div>
         </div>
       )}
 
-      {/* --------------------------------------------------------------------- */}
-      {/* TAB 5: HOSTEL ANALYTICS & REPORTS (NEW TAB) */}
-      {/* --------------------------------------------------------------------- */}
+      {/* TAB 4: HOSTEL ANALYTICS & REPORTS */}
       {activeTab === "analytics" && (
-        <div className="space-y-6">
-          {/* HEADER & EXPORT ACTIONS */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
             <div>
               <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <BarChart3 className="size-5 text-primary" /> Executive Hostel Analytics & Performance Matrix
+                <BarChart3 className="size-4 text-primary" /> Executive Hostel Analytics & Institutional Reports
               </h3>
-              <p className="text-xs text-muted-foreground">Comprehensive institutional telemetry for occupancy, revenue, maintenance costs, and mess utilization.</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Comprehensive analytics on occupancy trends, revenue, maintenance costs, and mess utilization.</p>
             </div>
-
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleExportAnalyticsPDF} className="h-8 text-xs gap-1.5">
-                <FileText className="size-3.5 text-red-500" /> Export PDF
+              <Button size="sm" variant="outline" onClick={handleExportPDF} className="h-9 gap-1.5 text-xs font-semibold">
+                <FileText className="size-3.5 text-destructive" /> Export PDF
               </Button>
-              <Button size="sm" onClick={handleExportAnalyticsExcel} className="h-8 bg-brand-gradient text-white text-xs gap-1.5 font-semibold">
-                <FileSpreadsheet className="size-3.5" /> Export Excel
+              <Button size="sm" variant="outline" onClick={handleExportExcel} className="h-9 gap-1.5 text-xs font-semibold">
+                <FileSpreadsheet className="size-3.5 text-emerald-600" /> Export Excel
               </Button>
             </div>
           </div>
 
-          {/* ANALYTICS GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-3 shadow-sm">
-              <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                <TrendingUp className="size-4 text-emerald-500" /> Monthly Occupancy Trend
-              </h4>
-              <div className="space-y-2 text-xs font-mono">
-                <div className="flex justify-between"><span>June 2026:</span><strong className="text-muted-foreground">92.4%</strong></div>
-                <div className="flex justify-between"><span>July 2026:</span><strong className="text-primary">94.1%</strong></div>
-                <div className="flex justify-between"><span>August 2026 (Current):</span><strong className="text-emerald-600">95.0% Peak</strong></div>
-                <Progress value={95} className="h-2 mt-2" />
-              </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 text-center">
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Hostel Revenue</span>
+              <span className="text-lg font-bold font-mono text-emerald-600">{analytics.hostelRevenue}</span>
             </div>
 
-            <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-3 shadow-sm">
-              <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                <PieChart className="size-4 text-blue-500" /> Hostel Financials & Revenue
-              </h4>
-              <div className="space-y-2 text-xs font-mono">
-                <div className="flex justify-between"><span>Annual Fee Realized:</span><strong className="text-emerald-600">₹8.07 Cr (96.4%)</strong></div>
-                <div className="flex justify-between"><span>Maintenance Budget:</span><strong className="text-amber-600">₹14.2 Lakhs / yr</strong></div>
-                <div className="flex justify-between"><span>Fee Recovery Rate:</span><strong className="text-primary">96.4% On Time</strong></div>
-              </div>
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Maintenance Cost</span>
+              <span className="text-lg font-bold font-mono text-amber-600">{analytics.maintenanceCost}</span>
             </div>
 
-            <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-3 shadow-sm">
-              <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                <Utensils className="size-4 text-purple-500" /> Mess Utilization & Satisfaction
-              </h4>
-              <div className="space-y-2 text-xs font-mono">
-                <div className="flex justify-between"><span>Daily Meals Served:</span><strong className="text-purple-600">2,550 Meals/day</strong></div>
-                <div className="flex justify-between"><span>Student Satisfaction:</span><strong className="text-emerald-600">4.8 / 5.0 Rating</strong></div>
-                <div className="flex justify-between"><span>Hygiene Grade:</span><strong className="text-emerald-600">Grade A+ (Certified)</strong></div>
-              </div>
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Mess Utilization</span>
+              <span className="text-lg font-bold font-mono text-primary">{analytics.messUtilization}</span>
             </div>
 
-            <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-3 shadow-sm">
-              <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                <Building className="size-4 text-primary" /> Block Occupancy Comparison
-              </h4>
-              <div className="space-y-2 text-xs font-mono">
-                <div className="flex justify-between"><span>Most Occupied Hostel:</span><strong className="text-emerald-600">Block A Boys (96.2%)</strong></div>
-                <div className="flex justify-between"><span>Girls Hostel:</span><strong className="text-primary">Block B Girls (94.8%)</strong></div>
-                <div className="flex justify-between"><span>Least Occupied Hostel:</span><strong className="text-amber-600">Block C PG (92.5%)</strong></div>
-              </div>
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Satisfaction Score</span>
+              <span className="text-lg font-bold font-mono text-emerald-600">{analytics.studentSatisfaction}</span>
             </div>
 
-            <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-3 shadow-sm">
-              <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                <KeyRound className="size-4 text-amber-500" /> Gate Pass Telemetry Stats
-              </h4>
-              <div className="space-y-2 text-xs font-mono">
-                <div className="flex justify-between"><span>Monthly Passes Issued:</span><strong className="text-primary">340 Gate Passes</strong></div>
-                <div className="flex justify-between"><span>Avg Approval Time:</span><strong className="text-emerald-600">18 Minutes</strong></div>
-                <div className="flex justify-between"><span>Late Entries Logged:</span><strong className="text-amber-600">14 Scans / mo</strong></div>
-              </div>
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Complaint Trend</span>
+              <span className="text-lg font-bold font-mono text-blue-600">{analytics.complaintTrend}</span>
             </div>
 
-            <div className="p-5 rounded-2xl bg-card border border-border/80 space-y-3 shadow-sm">
-              <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                <Wrench className="size-4 text-indigo-500" /> Maintenance & Repair SLA
-              </h4>
-              <div className="space-y-2 text-xs font-mono">
-                <div className="flex justify-between"><span>Monthly Repairs Closed:</span><strong className="text-emerald-600">28 Repairs</strong></div>
-                <div className="flex justify-between"><span>Avg Resolution Time:</span><strong className="text-primary">&lt; 24h SLA</strong></div>
-                <div className="flex justify-between"><span>Complaint SLA Rate:</span><strong className="text-emerald-600">94.8% SLA Pass</strong></div>
-              </div>
+            <div className="p-3.5 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.65rem] font-semibold text-muted-foreground uppercase block">Inspection Status</span>
+              <span className="text-lg font-bold font-mono text-emerald-600">{analytics.inspectionReports}</span>
+            </div>
+          </div>
+
+          {/* MONTHLY OCCUPANCY TREND BARS */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Monthly Occupancy Trend (2026)</h4>
+            <div className="grid grid-cols-4 sm:grid-cols-8 gap-3 text-center">
+              {analytics.monthlyOccupancyTrend.map((m) => (
+                <div key={m.month} className="p-2.5 rounded-xl bg-muted/30 border border-border/60 space-y-1">
+                  <span className="text-xs font-bold font-mono text-foreground block">{m.month}</span>
+                  <span className="text-sm font-bold font-mono text-primary">{m.occupancyPct}%</span>
+                  <Progress value={m.occupancyPct} className="h-1.5 bg-muted" />
+                </div>
+              ))}
             </div>
           </div>
         </div>
       )}
 
-      {/* --------------------------------------------------------------------- */}
-      {/* TAB 6: WARDEN & STAFF SUMMARY */}
-      {/* --------------------------------------------------------------------- */}
-      {activeTab === "staff" && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-              <UserCheck className="size-5 text-purple-500" /> Hostel Warden & Staff Administration Summary
-            </h3>
-            <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-mono text-xs">
-              100% Staff On Duty
-            </Badge>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-            <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-2">
-              <div className="flex justify-between items-center">
-                <Badge className="bg-purple-500/10 text-purple-600 font-mono text-xs">Chief Warden</Badge>
-                <Badge className="bg-emerald-500/10 text-emerald-600 text-xs">On Duty</Badge>
-              </div>
-              <h4 className="font-bold text-base text-foreground">Dr. S. R. Varma</h4>
-              <p className="text-[0.68rem] text-muted-foreground font-mono">Overall Hostel Administration Head</p>
-              <div className="pt-2 border-t border-border/60 space-y-1 font-mono text-[0.68rem]">
-                <div className="flex justify-between"><span>Contact:</span><strong>+91 98765 43210</strong></div>
-                <div className="flex justify-between"><span>Audit Rating:</span><strong className="text-emerald-600">Grade A+</strong></div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-2">
-              <div className="flex justify-between items-center">
-                <Badge className="bg-blue-500/10 text-blue-600 font-mono text-xs">Assistant Wardens</Badge>
-                <Badge className="bg-emerald-500/10 text-emerald-600 text-xs">2 / 2 On Duty</Badge>
-              </div>
-              <h4 className="font-bold text-sm text-foreground">Mr. K. Ramesh (Block A)</h4>
-              <h4 className="font-bold text-sm text-foreground">Mrs. P. Shanthi (Block B)</h4>
-              <div className="pt-2 border-t border-border/60 space-y-1 font-mono text-[0.68rem]">
-                <div className="flex justify-between"><span>Pending Leaves:</span><strong className="text-emerald-600">0 Requests</strong></div>
-                <div className="flex justify-between"><span>Gate Pass SLA:</span><strong className="text-primary">100% On Time</strong></div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-2">
-              <div className="flex justify-between items-center">
-                <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-xs">Security Staff</Badge>
-                <Badge className="bg-emerald-500/10 text-emerald-600 text-xs">12 / 12 Guards</Badge>
-              </div>
-              <h4 className="font-bold text-sm text-foreground">3 Shift Teams (24x7)</h4>
-              <p className="text-[0.68rem] text-muted-foreground">Gate 1, Gate 2 & Block Perimeter Guards</p>
-              <div className="pt-2 border-t border-border/60 space-y-1 font-mono text-[0.68rem]">
-                <div className="flex justify-between"><span>Shift Supervisor:</span><strong>Capt. V. Singh</strong></div>
-                <div className="flex justify-between"><span>CCTV Monitor:</span><strong className="text-emerald-600">Active</strong></div>
-              </div>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-2">
-              <div className="flex justify-between items-center">
-                <Badge className="bg-amber-500/10 text-amber-600 font-mono text-xs">Maintenance & Mess</Badge>
-                <Badge className="bg-emerald-500/10 text-emerald-600 text-xs">All Staff Active</Badge>
-              </div>
-              <h4 className="font-bold text-sm text-foreground">Mr. T. Srinivas (Mess Head)</h4>
-              <p className="text-[0.68rem] text-muted-foreground">4 Technicians (Plumber, Electrician, Carpenter)</p>
-              <div className="pt-2 border-t border-border/60 space-y-1 font-mono text-[0.68rem]">
-                <div className="flex justify-between"><span>Mess Hygiene:</span><strong className="text-emerald-600">A+ Certified</strong></div>
-                <div className="flex justify-between"><span>Repair SLA:</span><strong className="text-primary font-sans">&lt; 24h Average</strong></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* --------------------------------------------------------------------- */}
-      {/* EXECUTIVE MODAL DIALOGS */}
-      {/* --------------------------------------------------------------------- */}
-
-      {/* DIALOG 1: HOSTEL CONFIGURATION MODAL */}
-      <Dialog open={isConfigOpen} onOpenChange={setIsConfigOpen}>
-        <DialogContent className="max-w-xl">
+      {/* SECTION 7: VIEW DETAILS READ-ONLY MODAL */}
+      <Dialog open={isViewDetailsOpen} onOpenChange={setIsViewDetailsOpen}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <Settings className="size-5 text-primary" /> Institutional Hostel Policy & Configuration
+              <Eye className="size-5 text-primary" /> Institutional Hostel Records Detail Ledger
             </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              Configure room fee structures, occupancy rules, mess timings, gate pass policies, and late entry rules.
+            <DialogDescription className="text-xs">
+              Super Admin Executive Read-Only View (Daily operations like approval/rejection & ticket resolution are managed by Hostel Wardens).
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSaveConfig} className="space-y-3.5 pt-2 text-xs max-h-[65vh] overflow-y-auto pr-1">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs font-semibold">Annual Fee Structure</Label>
-                <Input value={configForm.feeStructure} onChange={(e) => setConfigForm({ ...configForm, feeStructure: e.target.value })} className="h-9 text-xs" />
-              </div>
+          {/* Modal Tabs: Gate Passes / Complaints */}
+          <div className="flex items-center gap-2 border-b border-border pb-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setViewDetailsTab("gatepass")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                viewDetailsTab === "gatepass"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              Gate Passes Ledger ({gatePassDetails.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewDetailsTab("complaints")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                viewDetailsTab === "complaints"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              Resident Complaints Ledger ({complaintDetails.length})
+            </button>
+          </div>
 
-              <div className="space-y-1">
-                <Label className="text-xs font-semibold">Room Categories</Label>
-                <Input value={configForm.roomCategories} onChange={(e) => setConfigForm({ ...configForm, roomCategories: e.target.value })} className="h-9 text-xs" />
+          {/* GATE PASSES READ-ONLY TABLE */}
+          {viewDetailsTab === "gatepass" && (
+            <div className="space-y-3 pt-2">
+              <div className="overflow-x-auto border border-border/80 rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase text-[0.65rem]">
+                    <tr>
+                      <th className="py-2.5 px-3">Student Name</th>
+                      <th className="py-2.5 px-3">Roll Number</th>
+                      <th className="py-2.5 px-3">Department</th>
+                      <th className="py-2.5 px-3">Hostel Block</th>
+                      <th className="py-2.5 px-3">Pass Type</th>
+                      <th className="py-2.5 px-3">Exit Time</th>
+                      <th className="py-2.5 px-3">Expected Return</th>
+                      <th className="py-2.5 px-3">Current Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {gatePassDetails.map((pass) => (
+                      <tr key={pass.id} className="hover:bg-muted/20">
+                        <td className="py-2.5 px-3 font-semibold text-foreground">{pass.studentName}</td>
+                        <td className="py-2.5 px-3 font-mono font-bold text-foreground">{pass.rollNo}</td>
+                        <td className="py-2.5 px-3 text-muted-foreground">{pass.department}</td>
+                        <td className="py-2.5 px-3 font-mono text-primary font-bold">{pass.hostelBlock}</td>
+                        <td className="py-2.5 px-3">
+                          <Badge variant="outline" className="font-mono text-xs">{pass.passType}</Badge>
+                        </td>
+                        <td className="py-2.5 px-3 font-mono text-muted-foreground">{pass.exitTime}</td>
+                        <td className="py-2.5 px-3 font-mono text-muted-foreground">{pass.expectedReturn}</td>
+                        <td className="py-2.5 px-3">
+                          <Badge className={pass.status === "Approved" ? "bg-emerald-500/10 text-emerald-600" : pass.status === "Pending" ? "bg-amber-500/10 text-amber-600" : pass.status === "Late Return" ? "bg-purple-500/10 text-purple-600" : "bg-red-500/10 text-red-600"}>
+                            {pass.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
+              <p className="text-[0.68rem] text-muted-foreground text-center">
+                * Note: Super Admin monitoring view. Gate pass approval/rejection operations are conducted at Warden Desk.
+              </p>
+            </div>
+          )}
 
-              <div className="space-y-1">
-                <Label className="text-xs font-semibold">Hostel Main Gate Timings</Label>
-                <Input value={configForm.hostelTimings} onChange={(e) => setConfigForm({ ...configForm, hostelTimings: e.target.value })} className="h-9 text-xs" />
+          {/* COMPLAINTS READ-ONLY TABLE */}
+          {viewDetailsTab === "complaints" && (
+            <div className="space-y-3 pt-2">
+              <div className="overflow-x-auto border border-border/80 rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase text-[0.65rem]">
+                    <tr>
+                      <th className="py-2.5 px-3">Complaint ID</th>
+                      <th className="py-2.5 px-3">Student Name</th>
+                      <th className="py-2.5 px-3">Hostel Block</th>
+                      <th className="py-2.5 px-3">Category</th>
+                      <th className="py-2.5 px-3">Priority</th>
+                      <th className="py-2.5 px-3">Assigned Warden</th>
+                      <th className="py-2.5 px-3">Current Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {complaintDetails.map((cmp) => (
+                      <tr key={cmp.id} className="hover:bg-muted/20">
+                        <td className="py-2.5 px-3 font-mono font-bold text-foreground">{cmp.complaintId}</td>
+                        <td className="py-2.5 px-3 font-semibold text-foreground">{cmp.studentName}</td>
+                        <td className="py-2.5 px-3 font-mono text-primary font-bold">{cmp.hostelBlock}</td>
+                        <td className="py-2.5 px-3"><Badge variant="outline" className="font-mono text-xs">{cmp.category}</Badge></td>
+                        <td className="py-2.5 px-3">
+                          <Badge className={cmp.priority === "High" ? "bg-red-500/10 text-red-600" : cmp.priority === "Medium" ? "bg-amber-500/10 text-amber-600" : "bg-blue-500/10 text-blue-600"}>
+                            {cmp.priority}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 px-3 font-medium text-foreground">{cmp.assignedWarden}</td>
+                        <td className="py-2.5 px-3">
+                          <Badge className={cmp.status === "Resolved" ? "bg-emerald-500/10 text-emerald-600" : cmp.status === "In Progress" ? "bg-blue-500/10 text-blue-600" : "bg-amber-500/10 text-amber-600"}>
+                            {cmp.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
+              <p className="text-[0.68rem] text-muted-foreground text-center">
+                * Note: Super Admin monitoring view. Complaint resolution and warden assignments are performed at Warden Desk.
+              </p>
+            </div>
+          )}
 
-              <div className="space-y-1">
-                <Label className="text-xs font-semibold">Mess Meal Timings</Label>
-                <Input value={configForm.messTimings} onChange={(e) => setConfigForm({ ...configForm, messTimings: e.target.value })} className="h-9 text-xs" />
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setIsViewDetailsOpen(false)} className="text-xs">
+              Close Ledger
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* QUICK ACTION MODAL A: SECURITY REPORT MODAL */}
+      <Dialog open={isSecurityReportOpen} onOpenChange={setIsSecurityReportOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <Video className="size-4 text-emerald-500" /> Executive Security & Infrastructure Telemetry
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Daily perimeter security, CCTV status, and unauthorized access telemetry summary.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2 text-xs pt-1">
+            <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">CCTV Cameras Operational:</span>
+                <span className="font-mono font-bold text-emerald-600">128 / 128 (100%)</span>
               </div>
-
-              <div className="space-y-1">
-                <Label className="text-xs font-semibold">Gate Pass Policy</Label>
-                <Input value={configForm.gatePassPolicy} onChange={(e) => setConfigForm({ ...configForm, gatePassPolicy: e.target.value })} className="h-9 text-xs" />
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Biometric RFID Smart Gates:</span>
+                <span className="font-mono font-bold text-emerald-600">Operational</span>
               </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Perimeter Intrusion Attempts:</span>
+                <span className="font-mono font-bold text-emerald-600">0 Incidents Logged</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Visitors Registered Today:</span>
+                <span className="font-mono font-bold text-primary">24 Logged</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="text-muted-foreground">Security Personnel Manned:</span>
+                <span className="font-mono font-bold text-foreground">18 Guards / 24 Hours</span>
+              </div>
+            </div>
+          </div>
 
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setIsSecurityReportOpen(false)} className="text-xs">
+              Close Report
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* QUICK ACTION MODAL B: SCHEDULE SECURITY AUDIT */}
+      <Dialog open={isAuditModalOpen} onOpenChange={setIsAuditModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <ShieldCheck className="size-4 text-purple-600" /> Schedule Hostel Security Audit
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Schedule an institutional security inspection or compliance audit.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleScheduleAuditSubmit} className="space-y-3 pt-1 text-xs">
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs font-semibold">Late Entry Policy & Fines</Label>
-                <Input value={configForm.lateEntryPolicy} onChange={(e) => setConfigForm({ ...configForm, lateEntryPolicy: e.target.value })} className="h-9 text-xs" />
+                <Label className="text-xs font-semibold">Audit Date</Label>
+                <Input
+                  type="date"
+                  value={auditForm.auditDate}
+                  onChange={(e) => setAuditForm({ ...auditForm, auditDate: e.target.value })}
+                  className="h-9 text-xs"
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs font-semibold">Audit Time</Label>
+                <Input
+                  type="time"
+                  value={auditForm.auditTime}
+                  onChange={(e) => setAuditForm({ ...auditForm, auditTime: e.target.value })}
+                  className="h-9 text-xs"
+                  required
+                />
               </div>
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs font-semibold">Academic Occupancy Continuation Rules</Label>
-              <Input value={configForm.occupancyRules} onChange={(e) => setConfigForm({ ...configForm, occupancyRules: e.target.value })} className="h-9 text-xs" />
+              <Label className="text-xs font-semibold">Audit Scope</Label>
+              <Input
+                value={auditForm.auditScope}
+                onChange={(e) => setAuditForm({ ...auditForm, auditScope: e.target.value })}
+                className="h-9 text-xs"
+                required
+              />
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs font-semibold">Visitor & Parent Access Policy</Label>
-              <Input value={configForm.visitorPolicy} onChange={(e) => setConfigForm({ ...configForm, visitorPolicy: e.target.value })} className="h-9 text-xs" />
+              <Label className="text-xs font-semibold">Inspector / Committee Lead</Label>
+              <Input
+                value={auditForm.inspector}
+                onChange={(e) => setAuditForm({ ...auditForm, inspector: e.target.value })}
+                className="h-9 text-xs"
+                required
+              />
             </div>
 
             <div className="space-y-1">
-              <Label className="text-xs font-semibold">Preventive Maintenance Schedule</Label>
-              <Input value={configForm.maintenanceSchedule} onChange={(e) => setConfigForm({ ...configForm, maintenanceSchedule: e.target.value })} className="h-9 text-xs" />
+              <Label className="text-xs font-semibold">Remarks & Instructions</Label>
+              <Textarea
+                rows={2}
+                value={auditForm.remarks}
+                onChange={(e) => setAuditForm({ ...auditForm, remarks: e.target.value })}
+                className="text-xs"
+              />
             </div>
 
-            <DialogFooter className="pt-3 border-t border-border">
-              <Button type="button" variant="outline" onClick={() => setIsConfigOpen(false)} className="text-xs">Cancel</Button>
-              <Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold">Save Hostel Configuration</Button>
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsAuditModalOpen(false)} className="text-xs">
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-purple-600 text-white text-xs font-semibold gap-1">
+                <ShieldCheck className="size-3.5" /> Schedule Audit
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      {/* DIALOG 2: HOSTEL REPORTS MODAL */}
-      <Dialog open={isReportsOpen} onOpenChange={setIsReportsOpen}>
-        <DialogContent className="max-w-lg">
+      {/* QUICK ACTION MODAL C: COMPLAINT ANALYTICS BREAKDOWN */}
+      <Dialog open={isComplaintAnalyticsOpen} onOpenChange={setIsComplaintAnalyticsOpen}>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <FileText className="size-5 text-primary" /> Executive Hostel Reports & Audits
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <Wrench className="size-4 text-amber-500" /> Resident Complaint SLA & Breakdown
             </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              Generate and download occupancy ledgers, maintenance reports, and gate pass audits.
+            <DialogDescription className="text-xs">
+              Category-wise resolution metrics and Warden SLA tracking.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 pt-2 text-xs">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {[
-                { title: "Monthly Occupancy Ledger", desc: "Detailed room occupancy & block-wise bed utilization.", icon: Building },
-                { title: "Hostel Fee Collection Audit", desc: "Fee recovery breakdown across Blocks A, B & C.", icon: FileCheck },
-                { title: "Maintenance & Repair Summary", desc: "Completed repairs and pending maintenance SLA.", icon: Wrench },
-                { title: "Gate Pass & Late Entry Log", desc: "ERP outstation passes & late entry scan audit.", icon: KeyRound },
-                { title: "Mess Hygiene & Quality Audit", desc: "Food safety, meal count & hygiene inspection report.", icon: Utensils },
-                { title: "Statutory Safety Certificate", desc: "Fire safety, building stability & insurance audit.", icon: ShieldCheck },
-              ].map((rep, idx) => (
-                <div key={idx} className="p-3 rounded-xl bg-muted/40 border border-border/80 space-y-1.5 flex flex-col justify-between">
-                  <div>
-                    <span className="font-bold text-foreground flex items-center gap-1.5"><rep.icon className="size-4 text-primary" /> {rep.title}</span>
-                    <p className="text-[0.68rem] text-muted-foreground mt-0.5">{rep.desc}</p>
-                  </div>
-                  <Button size="sm" variant="outline" onClick={() => toast.success(`Exporting ${rep.title}...`)} className="h-7 text-xs w-full gap-1">
-                    <Download className="size-3" /> Download PDF
-                  </Button>
-                </div>
-              ))}
+          <div className="space-y-2.5 text-xs pt-1">
+            <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Plumbing Tickets:</span>
+                <span className="font-mono font-bold text-amber-700">35% (18 Tickets)</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Electrical Tickets:</span>
+                <span className="font-mono font-bold text-blue-700">28% (15 Tickets)</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Wi-Fi Network Tickets:</span>
+                <span className="font-mono font-bold text-purple-700">22% (12 Tickets)</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/40">
+                <span className="text-muted-foreground">Furniture & Carpentry:</span>
+                <span className="font-mono font-bold text-foreground">15% (8 Tickets)</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="text-muted-foreground">Resolution SLA Compliance:</span>
+                <span className="font-bold text-emerald-600">94.2% within 24 Hours</span>
+              </div>
             </div>
-
-            <DialogFooter className="pt-2">
-              <Button variant="outline" onClick={() => setIsReportsOpen(false)} className="w-full text-xs">Close Reports Center</Button>
-            </DialogFooter>
           </div>
+
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setIsComplaintAnalyticsOpen(false)} className="text-xs">
+              Close Breakdown
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* DIALOG: HOSTEL CONFIGURATION & POLICY GOVERNANCE */}
+      <Dialog open={isConfigOpen} onOpenChange={setIsConfigOpen}>
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Sliders className="size-5 text-primary" /> Hostel Governance & Policy Configuration
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Configure hostel rules, fee structures, policies, timings, fine rules, and emergency escalations.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Dialog Tabs */}
+          <div className="flex items-center gap-2 border-b border-border pb-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setConfigTab("fees")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${configTab === "fees" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              1. Fee & Categories
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigTab("policies")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${configTab === "policies" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              2. Hostel Policies
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigTab("timings")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${configTab === "timings" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              3. Timings & Fines
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigTab("operations")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${configTab === "operations" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              4. Maintenance & Alerts
+            </button>
+          </div>
+
+          <form onSubmit={handleSaveConfig} className="space-y-4 pt-2">
+            {/* TAB 1: FEES & CATEGORIES */}
+            {configTab === "fees" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Hostel Fee Structure & Room Categories</h4>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Single AC Fee (Annual ₹)</Label>
+                    <Input
+                      type="number"
+                      value={configForm.feeStructure.singleAc}
+                      onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, singleAc: Number(e.target.value) } })}
+                      className="h-9 text-xs font-mono"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">2-Sharing AC Fee (Annual ₹)</Label>
+                    <Input
+                      type="number"
+                      value={configForm.feeStructure.doubleAc}
+                      onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, doubleAc: Number(e.target.value) } })}
+                      className="h-9 text-xs font-mono"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">2-Sharing Non-AC Fee (Annual ₹)</Label>
+                    <Input
+                      type="number"
+                      value={configForm.feeStructure.doubleNonAc}
+                      onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, doubleNonAc: Number(e.target.value) } })}
+                      className="h-9 text-xs font-mono"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">3-Sharing Non-AC Fee (Annual ₹)</Label>
+                    <Input
+                      type="number"
+                      value={configForm.feeStructure.tripleNonAc}
+                      onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, tripleNonAc: Number(e.target.value) } })}
+                      className="h-9 text-xs font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 2: POLICIES */}
+            {configTab === "policies" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Hostel Governance Policies</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Check-in Policy</Label>
+                    <Textarea rows={2} value={configForm.checkInPolicy} onChange={(e) => setConfigForm({ ...configForm, checkInPolicy: e.target.value })} className="text-xs" />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Gate Pass Policy</Label>
+                    <Textarea rows={2} value={configForm.gatePassPolicy} onChange={(e) => setConfigForm({ ...configForm, gatePassPolicy: e.target.value })} className="text-xs" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: TIMINGS */}
+            {configTab === "timings" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Timings, Mess Rules & Fines</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Curfew & Quiet Hours</Label>
+                    <Input value={configForm.hostelTimings} onChange={(e) => setConfigForm({ ...configForm, hostelTimings: e.target.value })} className="h-9 text-xs" />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Mess Operating Timings</Label>
+                    <Input value={configForm.messTimings} onChange={(e) => setConfigForm({ ...configForm, messTimings: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 4: OPERATIONS */}
+            {configTab === "operations" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Maintenance Schedule & Escalations</h4>
+                <div className="space-y-1">
+                  <Label className="text-xs font-semibold">Emergency Contacts & Escalation Matrix</Label>
+                  <Input value={configForm.emergencyContacts} onChange={(e) => setConfigForm({ ...configForm, emergencyContacts: e.target.value })} className="h-9 text-xs" />
+                </div>
+              </div>
+            )}
+
+            <DialogFooter className="pt-3 border-t border-border">
+              <Button type="button" variant="outline" onClick={() => setIsConfigOpen(false)} className="text-xs">
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold gap-1.5">
+                <CheckCircle2 className="size-3.5" /> Save Configuration
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

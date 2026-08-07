@@ -1,12 +1,10 @@
-import { useState } from "react";
+import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ReceiptItem, StudentFinanceSummary } from "../types";
-import { Download, Printer, Loader2, CheckCircle2 } from "lucide-react";
+import { Download, Printer, Mail, QrCode, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-import { downloadReceiptPdf } from "../finance-pdf-utils";
-
 
 interface ReceiptModalProps {
   open: boolean;
@@ -16,49 +14,7 @@ interface ReceiptModalProps {
 }
 
 export function ReceiptModal({ open, onOpenChange, receipt, summary }: ReceiptModalProps) {
-  const [isDownloading, setIsDownloading] = useState(false);
-
   if (!receipt) return null;
-
-  const handleDownload = async () => {
-    setIsDownloading(true);
-    try {
-      await downloadReceiptPdf(receipt, summary);
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
-  const handlePrint = () => {
-    const el = document.getElementById("receipt-modal-print-area");
-    if (!el) { window.print(); return; }
-    const content = el.innerHTML;
-    const win = window.open("", "_blank", "width=700,height=600");
-    if (!win) { window.print(); return; }
-    win.document.write(`
-      <html>
-        <head>
-          <title>Receipt ${receipt.receiptNumber}</title>
-          <style>
-            body { font-family: Arial, sans-serif; font-size: 12px; padding: 32px; color: #0f172a; max-width: 600px; margin: 0 auto; }
-            h1 { font-size: 16px; text-align: center; }
-            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; }
-            .label { font-size: 10px; color: #94a3b8; }
-            .value { font-weight: bold; }
-            table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-            th { background: #f1f5f9; padding: 8px; text-align: left; border: 1px solid #e2e8f0; }
-            td { padding: 8px; border: 1px solid #e2e8f0; }
-            .total { background: #f0fdf4; font-weight: bold; color: #059669; }
-          </style>
-        </head>
-        <body>${content}</body>
-      </html>
-    `);
-    win.document.close();
-    win.focus();
-    win.print();
-    win.close();
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -84,13 +40,8 @@ export function ReceiptModal({ open, onOpenChange, receipt, summary }: ReceiptMo
           </div>
         </DialogHeader>
 
-        {/* Printable area */}
-        <div id="receipt-modal-print-area" className="space-y-4 my-3 text-xs">
-
-          <div>
-            <h1>EduSuite Pro University — Official Payment Receipt</h1>
-          </div>
-
+        <div className="space-y-4 my-3 text-xs">
+          
           {/* STUDENT & TRANSACTION SUMMARY */}
           <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 grid grid-cols-2 gap-3">
             <div>
@@ -142,27 +93,17 @@ export function ReceiptModal({ open, onOpenChange, receipt, summary }: ReceiptMo
 
         </div>
 
-        <DialogFooter className="pt-2 flex justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+        <DialogFooter className="pt-2 flex flex-wrap justify-between gap-2 border-t border-slate-100 dark:border-slate-800">
+          <Button type="button" variant="outline" onClick={() => toast.success(`Receipt emailed to student inbox.`)} className="rounded-xl text-xs gap-1.5 border-slate-200 dark:border-slate-700">
+            <Mail className="h-3.5 w-3.5 text-blue-600" /> Email Copy
+          </Button>
+
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handlePrint}
-              className="rounded-xl text-xs gap-1.5 border-slate-200 dark:border-slate-700"
-            >
+            <Button type="button" variant="outline" onClick={() => window.print()} className="rounded-xl text-xs gap-1.5 border-slate-200 dark:border-slate-700">
               <Printer className="h-3.5 w-3.5" /> Print
             </Button>
-            <Button
-              type="button"
-              onClick={handleDownload}
-              disabled={isDownloading}
-              className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5"
-            >
-              {isDownloading ? (
-                <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Generating...</>
-              ) : (
-                <><Download className="h-3.5 w-3.5" /> Download PDF</>
-              )}
+            <Button type="button" onClick={() => toast.success(`Downloading PDF for ${receipt.receiptNumber}...`)} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5">
+              <Download className="h-3.5 w-3.5" /> Download PDF
             </Button>
           </div>
         </DialogFooter>

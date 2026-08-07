@@ -95,7 +95,7 @@ export function StudentTimetableModule() {
 =====================================================
 OFFICIAL STUDENT CLASS TIMETABLE — SEMESTER V (2026-27)
 =====================================================
-Student Name: Sai Teja | Adm No: 22CS101 | Branch: CSE
+Student Name: Sai Teja | Roll No: 22CS101 | Branch: CSE
 
 MONDAY
 - 09:00 AM - 10:00 AM | CS401: Distributed Systems | Room 302 (Tech Block A) | Dr. Ramesh Nair

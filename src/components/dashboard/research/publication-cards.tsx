@@ -1,4 +1,4 @@
-import { BookOpen, Calendar, Key, Download, Eye, Edit3, Trash2 } from "lucide-react";
+import { BookOpen, Calendar, Key, Link as LinkIcon, Download, Eye, Edit3, Award, ExternalLink } from "lucide-react";
 import type { PublicationItem } from "./types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,19 +6,24 @@ import { toast } from "sonner";
 
 interface PublicationCardsProps {
   publications: PublicationItem[];
-  onViewPublication?: (pub: PublicationItem) => void;
   onEditPublication?: (pub: PublicationItem) => void;
-  onDeletePublication?: (pub: PublicationItem) => void;
-  onDownloadPublication?: (pub: PublicationItem) => void;
 }
 
-export function PublicationCards({
-  publications,
-  onViewPublication,
-  onEditPublication,
-  onDeletePublication,
-  onDownloadPublication,
-}: PublicationCardsProps) {
+export function PublicationCards({ publications, onEditPublication }: PublicationCardsProps) {
+  const getIndexingBadgeClass = (indexing: string) => {
+    switch (indexing) {
+      case "SCI":
+      case "SCIE":
+        return "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/20";
+      case "Scopus":
+        return "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-500/20";
+      case "Google Scholar":
+        return "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/20";
+      default:
+        return "bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-500/20";
+    }
+  };
+
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "Published":
@@ -33,31 +38,15 @@ export function PublicationCards({
   };
 
   const handleDownload = (pub: PublicationItem) => {
-    if (onDownloadPublication) {
-      onDownloadPublication(pub);
-    } else {
-      toast.success("Downloading Manuscript", {
-        description: `Downloading full-text PDF for: "${pub.title}"`
-      });
-    }
+    toast.success("Downloading Manuscript", {
+      description: `Downloading full-text PDF for: "${pub.title}"`
+    });
   };
 
   const handleView = (pub: PublicationItem) => {
-    if (onViewPublication) {
-      onViewPublication(pub);
-    } else {
-      toast.info("Viewing Publication", {
-        description: `Paper: "${pub.title}" (${pub.year})`
-      });
-    }
-  };
-
-  const handleDelete = (pub: PublicationItem) => {
-    if (onDeletePublication) {
-      onDeletePublication(pub);
-    } else {
-      toast.success(`Publication "${pub.title}" deleted.`);
-    }
+    toast.info("Opening external database", {
+      description: `Navigating to DOI publisher index link: ${pub.doi ?? "N/A"}`
+    });
   };
 
   if (publications.length === 0) {
@@ -78,15 +67,20 @@ export function PublicationCards({
           <div className="space-y-3">
             {/* Header tags */}
             <div className="flex items-start justify-between gap-3">
-              <Badge variant="outline" className="bg-muted text-muted-foreground font-semibold">
-                {pub.type}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className={getIndexingBadgeClass(pub.indexing)}>
+                  {pub.indexing}
+                </Badge>
+                <Badge variant="outline" className="bg-muted text-muted-foreground">
+                  {pub.type}
+                </Badge>
+              </div>
               <Badge variant="outline" className={getStatusBadgeClass(pub.status)}>
                 {pub.status}
               </Badge>
             </div>
 
-            {/* Paper Title & Authors */}
+            {/* Paper Title */}
             <div>
               <h4 className="font-bold text-sm text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">
                 {pub.title}
@@ -100,57 +94,67 @@ export function PublicationCards({
             <div className="text-[11px] text-muted-foreground bg-muted/40 p-3 rounded-xl border border-border/30 space-y-1.5">
               <p className="flex items-center gap-1.5 leading-snug">
                 <BookOpen className="size-3.5 shrink-0" />
-                <span>Journal/Conference: <strong className="text-foreground">{pub.journalOrConference}</strong></span>
+                <span>Journal: <strong className="text-foreground">{pub.journalOrConference}</strong></span>
               </p>
-              <div className="flex items-center gap-4 border-t border-border/40 pt-1.5 mt-1.5 flex-wrap">
+              <div className="grid grid-cols-2 gap-2 border-t border-border/40 pt-1.5 mt-1.5">
                 <p className="flex items-center gap-1.5">
                   <Calendar className="size-3.5 shrink-0" />
                   <span>Year: <strong className="text-foreground">{pub.year}</strong></span>
                 </p>
-                {pub.doi && (
-                  <p className="flex items-center gap-1.5">
-                    <Key className="size-3.5 shrink-0" />
-                    <span className="truncate">DOI: <strong className="text-foreground">{pub.doi}</strong></span>
-                  </p>
-                )}
+                <p className="flex items-center gap-1.5">
+                  <Award className="size-3.5 shrink-0" />
+                  <span>Publisher: <strong className="text-foreground">{pub.publisher}</strong></span>
+                </p>
               </div>
+              {(pub.doi || pub.issnOrIsbn) && (
+                <div className="grid grid-cols-2 gap-2 border-t border-border/40 pt-1.5">
+                  {pub.doi && (
+                    <p className="flex items-center gap-1.5">
+                      <Key className="size-3.5 shrink-0" />
+                      <span className="truncate">DOI: <strong className="text-foreground">{pub.doi}</strong></span>
+                    </p>
+                  )}
+                  {pub.issnOrIsbn && (
+                    <p className="flex items-center gap-1.5">
+                      <LinkIcon className="size-3.5 shrink-0" />
+                      <span className="truncate">ISBN: <strong className="text-foreground">{pub.issnOrIsbn}</strong></span>
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
           {/* Action Row */}
-          <div className="flex items-center justify-between gap-1 pt-3 border-t border-border/30 mt-4 flex-wrap">
+          <div className="flex items-center gap-1.5 pt-4 border-t border-border/30 mt-4">
             <Button
               size="sm"
-              variant="outline"
-              className="h-7 text-xs px-2 gap-1 font-semibold"
+              variant="ghost"
+              className="h-7 text-xs flex-1 gap-1 font-bold text-muted-foreground hover:text-foreground"
               onClick={() => handleView(pub)}
             >
               <Eye className="size-3.5" /> View
             </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-7 text-xs px-2 gap-1 font-semibold"
-              onClick={() => onEditPublication && onEditPublication(pub)}
-            >
-              <Edit3 className="size-3.5" /> Edit
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-7 text-xs px-2 gap-1 font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/20"
-              onClick={() => handleDelete(pub)}
-            >
-              <Trash2 className="size-3.5" /> Delete
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-7 text-xs px-2 gap-1 font-semibold text-indigo-600 hover:text-indigo-700"
-              onClick={() => handleDownload(pub)}
-            >
-              <Download className="size-3.5" /> Download
-            </Button>
+            {pub.documentUrl && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 text-xs flex-1 gap-1 font-bold text-muted-foreground hover:text-foreground"
+                onClick={() => handleDownload(pub)}
+              >
+                <Download className="size-3.5" /> Download
+              </Button>
+            )}
+            {onEditPublication && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 text-xs flex-1 gap-1 font-bold text-primary hover:bg-primary/5"
+                onClick={() => onEditPublication(pub)}
+              >
+                <Edit3 className="size-3.5" /> Edit
+              </Button>
+            )}
           </div>
         </div>
       ))}

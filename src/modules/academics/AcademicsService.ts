@@ -42,6 +42,91 @@ export interface CurriculumScheme {
   status: "Active" | "Draft" | "Archived";
 }
 
+export interface LiveFacultyStatus {
+  id: string;
+  facultyId: string;
+  name: string;
+  department: string;
+  status: "FREE" | "IN CLASS / WORKING" | "ON LEAVE";
+  currentClass?: string; // e.g. "CSE-3A"
+  subject?: string; // e.g. "Data Structures"
+  roomNo?: string; // e.g. "Block B - 302"
+  timeSlot?: string; // e.g. "10:00 AM - 11:00 AM"
+  leaveReason?: string; // e.g. "Casual Leave"
+  period: number; // 1 to 8
+}
+
+export interface FacultyPeriodSlot {
+  periodNumber: number;
+  timeSlot: string;
+  status: "FREE" | "IN CLASS" | "ON LEAVE" | "BREAK";
+  subject?: string;
+  className?: string;
+  roomNo?: string;
+}
+
+export interface FacultyFullDaySchedule {
+  facultyId: string;
+  name: string;
+  department: string;
+  designation: string;
+  email: string;
+  periods: FacultyPeriodSlot[];
+}
+
+export interface ClassStudentAttendance {
+  id: string;
+  rollNo: string;
+  name: string;
+  avatar?: string;
+  status: "Present" | "Absent" | "Late";
+}
+
+export interface AttendanceSubmission {
+  classId: string;
+  subjectId: string;
+  date: string;
+  period: number;
+  records: { studentId: string; status: "Present" | "Absent" | "Late" }[];
+}
+
+export interface SyllabusUnit {
+  id: string;
+  unitNumber: number;
+  unitTitle: string;
+  completionPct: number; // 0 to 100
+  status: "Completed" | "In Progress" | "Remaining";
+}
+
+export interface SyllabusProgress {
+  id: string;
+  facultyId: string;
+  facultyName: string;
+  courseCode: string;
+  courseName: string;
+  department: string;
+  totalClassesScheduled: number;
+  classesCompleted: number;
+  classesCancelled: number;
+  units: SyllabusUnit[];
+  overallProgressPct: number;
+}
+
+export interface AllClassesAttendanceItem {
+  id: string;
+  className: string;
+  department: string;
+  totalStudents: number;
+  presentCount: number;
+  absentCount: number;
+  lateCount: number;
+  dailyPct: number;
+  weeklyPct: number;
+  monthlyPct: number;
+  classTeacher: string;
+  status: "Normal" | "Defaulter Warning";
+}
+
 // 1. EXTENDED DEPARTMENT MOCK DATA ROSTER
 export const ALL_MOCK_COURSES: AcademicCourse[] = [
   // Computer Science & Engineering (CSE)
@@ -880,3 +965,400 @@ export async function deleteAcademicCourse(id: string): Promise<boolean> {
   } catch {}
   return true;
 }
+
+// ----------------------------------------------------
+// 1. LIVE FACULTY STATUS MATRIX MOCK & API ENDPOINTS
+// ----------------------------------------------------
+export const INITIAL_FACULTY_STATUS: LiveFacultyStatus[] = [
+  {
+    id: "FS-01",
+    facultyId: "FAC-101",
+    name: "Dr. Rajesh K. Varma",
+    department: "CSE",
+    status: "IN CLASS / WORKING",
+    currentClass: "CSE-3A",
+    subject: "Data Structures & Algorithms",
+    roomNo: "Block B - 302",
+    timeSlot: "10:00 AM - 11:00 AM",
+    period: 2,
+  },
+  {
+    id: "FS-02",
+    facultyId: "FAC-102",
+    name: "Dr. Meera Nambiar",
+    department: "ECE",
+    status: "FREE",
+    period: 2,
+  },
+  {
+    id: "FS-03",
+    facultyId: "FAC-103",
+    name: "Prof. Arvind Swaminathan",
+    department: "AI&DS",
+    status: "IN CLASS / WORKING",
+    currentClass: "AIDS-2B",
+    subject: "Machine Learning Principles",
+    roomNo: "Block A - 105",
+    timeSlot: "10:00 AM - 11:00 AM",
+    period: 2,
+  },
+  {
+    id: "FS-04",
+    facultyId: "FAC-104",
+    name: "Dr. Sankar Narayan",
+    department: "ME",
+    status: "ON LEAVE",
+    leaveReason: "Casual Leave",
+    period: 2,
+  },
+  {
+    id: "FS-05",
+    facultyId: "FAC-105",
+    name: "Ms. Ananya Sharma",
+    department: "CSE",
+    status: "FREE",
+    period: 2,
+  },
+  {
+    id: "FS-06",
+    facultyId: "FAC-106",
+    name: "Dr. K. Sai Teja",
+    department: "CSE",
+    status: "IN CLASS / WORKING",
+    currentClass: "CSE-4A",
+    subject: "Advanced Deep Learning",
+    roomNo: "Block C - Lab 4",
+    timeSlot: "10:00 AM - 11:00 AM",
+    period: 2,
+  },
+];
+
+export async function fetchLiveFacultyStatus(period: number = 2): Promise<LiveFacultyStatus[]> {
+  try {
+    const res = await api.get(`/api/academics/faculty/live-status?period=${period}`);
+    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+  } catch {}
+  return INITIAL_FACULTY_STATUS.map((f) => ({ ...f, period }));
+}
+
+export async function fetchFacultyFullDaySchedule(facultyName: string): Promise<FacultyFullDaySchedule> {
+  try {
+    const res = await api.get(`/api/academics/faculty/schedule?name=${encodeURIComponent(facultyName)}`);
+    if (res && res.data && res.data.periods) return res.data;
+  } catch {}
+
+  if (facultyName.includes("Sankar")) {
+    return {
+      facultyId: "FAC-104",
+      name: "Dr. Sankar Narayan",
+      department: "ME",
+      designation: "Professor",
+      email: "sankar.n@edusuite.edu.in",
+      periods: [1, 2, 3, 4, 5, 6, 7, 8].map((p) => ({
+        periodNumber: p,
+        timeSlot: getTimeSlotForPeriod(p),
+        status: "ON LEAVE" as const,
+      })),
+    };
+  }
+
+  if (facultyName.includes("Rajesh")) {
+    return {
+      facultyId: "FAC-101",
+      name: "Dr. Rajesh K. Varma",
+      department: "CSE",
+      designation: "Professor & HOD",
+      email: "rajesh.varma@edusuite.edu.in",
+      periods: [
+        { periodNumber: 1, timeSlot: "09:00 AM - 10:00 AM", status: "FREE" },
+        { periodNumber: 2, timeSlot: "10:00 AM - 11:00 AM", status: "IN CLASS", subject: "Data Structures & Algorithms", className: "CSE-3A", roomNo: "Block B - 302" },
+        { periodNumber: 3, timeSlot: "11:15 AM - 12:15 PM", status: "FREE" },
+        { periodNumber: 4, timeSlot: "12:15 PM - 01:15 PM", status: "IN CLASS", subject: "Object Oriented Programming", className: "CSE-2B", roomNo: "Block B - 104" },
+        { periodNumber: 5, timeSlot: "02:00 PM - 03:00 PM", status: "FREE" },
+        { periodNumber: 6, timeSlot: "03:00 PM - 04:00 PM", status: "IN CLASS", subject: "Data Structures Lab", className: "CSE-3A", roomNo: "Lab - CSE 2" },
+        { periodNumber: 7, timeSlot: "04:00 PM - 05:00 PM", status: "IN CLASS", subject: "Data Structures Lab", className: "CSE-3A", roomNo: "Lab - CSE 2" },
+        { periodNumber: 8, timeSlot: "05:00 PM - 06:00 PM", status: "FREE" },
+      ],
+    };
+  }
+
+  if (facultyName.includes("Meera")) {
+    return {
+      facultyId: "FAC-102",
+      name: "Dr. Meera Nambiar",
+      department: "ECE",
+      designation: "Associate Professor",
+      email: "meera.nambiar@edusuite.edu.in",
+      periods: [
+        { periodNumber: 1, timeSlot: "09:00 AM - 10:00 AM", status: "IN CLASS", subject: "VLSI Design & Systems", className: "ECE-4A", roomNo: "Block C - 201" },
+        { periodNumber: 2, timeSlot: "10:00 AM - 11:00 AM", status: "FREE" },
+        { periodNumber: 3, timeSlot: "11:15 AM - 12:15 PM", status: "IN CLASS", subject: "Digital Signal Processing", className: "ECE-3B", roomNo: "Block C - 102" },
+        { periodNumber: 4, timeSlot: "12:15 PM - 01:15 PM", status: "FREE" },
+        { periodNumber: 5, timeSlot: "02:00 PM - 03:00 PM", status: "IN CLASS", subject: "Embedded Systems Lab", className: "ECE-3A", roomNo: "Lab - ECE 1" },
+        { periodNumber: 6, timeSlot: "03:00 PM - 04:00 PM", status: "IN CLASS", subject: "Embedded Systems Lab", className: "ECE-3A", roomNo: "Lab - ECE 1" },
+        { periodNumber: 7, timeSlot: "04:00 PM - 05:00 PM", status: "FREE" },
+        { periodNumber: 8, timeSlot: "05:00 PM - 06:00 PM", status: "FREE" },
+      ],
+    };
+  }
+
+  return {
+    facultyId: "FAC-109",
+    name: facultyName,
+    department: "CSE",
+    designation: "Faculty Member",
+    email: `${facultyName.toLowerCase().replace(/[^a-z]/g, ".")}@edusuite.edu.in`,
+    periods: [
+      { periodNumber: 1, timeSlot: "09:00 AM - 10:00 AM", status: "IN CLASS", subject: "Computer Networks", className: "CSE-3B", roomNo: "Block B - 204" },
+      { periodNumber: 2, timeSlot: "10:00 AM - 11:00 AM", status: "FREE" },
+      { periodNumber: 3, timeSlot: "11:15 AM - 12:15 PM", status: "IN CLASS", subject: "Operating Systems", className: "CSE-3A", roomNo: "Block B - 302" },
+      { periodNumber: 4, timeSlot: "12:15 PM - 01:15 PM", status: "FREE" },
+      { periodNumber: 5, timeSlot: "02:00 PM - 03:00 PM", status: "FREE" },
+      { periodNumber: 6, timeSlot: "03:00 PM - 04:00 PM", status: "IN CLASS", subject: "Web Technologies Lab", className: "CSE-2A", roomNo: "Lab - CSE 1" },
+      { periodNumber: 7, timeSlot: "04:00 PM - 05:00 PM", status: "IN CLASS", subject: "Web Technologies Lab", className: "CSE-2A", roomNo: "Lab - CSE 1" },
+      { periodNumber: 8, timeSlot: "05:00 PM - 06:00 PM", status: "FREE" },
+    ],
+  };
+}
+
+function getTimeSlotForPeriod(period: number): string {
+  const slots: Record<number, string> = {
+    1: "09:00 AM - 10:00 AM",
+    2: "10:00 AM - 11:00 AM",
+    3: "11:15 AM - 12:15 PM",
+    4: "12:15 PM - 01:15 PM",
+    5: "02:00 PM - 03:00 PM",
+    6: "03:00 PM - 04:00 PM",
+    7: "04:00 PM - 05:00 PM",
+    8: "05:00 PM - 06:00 PM",
+  };
+  return slots[period] || "Period Slot";
+}
+
+// ----------------------------------------------------
+// 2. FACULTY ATTENDANCE MARKING MOCK & API ENDPOINTS
+// ----------------------------------------------------
+export const INITIAL_CLASS_STUDENTS: ClassStudentAttendance[] = [
+  { id: "STU-01", rollNo: "22CSE001", name: "Aarav Sharma", status: "Present" },
+  { id: "STU-02", rollNo: "22CSE002", name: "Ananya Iyer", status: "Present" },
+  { id: "STU-03", rollNo: "22CSE003", name: "Rohan Varma", status: "Present" },
+  { id: "STU-04", rollNo: "22CSE004", name: "Priya Nair", status: "Absent" },
+  { id: "STU-05", rollNo: "22CSE005", name: "Vikram Aditya", status: "Present" },
+  { id: "STU-06", rollNo: "22CSE006", name: "Kavya Patel", status: "Late" },
+  { id: "STU-07", rollNo: "22CSE007", name: "Siddharth Rao", status: "Present" },
+  { id: "STU-08", rollNo: "22CSE008", name: "Sneha Reddy", status: "Present" },
+];
+
+export async function fetchClassStudents(
+  classId: string = "CSE-3A",
+  subjectId: string = "CS302",
+): Promise<ClassStudentAttendance[]> {
+  try {
+    const res = await api.get(
+      `/api/academics/attendance/class-students?classId=${classId}&subjectId=${subjectId}`,
+    );
+    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+  } catch {}
+  return INITIAL_CLASS_STUDENTS;
+}
+
+export async function submitAttendanceMark(
+  payload: AttendanceSubmission,
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const res = await api.post("/api/attendance/mark", payload);
+    if (res && res.data) return res.data;
+  } catch {}
+  return {
+    success: true,
+    message: `Attendance log successfully submitted for ${payload.records.length} students on ${payload.date} (Period ${payload.period}).`,
+  };
+}
+
+// ----------------------------------------------------
+// 3. FACULTY SYLLABUS TRACKER MOCK & API ENDPOINTS
+// ----------------------------------------------------
+export const INITIAL_SYLLABUS_PROGRESS: SyllabusProgress[] = [
+  {
+    id: "SYLL-101",
+    facultyId: "FAC-101",
+    facultyName: "Dr. Rajesh K. Varma",
+    courseCode: "CS302",
+    courseName: "Data Structures & Algorithms",
+    department: "CSE",
+    totalClassesScheduled: 45,
+    classesCompleted: 32,
+    classesCancelled: 2,
+    overallProgressPct: 71,
+    units: [
+      {
+        id: "U-1",
+        unitNumber: 1,
+        unitTitle: "Unit 1: Introduction to Algorithms & Asymptotic Analysis",
+        completionPct: 100,
+        status: "Completed",
+      },
+      {
+        id: "U-2",
+        unitNumber: 2,
+        unitTitle: "Unit 2: Sorting, Searching & Linear Data Structures",
+        completionPct: 100,
+        status: "Completed",
+      },
+      {
+        id: "U-3",
+        unitNumber: 3,
+        unitTitle: "Unit 3: Dynamic Programming & Greedy Algorithms",
+        completionPct: 60,
+        status: "In Progress",
+      },
+      {
+        id: "U-4",
+        unitNumber: 4,
+        unitTitle: "Unit 4: Graph Algorithms & Network Flow",
+        completionPct: 0,
+        status: "Remaining",
+      },
+    ],
+  },
+  {
+    id: "SYLL-102",
+    facultyId: "FAC-102",
+    facultyName: "Dr. Meera Nambiar",
+    courseCode: "EC304",
+    courseName: "VLSI System Design",
+    department: "ECE",
+    totalClassesScheduled: 40,
+    classesCompleted: 34,
+    classesCancelled: 1,
+    overallProgressPct: 85,
+    units: [
+      {
+        id: "U-201",
+        unitNumber: 1,
+        unitTitle: "Unit 1: CMOS Inverter Physics & Static Timing",
+        completionPct: 100,
+        status: "Completed",
+      },
+      {
+        id: "U-202",
+        unitNumber: 2,
+        unitTitle: "Unit 2: VLSI Layout & Cadence Synthesis",
+        completionPct: 100,
+        status: "Completed",
+      },
+      {
+        id: "U-203",
+        unitNumber: 3,
+        unitTitle: "Unit 3: FPGA Architectures & Verilog HDL",
+        completionPct: 90,
+        status: "In Progress",
+      },
+      {
+        id: "U-204",
+        unitNumber: 4,
+        unitTitle: "Unit 4: Low-Power VLSI & Testing",
+        completionPct: 50,
+        status: "In Progress",
+      },
+    ],
+  },
+];
+
+export async function fetchSyllabusProgress(
+  facultyId: string = "FAC-101",
+): Promise<SyllabusProgress[]> {
+  try {
+    const res = await api.get(`/api/academics/faculty/syllabus-progress?facultyId=${facultyId}`);
+    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+  } catch {}
+  return INITIAL_SYLLABUS_PROGRESS;
+}
+
+export async function updateSyllabusUnitStatus(
+  progressId: string,
+  unitId: string,
+  status: "Completed" | "In Progress" | "Remaining",
+  completionPct: number,
+): Promise<boolean> {
+  try {
+    await api.put("/api/academics/faculty/syllabus-progress", {
+      progressId,
+      unitId,
+      status,
+      completionPct,
+    });
+  } catch {}
+  return true;
+}
+
+// ----------------------------------------------------
+// 4. ALL CLASSES ATTENDANCE DASHBOARD FOR SUPER ADMIN
+// ----------------------------------------------------
+export const INITIAL_ALL_CLASSES_ATTENDANCE: AllClassesAttendanceItem[] = [
+  {
+    id: "CLA-101",
+    className: "CSE-3A",
+    department: "CSE",
+    totalStudents: 60,
+    presentCount: 56,
+    absentCount: 3,
+    lateCount: 1,
+    dailyPct: 93.3,
+    weeklyPct: 91.5,
+    monthlyPct: 90.2,
+    classTeacher: "Dr. Rajesh K. Varma",
+    status: "Normal",
+  },
+  {
+    id: "CLA-102",
+    className: "ECE-2B",
+    department: "ECE",
+    totalStudents: 55,
+    presentCount: 48,
+    absentCount: 6,
+    lateCount: 1,
+    dailyPct: 87.2,
+    weeklyPct: 86.0,
+    monthlyPct: 85.4,
+    classTeacher: "Dr. Meera Nambiar",
+    status: "Normal",
+  },
+  {
+    id: "CLA-103",
+    className: "AIDS-2A",
+    department: "AI&DS",
+    totalStudents: 62,
+    presentCount: 59,
+    absentCount: 2,
+    lateCount: 1,
+    dailyPct: 95.1,
+    weeklyPct: 94.2,
+    monthlyPct: 93.8,
+    classTeacher: "Prof. Arvind Swaminathan",
+    status: "Normal",
+  },
+  {
+    id: "CLA-104",
+    className: "ME-4A",
+    department: "ME",
+    totalStudents: 50,
+    presentCount: 36,
+    absentCount: 12,
+    lateCount: 2,
+    dailyPct: 72.0,
+    weeklyPct: 71.5,
+    monthlyPct: 70.8,
+    classTeacher: "Dr. Sankar Narayan",
+    status: "Defaulter Warning",
+  },
+];
+
+export async function fetchAllClassesAttendance(): Promise<AllClassesAttendanceItem[]> {
+  try {
+    const res = await api.get("/api/academics/all-classes-attendance");
+    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+  } catch {}
+  return INITIAL_ALL_CLASSES_ATTENDANCE;
+}
+

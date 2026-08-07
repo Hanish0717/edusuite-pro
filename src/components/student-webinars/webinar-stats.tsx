@@ -7,7 +7,6 @@ interface WebinarStatsProps {
 }
 
 export function WebinarStatsCards({ onTabClick }: WebinarStatsProps) {
-  return null;
   const cards = [
     {
       id: "upcoming",

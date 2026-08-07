@@ -1,22 +1,12 @@
-import { Calendar, FileCheck, Eye, Edit3, Download } from "lucide-react";
+import { Award, Calendar, FileCheck, Globe } from "lucide-react";
 import type { PatentItem } from "./types";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 interface PatentCardsProps {
   patents: PatentItem[];
-  onViewPatent?: (pat: PatentItem) => void;
-  onEditPatent?: (pat: PatentItem) => void;
-  onDownloadPatent?: (pat: PatentItem) => void;
 }
 
-export function PatentCards({
-  patents,
-  onViewPatent,
-  onEditPatent,
-  onDownloadPatent,
-}: PatentCardsProps) {
+export function PatentCards({ patents }: PatentCardsProps) {
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "Granted":
@@ -28,21 +18,6 @@ export function PatentCards({
       default:
         return "bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-500/20";
     }
-  };
-
-  const handleView = (pat: PatentItem) => {
-    if (onViewPatent) onViewPatent(pat);
-    else toast.info("Viewing Patent", { description: `Patent Number: ${pat.patentNumber}` });
-  };
-
-  const handleEdit = (pat: PatentItem) => {
-    if (onEditPatent) onEditPatent(pat);
-    else toast.info("Edit Patent", { description: `Editing patent: ${pat.patentNumber}` });
-  };
-
-  const handleDownload = (pat: PatentItem) => {
-    if (onDownloadPatent) onDownloadPatent(pat);
-    else toast.success("Downloading Patent Certificate", { description: `Patent App No: ${pat.patentNumber}` });
   };
 
   if (patents.length === 0) {
@@ -77,7 +52,7 @@ export function PatentCards({
                 {pat.title}
               </h4>
               <p className="text-xs text-muted-foreground mt-1.5 font-mono">
-                Patent Number: {pat.patentNumber}
+                App No: {pat.patentNumber}
               </p>
             </div>
 
@@ -85,41 +60,19 @@ export function PatentCards({
             <div className="grid grid-cols-2 gap-2 pt-3 border-t border-border/30 text-xs text-muted-foreground">
               <div className="flex items-center gap-1.5">
                 <Calendar className="size-3.5 text-muted-foreground/75" />
-                <span>Application Date: <strong className="text-foreground">{pat.filingDate}</strong></span>
+                <span>Filing: <strong className="text-foreground">{pat.filingDate}</strong></span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Calendar className="size-3.5 text-muted-foreground/75" />
-                <span>Grant Date: <strong className="text-foreground">{pat.publicationDate || pat.filingDate}</strong></span>
+              {pat.publicationDate && (
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="size-3.5 text-muted-foreground/75" />
+                  <span>Published: <strong className="text-foreground">{pat.publicationDate}</strong></span>
+                </div>
+              )}
+              <div className="flex items-center gap-1.5 col-span-2 mt-1">
+                <Globe className="size-3.5 text-muted-foreground/75" />
+                <span>Jurisdiction: <strong className="text-foreground">{pat.country}</strong></span>
               </div>
             </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center justify-between gap-2 pt-3 border-t border-border/30 mt-4">
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-7 text-xs flex-1 gap-1 font-semibold"
-              onClick={() => handleView(pat)}
-            >
-              <Eye className="size-3.5" /> View
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-7 text-xs flex-1 gap-1 font-semibold"
-              onClick={() => handleEdit(pat)}
-            >
-              <Edit3 className="size-3.5" /> Edit
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-7 text-xs flex-1 gap-1 font-semibold text-indigo-600 hover:text-indigo-700"
-              onClick={() => handleDownload(pat)}
-            >
-              <Download className="size-3.5" /> Download
-            </Button>
           </div>
         </div>
       ))}

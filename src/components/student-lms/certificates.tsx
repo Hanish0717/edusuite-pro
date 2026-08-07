@@ -31,7 +31,7 @@ export function Certificates({ certificates, searchQuery }: CertificatesProps) {
 =====================================================
 CERTIFICATE OF ACCOMPLISHMENT
 =====================================================
-Awarded to: Sai Teja (Adm No: 22CS101)
+Awarded to: Sai Teja (Roll No: 22CS101)
 Credential: ${cert.title}
 Certificate Type: ${cert.type}
 Issuing Authority: ${cert.issuer}

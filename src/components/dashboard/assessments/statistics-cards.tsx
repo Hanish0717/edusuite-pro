@@ -1,4 +1,4 @@
-import { FileText, Users, Clock, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { FileText, BarChart2, Users, Clock, TrendingUp, Award, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { AssessmentStats } from "./types";
 
@@ -7,16 +7,19 @@ interface StatisticsCardsProps {
 }
 
 const STAT_CARDS = (s: AssessmentStats) => [
-  { label: "Total Assessments",  value: s.total,             icon: FileText,     color: "from-blue-500 to-blue-600",   bg: "bg-blue-500/8",    text: "text-blue-600 dark:text-blue-400" },
-  { label: "Published",          value: s.published,         icon: CheckCircle2, color: "from-indigo-500 to-indigo-600", bg: "bg-indigo-500/8", text: "text-indigo-600 dark:text-indigo-400" },
-  { label: "Draft",              value: s.draft,             icon: Clock,        color: "from-sky-500 to-sky-600",     bg: "bg-sky-500/8",      text: "text-sky-600 dark:text-sky-400" },
-  { label: "Marks Pending",      value: s.marksPending,      icon: AlertTriangle,color: "from-blue-600 to-indigo-600",   bg: "bg-blue-600/8",    text: "text-blue-700 dark:text-blue-400" },
-  { label: "Students Evaluated", value: s.studentsEvaluated, icon: Users,        color: "from-indigo-700 to-blue-700",  bg: "bg-indigo-700/8",  text: "text-indigo-800 dark:text-indigo-400" },
+  { label: "Total Assessments",   value: s.total,              icon: FileText,     color: "from-blue-500 to-blue-600",   bg: "bg-blue-500/8",    text: "text-blue-600 dark:text-blue-400" },
+  { label: "Published",           value: s.published,          icon: CheckCircle2, color: "from-indigo-500 to-indigo-600", bg: "bg-indigo-500/8", text: "text-indigo-600 dark:text-indigo-400" },
+  { label: "Draft",               value: s.draft,              icon: Clock,        color: "from-sky-500 to-sky-600",  bg: "bg-sky-500/8",   text: "text-sky-600 dark:text-sky-400" },
+  { label: "Marks Pending",       value: s.marksPending,       icon: AlertTriangle,color: "from-blue-600 to-indigo-600",    bg: "bg-blue-600/8",    text: "text-blue-700 dark:text-blue-400" },
+  { label: "Average Score",       value: `${s.averageScore}%`, icon: TrendingUp,   color: "from-indigo-600 to-blue-500", bg: "bg-indigo-600/8",  text: "text-indigo-700 dark:text-indigo-400" },
+  { label: "Highest Score",       value: `${s.highestScore}%`, icon: Award,        color: "from-blue-700 to-indigo-700",bg: "bg-blue-700/8",  text: "text-blue-800 dark:text-blue-400" },
+  { label: "Lowest Score",        value: `${s.lowestScore}%`,  icon: BarChart2,    color: "from-sky-600 to-blue-600",bg: "bg-sky-600/8",  text: "text-sky-700 dark:text-sky-400" },
+  { label: "Students Evaluated",  value: s.studentsEvaluated,  icon: Users,        color: "from-indigo-700 to-blue-700",   bg: "bg-indigo-700/8",    text: "text-indigo-800 dark:text-indigo-400" },
 ];
 
 export function StatisticsCards({ stats }: StatisticsCardsProps) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
       {STAT_CARDS(stats).map((card) => {
         const Icon = card.icon;
         return (

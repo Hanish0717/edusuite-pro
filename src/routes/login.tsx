@@ -22,7 +22,10 @@ import {
   getScopeOptionsForDesignation,
   getDefaultCredentialsForSelection,
   resolveRoleContextFromSelection,
+  DEAN_ROUTE_MAP,
 } from "@/lib/authService";
+import { StaffDesignationDropdown } from "@/components/auth/staff-designation-dropdown";
+
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -55,9 +58,23 @@ const institutionLevelRoles = [
   "hr_manager",
   "vice_principal",
   "exam_controller",
-  // Academic Management: no department/branch scope needed — institution-wide role
-  "academic_management",
-  "Academic Management",
+  "Academic Dean",
+  "academic_dean",
+  "Student Dean",
+  "student_dean",
+  "IQAC",
+  "iqac_dean",
+  "IMA",
+  "ima_dean",
+  "Research & Development",
+  "research_dean",
+  "Finance Dean",
+  "finance_dean",
+  "Examination Dean",
+  "examination_dean",
+  "Placement Dean",
+  "placement_dean",
+  "dean",
 ];
 
 export function LoginPage() {
@@ -144,13 +161,37 @@ export function LoginPage() {
     // Dynamically resolve role context from mock service
     const resolved = resolveRoleContextFromSelection(step1CoreRole, step2Designation, step3Branch);
 
+    if (resolved.role === "external-user" && resolved.externalPersona === "recruiter") {
+      if (email && email.trim()) {
+        const emailHandle = email.split("@")[0] || email;
+        const formattedName = emailHandle.charAt(0).toUpperCase() + emailHandle.slice(1);
+        const comp = email.includes("info")
+          ? "Infosys Limited"
+          : email.includes("tcs")
+          ? "TCS (Tata Consultancy Services)"
+          : email.includes("microsoft")
+          ? "Microsoft India"
+          : email.includes("google")
+          ? "Google Cloud"
+          : "Corporate HR";
+
+        localStorage.setItem("loggedInRecruiterName", formattedName);
+        localStorage.setItem("loggedInRecruiterEmail", email);
+        localStorage.setItem("loggedInRecruiterCompany", comp);
+      }
+    }
+
     setRole(resolved.role);
     setFlags(resolved.flags);
     if (resolved.department) setDepartment(resolved.department);
     if (resolved.externalPersona) setExternalPersona(resolved.externalPersona);
 
     toast.success(resolved.toastMessage);
-    navigate({ to: "/dashboard" });
+    if (step1CoreRole === "staff" && DEAN_ROUTE_MAP[step2Designation]) {
+      navigate({ to: DEAN_ROUTE_MAP[step2Designation] as any });
+    } else {
+      navigate({ to: "/dashboard" });
+    }
   };
 
   return (
@@ -201,21 +242,12 @@ export function LoginPage() {
                 Step 2
               </Badge>
             </Label>
-            <div className="relative">
-              <select
-                value={step2Designation}
-                onChange={(e) => handleStep2Change(e.target.value)}
-                aria-label="2nd Dropdown: Designation / Sub-Role"
-                className="w-full h-10 rounded-xl border border-input bg-card px-3 pr-8 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
-              >
-                {designationOptions.map((opt) => (
-                  <option key={opt.id} value={opt.id}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            </div>
+            <StaffDesignationDropdown
+              coreRole={step1CoreRole}
+              value={step2Designation}
+              options={designationOptions}
+              onChange={handleStep2Change}
+            />
           </div>
 
           {/* 3RD DROPDOWN: BRANCH / DEPARTMENT / FIELD (Hidden dynamically for Institution Level Roles) */}
