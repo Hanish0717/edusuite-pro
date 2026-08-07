@@ -29,7 +29,7 @@ export function getFlagOverrideForModule(
   flags: string[],
   moduleId: string,
 ): Partial<ModulePermissions> | null {
-  if (flags.includes("isSystemAdmin") || flags.includes("isPrincipal")) {
+  if (flags.includes("isSystemAdmin") || flags.includes("isPrincipal") || flags.includes("isAcademicManagement")) {
     return { read: true, create: true, update: true, delete: true, approve: true, scope: "global" };
   }
 

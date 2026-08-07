@@ -20,6 +20,7 @@ import { AccountsDashboard } from "./accounts-dashboard";
 import { LmsDashboard } from "./lms-dashboard";
 import { AlumniCoordinatorDashboard } from "./alumni-coordinator-dashboard";
 import { AlumniDashboard } from "./alumni-dashboard";
+import { AcademicManagementDashboard } from "./academic-management-dashboard";
 
 import {
   AcademicDeanDashboard,
@@ -60,6 +61,7 @@ const DASHBOARD_MAP: Record<string, React.ComponentType> = {
   lms: LmsDashboard,
   alumni_coordinator: AlumniCoordinatorDashboard,
   alumni: AlumniDashboard,
+  academic_management: AcademicManagementDashboard,
 };
 
 export function RoleDashboardDispatcher() {

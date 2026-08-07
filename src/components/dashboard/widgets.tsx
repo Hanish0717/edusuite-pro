@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Activity, Sparkles } from "lucide-react";
+import { Activity, Sparkles, Clock, MapPin, Users, Calendar } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 
@@ -7,6 +7,7 @@ import { Panel } from "@/components/dashboard/panel";
 import { Button } from "@/components/ui/button";
 import { useRole } from "@/context/role-context";
 import { fetchActivities, fetchAiInsightsForRole } from "@/lib/dashboardService";
+import { getFacultyTimetable } from "@/services/master-timetable-service";
 
 const ACTION_ROUTE_MAP: Record<string, { to: string; search?: Record<string, string> }> = {
   // Staff / Faculty Quick Actions
@@ -117,3 +118,80 @@ export function QuickActionsWidget({ actions }: { actions: string[] }) {
     </Panel>
   );
 }
+
+export function FacultyDashboardTimetableWidget({ facultyId = "EMP-CSE-2041" }: { facultyId?: string }) {
+  const navigate = useNavigate();
+  const timetableEntries = useMemo(() => getFacultyTimetable(facultyId), [facultyId]);
+
+  const todayEntries = useMemo(() => {
+    return timetableEntries.filter((e) => e.day === "Monday" || e.day === "Wednesday" || e.day === "Friday");
+  }, [timetableEntries]);
+
+  const upcomingClass = todayEntries[0] || timetableEntries[0];
+  const totalWeeklyHours = timetableEntries.length * 1.5;
+
+  return (
+    <Panel
+      title="Today's Schedule & Classes"
+      description={`Master Timetable Derived · ${totalWeeklyHours} Weekly Hours`}
+      action={
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 text-xs font-bold gap-1"
+          onClick={() => navigate({ to: "/faculty/timetable" })}
+        >
+          <Calendar className="size-3" /> Full Schedule
+        </Button>
+      }
+    >
+      {upcomingClass && (
+        <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 mb-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+              Next Upcoming Class
+            </span>
+            <span className="text-[10px] font-bold text-foreground bg-background px-1.5 py-0.5 rounded border border-border/40">
+              {upcomingClass.section}
+            </span>
+          </div>
+
+          <h4 className="font-extrabold text-xs text-foreground leading-tight">
+            {upcomingClass.subjectName} ({upcomingClass.subjectCode})
+          </h4>
+
+          <div className="grid grid-cols-3 gap-2 text-[11px] text-muted-foreground pt-1 border-t border-blue-500/15">
+            <span className="flex items-center gap-1">
+              <Clock className="size-3 text-blue-500 shrink-0" />
+              <strong className="text-foreground">{upcomingClass.startTime}</strong>
+            </span>
+            <span className="flex items-center gap-1">
+              <MapPin className="size-3 text-blue-500 shrink-0" />
+              <strong className="text-foreground">{upcomingClass.room}</strong>
+            </span>
+            <span className="flex items-center gap-1">
+              <Users className="size-3 text-blue-500 shrink-0" />
+              <strong className="text-foreground">{upcomingClass.studentCount} Students</strong>
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-2">
+        {todayEntries.slice(1, 4).map((cls) => (
+          <div
+            key={cls.id}
+            className="flex items-center justify-between p-2.5 rounded-xl bg-muted/20 border border-border/30 text-xs"
+          >
+            <div className="space-y-0.5">
+              <p className="font-bold text-foreground">{cls.subjectName}</p>
+              <p className="text-[10px] text-muted-foreground">{cls.section} · {cls.room}</p>
+            </div>
+            <span className="text-[11px] font-semibold text-primary font-mono">{cls.startTime}</span>
+          </div>
+        ))}
+      </div>
+    </Panel>
+  );
+}
+

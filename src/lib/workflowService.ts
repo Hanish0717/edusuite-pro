@@ -10,6 +10,10 @@ import {
   WorkflowDomainCategory,
 } from "@/types/approval";
 
+export type { WorkflowItem };
+export { processStandardStep as processWorkflowStep };
+
+
 export const MOCK_DELEGATIONS: DelegationRecord[] = [
   {
     id: "DEL-2026-001",

@@ -9,5 +9,5 @@ export const Route = createFileRoute("/super-admin/faculty")({
 });
 
 function SuperAdminFacultyPage() {
-  return <FacultyModuleView initialTab="faculty-status" />;
+  return <FacultyModuleView />;
 }

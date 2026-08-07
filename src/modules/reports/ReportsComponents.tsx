@@ -131,38 +131,39 @@ interface SummaryProps {
 
 export function SummaryCards({ stats }: SummaryProps) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-3.5">
-      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase block">Generated</span>
-        <p className="text-xl font-bold font-mono text-primary">{stats.totalGenerated}</p>
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 2xl:grid-cols-7 gap-3.5">
+      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 min-w-0 flex flex-col justify-between h-full">
+        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase leading-snug break-words block">Generated</span>
+        <p className="text-xl font-bold font-mono text-primary whitespace-nowrap">{stats.totalGenerated}</p>
       </div>
-      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase block">Attendance</span>
-        <p className="text-xl font-bold font-mono text-blue-600">{stats.attendanceCount}</p>
+      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 min-w-0 flex flex-col justify-between h-full">
+        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase leading-snug break-words block">Attendance</span>
+        <p className="text-xl font-bold font-mono text-blue-600 whitespace-nowrap">{stats.attendanceCount}</p>
       </div>
-      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase block">Marks Sheets</span>
-        <p className="text-xl font-bold font-mono text-emerald-600">{stats.marksCount}</p>
+      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 min-w-0 flex flex-col justify-between h-full">
+        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase leading-snug break-words block">Marks Sheets</span>
+        <p className="text-xl font-bold font-mono text-emerald-600 whitespace-nowrap">{stats.marksCount}</p>
       </div>
-      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase block">Course Files</span>
-        <p className="text-xl font-bold font-mono text-purple-600">{stats.courseFileCount}</p>
+      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 min-w-0 flex flex-col justify-between h-full">
+        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase leading-snug break-words block">Course Files</span>
+        <p className="text-xl font-bold font-mono text-purple-600 whitespace-nowrap">{stats.courseFileCount}</p>
       </div>
-      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase block">Accreditation</span>
-        <p className="text-xl font-bold font-mono text-indigo-600">{stats.nbaNaacCount}</p>
+      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 min-w-0 flex flex-col justify-between h-full">
+        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase leading-snug break-words block">Accreditation</span>
+        <p className="text-xl font-bold font-mono text-indigo-600 whitespace-nowrap">{stats.nbaNaacCount}</p>
       </div>
-      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase block">Pending</span>
-        <p className="text-xl font-bold font-mono text-amber-600">{stats.pendingCount}</p>
+      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 min-w-0 flex flex-col justify-between h-full">
+        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase leading-snug break-words block">Pending</span>
+        <p className="text-xl font-bold font-mono text-amber-600 whitespace-nowrap">{stats.pendingCount}</p>
       </div>
-      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 col-span-2 lg:col-span-1">
-        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase block">This Month</span>
-        <p className="text-xl font-bold font-mono text-rose-600">{stats.generatedThisMonth}</p>
+      <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 col-span-2 sm:col-span-1 lg:col-span-1 min-w-0 flex flex-col justify-between h-full">
+        <span className="text-[0.62rem] font-bold text-muted-foreground uppercase leading-snug break-words block">This Month</span>
+        <p className="text-xl font-bold font-mono text-rose-600 whitespace-nowrap">{stats.generatedThisMonth}</p>
       </div>
     </div>
   );
 }
+
 
 // ─── 5. QUICK REPORT ACTIONS ──────────────────────────────────────────────────
 interface QuickActionsProps {
@@ -187,12 +188,13 @@ export function QuickReportActions({ onGenerate }: QuickActionsProps) {
       title="Quick Report Generation"
       description="Select template guidelines to generate immediate academic sheets."
     >
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
         {actions.map((act) => (
           <button
             key={act.title}
             onClick={() => onGenerate(act.title.replace("Generate ", ""), act.category)}
-            className="p-3 text-left rounded-xl border border-border/80 bg-card hover:border-primary/45 hover:bg-primary/5 transition-all text-xs font-semibold text-foreground cursor-pointer"
+            className="p-3 text-left rounded-xl border border-border/80 bg-card hover:border-primary/45 hover:bg-primary/5 transition-all text-xs font-semibold text-foreground cursor-pointer truncate"
+            title={act.title}
           >
             {act.title}
           </button>
@@ -201,6 +203,7 @@ export function QuickReportActions({ onGenerate }: QuickActionsProps) {
     </Panel>
   );
 }
+
 
 // ─── 6. REPORT CATEGORIES ─────────────────────────────────────────────────────
 interface CategoryProps {

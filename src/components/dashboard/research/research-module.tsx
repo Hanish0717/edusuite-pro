@@ -2,16 +2,9 @@ import { useState, useMemo } from "react";
 import { TrendingUp, RefreshCw, Download, Search, Filter, ChevronDown, Plus } from "lucide-react";
 import type { ResearchModuleData, PublicationItem } from "./types";
 import { StatisticsCards } from "./statistics-cards";
-import { ResearchDashboard } from "./research-dashboard";
 import { PublicationCards } from "./publication-cards";
 import { PatentCards } from "./patent-cards";
-import { BookCards } from "./book-cards";
 import { ProjectCards } from "./project-cards";
-import { GrantCards } from "./grant-cards";
-import { ConferenceCards } from "./conference-cards";
-import { CertificationCards } from "./certification-cards";
-import { AwardCards } from "./award-cards";
-import { ResearchAnalytics } from "./research-analytics";
 import { UploadResearchModal } from "./upload-research-modal";
 import { QuickActions } from "./quick-actions";
 import { EmptyState } from "./empty-state";
@@ -69,24 +62,19 @@ export function ResearchModule({ data, facultyName, academicYear, semester }: Re
 
   const handleActionSelect = (actionId: string) => {
     if (actionId === "add-publication") {
+      setActiveTab("publications");
       setModalOpen(true);
     } else if (actionId === "add-patent") {
+      setActiveTab("patents");
       setModalOpen(true);
-      toast.info("Opening Add Patent panel", {
-        description: "Modal pre-configured to Patent category type."
-      });
     } else if (actionId === "add-project") {
+      setActiveTab("projects");
       setModalOpen(true);
-      toast.info("Opening Add Project panel", {
-        description: "Wizard configured to proposed Project schemes."
-      });
     } else if (actionId === "upload-certificate") {
       setModalOpen(true);
       toast.info("Opening Upload Certificate panel", {
-        description: "Attach credential parameters in Step 4."
+        description: "Attach credential parameters."
       });
-    } else if (actionId === "analytics") {
-      setActiveTab("analytics");
     } else if (actionId === "export") {
       handleExport();
     }
@@ -119,33 +107,21 @@ export function ResearchModule({ data, facultyName, academicYear, semester }: Re
     });
   }, [publications, search, selectedType, selectedYear, selectedStatus]);
 
-  // Dynamic dashboard summary stats computed based on state publications
-  const dynamicSummaryStats = useMemo(() => {
-    return {
-      publicationsThisYear: publications.filter((p) => p.year === 2026 && p.status === "Published").length,
-      acceptedPapers: publications.filter((p) => p.status === "Accepted").length,
-      underReview: publications.filter((p) => p.status === "Under Review").length,
-      ongoingProjects: data.projects.filter((p) => p.status === "Ongoing").length,
-      completedProjects: data.projects.filter((p) => p.status === "Completed").length,
-      grantsReceived: data.grants.filter((g) => g.approvalStatus === "Disbursed" || g.approvalStatus === "Approved").length
-    };
-  }, [publications, data.projects, data.grants]);
-
   // Dynamic KPI stats blocks computed based on state publications
   const dynamicKpiStats = useMemo(() => {
     return {
       totalPublications: publications.length,
-      scopusIndexed: publications.filter((p) => p.indexing === "Scopus").length,
-      sciIndexed: publications.filter((p) => p.indexing === "SCI" || p.indexing === "SCIE").length,
-      conferences: publications.filter((p) => p.type === "Conference").length,
-      patents: data.stats.patents,
-      books: data.stats.books,
-      projects: data.stats.projects,
-      researchGrants: data.stats.researchGrants,
-      citations: data.stats.citations,
-      hIndex: data.stats.hIndex
+      ongoingProjects: data.projects.filter((p) => p.status === "Ongoing").length,
+      researchGrants: data.grants.filter((g) => g.approvalStatus === "Disbursed" || g.approvalStatus === "Approved").length,
+      patents: data.patents.length,
+      publicationsThisYear: publications.filter((p) => p.year === 2026 || p.year === 2025).length,
     };
-  }, [publications, data.stats]);
+  }, [publications, data.projects, data.grants, data.patents]);
+
+  const handleDeletePublication = (pub: PublicationItem) => {
+    setPublications((prev) => prev.filter((p) => p.id !== pub.id));
+    toast.success(`Publication "${pub.title}" deleted.`);
+  };
 
   return (
     <div className="space-y-6">
@@ -181,10 +157,7 @@ export function ResearchModule({ data, facultyName, academicYear, semester }: Re
       {/* ── Research Statistics KPI ─────────────────────────────── */}
       <StatisticsCards stats={dynamicKpiStats} />
 
-      {/* ── Research Dashboard Summary widgets ──────────────────── */}
-      <ResearchDashboard summary={dynamicSummaryStats} />
-
-      {/* ── Quick ActionsCockpit ──────────────────────────────────── */}
+      {/* ── Quick Actions ────────────────────────────────────────── */}
       <QuickActions onActionSelect={handleActionSelect} />
 
       {/* ── Search Toolbar Filters ───────────────────────────────── */}
@@ -261,12 +234,10 @@ export function ResearchModule({ data, facultyName, academicYear, semester }: Re
         <SkeletonLoader />
       ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="flex flex-wrap h-auto p-1 bg-muted rounded-xl">
+          <TabsList className="grid grid-cols-3 w-full max-w-md p-1 bg-muted rounded-xl">
             <TabsTrigger value="publications" className="rounded-lg text-xs py-1.5 font-bold">Publications</TabsTrigger>
-            <TabsTrigger value="patents-books" className="rounded-lg text-xs py-1.5 font-bold">Patents & Books</TabsTrigger>
-            <TabsTrigger value="projects-grants" className="rounded-lg text-xs py-1.5 font-bold">Projects & Funding</TabsTrigger>
-            <TabsTrigger value="events-credentials" className="rounded-lg text-xs py-1.5 font-bold">Workshops & Awards</TabsTrigger>
-            <TabsTrigger value="analytics" className="rounded-lg text-xs py-1.5 font-bold">Analytics Charts</TabsTrigger>
+            <TabsTrigger value="projects" className="rounded-lg text-xs py-1.5 font-bold">Projects</TabsTrigger>
+            <TabsTrigger value="patents" className="rounded-lg text-xs py-1.5 font-bold">Patents</TabsTrigger>
           </TabsList>
 
           {/* Publications Tab */}
@@ -275,53 +246,24 @@ export function ResearchModule({ data, facultyName, academicYear, semester }: Re
             {filteredPublications.length === 0 ? (
               <EmptyState onResetFilters={handleResetFilters} />
             ) : (
-              <PublicationCards publications={filteredPublications} />
+              <PublicationCards
+                publications={filteredPublications}
+                onEditPublication={() => setModalOpen(true)}
+                onDeletePublication={handleDeletePublication}
+              />
             )}
           </TabsContent>
 
-          {/* Patents & Books Tab */}
-          <TabsContent value="patents-books" className="mt-4 space-y-6">
-            <div className="space-y-4">
-              <h2 className="text-sm font-black text-foreground uppercase tracking-wider">Patents Registry</h2>
-              <PatentCards patents={data.patents} />
-            </div>
-            <div className="space-y-4">
-              <h2 className="text-sm font-black text-foreground uppercase tracking-wider">Books & Book Chapters</h2>
-              <BookCards books={data.books} />
-            </div>
+          {/* Projects Tab */}
+          <TabsContent value="projects" className="mt-4 space-y-4">
+            <h2 className="text-sm font-black text-foreground uppercase tracking-wider">Research Projects</h2>
+            <ProjectCards projects={data.projects} />
           </TabsContent>
 
-          {/* Projects & Grants Tab */}
-          <TabsContent value="projects-grants" className="mt-4 space-y-6">
-            <div className="space-y-4">
-              <h2 className="text-sm font-black text-foreground uppercase tracking-wider">Research Projects</h2>
-              <ProjectCards projects={data.projects} />
-            </div>
-            <div className="space-y-4">
-              <h2 className="text-sm font-black text-foreground uppercase tracking-wider">Grants & Funding Agencies</h2>
-              <GrantCards grants={data.grants} />
-            </div>
-          </TabsContent>
-
-          {/* Events & Credentials Tab */}
-          <TabsContent value="events-credentials" className="mt-4 space-y-6">
-            <div className="space-y-4">
-              <h2 className="text-sm font-black text-foreground uppercase tracking-wider">Conferences & Workshops</h2>
-              <ConferenceCards conferences={data.conferences} />
-            </div>
-            <div className="space-y-4">
-              <h2 className="text-sm font-black text-foreground uppercase tracking-wider">Certifications & Badges</h2>
-              <CertificationCards certifications={data.certifications} />
-            </div>
-            <div className="space-y-4">
-              <h2 className="text-sm font-black text-foreground uppercase tracking-wider">Awards & Timeline Achievements</h2>
-              <AwardCards awards={data.awards} />
-            </div>
-          </TabsContent>
-
-          {/* Research Analytics Tab */}
-          <TabsContent value="analytics" className="mt-4">
-            <ResearchAnalytics analytics={data.analytics} />
+          {/* Patents Tab */}
+          <TabsContent value="patents" className="mt-4 space-y-4">
+            <h2 className="text-sm font-black text-foreground uppercase tracking-wider">Patents Registry</h2>
+            <PatentCards patents={data.patents} />
           </TabsContent>
         </Tabs>
       )}

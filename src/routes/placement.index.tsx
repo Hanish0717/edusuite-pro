@@ -1,10 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PlacementModuleView } from "@/modules/placement";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/placement/")({
-  component: PlacementIndexPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/placement/dashboard" });
+  },
 });
-
-function PlacementIndexPage() {
-  return <PlacementModuleView />;
-}
