@@ -9,5 +9,5 @@ export const Route = createFileRoute("/super-admin/academics")({
 });
 
 function SuperAdminAcademicsPage() {
-  return <AcademicsModuleView initialTab="faculty-status" />;
+  return <AcademicsModuleView initialTab="departments" />;
 }

@@ -8,13 +8,13 @@ interface StatisticsCardsProps {
 
 const STAT_CARDS = (s: AssessmentStats) => [
   { label: "Total Assessments",   value: s.total,              icon: FileText,     color: "from-blue-500 to-blue-600",   bg: "bg-blue-500/8",    text: "text-blue-600 dark:text-blue-400" },
-  { label: "Published",           value: s.published,          icon: CheckCircle2, color: "from-emerald-500 to-emerald-600", bg: "bg-emerald-500/8", text: "text-emerald-600 dark:text-emerald-400" },
-  { label: "Draft",               value: s.draft,              icon: Clock,        color: "from-amber-500 to-amber-600",  bg: "bg-amber-500/8",   text: "text-amber-600 dark:text-amber-400" },
-  { label: "Marks Pending",       value: s.marksPending,       icon: AlertTriangle,color: "from-rose-500 to-rose-600",    bg: "bg-rose-500/8",    text: "text-rose-600 dark:text-rose-400" },
-  { label: "Average Score",       value: `${s.averageScore}%`, icon: TrendingUp,   color: "from-violet-500 to-violet-600",bg: "bg-violet-500/8",  text: "text-violet-600 dark:text-violet-400" },
-  { label: "Highest Score",       value: `${s.highestScore}%`, icon: Award,        color: "from-indigo-500 to-indigo-600",bg: "bg-indigo-500/8",  text: "text-indigo-600 dark:text-indigo-400" },
-  { label: "Lowest Score",        value: `${s.lowestScore}%`,  icon: BarChart2,    color: "from-orange-500 to-orange-600",bg: "bg-orange-500/8",  text: "text-orange-600 dark:text-orange-400" },
-  { label: "Students Evaluated",  value: s.studentsEvaluated,  icon: Users,        color: "from-teal-500 to-teal-600",   bg: "bg-teal-500/8",    text: "text-teal-600 dark:text-teal-400" },
+  { label: "Published",           value: s.published,          icon: CheckCircle2, color: "from-indigo-500 to-indigo-600", bg: "bg-indigo-500/8", text: "text-indigo-600 dark:text-indigo-400" },
+  { label: "Draft",               value: s.draft,              icon: Clock,        color: "from-sky-500 to-sky-600",  bg: "bg-sky-500/8",   text: "text-sky-600 dark:text-sky-400" },
+  { label: "Marks Pending",       value: s.marksPending,       icon: AlertTriangle,color: "from-blue-600 to-indigo-600",    bg: "bg-blue-600/8",    text: "text-blue-700 dark:text-blue-400" },
+  { label: "Average Score",       value: `${s.averageScore}%`, icon: TrendingUp,   color: "from-indigo-600 to-blue-500", bg: "bg-indigo-600/8",  text: "text-indigo-700 dark:text-indigo-400" },
+  { label: "Highest Score",       value: `${s.highestScore}%`, icon: Award,        color: "from-blue-700 to-indigo-700",bg: "bg-blue-700/8",  text: "text-blue-800 dark:text-blue-400" },
+  { label: "Lowest Score",        value: `${s.lowestScore}%`,  icon: BarChart2,    color: "from-sky-600 to-blue-600",bg: "bg-sky-600/8",  text: "text-sky-700 dark:text-sky-400" },
+  { label: "Students Evaluated",  value: s.studentsEvaluated,  icon: Users,        color: "from-indigo-700 to-blue-700",   bg: "bg-indigo-700/8",    text: "text-indigo-800 dark:text-indigo-400" },
 ];
 
 export function StatisticsCards({ stats }: StatisticsCardsProps) {

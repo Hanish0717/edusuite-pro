@@ -37,6 +37,7 @@ import {
   type FacultyDashboardData,
 } from "@/data/faculty-mock-data";
 import { toast } from "sonner";
+import { FacultyModuleView } from "@/modules/faculty";
 
 export function StaffDashboard() {
   const { hasFlag, profile } = useRole();
@@ -46,14 +47,6 @@ export function StaffDashboard() {
   // Dynamic department-aware data
   const dashboardData = (FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"]) as FacultyDashboardData;
   
-  // Format current greeting based on time of day
-  const getGreeting = () => {
-    const hrs = new Date().getHours();
-    if (hrs < 12) return "Good Morning";
-    if (hrs < 17) return "Good Afternoon";
-    return "Good Evening";
-  };
-
   const handleQuickAction = (action: string) => {
     toast.success(`Quick Action triggered: ${action}`, {
       description: "Frontend mock interaction active.",
@@ -69,51 +62,19 @@ export function StaffDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* 1. WELCOME SECTION HERO CARD */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-700 p-6 md:p-8 text-white shadow-lg shadow-indigo-500/10">
-        <div className="absolute -right-10 -top-10 size-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -left-10 -bottom-10 size-40 rounded-full bg-white/10 blur-2xl" />
-        
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-md">
-              <Activity className="size-3.5 animate-pulse" /> Active Session
-            </span>
-            <div>
-              <h2 className="font-display text-2xl font-extrabold md:text-3xl tracking-tight">
-                {getGreeting()}, {profile.personaName || dashboardData.facultyName}
-              </h2>
-              <p className="mt-1 text-sm text-white/80 font-medium">
-                {deptName} &middot; ID: {dashboardData.employeeId}
-              </p>
-            </div>
-            
-            <div className="flex flex-wrap gap-2 pt-1">
-              <Badge className="bg-white/15 hover:bg-white/20 text-white border-0 py-1 px-3 rounded-xl font-bold">
-                {dashboardData.designation}
-              </Badge>
-              <Badge className="bg-white/15 hover:bg-white/20 text-white border-0 py-1 px-3 rounded-xl font-bold">
-                Semester {dashboardData.semester}
-              </Badge>
-              <Badge className="bg-white/15 hover:bg-white/20 text-white border-0 py-1 px-3 rounded-xl font-bold">
-                AY {dashboardData.academicYear}
-              </Badge>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-4 shrink-0 bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl p-4">
-            <div className="size-12 rounded-xl bg-white/10 text-white font-black text-lg grid place-items-center">
-              {profile.initials || "FC"}
-            </div>
-            <div>
-              <h4 className="text-xs uppercase font-extrabold tracking-wider text-white/60">Logged In As</h4>
-              <p className="text-sm font-black">{profile.label || "Faculty"}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* 2. DYNAMIC COMPOSABLE SECTIONS FOR ADMINISTRATIVE OVERLAYS */}
+      {(hasFlag("isSuperAdmin") || profile.role === "super-admin" || profile.role === "super_admin") && (
+        <div className="space-y-4 border-b border-border/60 pb-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-primary flex items-center gap-2">
+              <UserCog className="size-4" /> Super Admin Faculty Governance Portal
+            </h3>
+            <Badge variant="secondary">Super Admin Privileges</Badge>
+          </div>
+          <FacultyModuleView initialTab="faculty-status" />
+        </div>
+      )}
+
       {hasFlag("isHod") && (
         <div className="space-y-4 border-b border-border/60 pb-6">
           <div className="flex items-center justify-between">

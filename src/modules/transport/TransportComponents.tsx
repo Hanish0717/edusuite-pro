@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Bus,
-  Search,
   RefreshCw,
   Download,
   Users,
@@ -9,39 +8,47 @@ import {
   AlertCircle,
   FileText,
   Navigation,
-  Sparkles,
-  Settings,
+  Sliders,
   BarChart3,
-  Shield,
   Activity,
+  Calendar,
+  Clock,
+  UserCheck,
+  ShieldCheck,
+  Zap,
+  BellRing,
+  PieChart,
+  ShieldAlert,
+  Search,
+  Filter,
+  FileSpreadsheet,
+  FileCheck,
+  Gauge,
   Fuel,
   Wrench,
-  Clock,
+  Eye,
+  Loader2,
   TrendingUp,
+  PhoneCall,
+  Flame,
+  Lock,
+  Printer,
+  X,
+  History,
+  Sparkles,
+  Award,
   TrendingDown,
-  AlertTriangle,
-  UserCheck,
-  Gauge,
-  Radio,
-  Calendar,
-  ChevronRight,
-  ChevronLeft,
-  CreditCard,
-  MapPin,
-  Globe,
-  Bell,
-  ClipboardList,
-  UserCog,
-  SlidersHorizontal,
-  Phone,
-  Route,
-  Zap,
+  BrainCircuit,
+  CheckSquare,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -57,402 +64,273 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 
 import {
   fetchBusRoutes,
   fetchTransportPasses,
-  INITIAL_ROUTES,
-  INITIAL_PASSES,
-  type BusRoute,
-  type TransportPass,
+  INITIAL_ENHANCED_ROUTES,
+  INITIAL_ENHANCED_PASSES,
+  DEFAULT_TRANSPORT_CONFIG,
+  INITIAL_VEHICLE_COMPLIANCE,
+  DEFAULT_FLEET_HEALTH,
+  DEFAULT_ANALYTICS,
+  DEFAULT_POLICY_GOVERNANCE,
+  INITIAL_ALERTS,
+  INITIAL_ACTIVITIES,
+  DEFAULT_STAFF_SUMMARY,
+  type EnhancedBusRoute,
+  type EnhancedTransportPass,
+  type TransportConfig,
+  type VehicleComplianceItem,
+  type FleetHealthCompliance,
+  type ExecutiveTransportAnalyticsData,
+  type PolicyGovernanceData,
+  type TransportAlert,
+  type TransportActivityLog,
+  type TransportStaffSummary,
 } from "./TransportService";
 
-// ─── Extended mock data for governance views ───────────────────────────────
-
-const FLEET_HEALTH_DATA = [
-  {
-    id: "VH-001", regNo: "TS-09-UB-4589", model: "Tata Starbus Ultra", year: 2021,
-    healthScore: 94, insurance: "2027-03-15", permit: "2026-10-22",
-    pollution: "2026-12-01", fitness: "2027-01-10", roadTax: "2027-03-31",
-    maintenance: "2026-09-10", gpsStatus: "Online", emergencyKit: "OK",
-    fireExtinguisher: "OK", lastServiced: "2026-07-15", status: "Active",
-  },
-  {
-    id: "VH-002", regNo: "TS-09-UB-7812", model: "Ashok Leyland Lynx", year: 2020,
-    healthScore: 87, insurance: "2026-08-30", permit: "2026-09-15",
-    pollution: "2026-08-20", fitness: "2026-10-05", roadTax: "2026-08-30",
-    maintenance: "2026-08-20", gpsStatus: "Online", emergencyKit: "OK",
-    fireExtinguisher: "Renewal Due", lastServiced: "2026-06-28", status: "Active",
-  },
-  {
-    id: "VH-003", regNo: "TS-09-UB-2109", model: "Volvo B8R", year: 2022,
-    healthScore: 98, insurance: "2027-06-20", permit: "2027-02-18",
-    pollution: "2027-01-25", fitness: "2027-03-12", roadTax: "2027-06-20",
-    maintenance: "2026-11-01", gpsStatus: "Online", emergencyKit: "OK",
-    fireExtinguisher: "OK", lastServiced: "2026-07-30", status: "Active",
-  },
-  {
-    id: "VH-004", regNo: "TS-09-UB-3341", model: "Tata Starbus", year: 2019,
-    healthScore: 71, insurance: "2026-09-05", permit: "2026-08-12",
-    pollution: "2026-08-01", fitness: "2026-09-20", roadTax: "2026-09-05",
-    maintenance: "2026-08-05", gpsStatus: "Offline", emergencyKit: "Missing",
-    fireExtinguisher: "OK", lastServiced: "2026-05-10", status: "Maintenance",
-  },
-];
-
-const TRANSPORT_ALERTS = [
-  { id: 1, type: "warning", icon: "wrench", title: "Maintenance Due", detail: "TS-09-UB-3341 — Service overdue by 12 days", time: "2h ago" },
-  { id: 2, type: "danger",  icon: "shield", title: "Insurance Expiring", detail: "TS-09-UB-7812 — Insurance expires in 26 days", time: "Today" },
-  { id: 3, type: "danger",  icon: "shield", title: "Permit Expiring",    detail: "TS-09-UB-3341 — Permit expires Aug 12, 2026", time: "Today" },
-  { id: 4, type: "danger",  icon: "radio",  title: "GPS Offline",        detail: "TS-09-UB-3341 — GPS signal lost since 06:40 AM", time: "6h ago" },
-  { id: 5, type: "warning", icon: "fuel",   title: "High Fuel Consumption", detail: "Route 2 — 18% above monthly average", time: "Yesterday" },
-  { id: 6, type: "info",    icon: "clock",  title: "Route Delay",        detail: "Route 1 — Morning trip delayed by 14 min", time: "Today" },
-];
-
-const RECENT_ACTIVITIES = [
-  { id: 1, date: "2026-08-04", user: "Transport Manager", action: "Fleet Inspection Completed — All 3 active buses cleared" },
-  { id: 2, date: "2026-08-03", user: "Transport Manager", action: "Vehicle Serviced — TS-09-UB-4589 engine oil & filters changed" },
-  { id: 3, date: "2026-08-02", user: "System",            action: "GPS Activated — New GPS unit installed on TS-09-UB-7812" },
-  { id: 4, date: "2026-08-01", user: "Transport Manager", action: "Permit Renewed — TS-09-UB-2109 permit renewed till Feb 2027" },
-  { id: 5, date: "2026-07-30", user: "Transport Manager", action: "Maintenance Completed — TS-09-UB-2109 brake system overhauled" },
-  { id: 6, date: "2026-07-28", user: "Transport Manager", action: "Fuel Audit Completed — Q2 fuel consumption ₹3.84 L total" },
-];
-
-const STAFF_SUMMARY = [
-  { role: "Transport Manager",   name: "Mr. P. Kishore Kumar",  status: "On Duty",  contact: "+91 9848055566" },
-  { role: "Fleet Supervisor",    name: "Mr. D. Srinivasa Rao",  status: "On Duty",  contact: "+91 9848011122" },
-  { role: "Fleet Supervisor",    name: "Mrs. T. Padmavathi",    status: "On Leave",  contact: "+91 9848033344" },
-  { role: "Driver",              name: "M. Ramakrishna",        status: "On Duty",  contact: "+91 9848012345" },
-  { role: "Driver",              name: "S. Venkatesh",          status: "On Duty",  contact: "+91 9848098765" },
-  { role: "Driver",              name: "K. Nageswara Rao",      status: "On Duty",  contact: "+91 9848033344" },
-  { role: "Mechanic",            name: "B. Raju",               status: "On Duty",  contact: "+91 9848077788" },
-  { role: "Support Staff",       name: "G. Lakshmi",            status: "On Duty",  contact: "+91 9848099900" },
-];
-
-// ─── Dynamic Transport Configuration Panels ───────────────────────────────
-
-type FieldType = "text" | "number" | "select" | "toggle" | "textarea" | "time";
-
-interface ConfigField {
-  key: string;
-  label: string;
-  type: FieldType;
-  placeholder?: string;
-  options?: string[];
-  defaultValue?: string;
-  description?: string;
-}
-
-interface ConfigPanel {
-  id: string;
-  label: string;
-  icon: React.ElementType;
-  description: string;
-  fields: ConfigField[];
-}
-
-const TRANSPORT_CONFIG_PANELS: ConfigPanel[] = [
-  {
-    id: "fee-structure",
-    label: "Transport Fee Structure",
-    icon: CreditCard,
-    description: "Set annual transport fee slabs by distance zone and student category.",
-    fields: [
-      { key: "zone1Fee", label: "Zone 1 Fee (0–10 km)", type: "number", placeholder: "28000", defaultValue: "28000", description: "Annual fee in ₹" },
-      { key: "zone2Fee", label: "Zone 2 Fee (10–20 km)", type: "number", placeholder: "32000", defaultValue: "32000" },
-      { key: "zone3Fee", label: "Zone 3 Fee (>20 km)", type: "number", placeholder: "36000", defaultValue: "36000" },
-      { key: "staffDiscount", label: "Staff Discount (%)", type: "number", placeholder: "20", defaultValue: "20" },
-      { key: "scStDiscount", label: "SC/ST Student Concession (%)", type: "number", placeholder: "50", defaultValue: "50" },
-      { key: "lateFee", label: "Late Payment Fine (₹/month)", type: "number", placeholder: "500", defaultValue: "500" },
-      { key: "paymentMode", label: "Accepted Payment Modes", type: "select", options: ["Online Only", "Online + Challan", "All Modes"], defaultValue: "Online + Challan" },
-    ],
-  },
-  {
-    id: "route-categories",
-    label: "Route Categories",
-    icon: Route,
-    description: "Define route types and categorisation rules for the fleet.",
-    fields: [
-      { key: "primaryRoutes", label: "Primary Route Count", type: "number", placeholder: "3", defaultValue: "3" },
-      { key: "feederRoutes", label: "Feeder/Shuttle Routes", type: "number", placeholder: "0", defaultValue: "0" },
-      { key: "staffRoutes", label: "Staff-Only Routes", type: "number", placeholder: "1", defaultValue: "1" },
-      { key: "categoryNaming", label: "Route Naming Convention", type: "select", options: ["Route 1, Route 2…", "North/South/East/West", "Zone A/B/C"], defaultValue: "Route 1, Route 2…" },
-      { key: "maxStops", label: "Maximum Stops per Route", type: "number", placeholder: "10", defaultValue: "10" },
-    ],
-  },
-  {
-    id: "transport-policies",
-    label: "Transport Policies",
-    icon: ClipboardList,
-    description: "Institutional transport governance policies and conduct rules.",
-    fields: [
-      { key: "passValidity", label: "Transport Pass Validity", type: "select", options: ["Annual", "Semester", "Monthly"], defaultValue: "Annual" },
-      { key: "cancellationPolicy", label: "Pass Cancellation Notice (days)", type: "number", placeholder: "15", defaultValue: "15" },
-      { key: "transferPolicy", label: "Route Transfer Policy", type: "select", options: ["Allowed Once/Year", "Allowed Anytime", "Not Allowed"], defaultValue: "Allowed Once/Year" },
-      { key: "conductPolicy", label: "Student Conduct Policy", type: "textarea", placeholder: "Students must board only at designated stops…", defaultValue: "Students must board only at designated stops and carry valid transport passes at all times." },
-      { key: "lostPassFee", label: "Lost Pass Replacement Fee (₹)", type: "number", placeholder: "200", defaultValue: "200" },
-    ],
-  },
-  {
-    id: "student-eligibility",
-    label: "Student Eligibility Rules",
-    icon: UserCog,
-    description: "Define which students qualify for institutional transport.",
-    fields: [
-      { key: "minDistance", label: "Minimum Distance from Campus (km)", type: "number", placeholder: "5", defaultValue: "5" },
-      { key: "maxDistance", label: "Maximum Distance Served (km)", type: "number", placeholder: "40", defaultValue: "40" },
-      { key: "eligibleYears", label: "Eligible Student Years", type: "select", options: ["All Years", "Year 1 Only", "Year 1 & 2", "Year 2 onwards"], defaultValue: "All Years" },
-      { key: "hostelerEligible", label: "Hostel Residents Eligible", type: "toggle", defaultValue: "false" },
-      { key: "maxPassPerStudent", label: "Max Passes per Student", type: "number", placeholder: "1", defaultValue: "1" },
-    ],
-  },
-  {
-    id: "staff-transport",
-    label: "Staff Transport Policy",
-    icon: UserCheck,
-    description: "Transport entitlements and rules for teaching and non-teaching staff.",
-    fields: [
-      { key: "staffPassType", label: "Staff Pass Type", type: "select", options: ["Subsidised", "Free", "Full Pay"], defaultValue: "Subsidised" },
-      { key: "staffSubsidy", label: "Staff Fee Subsidy (%)", type: "number", placeholder: "20", defaultValue: "20" },
-      { key: "staffDedicatedSeats", label: "Reserved Seats per Bus", type: "number", placeholder: "4", defaultValue: "4" },
-      { key: "staffPriority", label: "Staff Boarding Priority", type: "toggle", defaultValue: "true" },
-      { key: "staffRouteChange", label: "Route Change Requests", type: "select", options: ["HR Approval Required", "Self-Service", "Transport Manager Approval"], defaultValue: "HR Approval Required" },
-    ],
-  },
-  {
-    id: "gps-config",
-    label: "GPS Configuration",
-    icon: Globe,
-    description: "Fleet GPS tracking system settings and alert thresholds.",
-    fields: [
-      { key: "gpsProvider", label: "GPS Provider", type: "select", options: ["iTrack", "MapMyIndia", "Trimble", "Vamosys"], defaultValue: "Vamosys" },
-      { key: "updateInterval", label: "Location Update Interval (sec)", type: "number", placeholder: "30", defaultValue: "30" },
-      { key: "offlineAlert", label: "Alert if GPS Offline for (min)", type: "number", placeholder: "10", defaultValue: "10" },
-      { key: "geofenceRadius", label: "Campus Geofence Radius (m)", type: "number", placeholder: "200", defaultValue: "200" },
-      { key: "parentTracking", label: "Enable Parent Live Tracking", type: "toggle", defaultValue: "true" },
-      { key: "gpsRetention", label: "Location Data Retention (days)", type: "number", placeholder: "90", defaultValue: "90" },
-    ],
-  },
-  {
-    id: "fuel-standards",
-    label: "Fuel Consumption Standards",
-    icon: Fuel,
-    description: "Set fuel efficiency benchmarks and alert thresholds for fleet vehicles.",
-    fields: [
-      { key: "stdEfficiency", label: "Standard Efficiency (km/l)", type: "number", placeholder: "12", defaultValue: "12" },
-      { key: "alertThreshold", label: "Alert if Below (km/l)", type: "number", placeholder: "9", defaultValue: "9" },
-      { key: "fuelType", label: "Fleet Fuel Type", type: "select", options: ["Diesel", "CNG", "Electric", "Hybrid"], defaultValue: "Diesel" },
-      { key: "monthlyBudget", label: "Monthly Fuel Budget (₹)", type: "number", placeholder: "130000", defaultValue: "130000" },
-      { key: "fuelAuditFreq", label: "Fuel Audit Frequency", type: "select", options: ["Weekly", "Monthly", "Quarterly"], defaultValue: "Monthly" },
-    ],
-  },
-  {
-    id: "vehicle-inspection",
-    label: "Vehicle Inspection Schedule",
-    icon: Wrench,
-    description: "Set maintenance and safety inspection intervals for the fleet.",
-    fields: [
-      { key: "serviceInterval", label: "Routine Service Interval (km)", type: "number", placeholder: "10000", defaultValue: "10000" },
-      { key: "preTrip", label: "Pre-Trip Inspection", type: "toggle", defaultValue: "true" },
-      { key: "annualFitness", label: "Annual Fitness Check Month", type: "select", options: ["January", "April", "July", "October"], defaultValue: "January" },
-      { key: "tirePressure", label: "Tyre Pressure Check Frequency", type: "select", options: ["Daily", "Weekly", "Before Each Trip"], defaultValue: "Weekly" },
-      { key: "safetyKitCheck", label: "Emergency Kit Inspection Frequency", type: "select", options: ["Monthly", "Quarterly", "Semi-Annual"], defaultValue: "Monthly" },
-      { key: "inspectionAuthority", label: "Inspection Authority", type: "select", options: ["Internal", "RTO", "Third-Party Agency"], defaultValue: "RTO" },
-    ],
-  },
-  {
-    id: "driver-compliance",
-    label: "Driver Compliance Rules",
-    icon: Shield,
-    description: "Driver eligibility, conduct, and license compliance standards.",
-    fields: [
-      { key: "minLicenseClass", label: "Minimum License Class", type: "select", options: ["LMV", "HMV", "HPMV/Transport"], defaultValue: "HPMV/Transport" },
-      { key: "minExperience", label: "Minimum Driving Experience (years)", type: "number", placeholder: "3", defaultValue: "3" },
-      { key: "backgroundCheck", label: "Police Background Verification", type: "toggle", defaultValue: "true" },
-      { key: "medicalFitness", label: "Annual Medical Fitness Certificate", type: "toggle", defaultValue: "true" },
-      { key: "speedLimit", label: "Campus Zone Speed Limit (km/h)", type: "number", placeholder: "20", defaultValue: "20" },
-      { key: "licenseRenewalAlert", label: "License Renewal Alert (days before)", type: "number", placeholder: "60", defaultValue: "60" },
-    ],
-  },
-  {
-    id: "transport-timings",
-    label: "Transport Timings",
-    icon: Clock,
-    description: "Set morning and evening bus departure and arrival time schedules.",
-    fields: [
-      { key: "morningDeparture", label: "Morning Campus Arrival Time", type: "time", defaultValue: "08:00" },
-      { key: "morningReturn", label: "Evening Campus Departure Time", type: "time", defaultValue: "17:30" },
-      { key: "saturdayService", label: "Saturday Service", type: "select", options: ["Full Service", "Half Service", "No Service"], defaultValue: "Half Service" },
-      { key: "sundayService", label: "Sunday Service", type: "toggle", defaultValue: "false" },
-      { key: "bufferTime", label: "Stop Wait Time (minutes)", type: "number", placeholder: "3", defaultValue: "3" },
-      { key: "latePickup", label: "Late Exam Special Pickup", type: "toggle", defaultValue: "true" },
-    ],
-  },
-  {
-    id: "emergency-contacts",
-    label: "Emergency Contacts",
-    icon: Phone,
-    description: "Configure emergency contact numbers displayed to students and staff.",
-    fields: [
-      { key: "transportManager", label: "Transport Manager", type: "text", placeholder: "+91 9848055566", defaultValue: "+91 9848055566" },
-      { key: "fleetSupervisor", label: "Fleet Supervisor", type: "text", placeholder: "+91 9848011122", defaultValue: "+91 9848011122" },
-      { key: "emergencyHotline", label: "24h Emergency Hotline", type: "text", placeholder: "+91 1800-XXX-XXXX", defaultValue: "+91 1800-100-2345" },
-      { key: "policeContact", label: "Local Police Station", type: "text", placeholder: "+91 040-XXXXXXXX", defaultValue: "+91 040-27852345" },
-      { key: "ambulance", label: "Nearest Ambulance", type: "text", placeholder: "108", defaultValue: "108" },
-      { key: "gpsControlRoom", label: "GPS Control Room", type: "text", placeholder: "+91 XXXXXXXXXX", defaultValue: "+91 9848099900" },
-    ],
-  },
-  {
-    id: "notification-rules",
-    label: "Notification Rules",
-    icon: Bell,
-    description: "Configure automated notifications sent to students, staff and parents.",
-    fields: [
-      { key: "departureSMS", label: "Departure Alert (SMS)", type: "toggle", defaultValue: "true" },
-      { key: "arrivalPush", label: "Campus Arrival Push Notification", type: "toggle", defaultValue: "true" },
-      { key: "delayAlert", label: "Delay Alert Threshold (minutes)", type: "number", placeholder: "10", defaultValue: "10" },
-      { key: "breakdownAlert", label: "Breakdown Instant Alert", type: "toggle", defaultValue: "true" },
-      { key: "feeDueAlert", label: "Fee Due Reminder (days before)", type: "number", placeholder: "15", defaultValue: "15" },
-      { key: "channel", label: "Primary Notification Channel", type: "select", options: ["SMS + App", "App Only", "Email + App", "SMS + Email + App"], defaultValue: "SMS + App" },
-    ],
-  },
-  {
-    id: "holiday-schedule",
-    label: "Holiday Transport Schedule",
-    icon: Calendar,
-    description: "Configure transport operations during holidays, exams, and special events.",
-    fields: [
-      { key: "examService", label: "Exam Period Service", type: "select", options: ["Full Service", "Exam Timing Only", "No Service"], defaultValue: "Exam Timing Only" },
-      { key: "festivalService", label: "Festival Holiday Service", type: "toggle", defaultValue: "false" },
-      { key: "noticePeriod", label: "Schedule Change Notice (days)", type: "number", placeholder: "3", defaultValue: "3" },
-      { key: "specialTrips", label: "Allow Special Trip Requests", type: "toggle", defaultValue: "true" },
-      { key: "holidayCalendar", label: "Holiday Calendar Source", type: "select", options: ["Academic Calendar", "Govt. Calendar", "Manual Entry"], defaultValue: "Academic Calendar" },
-    ],
-  },
-];
-
-const REPORT_ITEMS = [
-  "Monthly Fleet Report", "Fuel Usage Report", "Maintenance Report",
-  "Vehicle Utilization", "Driver Performance", "Route Performance", "GPS Summary",
-];
-
 export function TransportModuleView() {
-  const [routes, setRoutes] = useState<BusRoute[]>(INITIAL_ROUTES);
-  const [passes, setPasses] = useState<TransportPass[]>(INITIAL_PASSES);
-  const [activeTab, setActiveTab] = useState<"routes" | "passes" | "health">("routes");
+  const [routes, setRoutes] = useState<EnhancedBusRoute[]>(INITIAL_ENHANCED_ROUTES);
+  const [passes, setPasses] = useState<EnhancedTransportPass[]>(INITIAL_ENHANCED_PASSES);
+  const [activeTab, setActiveTab] = useState<"routes" | "passes" | "health" | "analytics" | "governance">("routes");
 
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [downloadingReport, setDownloadingReport] = useState(false);
+  const [reportExporting, setReportExporting] = useState<string | null>(null);
 
-  // Filter states
-  const [filterDept, setFilterDept]     = useState("all");
-  const [filterYear, setFilterYear]     = useState("all");
-  const [filterRoute, setFilterRoute]   = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
+  // Tab 1 Filters
+  const [routeSearch, setRouteSearch] = useState("");
+  const [routeCategoryFilter, setRouteCategoryFilter] = useState("All");
+  const [routeStatusFilter, setRouteStatusFilter] = useState("All");
 
-  // Modal states
-  const [isConfigOpen, setIsConfigOpen]   = useState(false);
-  const [isReportOpen, setIsReportOpen]   = useState(false);
-  const [activePanel, setActivePanel]     = useState<ConfigPanel | null>(null);
-  const [configData, setConfigData]       = useState<Record<string, string>>(() => {
-    const defaults: Record<string, string> = {};
-    TRANSPORT_CONFIG_PANELS.forEach(panel => {
-      panel.fields.forEach(field => {
-        defaults[`${panel.id}__${field.key}`] = field.defaultValue ?? "";
-      });
-    });
-    return defaults;
+  // Tab 2 Filters
+  const [passSearch, setPassSearch] = useState("");
+  const [filterDept, setFilterDept] = useState("All");
+  const [filterUserType, setFilterUserType] = useState("All");
+  const [filterRoute, setFilterRoute] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterAcademicYear, setFilterAcademicYear] = useState("All");
+
+  // Tab 3 Filters
+  const [complianceList] = useState<VehicleComplianceItem[]>(INITIAL_VEHICLE_COMPLIANCE);
+  const [complianceFilterVehicle, setComplianceFilterVehicle] = useState("All");
+  const [complianceFilterStatus, setComplianceFilterStatus] = useState("All");
+  const [complianceFilterExpiry, setComplianceFilterExpiry] = useState("All");
+
+  // Modals for "View Details"
+  const [selectedRoute, setSelectedRoute] = useState<EnhancedBusRoute | null>(null);
+  const [selectedPass, setSelectedPass] = useState<EnhancedTransportPass | null>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleComplianceItem | null>(null);
+  const [selectedDoc, setSelectedDoc] = useState<{ title: string; category: string; docNo: string; expiry: string; status: string } | null>(null);
+
+  // Quick Action Dialogs State
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [configSubTab, setConfigSubTab] = useState<"general" | "fees" | "vehicles" | "drivers" | "students" | "gps" | "notifications">("general");
+  const [configForm, setConfigForm] = useState<TransportConfig>(DEFAULT_TRANSPORT_CONFIG);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+  const [isReportsOpen, setIsReportsOpen] = useState(false);
+  const [selectedReportType, setSelectedReportType] = useState<string>("Monthly Fleet Report");
+  const [reportVehicleFilter, setReportVehicleFilter] = useState("All");
+  const [reportRouteFilter, setReportRouteFilter] = useState("All");
+  const [reportDriverFilter, setReportDriverFilter] = useState("All");
+  const [reportDeptFilter, setReportDeptFilter] = useState("All");
+  const [reportDateRange, setReportDateRange] = useState("August 2026");
+
+  const [isAuditOpen, setIsAuditOpen] = useState(false);
+  const [auditForm, setAuditForm] = useState({
+    auditTitle: "Q3 RTO Fitness & Safety Fleet Inspection",
+    auditDate: "2026-08-25",
+    auditTime: "09:30",
+    auditType: "RTO Fitness & Safety Audit",
+    auditor: "State RTO Inspection Cell & Campus Fleet Committee",
+    vehicleCategory: "All Fleet",
+    priority: "High",
+    remarks: "Comprehensive bi-annual RTO compliance, emission, and GPS telematics audit.",
   });
+
+  const [isComplianceOpen, setIsComplianceOpen] = useState(false);
+
+  // Telemetry & Governance State
+  const [fleetHealth] = useState<FleetHealthCompliance>(DEFAULT_FLEET_HEALTH);
+  const [analytics] = useState<ExecutiveTransportAnalyticsData>(DEFAULT_ANALYTICS);
+  const [policyGovernance] = useState<PolicyGovernanceData>(DEFAULT_POLICY_GOVERNANCE);
+  const [alerts, setAlerts] = useState<TransportAlert[]>(INITIAL_ALERTS);
+  const [activities, setActivities] = useState<TransportActivityLog[]>(INITIAL_ACTIVITIES);
+
+  const addActivityLog = (action: string, category: string) => {
+    const newLog: TransportActivityLog = {
+      id: `ACT-${Date.now()}`,
+      date: new Date().toISOString().replace("T", " ").substring(0, 16),
+      user: "Super Admin (Executive)",
+      action,
+      category,
+    };
+    setActivities((prev) => [newLog, ...prev]);
+  };
 
   const loadData = async () => {
     setLoading(true);
     const [rt, ps] = await Promise.all([fetchBusRoutes(), fetchTransportPasses()]);
-    setRoutes(rt);
-    setPasses(ps);
+    setRoutes(rt as EnhancedBusRoute[]);
     setLoading(false);
+    toast.success("Super Admin Transport Governance console refreshed");
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  // ── Derived KPI values ───────────────────────────────────────────────────
-  const totalVehicles        = routes.length + 1; // +1 for maintenance bus
-  const vehiclesInService    = routes.filter(r => r.status === "Active").length;
-  const vehiclesMaintenance  = FLEET_HEALTH_DATA.filter(v => v.status === "Maintenance").length;
-  const totalPassHolders     = routes.reduce((s, r) => s + r.passHoldersCount, 0);
-  const totalCapacity        = routes.reduce((s, r) => s + r.capacity, 0);
-  const avgOccupancy         = totalCapacity > 0 ? ((totalPassHolders / totalCapacity) * 100).toFixed(1) : "0";
-  const gpsOnline            = FLEET_HEALTH_DATA.filter(v => v.gpsStatus === "Online").length;
-  const maintenanceDue       = FLEET_HEALTH_DATA.filter(v => v.status === "Maintenance").length;
+  // Filtered Lists
+  const filteredRoutes = routes.filter((r) => {
+    const matchesSearch =
+      r.routeNo.toLowerCase().includes(routeSearch.toLowerCase()) ||
+      r.routeName.toLowerCase().includes(routeSearch.toLowerCase()) ||
+      r.busRegNo.toLowerCase().includes(routeSearch.toLowerCase()) ||
+      r.driverName.toLowerCase().includes(routeSearch.toLowerCase()) ||
+      r.routeCode.toLowerCase().includes(routeSearch.toLowerCase());
+    const matchesCategory = routeCategoryFilter === "All" || r.routeCategory === routeCategoryFilter;
+    const matchesStatus = routeStatusFilter === "All" || r.status === routeStatusFilter;
 
-  // ── Pass monitoring derived ───────────────────────────────────────────────
-  const passStudents  = passes.filter(p => p.rollNo.match(/^[0-9]{2}/)).length;
-  const passFaculty   = passes.length - passStudents;
-  const passPaid      = passes.filter(p => p.paymentStatus === "Paid").length;
-  const passPending   = passes.filter(p => p.paymentStatus === "Pending" || p.paymentStatus === "Partial").length;
-  const passRevenue   = passes.reduce((s, p) => s + p.annualFee, 0);
-
-  // ── Fleet route table rows ────────────────────────────────────────────────
-  const fleetRows = routes.map((r, idx) => {
-    const hd = FLEET_HEALTH_DATA[idx] || FLEET_HEALTH_DATA[0];
-    const occ = r.capacity > 0 ? ((r.passHoldersCount / r.capacity) * 100).toFixed(0) : "0";
-    return { ...r, healthScore: hd.healthScore, gpsStatus: hd.gpsStatus, maintenanceDue: hd.maintenance, fuelEff: "11.4 km/l", distance: `${28 + idx * 6} km`, occupancy: occ, inspectionStatus: hd.healthScore >= 90 ? "Passed" : "Pending" };
+    return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const filteredRoutes = fleetRows.filter(r =>
-    r.routeNo.toLowerCase().includes(search.toLowerCase()) ||
-    r.routeName.toLowerCase().includes(search.toLowerCase()) ||
-    r.busRegNo.toLowerCase().includes(search.toLowerCase()) ||
-    r.driverName.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredPasses = passes.filter((p) => {
+    const matchesSearch =
+      p.studentName.toLowerCase().includes(passSearch.toLowerCase()) ||
+      p.rollNo.toLowerCase().includes(passSearch.toLowerCase()) ||
+      p.passId.toLowerCase().includes(passSearch.toLowerCase());
+    const matchesDept = filterDept === "All" || p.department === filterDept;
+    const matchesUser = filterUserType === "All" || p.userType === filterUserType;
+    const matchesRoute = filterRoute === "All" || p.routeNo === filterRoute;
+    const matchesStatus = filterStatus === "All" || p.passStatus === filterStatus;
+    const matchesYear = filterAcademicYear === "All" || p.academicYear === filterAcademicYear;
 
-  const filteredPasses = passes.filter(p => {
-    const matchDept   = filterDept === "all"   || p.department === filterDept;
-    const matchRoute  = filterRoute === "all"  || p.routeNo === filterRoute;
-    const matchStatus = filterStatus === "all" || p.paymentStatus === filterStatus;
-    return matchDept && matchRoute && matchStatus;
+    return matchesSearch && matchesDept && matchesUser && matchesRoute && matchesStatus && matchesYear;
   });
 
-  // ── Export CSV (routes) ──────────────────────────────────────────────────
-  const handleExportCSV = () => {
-    const headers = ["Route No", "Route Name", "Bus Reg No", "Driver", "Capacity", "Occupancy%", "GPS", "Health", "Status"];
-    const rows = filteredRoutes.map(r => [r.routeNo, `"${r.routeName}"`, r.busRegNo, `"${r.driverName}"`, r.capacity, r.occupancy, r.gpsStatus, r.healthScore, r.status]);
-    const csv = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+  const filteredCompliance = complianceList.filter((item) => {
+    const matchesVehicle = complianceFilterVehicle === "All" || item.vehicleNo === complianceFilterVehicle;
+    const matchesStatus =
+      complianceFilterStatus === "All" ||
+      item.vehicleHealth === complianceFilterStatus ||
+      item.insuranceStatus === complianceFilterStatus;
+    const matchesExpiry =
+      complianceFilterExpiry === "All" ||
+      (complianceFilterExpiry === "Expiring Soon" && (item.insuranceStatus === "Expiring Soon" || item.permitStatus === "Expiring Soon")) ||
+      (complianceFilterExpiry === "Expired" && (item.pollutionCertificate === "Expired" || item.fitnessCertificate === "Expired"));
+
+    return matchesVehicle && matchesStatus && matchesExpiry;
+  });
+
+  const handleSaveConfig = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsConfigOpen(false);
+    addActivityLog("Updated Transport Policy & Governance Configuration", "Configuration");
+    toast.success("Transport Policy & Governance Configuration updated!");
+  };
+
+  const handleResetConfig = () => {
+    setConfigForm(DEFAULT_TRANSPORT_CONFIG);
+    toast.info("Transport Configuration reset to default policy values.");
+  };
+
+  const handleExportRoutesCSV = () => {
+    const headers = ["Route Code", "Route No", "Route Name", "Category", "Bus Reg No", "Driver", "Capacity", "Pass Holders", "Students", "Faculty", "Waiting List", "Occupancy %", "Distance (km)", "Travel Time", "On-Time %", "GPS Status", "Vehicle Health", "Status"];
+    const rows = filteredRoutes.map((r) => [r.routeCode, r.routeNo, `"${r.routeName}"`, `"${r.routeCategory}"`, r.busRegNo, `"${r.driverName}"`, r.capacity, r.passHoldersCount, r.studentCount, r.facultyCount, r.waitingList, `${r.occupancyPercentage}%`, r.distanceKm, `"${r.estimatedTravelTime}"`, `${r.onTimePerformancePct}%`, `"${r.gpsStatus}"`, r.vehicleHealth, r.status]);
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
-    link.setAttribute("href", encodeURI(csv));
-    link.setAttribute("download", `Fleet_Overview_Report_${new Date().toISOString().split("T")[0]}.csv`);
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Route_Analytics_Report_${new Date().toISOString().split("T")[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success("Fleet Overview exported to CSV!");
+    addActivityLog("Exported Route Directory to CSV", "Export");
+    toast.success("Exported route directory to CSV!");
   };
 
-  // ─── UI helpers ───────────────────────────────────────────────────────────
-  const alertTypeColor = (t: string) =>
-    t === "danger" ? "text-red-500 bg-red-500/10 border-red-500/20"
-    : t === "warning" ? "text-amber-500 bg-amber-500/10 border-amber-500/20"
-    : "text-blue-500 bg-blue-500/10 border-blue-500/20";
-
-  const healthBadge = (score: number) =>
-    score >= 90 ? <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Grade A+</Badge>
-    : score >= 75 ? <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">Grade B</Badge>
-    : <Badge className="bg-red-500/10 text-red-600 text-[0.65rem]">Grade C</Badge>;
-
-  const docBadge = (expiry: string) => {
-    const days = Math.ceil((new Date(expiry).getTime() - Date.now()) / 86400000);
-    if (days < 0)  return <Badge className="bg-red-500/10 text-red-600 text-[0.65rem]">Expired</Badge>;
-    if (days < 30) return <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">Expiring {days}d</Badge>;
-    return <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">Valid</Badge>;
+  const handleExportPassesCSV = () => {
+    const headers = ["Pass ID", "Name", "Roll / Employee ID", "User Type", "Department", "Year", "Route", "Pickup Stop", "Drop Point", "Pass Type", "Annual Fee", "Payment Status", "Expiry Date", "Renewal Status", "Status"];
+    const rows = filteredPasses.map((p) => [p.passId, `"${p.studentName}"`, p.rollNo, p.userType, p.department, `"${p.year}"`, p.routeNo, `"${p.pickupStop}"`, `"${p.dropPoint}"`, `"${p.passType}"`, p.annualFee, p.paymentStatus, p.expiryDate, `"${p.renewalStatus}"`, p.passStatus]);
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Transport_Pass_Directory_${new Date().toISOString().split("T")[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    addActivityLog("Exported Pass Holders Directory to CSV", "Export");
+    toast.success("Exported pass holders directory to CSV!");
   };
 
-  const staffStatus = (s: string) =>
-    s === "On Duty" ? <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">On Duty</Badge>
-    : <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">On Leave</Badge>;
+  const handleDownloadTransportReport = () => {
+    setDownloadingReport(true);
+    setTimeout(() => {
+      const textContent = `INSTITUTIONAL TRANSPORT GOVERNANCE REPORT\nGenerated: ${new Date().toISOString()}\n\n1. FLEET SUMMARY\nTotal Active Routes: ${routes.length}\nFleet Occupancy: ${analytics.averageOccupancyPct}%\nActive Buses: 24 Buses (100% Operational)\nTotal Transport Revenue: ${analytics.transportRevenue}\nMonthly Fuel Cost: ${analytics.monthlyFuelCost}\nMonthly Maintenance Cost: ${analytics.monthlyMaintenanceCost}\n\n2. VEHICLE HEALTH & COMPLIANCE SUMMARY\nOverall Fleet Health Score: ${fleetHealth.vehicleHealthScore}/100\nInsurance Expiry Status: ${fleetHealth.insuranceExpiry}\nPermit Status: ${fleetHealth.permitStatus}\nPollution Certificate: ${fleetHealth.pollutionCertificate}\nFitness Clearance: ${fleetHealth.fitnessCertificate}\nGPS Tracking: ${fleetHealth.gpsStatus}\n\n3. ROUTE UTILIZATION LEDGER\n${routes.map(r => `${r.routeCode} (${r.routeNo}): ${r.routeName} | Bus: ${r.busRegNo} | Driver: ${r.driverName} | Occupancy: ${r.occupancyPercentage}%`).join("\n")}\n`;
+
+      const blob = new Blob([textContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Institutional_Transport_Governance_Report_${new Date().toISOString().split("T")[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      setDownloadingReport(false);
+      addActivityLog("Downloaded Institutional Transport Governance Report", "Reports");
+      toast.success("Institutional Transport Governance Report compiled & downloaded!");
+    }, 500);
+  };
+
+  const handleScheduleAuditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsAuditOpen(false);
+    addActivityLog(`Scheduled Fleet Audit: ${auditForm.auditTitle} for ${auditForm.auditDate}`, "Audit");
+
+    const newAlert: TransportAlert = {
+      id: `ALT-${Date.now()}`,
+      severity: "medium",
+      title: `Fleet Audit Scheduled: ${auditForm.auditTitle}`,
+      description: `Scheduled for ${auditForm.auditDate} at ${auditForm.auditTime}. Auditor: ${auditForm.auditor}`,
+      timestamp: "Just now",
+    };
+    setAlerts((prev) => [newAlert, ...prev]);
+
+    toast.success(`Fleet Audit scheduled successfully for ${auditForm.auditDate}!`);
+  };
+
+  const handleExportReport = (format: "PDF" | "Excel" | "CSV") => {
+    setReportExporting(format);
+    setTimeout(() => {
+      const mime = format === "PDF" ? "application/pdf" : format === "Excel" ? "application/vnd.ms-excel" : "text/csv";
+      const ext = format.toLowerCase();
+      const content = `FLEET REPORT - ${selectedReportType.toUpperCase()}\nDate: ${new Date().toISOString()}\nFilters: Vehicle=${reportVehicleFilter}, Route=${reportRouteFilter}, Driver=${reportDriverFilter}, Dept=${reportDeptFilter}, DateRange=${reportDateRange}\n\nReport Summary Data:\nTotal Fleet Occupancy: 92.4%\nTotal Fuel Cost: ₹4.25 Lakhs\nTotal Maintenance Cost: ₹1.15 Lakhs\nDriver Safety Score: 98/100\n`;
+
+      const blob = new Blob([content], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Fleet_${selectedReportType.replace(/\s+/g, "_")}_${new Date().toISOString().split("T")[0]}.${ext}`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      setReportExporting(null);
+      addActivityLog(`Exported ${selectedReportType} (${format})`, "Reports");
+      toast.success(`${selectedReportType} exported to ${format} successfully!`);
+    }, 400);
+  };
 
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
-
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0">
@@ -461,357 +339,397 @@ export function TransportModuleView() {
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold font-display tracking-tight text-foreground">
-                Campus Transport &amp; Fleet Management
+                Super Admin Transport & Fleet Governance Console
               </h1>
               <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">
-                Campus Services Core
+                Institutional Monitoring & Compliance
               </Badge>
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-              Fleet governance, route analytics, compliance monitoring and transport intelligence.
+              Institutional governance console for fleet telemetry, route optimization, driver compliance, passenger rosters, and financial transport reports.
             </p>
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Executive Action Bar */}
         <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto flex-wrap">
           <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="h-9 gap-2 text-xs font-medium">
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
           </Button>
-          <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-9 gap-2 text-xs font-medium">
-            <Download className="size-3.5" /> Export Routes
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => setIsReportOpen(true)} className="h-9 border-primary/30 text-primary gap-2 text-xs font-semibold">
-            <BarChart3 className="size-4" /> Fleet Reports
+          <Button variant="outline" size="sm" onClick={handleDownloadTransportReport} disabled={downloadingReport} className="h-9 gap-2 text-xs font-medium">
+            {downloadingReport ? <Loader2 className="size-3.5 animate-spin" /> : <Download className="size-3.5" />} Export Governance Report
           </Button>
           <Button size="sm" onClick={() => setIsConfigOpen(true)} className="h-9 bg-brand-gradient text-white gap-2 text-xs font-semibold shadow-glow">
-            <Settings className="size-4" /> Transport Configuration
+            <Sliders className="size-4" /> Policy Configuration
           </Button>
         </div>
       </div>
 
-      {/* ── KPI Row 1 — Existing ──────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Fleet Buses</span>
-            <Bus className="size-4 text-primary" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-primary">{vehiclesInService} Active</p>
-          <p className="text-[0.68rem] text-muted-foreground">GPS tracking enabled</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Active Bus Routes</span>
-            <Navigation className="size-4 text-emerald-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-emerald-600">{routes.length} Routes</p>
-          <p className="text-[0.68rem] text-emerald-600 font-medium">Greater Hyderabad Region</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Transport Pass Holders</span>
-            <Users className="size-4 text-blue-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-blue-600">{totalPassHolders.toLocaleString()} Scholars</p>
-          <p className="text-[0.68rem] text-muted-foreground">Students &amp; Staff</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Driver Compliance</span>
-            <CheckCircle2 className="size-4 text-purple-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-purple-600">100% Verified</p>
-          <p className="text-[0.68rem] text-purple-600 font-medium">RTO Commercial Licenses</p>
-        </div>
+      {/* EXECUTIVE TABS SWITCHER (5 TABS) */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
+        <button
+          onClick={() => setActiveTab("routes")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "routes" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          1. Fleet Overview & Route Analytics ({routes.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("passes")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "passes" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          2. Transport Pass Holders Directory ({passes.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("health")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "health" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          3. Fleet Health & Vehicle Compliance
+        </button>
+        <button
+          onClick={() => setActiveTab("analytics")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "analytics" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          4. Transport Executive Analytics
+        </button>
+        <button
+          onClick={() => setActiveTab("governance")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "governance" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          5. Transport Policy & Governance
+        </button>
       </div>
 
-      {/* ── KPI Row 2 — New Governance Row ───────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-        {[
-          { label: "In Service",        value: vehiclesInService,       unit: "Buses",  color: "text-emerald-600", icon: <Bus className="size-4 text-emerald-500" /> },
-          { label: "Under Maintenance", value: vehiclesMaintenance,     unit: "Buses",  color: "text-amber-600",   icon: <Wrench className="size-4 text-amber-500" /> },
-          { label: "Avg Occupancy",     value: `${avgOccupancy}%`,      unit: "",       color: "text-blue-600",    icon: <Gauge className="size-4 text-blue-500" /> },
-          { label: "Fuel Consumed",     value: "₹3.84L",                unit: "",       color: "text-orange-600",  icon: <Fuel className="size-4 text-orange-500" /> },
-          { label: "Trips Today",       value: 6,                       unit: "Trips",  color: "text-primary",     icon: <Activity className="size-4 text-primary" /> },
-          { label: "Drivers On Duty",   value: 3,                       unit: "Drivers",color: "text-teal-600",    icon: <UserCheck className="size-4 text-teal-500" /> },
-          { label: "GPS Active",        value: gpsOnline,               unit: "Vehs",   color: "text-violet-600",  icon: <Radio className="size-4 text-violet-500" /> },
-          { label: "Transport Revenue", value: `₹${(passRevenue/100000).toFixed(2)}L`, unit: "", color: "text-rose-600", icon: <TrendingUp className="size-4 text-rose-500" /> },
-        ].map((k, i) => (
-          <div key={i} className="p-3 rounded-xl bg-card border border-border/70 shadow-sm space-y-1">
-            <div className="flex items-center justify-between">{k.icon}<span className="text-[0.6rem] font-semibold text-muted-foreground uppercase leading-tight text-right">{k.label}</span></div>
-            <p className={`text-lg font-bold font-mono ${k.color}`}>{k.value}</p>
-            {k.unit && <p className="text-[0.6rem] text-muted-foreground">{k.unit}</p>}
-          </div>
-        ))}
-      </div>
-
-      {/* ── Transport Alerts ─────────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><AlertTriangle className="size-4 text-amber-500" /> Transport Alerts</h2>
-          <Badge variant="outline" className="text-[0.65rem] font-mono">{TRANSPORT_ALERTS.filter(a => a.type === "danger").length} Critical</Badge>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          {TRANSPORT_ALERTS.map(alert => (
-            <div key={alert.id} className={`flex items-start gap-2 p-2.5 rounded-xl border text-xs ${alertTypeColor(alert.type)}`}>
-              <AlertCircle className="size-3.5 mt-0.5 shrink-0" />
-              <div>
-                <p className="font-bold">{alert.title}</p>
-                <p className="opacity-80 text-[0.65rem]">{alert.detail}</p>
-                <p className="opacity-60 text-[0.6rem] mt-0.5">{alert.time}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Tab Switcher ─────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border/80 flex-wrap">
-        {[
-          { key: "routes", label: `1. Fleet Overview & Route Analytics (${routes.length})` },
-          { key: "passes", label: `2. Transport Pass Monitoring (${passes.length})` },
-          { key: "health", label: "3. Fleet Health & Compliance" },
-        ].map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key as typeof activeTab)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === tab.key ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* ══════════════════════════════════════════════════════════════════════
-          TAB 1: FLEET OVERVIEW & ROUTE ANALYTICS
-      ══════════════════════════════════════════════════════════════════════ */}
+      {/* TAB 1: FLEET OVERVIEW & ROUTE ANALYTICS */}
       {activeTab === "routes" && (
         <div className="space-y-4">
-          {/* Fleet Summary Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {[
-              { label: "Fleet Size",        value: totalVehicles,              color: "text-primary" },
-              { label: "Routes Active",     value: routes.length,              color: "text-emerald-600" },
-              { label: "Drivers",           value: STAFF_SUMMARY.filter(s => s.role === "Driver").length, color: "text-blue-600" },
-              { label: "GPS Online",        value: gpsOnline,                  color: "text-violet-600" },
-              { label: "Maintenance Due",   value: maintenanceDue,             color: "text-amber-600" },
-              { label: "Avg Occupancy",     value: `${avgOccupancy}%`,         color: "text-teal-600" },
-            ].map((c, i) => (
-              <div key={i} className="p-3 rounded-xl bg-card border border-border/70 shadow-sm text-center space-y-1">
-                <p className={`text-xl font-bold font-mono ${c.color}`}>{c.value}</p>
-                <p className="text-[0.65rem] text-muted-foreground font-semibold uppercase">{c.label}</p>
+          {/* TAB 1 SUMMARY CARDS (8 CARDS) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 text-center">
+            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Total Routes</span>
+              <span className="text-lg font-bold font-mono text-primary">18 Routes</span>
+            </div>
+            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Fleet Size</span>
+              <span className="text-lg font-bold font-mono text-foreground">24 Buses</span>
+            </div>
+            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-emerald-700 uppercase block truncate">Active Routes</span>
+              <span className="text-lg font-bold font-mono text-emerald-700">18 Active</span>
+            </div>
+            <div className="p-3 rounded-xl bg-muted/40 border border-border/60 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Inactive Routes</span>
+              <span className="text-lg font-bold font-mono text-muted-foreground">0 Inactive</span>
+            </div>
+            <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-blue-700 uppercase block truncate">In Service</span>
+              <span className="text-lg font-bold font-mono text-blue-700">22 Buses</span>
+            </div>
+            <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-purple-700 uppercase block truncate">Avg Occupancy</span>
+              <span className="text-lg font-bold font-mono text-purple-700">{analytics.averageOccupancyPct}%</span>
+            </div>
+            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-emerald-700 uppercase block truncate">GPS Online</span>
+              <span className="text-lg font-bold font-mono text-emerald-700">24 / 24</span>
+            </div>
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-amber-700 uppercase block truncate">Route Utilization</span>
+              <span className="text-lg font-bold font-mono text-amber-700">{analytics.routeUtilization}%</span>
+            </div>
+          </div>
+
+          {/* SEARCH & FILTERS BAR */}
+          <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <Search className="size-4 text-primary" /> Filter Route Directory Telemetry
+              </h3>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={handleExportRoutesCSV} className="h-8 text-xs gap-1.5 font-semibold">
+                  <Download className="size-3.5" /> Export Routes CSV
+                </Button>
+                <span className="text-xs font-mono text-muted-foreground">{filteredRoutes.length} Routes Displayed</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div className="relative col-span-1 sm:col-span-1">
+                <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search code, route name, bus reg, driver..."
+                  value={routeSearch}
+                  onChange={(e) => setRouteSearch(e.target.value)}
+                  className="pl-8 h-8 text-xs"
+                />
+              </div>
+
+              <Select value={routeCategoryFilter} onValueChange={setRouteCategoryFilter}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Category" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Categories</SelectItem>
+                  <SelectItem value="City Express">City Express</SelectItem>
+                  <SelectItem value="Suburban Feeder">Suburban Feeder</SelectItem>
+                  <SelectItem value="Metro Link">Metro Link</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={routeStatusFilter} onValueChange={setRouteStatusFilter}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Route Status" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Statuses</SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Maintenance">Maintenance</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* ROUTE CARDS GRID WITH COMPLETE TELEMETRY */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {filteredRoutes.map((r) => (
+              <div key={r.id} className="p-5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono font-bold text-xs text-primary">{r.routeCode}</span>
+                      <Badge variant="outline" className="text-[0.6rem] font-mono">{r.routeCategory}</Badge>
+                    </div>
+                    <h3 className="font-bold text-sm text-foreground leading-snug mt-0.5">{r.routeName}</h3>
+                  </div>
+                  <Badge className={r.status === "Active" ? "bg-emerald-500/10 text-emerald-600 shrink-0" : "bg-amber-500/10 text-amber-600 shrink-0"}>
+                    {r.status}
+                  </Badge>
+                </div>
+
+                {/* Progress bar for occupancy */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-semibold">
+                    <span className="text-muted-foreground">Occupancy & Pass Distribution</span>
+                    <span className="font-mono text-primary">{r.passHoldersCount} / {r.capacity} ({r.occupancyPercentage}%)</span>
+                  </div>
+                  <Progress value={r.occupancyPercentage} className="h-2 bg-muted" />
+                  <div className="flex justify-between text-[0.68rem] text-muted-foreground">
+                    <span>Students: {r.studentCount} | Staff: {r.facultyCount}</span>
+                    <span className={r.waitingList > 0 ? "text-amber-600 font-bold" : ""}>Waitlist: {r.waitingList}</span>
+                  </div>
+                </div>
+
+                {/* Grid metrics */}
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground uppercase block font-semibold">Distance</span>
+                    <span className="font-mono font-bold text-foreground">{r.distanceKm} km</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground uppercase block font-semibold">Travel Time</span>
+                    <span className="font-mono font-bold text-foreground">{r.estimatedTravelTime}</span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-muted/40 border border-border/60">
+                    <span className="text-[0.65rem] text-muted-foreground uppercase block font-semibold">On-Time %</span>
+                    <span className="font-mono font-bold text-emerald-600">{r.onTimePerformancePct}%</span>
+                  </div>
+                </div>
+
+                {/* Detailed Telemetry */}
+                <div className="space-y-1.5 text-xs border-t border-border/60 pt-3">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Assigned Vehicle:</span>
+                    <span className="font-mono font-bold text-foreground">{r.busRegNo}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Driver:</span>
+                    <span className="font-semibold text-foreground">{r.driverName} ({r.driverPhone})</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Fuel Mileage / Trips:</span>
+                    <span className="font-mono text-emerald-600 font-semibold">{r.fuelEfficiencyKmpl} Kmpl ({r.dailyTrips} Trips/day)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">GPS Uptime / Health:</span>
+                    <span className="font-mono text-emerald-600 font-semibold">{r.gpsStatus} ({r.vehicleHealth})</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Safety Rating:</span>
+                    <span className="font-bold text-primary">{r.safetyRating} ({r.complaintCount} Complaints)</span>
+                  </div>
+
+                  <div className="pt-2 flex justify-between items-center border-t border-border/40">
+                    <span className="text-[0.65rem] text-muted-foreground font-mono">Next Maint: {r.nextMaintenanceDue}</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedRoute(r)}
+                      className="h-7 text-[0.7rem] font-semibold gap-1"
+                    >
+                      <Eye className="size-3 text-primary" /> View Details
+                    </Button>
+                  </div>
+                </div>
               </div>
             ))}
-          </div>
-
-          {/* Search bar */}
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-              <Input placeholder="Search routes, buses, drivers…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-9 text-xs" />
-            </div>
-          </div>
-
-          {/* Fleet Table */}
-          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
-                  <tr>
-                    <th className="py-3 px-3">Route</th>
-                    <th className="py-3 px-3">Vehicle</th>
-                    <th className="py-3 px-3">Driver</th>
-                    <th className="py-3 px-3">Capacity</th>
-                    <th className="py-3 px-3">Occupancy %</th>
-                    <th className="py-3 px-3">Distance</th>
-                    <th className="py-3 px-3">Fuel Efficiency</th>
-                    <th className="py-3 px-3">GPS Status</th>
-                    <th className="py-3 px-3">Vehicle Health</th>
-                    <th className="py-3 px-3">Maintenance Due</th>
-                    <th className="py-3 px-3">Inspection</th>
-                    <th className="py-3 px-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60">
-                  {filteredRoutes.map(r => (
-                    <tr key={r.id} className="hover:bg-muted/20 transition-colors">
-                      <td className="py-3 px-3">
-                        <p className="font-mono font-bold text-primary">{r.routeNo}</p>
-                        <p className="text-[0.65rem] text-muted-foreground leading-tight">{r.routeName}</p>
-                      </td>
-                      <td className="py-3 px-3 font-mono text-foreground font-semibold">{r.busRegNo}</td>
-                      <td className="py-3 px-3 font-medium text-foreground">{r.driverName}</td>
-                      <td className="py-3 px-3 font-mono font-bold">{r.capacity} Seats</td>
-                      <td className="py-3 px-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
-                            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${r.occupancy}%` }} />
-                          </div>
-                          <span className="font-mono font-bold text-foreground">{r.occupancy}%</span>
-                        </div>
-                      </td>
-                      <td className="py-3 px-3 font-mono text-muted-foreground">{r.distance}</td>
-                      <td className="py-3 px-3 font-mono text-foreground">{r.fuelEff}</td>
-                      <td className="py-3 px-3">
-                        <Badge className={r.gpsStatus === "Online" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-red-500/10 text-red-600 text-[0.65rem]"}>
-                          {r.gpsStatus}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-3">
-                        <div className="flex items-center gap-1">
-                          <span className="font-mono font-bold text-foreground">{r.healthScore}/100</span>
-                          {healthBadge(r.healthScore)}
-                        </div>
-                      </td>
-                      <td className="py-3 px-3 font-mono text-muted-foreground text-[0.65rem]">{r.maintenanceDue}</td>
-                      <td className="py-3 px-3">
-                        <Badge className={r.inspectionStatus === "Passed" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
-                          {r.inspectionStatus}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-3">
-                        <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">{r.status}</Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Transport Analytics */}
-          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm space-y-4">
-            <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><BarChart3 className="size-4 text-primary" /> Transport Analytics</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { title: "Route Utilization",       value: `${avgOccupancy}%`,   sub: "Average across all routes",    trend: "up",   color: "text-emerald-600" },
-                { title: "Peak Route",              value: "Route 2",            sub: "LB Nagar — 100% occupied",     trend: "up",   color: "text-blue-600" },
-                { title: "Low Usage Route",         value: "Route 3",            sub: "84% occupancy this month",     trend: "down", color: "text-amber-600" },
-                { title: "Monthly Fuel Cost",       value: "₹1.28 Lakh",        sub: "Aug 2026 estimate",            trend: "up",   color: "text-orange-600" },
-                { title: "Monthly Maintenance",     value: "₹0.42 Lakh",        sub: "Aug 2026 estimate",            trend: "down", color: "text-teal-600" },
-                { title: "Transport Revenue",       value: `₹${(passRevenue / 100000).toFixed(2)} L`, sub: "Active pass collections", trend: "up", color: "text-rose-600" },
-                { title: "Student Usage",           value: `${passStudents} Students`, sub: "Active pass holders",   trend: "up",   color: "text-primary" },
-                { title: "Faculty Usage",           value: `${passFaculty} Faculty`,   sub: "Active pass holders",   trend: "neutral", color: "text-violet-600" },
-                { title: "Trips Completed",         value: "6 Today",            sub: "3 AM + 3 PM trips",            trend: "up",   color: "text-emerald-600" },
-                { title: "Vehicle Downtime",        value: "1 Bus",              sub: "TS-09-UB-3341 — Maintenance",  trend: "down", color: "text-amber-600" },
-                { title: "Avg Occupancy",           value: `${avgOccupancy}%`,   sub: "Fleet-wide average",           trend: "up",   color: "text-blue-600" },
-                { title: "GPS Coverage",            value: `${gpsOnline}/${totalVehicles} Vehs`, sub: "Online GPS units", trend: gpsOnline === totalVehicles ? "up" : "down", color: "text-violet-600" },
-              ].map((a, i) => (
-                <div key={i} className="flex items-start justify-between p-3 rounded-xl border border-border/60 bg-muted/20">
-                  <div>
-                    <p className="text-[0.68rem] text-muted-foreground font-semibold uppercase">{a.title}</p>
-                    <p className={`text-base font-bold font-mono ${a.color}`}>{a.value}</p>
-                    <p className="text-[0.62rem] text-muted-foreground">{a.sub}</p>
-                  </div>
-                  {a.trend === "up"   && <TrendingUp   className="size-4 text-emerald-500 mt-1 shrink-0" />}
-                  {a.trend === "down" && <TrendingDown  className="size-4 text-amber-500 mt-1 shrink-0" />}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       )}
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          TAB 2: TRANSPORT PASS MONITORING
-      ══════════════════════════════════════════════════════════════════════ */}
+      {/* TAB 2: TRANSPORT PASS HOLDERS DIRECTORY */}
       {activeTab === "passes" && (
         <div className="space-y-4">
-          {/* Pass Analytics Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-            {[
-              { label: "Total Pass Holders", value: passes.length,   color: "text-primary" },
-              { label: "Students",           value: passStudents,    color: "text-blue-600" },
-              { label: "Faculty",            value: passFaculty,     color: "text-violet-600" },
-              { label: "Expired Passes",     value: 0,               color: "text-red-600" },
-              { label: "Renewal Due",        value: 2,               color: "text-amber-600" },
-              { label: "Blocked Passes",     value: 0,               color: "text-red-600" },
-              { label: "Pending Renewals",   value: passPending,     color: "text-orange-600" },
-              { label: "Pass Revenue",       value: `₹${(passRevenue / 100000).toFixed(1)}L`, color: "text-emerald-600" },
-            ].map((c, i) => (
-              <div key={i} className="p-3 rounded-xl bg-card border border-border/70 shadow-sm text-center space-y-1">
-                <p className={`text-xl font-bold font-mono ${c.color}`}>{c.value}</p>
-                <p className="text-[0.6rem] text-muted-foreground font-semibold uppercase leading-tight">{c.label}</p>
+          {/* SUMMARY CARDS (8 CARDS) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 text-center">
+            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Active Passes</span>
+              <span className="text-lg font-bold font-mono text-primary">1,120</span>
+            </div>
+            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Student Passes</span>
+              <span className="text-lg font-bold font-mono text-foreground">1,040</span>
+            </div>
+            <div className="p-3 rounded-xl bg-card border border-border/80 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Faculty Passes</span>
+              <span className="text-lg font-bold font-mono text-foreground">80</span>
+            </div>
+            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-red-700 uppercase block truncate">Expired Passes</span>
+              <span className="text-lg font-bold font-mono text-red-700">12</span>
+            </div>
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-amber-700 uppercase block truncate">Renewal Due</span>
+              <span className="text-lg font-bold font-mono text-amber-700">4</span>
+            </div>
+            <div className="p-3 rounded-xl bg-muted/40 border border-border/60 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-muted-foreground uppercase block truncate">Blocked Passes</span>
+              <span className="text-lg font-bold font-mono text-muted-foreground">0</span>
+            </div>
+            <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-blue-700 uppercase block truncate">Pending Apps</span>
+              <span className="text-lg font-bold font-mono text-blue-700">18</span>
+            </div>
+            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-sm space-y-1">
+              <span className="text-[0.62rem] font-semibold text-emerald-700 uppercase block truncate">Revenue Gen.</span>
+              <span className="text-lg font-bold font-mono text-emerald-700">₹3.58 Cr</span>
+            </div>
+          </div>
+
+          {/* ADVANCED FILTERS BAR */}
+          <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <Filter className="size-4 text-primary" /> Advanced Filters - Transport Pass Holders Roster
+              </h3>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={handleExportPassesCSV} className="h-8 text-xs gap-1.5 font-semibold">
+                  <Download className="size-3.5" /> Export Directory CSV
+                </Button>
+                <span className="text-xs font-mono text-muted-foreground">{filteredPasses.length} Pass Holders Found</span>
               </div>
-            ))}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2.5">
+              <div className="relative col-span-1 sm:col-span-2">
+                <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search student/faculty name, roll no, pass ID..."
+                  value={passSearch}
+                  onChange={(e) => setPassSearch(e.target.value)}
+                  className="pl-8 h-8 text-xs"
+                />
+              </div>
+
+              <Select value={filterDept} onValueChange={setFilterDept}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Department" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Departments</SelectItem>
+                  <SelectItem value="CSE">CSE</SelectItem>
+                  <SelectItem value="ECE">ECE</SelectItem>
+                  <SelectItem value="Mechanical">Mechanical</SelectItem>
+                  <SelectItem value="Civil">Civil</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={filterUserType} onValueChange={setFilterUserType}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="User Type" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All User Types</SelectItem>
+                  <SelectItem value="Student">Student</SelectItem>
+                  <SelectItem value="Faculty">Faculty</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={filterRoute} onValueChange={setFilterRoute}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Route" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Routes</SelectItem>
+                  <SelectItem value="Route 1">Route 1</SelectItem>
+                  <SelectItem value="Route 2">Route 2</SelectItem>
+                  <SelectItem value="Route 3">Route 3</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Pass Status" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Statuses</SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Renewal Due">Renewal Due</SelectItem>
+                  <SelectItem value="Expired">Expired</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          {/* Filters */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <Search className="size-3.5 text-muted-foreground" />
-            <Select value={filterDept} onValueChange={setFilterDept}>
-              <SelectTrigger className="h-8 text-xs w-32"><SelectValue placeholder="Department" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Depts</SelectItem>
-                <SelectItem value="CSE">CSE</SelectItem>
-                <SelectItem value="ECE">ECE</SelectItem>
-                <SelectItem value="ME">ME</SelectItem>
-                <SelectItem value="CE">CE</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filterYear} onValueChange={setFilterYear}>
-              <SelectTrigger className="h-8 text-xs w-28"><SelectValue placeholder="Year" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Years</SelectItem>
-                <SelectItem value="1">Year 1</SelectItem>
-                <SelectItem value="2">Year 2</SelectItem>
-                <SelectItem value="3">Year 3</SelectItem>
-                <SelectItem value="4">Year 4</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={filterRoute} onValueChange={setFilterRoute}>
-              <SelectTrigger className="h-8 text-xs w-32"><SelectValue placeholder="Route" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Routes</SelectItem>
-                {routes.map(r => <SelectItem key={r.id} value={r.routeNo}>{r.routeNo}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="h-8 text-xs w-32"><SelectValue placeholder="Status" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="Paid">Paid</SelectItem>
-                <SelectItem value="Pending">Pending</SelectItem>
-                <SelectItem value="Partial">Partial</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Pass Table */}
-          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
+          {/* PASS DIRECTORY TABLE */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
                   <tr>
-                    <th className="py-3 px-3">Pass ID</th>
-                    <th className="py-3 px-3">Student Name</th>
-                    <th className="py-3 px-3">Department</th>
-                    <th className="py-3 px-3">Route &amp; Pickup Stop</th>
-                    <th className="py-3 px-3">Annual Fee</th>
-                    <th className="py-3 px-3">Payment Status</th>
-                    <th className="py-3 px-3">Pass Type</th>
-                    <th className="py-3 px-3">Validity</th>
+                    <th className="py-3 px-3">Pass Number</th>
+                    <th className="py-3 px-3">Student / Faculty Name</th>
+                    <th className="py-3 px-3">Roll / Employee ID</th>
+                    <th className="py-3 px-3">User Type & Dept</th>
+                    <th className="py-3 px-3">Assigned Route</th>
+                    <th className="py-3 px-3">Pickup / Drop Point</th>
+                    <th className="py-3 px-3">Pass Type & Fee</th>
+                    <th className="py-3 px-3">Validity & Renewal</th>
+                    <th className="py-3 px-3">Current Status</th>
+                    <th className="py-3 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60">
-                  {filteredPasses.map(p => (
+                  {filteredPasses.map((p) => (
                     <tr key={p.id} className="hover:bg-muted/20 transition-colors">
                       <td className="py-3 px-3 font-mono font-bold text-foreground">{p.passId}</td>
-                      <td className="py-3 px-3 font-semibold text-foreground">{p.studentName} <span className="text-muted-foreground font-normal">({p.rollNo})</span></td>
-                      <td className="py-3 px-3">{p.department}</td>
-                      <td className="py-3 px-3 font-mono text-primary font-bold">{p.routeNo} · {p.pickupStop}</td>
-                      <td className="py-3 px-3 font-mono font-bold text-foreground">₹{p.annualFee.toLocaleString()}</td>
+                      <td className="py-3 px-3 font-semibold text-foreground">{p.studentName}</td>
+                      <td className="py-3 px-3 font-mono text-muted-foreground">{p.rollNo}</td>
+                      <td className="py-3 px-3">{p.userType} ({p.department})</td>
+                      <td className="py-3 px-3 font-mono text-primary font-bold">{p.routeNo}</td>
+                      <td className="py-3 px-3 text-muted-foreground font-medium">{p.pickupStop} ──&gt; {p.dropPoint}</td>
                       <td className="py-3 px-3">
-                        <Badge className={p.paymentStatus === "Paid" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
-                          {p.paymentStatus}
-                        </Badge>
+                        <span className="font-semibold block">{p.passType}</span>
+                        <span className="font-mono text-emerald-600 font-bold">₹{p.annualFee.toLocaleString()} ({p.paymentStatus})</span>
                       </td>
-                      <td className="py-3 px-3"><Badge variant="outline" className="text-[0.65rem]">Student</Badge></td>
-                      <td className="py-3 px-3 font-mono text-muted-foreground text-[0.65rem]">AY 2026-27</td>
+                      <td className="py-3 px-3 font-mono text-muted-foreground">
+                        <span>{p.expiryDate}</span>
+                        <span className="block text-[0.65rem] text-primary">{p.renewalStatus}</span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge className={p.passStatus === "Active" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}>{p.passStatus}</Badge>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <Button size="sm" variant="outline" onClick={() => setSelectedPass(p)} className="h-7 text-[0.7rem] font-semibold gap-1">
+                          <Eye className="size-3 text-primary" /> View Details
+                        </Button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -821,84 +739,117 @@ export function TransportModuleView() {
         </div>
       )}
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          TAB 3: FLEET HEALTH & COMPLIANCE
-      ══════════════════════════════════════════════════════════════════════ */}
+      {/* TAB 3: FLEET HEALTH & VEHICLE COMPLIANCE */}
       {activeTab === "health" && (
         <div className="space-y-4">
-          {/* Fleet Health Summary */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { label: "Avg Health Score",  value: `${Math.round(FLEET_HEALTH_DATA.reduce((s, v) => s + v.healthScore, 0) / FLEET_HEALTH_DATA.length)}/100`, color: "text-emerald-600" },
-              { label: "GPS Online",        value: `${FLEET_HEALTH_DATA.filter(v => v.gpsStatus === "Online").length}/${FLEET_HEALTH_DATA.length}`,           color: "text-violet-600" },
-              { label: "Compliance Issues", value: FLEET_HEALTH_DATA.filter(v => v.fireExtinguisher !== "OK" || v.emergencyKit !== "OK").length,               color: "text-amber-600" },
-              { label: "Docs Expiring <30d",value: FLEET_HEALTH_DATA.filter(v => Math.ceil((new Date(v.insurance).getTime() - Date.now()) / 86400000) < 30).length, color: "text-red-600" },
-            ].map((c, i) => (
-              <div key={i} className="p-4 rounded-xl bg-card border border-border/70 shadow-sm space-y-1 text-center">
-                <p className={`text-2xl font-bold font-mono ${c.color}`}>{c.value}</p>
-                <p className="text-[0.65rem] text-muted-foreground font-semibold uppercase">{c.label}</p>
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3 flex-wrap gap-2">
+              <div>
+                <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                  <ShieldCheck className="size-4 text-emerald-500" /> Vehicle Compliance & Maintenance Audit Roster
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Comprehensive institutional audit of insurance, fitness, permits, pollution, tyre health, and emergency equipment.</p>
               </div>
-            ))}
-          </div>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={() => setIsComplianceOpen(true)} className="h-8 text-xs font-semibold gap-1.5">
+                  <Eye className="size-3.5 text-primary" /> Compliance Console
+                </Button>
+              </div>
+            </div>
 
-          {/* Fleet Health Table */}
-          <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
-            <h2 className="text-sm font-bold text-foreground flex items-center gap-2 mb-4"><Shield className="size-4 text-primary" /> Vehicle Compliance Registry</h2>
-            <div className="overflow-x-auto">
+            {/* FILTERS */}
+            <div className="p-3 rounded-xl bg-muted/40 border border-border/60 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+              <div>
+                <Label className="text-[0.65rem] font-semibold uppercase text-muted-foreground">Filter Vehicle</Label>
+                <Select value={complianceFilterVehicle} onValueChange={setComplianceFilterVehicle}>
+                  <SelectTrigger className="h-8 text-xs bg-card"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Vehicles</SelectItem>
+                    {complianceList.map((v) => (
+                      <SelectItem key={v.id} value={v.vehicleNo}>{v.vehicleNo}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-[0.65rem] font-semibold uppercase text-muted-foreground">Filter Vehicle Health</Label>
+                <Select value={complianceFilterStatus} onValueChange={setComplianceFilterStatus}>
+                  <SelectTrigger className="h-8 text-xs bg-card"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Health Statuses</SelectItem>
+                    <SelectItem value="Healthy">Healthy (Green)</SelectItem>
+                    <SelectItem value="Warning">Warning (Amber)</SelectItem>
+                    <SelectItem value="Critical">Critical (Red)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-[0.65rem] font-semibold uppercase text-muted-foreground">Filter Compliance Expiry</Label>
+                <Select value={complianceFilterExpiry} onValueChange={setComplianceFilterExpiry}>
+                  <SelectTrigger className="h-8 text-xs bg-card"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Expiry Dates</SelectItem>
+                    <SelectItem value="Expiring Soon">Expiring Soon (30 Days)</SelectItem>
+                    <SelectItem value="Expired">Expired</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* VEHICLES COMPLIANCE LEDGER */}
+            <div className="overflow-x-auto border border-border/80 rounded-xl">
               <table className="w-full text-left text-xs">
-                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase text-[0.68rem]">
                   <tr>
-                    <th className="py-3 px-3">Vehicle</th>
-                    <th className="py-3 px-3">Model</th>
-                    <th className="py-3 px-3">Health Score</th>
-                    <th className="py-3 px-3">Insurance</th>
-                    <th className="py-3 px-3">Permit</th>
-                    <th className="py-3 px-3">Pollution Cert</th>
-                    <th className="py-3 px-3">Fitness Cert</th>
-                    <th className="py-3 px-3">Road Tax</th>
-                    <th className="py-3 px-3">Maintenance</th>
-                    <th className="py-3 px-3">GPS</th>
-                    <th className="py-3 px-3">Emergency Kit</th>
-                    <th className="py-3 px-3">Fire Ext.</th>
-                    <th className="py-3 px-3">Status</th>
+                    <th className="py-3 px-3">Vehicle Info</th>
+                    <th className="py-3 px-3">Type & Driver</th>
+                    <th className="py-3 px-3">Insurance & Permit</th>
+                    <th className="py-3 px-3">Fitness & Pollution</th>
+                    <th className="py-3 px-3">GPS & CCTV Uptime</th>
+                    <th className="py-3 px-3">Safety & Service</th>
+                    <th className="py-3 px-3">Health & Score</th>
+                    <th className="py-3 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60">
-                  {FLEET_HEALTH_DATA.map(v => (
-                    <tr key={v.id} className="hover:bg-muted/20 transition-colors">
-                      <td className="py-3 px-3 font-mono font-bold text-primary">{v.regNo}</td>
-                      <td className="py-3 px-3 text-foreground font-medium">{v.model} <span className="text-muted-foreground">({v.year})</span></td>
-                      <td className="py-3 px-3">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono font-bold text-foreground">{v.healthScore}</span>
-                          {healthBadge(v.healthScore)}
-                        </div>
-                      </td>
-                      <td className="py-3 px-3">{docBadge(v.insurance)} <span className="text-[0.6rem] text-muted-foreground ml-1">{v.insurance}</span></td>
-                      <td className="py-3 px-3">{docBadge(v.permit)} <span className="text-[0.6rem] text-muted-foreground ml-1">{v.permit}</span></td>
-                      <td className="py-3 px-3">{docBadge(v.pollution)}</td>
-                      <td className="py-3 px-3">{docBadge(v.fitness)}</td>
-                      <td className="py-3 px-3">{docBadge(v.roadTax)}</td>
-                      <td className="py-3 px-3 font-mono text-muted-foreground text-[0.65rem]">{v.maintenance}</td>
-                      <td className="py-3 px-3">
-                        <Badge className={v.gpsStatus === "Online" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-red-500/10 text-red-600 text-[0.65rem]"}>
-                          {v.gpsStatus}
-                        </Badge>
+                  {filteredCompliance.map((c) => (
+                    <tr key={c.id} className="hover:bg-muted/20">
+                      <td className="py-3 px-3 font-mono font-bold text-foreground">
+                        {c.vehicleNo}
+                        <span className="text-[0.62rem] text-muted-foreground block font-normal">{c.manufacturer} {c.model} ({c.purchaseYear})</span>
                       </td>
                       <td className="py-3 px-3">
-                        <Badge className={v.emergencyKit === "OK" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-red-500/10 text-red-600 text-[0.65rem]"}>
-                          {v.emergencyKit}
-                        </Badge>
+                        <span className="font-semibold block text-foreground">{c.vehicleType}</span>
+                        <span className="text-[0.65rem] text-muted-foreground block">Driver: {c.assignedDriver}</span>
                       </td>
                       <td className="py-3 px-3">
-                        <Badge className={v.fireExtinguisher === "OK" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
-                          {v.fireExtinguisher}
-                        </Badge>
+                        <Badge className={c.insuranceStatus === "Compliant" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}>Insurance: {c.insuranceStatus}</Badge>
+                        <span className="text-[0.62rem] text-muted-foreground block font-mono">Permit: {c.permitStatus}</span>
                       </td>
                       <td className="py-3 px-3">
-                        <Badge className={v.status === "Active" ? "bg-emerald-500/10 text-emerald-600 text-[0.65rem]" : "bg-amber-500/10 text-amber-600 text-[0.65rem]"}>
-                          {v.status}
+                        <Badge className={c.fitnessCertificate === "Compliant" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}>Fitness: {c.fitnessCertificate}</Badge>
+                        <span className="text-[0.62rem] text-muted-foreground block font-mono">Pollution: {c.pollutionCertificate}</span>
+                      </td>
+                      <td className="py-3 px-3 font-mono text-emerald-600 font-semibold">
+                        <span>{c.gpsStatus}</span>
+                        <span className="text-[0.62rem] text-muted-foreground block">CCTV: {c.cctvStatus}</span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="font-semibold block">Last Serviced: {c.lastServiceDate}</span>
+                        <span className="text-[0.65rem] text-muted-foreground font-mono block">Cost: {c.maintenanceCost}</span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge className={c.vehicleHealth === "Healthy" ? "bg-emerald-500/10 text-emerald-600" : c.vehicleHealth === "Warning" ? "bg-amber-500/10 text-amber-600" : "bg-red-500/10 text-red-600"}>
+                          {c.vehicleHealth} ({c.overallComplianceScore}%)
                         </Badge>
+                        <span className="text-[0.65rem] font-mono text-primary block">Safety: {c.safetyScore}%</span>
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        <Button size="sm" variant="outline" onClick={() => setSelectedVehicle(c)} className="h-7 text-[0.7rem] font-semibold gap-1">
+                          <Eye className="size-3 text-primary" /> View Details
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -909,271 +860,916 @@ export function TransportModuleView() {
         </div>
       )}
 
-      {/* ── Recent Activities ─────────────────────────────────────────────── */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm space-y-3">
-        <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><Activity className="size-4 text-primary" /> Recent Activities</h2>
-        <div className="divide-y divide-border/40">
-          {RECENT_ACTIVITIES.map(act => (
-            <div key={act.id} className="flex items-start gap-3 py-2.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-foreground">{act.action}</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[0.62rem] text-muted-foreground">{act.date}</span>
-                  <span className="text-[0.62rem] text-muted-foreground">·</span>
-                  <span className="text-[0.62rem] text-muted-foreground font-semibold">{act.user}</span>
+      {/* TAB 4: TRANSPORT EXECUTIVE ANALYTICS SUMMARY */}
+      {activeTab === "analytics" && (
+        <div className="space-y-6">
+          {/* HEADER BAR */}
+          <div className="flex items-center justify-between rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
+            <div>
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <BarChart3 className="size-4 text-primary" /> Transport Executive Analytics & AI Intelligence
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Real-time operational, financial, passenger, driver, safety, and AI predictive insights.</p>
+            </div>
+            <Button size="sm" onClick={handleDownloadTransportReport} disabled={downloadingReport} className="h-9 bg-brand-gradient text-white gap-2 text-xs font-semibold shadow-glow">
+              {downloadingReport ? <Loader2 className="size-3.5 animate-spin" /> : <Download className="size-3.5" />} Export Executive Report
+            </Button>
+          </div>
+
+          {/* AI INSIGHTS WIDGET */}
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h4 className="font-bold text-sm text-primary flex items-center gap-2">
+                <BrainCircuit className="size-4 text-primary" /> Institutional AI Transport Intelligence & Recommendations
+              </h4>
+              <Badge className="bg-primary/20 text-primary border-primary/30 text-[0.65rem]">5 Active Insights</Badge>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-2.5 text-xs">
+              {analytics.aiInsights.map((insight, idx) => (
+                <div key={idx} className="p-3 rounded-xl bg-card border border-border/80 space-y-1 shadow-2xs">
+                  <span className="text-[0.62rem] font-bold font-mono text-primary block uppercase">AI Alert #{idx + 1}</span>
+                  <p className="text-xs text-foreground font-medium leading-snug">{insight}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 6 ANALYTICS SECTIONS GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* SECTION 1: OPERATIONAL ANALYTICS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <h4 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border/60 pb-2">
+                <Gauge className="size-4 text-primary" /> Operational Telemetry Analytics
+              </h4>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Daily Trips Executed:</span>
+                  <span className="font-mono font-bold text-foreground">{analytics.dailyTrips} Trips / Day</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Monthly Trips Executed:</span>
+                  <span className="font-mono font-bold text-primary">{analytics.monthlyTrips} Trips</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Average Fleet Occupancy:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.averageOccupancyPct}%</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Route Utilization Index:</span>
+                  <span className="font-mono font-bold text-amber-600">{analytics.routeUtilization}%</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Peak Travel Hours:</span>
+                  <span className="font-mono font-semibold text-foreground text-[0.7rem]">{analytics.peakTravelHours}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">Average Trip Delay:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.averageDelay}</span>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* ── Transport Staff Summary ───────────────────────────────────────── */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><Users className="size-4 text-primary" /> Transport Staff Summary</h2>
-          <div className="flex items-center gap-2">
-            <Badge className="bg-emerald-500/10 text-emerald-600 text-[0.65rem]">
-              {STAFF_SUMMARY.filter(s => s.status === "On Duty").length}/{STAFF_SUMMARY.length} On Duty
-            </Badge>
-            <Badge variant="outline" className="text-[0.65rem]">0 Pending Leave</Badge>
+            {/* SECTION 2: FINANCIAL ANALYTICS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <h4 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border/60 pb-2">
+                <PieChart className="size-4 text-emerald-600" /> Financial Telemetry Analytics
+              </h4>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Monthly Transport Revenue:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.monthlyRevenue}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Monthly Fuel Cost:</span>
+                  <span className="font-mono font-bold text-amber-600">{analytics.monthlyFuelCost}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Monthly Maintenance Cost:</span>
+                  <span className="font-mono font-bold text-blue-600">{analytics.monthlyMaintenanceCost}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Pending Student Dues:</span>
+                  <span className="font-mono font-bold text-red-600">{analytics.pendingFees}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">YoY Revenue Trend:</span>
+                  <span className="font-bold text-emerald-600">{analytics.revenueTrend}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 3: FLEET ANALYTICS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <h4 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border/60 pb-2">
+                <Bus className="size-4 text-blue-600" /> Fleet Availability Analytics
+              </h4>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Vehicles Active in Service:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.vehiclesInService} Buses</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Vehicles Under Maintenance:</span>
+                  <span className="font-mono font-bold text-amber-600">{analytics.vehiclesUnderMaintenance} Buses</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Idle Fleet Vehicles:</span>
+                  <span className="font-mono font-bold text-foreground">{analytics.idleVehicles} Buses</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">Fleet Availability Rate:</span>
+                  <span className="font-mono font-bold text-primary">{analytics.fleetAvailabilityPct}%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 4: PASSENGER ANALYTICS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <h4 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border/60 pb-2">
+                <Users className="size-4 text-purple-600" /> Passenger Usage Analytics
+              </h4>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Student Pass Holders Share:</span>
+                  <span className="font-mono font-bold text-primary">{analytics.studentUsagePct}%</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Faculty Pass Holders Share:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.facultyUsagePct}%</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Top Dept Usage (CSE):</span>
+                  <span className="font-bold text-foreground">38% Share (426 Passes)</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">Highest Occupancy Route:</span>
+                  <span className="font-bold text-emerald-600">Route 2 LB Nagar (100%)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 5: DRIVER ANALYTICS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <h4 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border/60 pb-2">
+                <UserCheck className="size-4 text-emerald-500" /> Driver Performance Telemetry
+              </h4>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Driver Duty Attendance Rate:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.driverAttendancePct}%</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Average Driver Performance Score:</span>
+                  <span className="font-mono font-bold text-primary">{analytics.driverPerformanceScore}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Zero Incident Safety Index:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.safetyRatingPct}%</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">License Expiry Alerts:</span>
+                  <span className="font-mono font-bold text-amber-600">{analytics.licenseExpiryAlertsCount} Alert (35 Days)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 6: SAFETY ANALYTICS */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <h4 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border/60 pb-2">
+                <ShieldAlert className="size-4 text-red-500" /> Safety & Incident Analytics
+              </h4>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Vehicle Breakdowns Logged:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.vehicleBreakdownsCount} Incidents</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Speed Violations Recorded:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.speedViolationsCount} Violations</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Panic Button Emergency Alerts:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.emergencyAlertsCount} Alerts</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">GPS Offline Telematics Units:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.gpsOfflineCount} Units</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">Security Incidents Logged:</span>
+                  <span className="font-mono font-bold text-emerald-600">{analytics.securityIncidentsCount} Incidents</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
-              <tr>
-                <th className="py-2.5 px-3">Role</th>
-                <th className="py-2.5 px-3">Name</th>
-                <th className="py-2.5 px-3">Contact</th>
-                <th className="py-2.5 px-3">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/60">
-              {STAFF_SUMMARY.map((s, i) => (
-                <tr key={i} className="hover:bg-muted/20 transition-colors">
-                  <td className="py-2.5 px-3 text-muted-foreground font-semibold">{s.role}</td>
-                  <td className="py-2.5 px-3 font-medium text-foreground">{s.name}</td>
-                  <td className="py-2.5 px-3 font-mono text-muted-foreground">{s.contact}</td>
-                  <td className="py-2.5 px-3">{staffStatus(s.status)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      )}
 
-      {/* ── Executive Quick Actions ──────────────────────────────────────── */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 shadow-sm space-y-3">
-        <h2 className="text-sm font-bold text-foreground flex items-center gap-2"><Sparkles className="size-4 text-primary" /> Executive Quick Actions</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-          {[
-            { label: "Transport Configuration", icon: <Settings className="size-4" />,    action: () => setIsConfigOpen(true) },
-            { label: "Fleet Reports",           icon: <BarChart3 className="size-4" />,   action: () => setIsReportOpen(true) },
-            { label: "Download Transport Report", icon: <Download className="size-4" />,  action: handleExportCSV },
-            { label: "Schedule Fleet Audit",    icon: <Calendar className="size-4" />,    action: () => toast.info("Fleet audit scheduling — contact Transport Manager") },
-            { label: "Vehicle Compliance",      icon: <Shield className="size-4" />,      action: () => setActiveTab("health") },
-            { label: "View Analytics",          icon: <TrendingUp className="size-4" />,  action: () => setActiveTab("routes") },
-          ].map((qa, i) => (
-            <button
-              key={i}
-              onClick={qa.action}
-              className="flex items-center gap-2 p-3 rounded-xl border border-border/60 bg-muted/20 hover:bg-primary/5 hover:border-primary/30 transition-all text-xs font-semibold text-foreground group"
+      {/* NEW TAB (TAB 5): TRANSPORT POLICY & GOVERNANCE */}
+      {activeTab === "governance" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
+            <div>
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <ShieldCheck className="size-4 text-primary" /> Institutional Policy, Compliance & Audit Governance
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Institutional policies, government compliance metrics, fleet inspection audits, and master document repository.</p>
+            </div>
+            <Button size="sm" onClick={() => setIsConfigOpen(true)} className="h-9 bg-brand-gradient text-white gap-2 text-xs font-semibold shadow-glow">
+              <Sliders className="size-3.5" /> Edit Governance Policies
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* POLICIES OVERVIEW CARD */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <h4 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border/60 pb-2">
+                <FileText className="size-4 text-primary" /> Active Transport Institutional Policies
+              </h4>
+              <div className="space-y-3 text-xs">
+                <div>
+                  <span className="font-bold text-foreground block">Fee Policy:</span>
+                  <p className="text-muted-foreground leading-snug">{policyGovernance.feePolicy}</p>
+                </div>
+                <div>
+                  <span className="font-bold text-foreground block">Driver Eligibility & Safety Policy:</span>
+                  <p className="text-muted-foreground leading-snug">{policyGovernance.driverPolicy}</p>
+                </div>
+                <div>
+                  <span className="font-bold text-foreground block">Student & Pass Eligibility Rules:</span>
+                  <p className="text-muted-foreground leading-snug">{policyGovernance.studentEligibility}</p>
+                </div>
+                <div>
+                  <span className="font-bold text-foreground block">Vehicle Replacement Policy:</span>
+                  <p className="text-muted-foreground leading-snug">{policyGovernance.vehicleReplacementPolicy}</p>
+                </div>
+                <div>
+                  <span className="font-bold text-foreground block">Emergency Transport Protocol:</span>
+                  <p className="text-muted-foreground leading-snug">{policyGovernance.emergencyTransportPolicy}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* COMPLIANCE & AUDIT OVERVIEW CARD */}
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+              <h4 className="font-bold text-sm text-foreground flex items-center gap-2 border-b border-border/60 pb-2">
+                <CheckSquare className="size-4 text-emerald-600" /> Compliance Status & Audit Telemetry
+              </h4>
+              <div className="space-y-2.5 text-xs">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Government RTO Compliance:</span>
+                  <span className="font-mono font-bold text-emerald-600">{policyGovernance.governmentCompliancePct}% Certified</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Insurance Policy Coverage:</span>
+                  <span className="font-mono font-bold text-emerald-600">{policyGovernance.insuranceCompliancePct}% Active</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Safety Equipment Compliance:</span>
+                  <span className="font-mono font-bold text-emerald-600">{policyGovernance.safetyCompliancePct}% Verified</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Pollution Standards Compliance:</span>
+                  <span className="font-mono font-bold text-emerald-600">{policyGovernance.pollutionCompliancePct}% Certified</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Last Fleet Audit Date:</span>
+                  <span className="font-mono font-bold text-foreground">{policyGovernance.lastFleetAudit}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Next Scheduled Audit:</span>
+                  <span className="font-mono font-bold text-amber-600">{policyGovernance.nextScheduledAudit}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground font-medium">Audit Grade & Status:</span>
+                  <span className="font-bold text-emerald-600">{policyGovernance.auditStatus}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground font-medium">Institutional Compliance Score:</span>
+                  <span className="font-mono font-bold text-primary text-sm">{policyGovernance.complianceScore} / 100</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* DOCUMENTS REPOSITORY CARD */}
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <FileCheck className="size-4 text-blue-600" /> Institutional Transport Master Document Repository
+              </h4>
+              <Badge variant="outline" className="text-[0.65rem] font-mono">{policyGovernance.documents.length} Master Docs</Badge>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                  <tr>
+                    <th className="py-2.5 px-3">Document Title</th>
+                    <th className="py-2.5 px-3">Category</th>
+                    <th className="py-2.5 px-3">Document Number</th>
+                    <th className="py-2.5 px-3">Expiry Date</th>
+                    <th className="py-2.5 px-3">Status</th>
+                    <th className="py-2.5 px-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {policyGovernance.documents.map((doc, idx) => (
+                    <tr key={idx} className="hover:bg-muted/20">
+                      <td className="py-2.5 px-3 font-semibold text-foreground">{doc.title}</td>
+                      <td className="py-2.5 px-3"><Badge variant="outline" className="font-mono text-[0.65rem]">{doc.category}</Badge></td>
+                      <td className="py-2.5 px-3 font-mono text-muted-foreground">{doc.docNo}</td>
+                      <td className="py-2.5 px-3 font-mono text-muted-foreground">{doc.expiry}</td>
+                      <td className="py-2.5 px-3">
+                        <Badge className={doc.status === "Active" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}>{doc.status}</Badge>
+                      </td>
+                      <td className="py-2.5 px-3 text-right">
+                        <Button size="sm" variant="outline" onClick={() => setSelectedDoc(doc)} className="h-7 text-[0.7rem] font-semibold gap-1">
+                          <Eye className="size-3 text-primary" /> View Document
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* QUICK ACTIONS & ALERTS & ACTIVITIES GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* EXECUTIVE QUICK ACTIONS CARD */}
+        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+              <Zap className="size-4 text-primary" /> Executive Quick Actions
+            </h3>
+            <span className="text-[0.65rem] font-mono text-muted-foreground">6 Active Tools</span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsConfigOpen(true)}
+              className="justify-start gap-2.5 h-10 text-xs font-semibold hover:bg-primary/5 transition-all"
             >
-              <span className="text-primary group-hover:scale-110 transition-transform">{qa.icon}</span>
-              <span className="text-left leading-tight">{qa.label}</span>
-            </button>
-          ))}
+              <Sliders className="size-4 text-primary shrink-0" /> Transport Policy & Governance Configuration
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setIsReportsOpen(true)}
+              className="justify-start gap-2.5 h-10 text-xs font-semibold hover:bg-emerald-500/5 transition-all text-emerald-700 border-emerald-500/30"
+            >
+              <BarChart3 className="size-4 text-emerald-600 shrink-0" /> View Comprehensive Fleet Reports
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={handleDownloadTransportReport}
+              disabled={downloadingReport}
+              className="justify-start gap-2.5 h-10 text-xs font-semibold hover:bg-blue-500/5 transition-all text-blue-700 border-blue-500/30"
+            >
+              {downloadingReport ? <Loader2 className="size-4 animate-spin text-blue-600 shrink-0" /> : <FileText className="size-4 text-blue-600 shrink-0" />}
+              Download Transport & Route Ledger
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setIsAuditOpen(true)}
+              className="justify-start gap-2.5 h-10 text-xs font-semibold hover:bg-purple-500/5 transition-all text-purple-700 border-purple-500/30"
+            >
+              <ShieldCheck className="size-4 text-purple-600 shrink-0" /> Schedule Institutional Fleet Audit
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setIsComplianceOpen(true)}
+              className="justify-start gap-2.5 h-10 text-xs font-semibold hover:bg-amber-500/5 transition-all text-amber-800 border-amber-500/30"
+            >
+              <Wrench className="size-4 text-amber-600 shrink-0" /> View Fleet Health & Vehicle Compliance
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setActiveTab("analytics")}
+              className="justify-start gap-2.5 h-10 text-xs font-semibold hover:bg-primary/5 transition-all"
+            >
+              <PieChart className="size-4 text-emerald-600 shrink-0" /> View Executive Analytics Summary
+            </Button>
+          </div>
+        </div>
+
+        {/* GOVERNANCE ALERTS CARD */}
+        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+              <BellRing className="size-4 text-amber-500" /> Active Governance Alerts
+            </h3>
+            <Badge className="bg-amber-500/10 text-amber-600 text-[0.65rem]">{alerts.length} Active</Badge>
+          </div>
+
+          <div className="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+            {alerts.map((alt) => (
+              <div key={alt.id} className="p-2.5 rounded-xl bg-muted/40 border border-border/60 space-y-0.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    {alt.severity === "high" ? (
+                      <span className="inline-block size-2 rounded-full bg-red-600 shrink-0" />
+                    ) : alt.severity === "medium" ? (
+                      <span className="inline-block size-2 rounded-full bg-amber-500 shrink-0" />
+                    ) : (
+                      <span className="inline-block size-2 rounded-full bg-blue-500 shrink-0" />
+                    )}
+                    {alt.title}
+                  </span>
+                  <Badge className={alt.severity === "high" ? "bg-red-500/10 text-red-600 text-[0.6rem]" : alt.severity === "medium" ? "bg-amber-500/10 text-amber-600 text-[0.6rem]" : "bg-blue-500/10 text-blue-600 text-[0.6rem]"}>
+                    {alt.severity.toUpperCase()}
+                  </Badge>
+                </div>
+                <p className="text-[0.72rem] text-muted-foreground leading-snug">{alt.description}</p>
+                <span className="text-[0.62rem] text-muted-foreground font-mono block text-right">{alt.timestamp}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* RECENT ACTIVITIES TIMELINE */}
+        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-3.5 shadow-sm">
+          <div className="flex items-center justify-between border-b border-border/60 pb-3">
+            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+              <Clock className="size-4 text-primary" /> Audit Trail & Recent Activities
+            </h3>
+            <Badge variant="outline" className="text-[0.65rem] font-mono">{activities.length} Logs</Badge>
+          </div>
+
+          <div className="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+            {activities.map((act) => (
+              <div key={act.id} className="p-2.5 rounded-xl bg-muted/30 border border-border/60 space-y-0.5">
+                <div className="flex justify-between text-[0.68rem] text-muted-foreground">
+                  <span className="font-mono">{act.date}</span>
+                  <Badge variant="secondary" className="text-[0.6rem] px-1.5 py-0">{act.category}</Badge>
+                </div>
+                <p className="text-xs font-semibold text-foreground">{act.action}</p>
+                <p className="text-[0.68rem] text-muted-foreground">By: {act.user}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ═══════════════════════════════════════════════════════
-          MODAL: TRANSPORT CONFIGURATION — Dynamic Multi-Panel
-      ═══════════════════════════════════════════════════════ */}
-      <Dialog open={isConfigOpen} onOpenChange={(open) => { setIsConfigOpen(open); if (!open) setActivePanel(null); }}>
-        <DialogContent className="max-w-lg">
+      {/* VIEW DETAILS MODAL: ROUTE TELEMETRY */}
+      <Dialog open={selectedRoute !== null} onOpenChange={() => setSelectedRoute(null)}>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
-              {activePanel ? (
-                <button onClick={() => setActivePanel(null)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">
-                  <ChevronLeft className="size-4" />
-                  <span className="text-xs">Back</span>
-                </button>
-              ) : (
-                <Settings className="size-4 text-primary" />
-              )}
-              {activePanel ? (
-                <span className="flex items-center gap-2">
-                  {React.createElement(activePanel.icon, { className: "size-4 text-primary" })}
-                  {activePanel.label}
-                </span>
-              ) : "Transport Configuration"}
+              <Bus className="size-4 text-primary" /> Route Telemetry & Performance Ledger
             </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              {activePanel ? activePanel.description : "Institutional transport policies, fee structures and system-wide transport settings."}
+            <DialogDescription className="text-xs">
+              Read-only executive monitoring view for {selectedRoute?.routeNo} ({selectedRoute?.routeCode}).
             </DialogDescription>
           </DialogHeader>
 
-          {/* INDEX: list of all panels */}
-          {!activePanel && (
-            <div className="grid grid-cols-1 gap-1.5 pt-2 max-h-[400px] overflow-y-auto pr-1">
-              {TRANSPORT_CONFIG_PANELS.map((panel) => (
-                <button
-                  key={panel.id}
-                  onClick={() => setActivePanel(panel)}
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-border/60 bg-muted/20 hover:bg-primary/5 hover:border-primary/30 transition-all text-xs font-medium text-foreground text-left group"
-                >
-                  {React.createElement(panel.icon, { className: "size-4 text-primary shrink-0" })}
-                  <span className="flex-1">{panel.label}</span>
-                  <ChevronRight className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-                </button>
-              ))}
+          {selectedRoute && (
+            <div className="space-y-2 text-xs pt-1">
+              <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Route Name:</span>
+                  <span className="font-semibold text-foreground text-[0.7rem]">{selectedRoute.routeName}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Assigned Bus / Driver:</span>
+                  <span className="font-mono font-bold text-foreground">{selectedRoute.busRegNo} ({selectedRoute.driverName})</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Passenger Breakdown:</span>
+                  <span className="font-mono font-semibold text-primary">{selectedRoute.studentCount} Students | {selectedRoute.facultyCount} Staff</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">On-Time Rate / Delay:</span>
+                  <span className="font-mono font-bold text-emerald-600">{selectedRoute.onTimePerformancePct}% (Avg {selectedRoute.avgDelay})</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">GPS Tracking Signal:</span>
+                  <span className="font-mono font-bold text-emerald-600">{selectedRoute.gpsStatus}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">Safety Rating / Complaints:</span>
+                  <span className="font-bold text-foreground">{selectedRoute.safetyRating} ({selectedRoute.complaintCount} Complaints)</span>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* PANEL: individual settings form */}
-          {activePanel && (
-            <div className="space-y-3 pt-2 max-h-[400px] overflow-y-auto pr-1">
-              {activePanel.fields.map((field) => {
-                const stateKey = `${activePanel.id}__${field.key}`;
-                const value = configData[stateKey] ?? "";
-                return (
-                  <div key={field.key} className="space-y-1">
-                    <Label className="text-xs font-semibold text-foreground">{field.label}</Label>
-                    {field.description && <p className="text-[0.62rem] text-muted-foreground">{field.description}</p>}
-
-                    {field.type === "text" && (
-                      <input
-                        type="text"
-                        value={value}
-                        placeholder={field.placeholder}
-                        onChange={e => setConfigData(prev => ({ ...prev, [stateKey]: e.target.value }))}
-                        className="w-full h-9 rounded-lg border border-border bg-muted/30 px-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
-                      />
-                    )}
-
-                    {field.type === "number" && (
-                      <input
-                        type="number"
-                        value={value}
-                        placeholder={field.placeholder}
-                        onChange={e => setConfigData(prev => ({ ...prev, [stateKey]: e.target.value }))}
-                        className="w-full h-9 rounded-lg border border-border bg-muted/30 px-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
-                      />
-                    )}
-
-                    {field.type === "time" && (
-                      <input
-                        type="time"
-                        value={value}
-                        onChange={e => setConfigData(prev => ({ ...prev, [stateKey]: e.target.value }))}
-                        className="w-full h-9 rounded-lg border border-border bg-muted/30 px-3 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
-                      />
-                    )}
-
-                    {field.type === "textarea" && (
-                      <textarea
-                        value={value}
-                        placeholder={field.placeholder}
-                        rows={3}
-                        onChange={e => setConfigData(prev => ({ ...prev, [stateKey]: e.target.value }))}
-                        className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all resize-none"
-                      />
-                    )}
-
-                    {field.type === "select" && (
-                      <Select
-                        value={value}
-                        onValueChange={val => setConfigData(prev => ({ ...prev, [stateKey]: val }))}
-                      >
-                        <SelectTrigger className="h-9 text-xs">
-                          <SelectValue placeholder="Select…" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {field.options?.map(opt => (
-                            <SelectItem key={opt} value={opt} className="text-xs">{opt}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-
-                    {field.type === "toggle" && (
-                      <button
-                        type="button"
-                        onClick={() => setConfigData(prev => ({ ...prev, [stateKey]: prev[stateKey] === "true" ? "false" : "true" }))}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                          value === "true" ? "bg-primary" : "bg-muted-foreground/30"
-                        }`}
-                      >
-                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                          value === "true" ? "translate-x-6" : "translate-x-1"
-                        }`} />
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          <DialogFooter className="pt-3 gap-2">
-            {activePanel && (
-              <Button
-                onClick={() => { toast.success(`${activePanel.label} saved successfully!`); setActivePanel(null); }}
-                className="bg-brand-gradient text-white text-xs font-semibold"
-              >
-                Save Changes
-              </Button>
-            )}
-            <Button variant="outline" onClick={() => { setIsConfigOpen(false); setActivePanel(null); }} className="text-xs">Close</Button>
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setSelectedRoute(null)} className="text-xs">
+              Close Telemetry
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* ═══════════════════════════════════════════════════════
-          MODAL: FLEET REPORTS
-      ═══════════════════════════════════════════════════════ */}
-      <Dialog open={isReportOpen} onOpenChange={setIsReportOpen}>
+      {/* VIEW DETAILS MODAL: PASS HOLDER */}
+      <Dialog open={selectedPass !== null} onOpenChange={() => setSelectedPass(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <BarChart3 className="size-4 text-primary" /> Fleet Reports
+              <Users className="size-4 text-primary" /> Transport Pass Holder Record
             </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              Generate and export institutional transport reports.
+            <DialogDescription className="text-xs">
+              Read-only pass details for {selectedPass?.studentName} ({selectedPass?.rollNo}).
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-2 pt-2">
-            {REPORT_ITEMS.map((item, i) => (
-              <button
-                key={i}
-                onClick={() => toast.success(`Generating: ${item}…`)}
-                className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-border/60 bg-muted/20 hover:bg-primary/5 hover:border-primary/30 transition-all text-xs font-medium text-foreground group"
-              >
-                <span>{item}</span>
-                <Download className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-              </button>
-            ))}
-          </div>
-          <div className="flex gap-2 pt-2">
-            <Button
-              className="flex-1 bg-brand-gradient text-white text-xs font-semibold"
-              onClick={() => { toast.success("Exporting all reports as PDF…"); setIsReportOpen(false); }}
-            >
-              <FileText className="size-3.5 mr-1.5" /> Export PDF
+
+          {selectedPass && (
+            <div className="space-y-2 text-xs pt-1">
+              <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Pass Number:</span>
+                  <span className="font-mono font-bold text-foreground">{selectedPass.passId}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">User Type & Dept:</span>
+                  <span className="font-semibold text-foreground">{selectedPass.userType} - {selectedPass.department} ({selectedPass.year})</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Assigned Route & Stop:</span>
+                  <span className="font-mono font-bold text-primary">{selectedPass.routeNo} ({selectedPass.pickupStop})</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Pass Type & Fee:</span>
+                  <span className="font-bold text-emerald-600">{selectedPass.passType} - ₹{selectedPass.annualFee.toLocaleString()} ({selectedPass.paymentStatus})</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">Validity & Status:</span>
+                  <span className="font-mono font-bold text-foreground">{selectedPass.expiryDate} ({selectedPass.passStatus})</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setSelectedPass(null)} className="text-xs">
+              Close Pass Record
             </Button>
-            <Button
-              variant="outline"
-              className="flex-1 text-xs font-semibold border-primary/30 text-primary"
-              onClick={() => { handleExportCSV(); setIsReportOpen(false); }}
-            >
-              <Download className="size-3.5 mr-1.5" /> Export Excel
-            </Button>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsReportOpen(false)} className="text-xs">Close</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* VIEW DETAILS MODAL: VEHICLE COMPLIANCE */}
+      <Dialog open={selectedVehicle !== null} onOpenChange={() => setSelectedVehicle(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <Wrench className="size-4 text-amber-600" /> Vehicle Maintenance & Compliance Record
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Read-only vehicle compliance and safety telemetry for {selectedVehicle?.vehicleNo}.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedVehicle && (
+            <div className="space-y-2 text-xs pt-1">
+              <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Vehicle Reg No:</span>
+                  <span className="font-mono font-bold text-foreground">{selectedVehicle.vehicleNo}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Type & Model:</span>
+                  <span className="font-semibold text-foreground">{selectedVehicle.manufacturer} {selectedVehicle.model} ({selectedVehicle.purchaseYear})</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Insurance & Permit:</span>
+                  <span className="font-mono font-bold text-emerald-600">{selectedVehicle.insuranceStatus} / {selectedVehicle.permitStatus}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Tyre & Battery Health:</span>
+                  <span className="font-mono font-semibold text-foreground">{selectedVehicle.tyreHealth} | {selectedVehicle.batteryHealth}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">Overall Health Score:</span>
+                  <span className="font-mono font-bold text-primary text-sm">{selectedVehicle.overallComplianceScore}% (Safety: {selectedVehicle.safetyScore}%)</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="pt-2">
+            <Button variant="outline" onClick={() => setSelectedVehicle(null)} className="text-xs">
+              Close Vehicle Record
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* VIEW DOCUMENT MODAL */}
+      <Dialog open={selectedDoc !== null} onOpenChange={() => setSelectedDoc(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-bold flex items-center gap-2">
+              <FileCheck className="size-4 text-blue-600" /> Master Institutional Governance Document
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Official university transport document repository viewer.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedDoc && (
+            <div className="space-y-2 text-xs pt-1">
+              <div className="p-3 rounded-xl bg-muted/40 space-y-1.5">
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Document Title:</span>
+                  <span className="font-semibold text-foreground">{selectedDoc.title}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Category:</span>
+                  <span className="font-mono font-bold text-primary">{selectedDoc.category}</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-border/40">
+                  <span className="text-muted-foreground">Document No:</span>
+                  <span className="font-mono font-bold text-foreground">{selectedDoc.docNo}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-muted-foreground">Expiry Date:</span>
+                  <span className="font-mono font-bold text-foreground">{selectedDoc.expiry} ({selectedDoc.status})</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="pt-2">
+            <Button
+              variant="default"
+              onClick={() => {
+                toast.success(`Downloaded ${selectedDoc?.title}`);
+                setSelectedDoc(null);
+              }}
+              className="text-xs font-semibold gap-1"
+            >
+              <Download className="size-3.5" /> Download Document
+            </Button>
+            <Button variant="outline" onClick={() => setSelectedDoc(null)} className="text-xs">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* QUICK ACTION MODALS (RETAINED & FULLY FUNCTIONAL) */}
+      <Dialog open={isConfigOpen} onOpenChange={setIsConfigOpen}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Sliders className="size-5 text-primary" /> Transport Policy & Governance Configuration
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Configure general transport settings, fee rules, vehicle/driver policies, student transport rules, GPS tracking, and notifications.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Config Tabs Switcher */}
+          <div className="flex items-center gap-1.5 border-b border-border pb-2 pt-1 overflow-x-auto">
+            <button
+              type="button"
+              onClick={() => setConfigSubTab("general")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "general" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              1. General Settings
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigSubTab("fees")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "fees" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              2. Transport Fees
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigSubTab("vehicles")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "vehicles" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              3. Vehicle Policies
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigSubTab("drivers")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "drivers" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              4. Driver Policies
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigSubTab("students")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "students" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              5. Student Policies
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigSubTab("gps")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "gps" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              6. GPS & Tracking
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigSubTab("notifications")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all shrink-0 ${configSubTab === "notifications" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              7. Notifications
+            </button>
+          </div>
+
+          <form onSubmit={handleSaveConfig} className="space-y-4 pt-2">
+            {/* SUBTAB 1: GENERAL SETTINGS */}
+            {configSubTab === "general" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">General Transport Operational Settings</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Transport Academic Year</Label>
+                    <Input value={configForm.academicYear || "2026 - 2027"} onChange={(e) => setConfigForm({ ...configForm, academicYear: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Transport Working Days</Label>
+                    <Input value={configForm.workingDays || "Mon - Sat (6 Days / Week)"} onChange={(e) => setConfigForm({ ...configForm, workingDays: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <Label className="text-xs font-semibold">Holiday Transport Schedule</Label>
+                    <Textarea rows={2} value={configForm.holidaySchedule || ""} onChange={(e) => setConfigForm({ ...configForm, holidaySchedule: e.target.value })} className="text-xs" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SUBTAB 2: TRANSPORT FEE SETTINGS */}
+            {configSubTab === "fees" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Transport Fee Structure & Policies</h4>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Single Zone Fee (Annual ₹)</Label>
+                    <Input type="number" value={configForm.feeStructure.singleZone} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, singleZone: Number(e.target.value) } })} className="h-9 text-xs font-mono" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Double Zone Fee (Annual ₹)</Label>
+                    <Input type="number" value={configForm.feeStructure.doubleZone} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, doubleZone: Number(e.target.value) } })} className="h-9 text-xs font-mono" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Full Zone Fee (Annual ₹)</Label>
+                    <Input type="number" value={configForm.feeStructure.fullZone} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, fullZone: Number(e.target.value) } })} className="h-9 text-xs font-mono" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Faculty Annual Fee (Annual ₹)</Label>
+                    <Input type="number" value={configForm.feeStructure.staffAnnualFee} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, staffAnnualFee: Number(e.target.value) } })} className="h-9 text-xs font-mono" />
+                  </div>
+                  <div className="space-y-1 col-span-2">
+                    <Label className="text-xs font-semibold">Installment Rules</Label>
+                    <Input value={configForm.feeStructure.installmentRules || ""} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, installmentRules: e.target.value } })} className="h-9 text-xs" />
+                  </div>
+                  <div className="space-y-1 col-span-2">
+                    <Label className="text-xs font-semibold">Refund Policy</Label>
+                    <Textarea rows={2} value={configForm.feeStructure.refundPolicy || ""} onChange={(e) => setConfigForm({ ...configForm, feeStructure: { ...configForm.feeStructure, refundPolicy: e.target.value } })} className="text-xs" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SUBTAB 3: VEHICLE POLICIES */}
+            {configSubTab === "vehicles" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Vehicle Maintenance & Fleet Standards</h4>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Standard Seating Capacity</Label>
+                    <Input type="number" value={configForm.seatingCapacity || 50} onChange={(e) => setConfigForm({ ...configForm, seatingCapacity: Number(e.target.value) })} className="h-9 text-xs font-mono" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Fuel Consumption Target (Kmpl)</Label>
+                    <Input value={configForm.fuelConsumptionStandards} onChange={(e) => setConfigForm({ ...configForm, fuelConsumptionStandards: e.target.value })} className="h-9 text-xs font-mono" />
+                  </div>
+                  <div className="space-y-1 col-span-2">
+                    <Label className="text-xs font-semibold">Preventive Maintenance Policy</Label>
+                    <Textarea rows={2} value={configForm.preventiveMaintenancePolicy || ""} onChange={(e) => setConfigForm({ ...configForm, preventiveMaintenancePolicy: e.target.value })} className="text-xs" />
+                  </div>
+                  <div className="space-y-1 col-span-2">
+                    <Label className="text-xs font-semibold">Vehicle Replacement Policy</Label>
+                    <Input value={configForm.vehicleReplacementPolicy || ""} onChange={(e) => setConfigForm({ ...configForm, vehicleReplacementPolicy: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SUBTAB 4: DRIVER POLICIES */}
+            {configSubTab === "drivers" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Driver Eligibility & Health Regulations</h4>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="space-y-1 col-span-2">
+                    <Label className="text-xs font-semibold">Driver Eligibility Rules</Label>
+                    <Input value={configForm.driverEligibility || ""} onChange={(e) => setConfigForm({ ...configForm, driverEligibility: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">License Verification Frequency</Label>
+                    <Input value={configForm.licenseVerification || ""} onChange={(e) => setConfigForm({ ...configForm, licenseVerification: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Max Daily Working Hours</Label>
+                    <Input type="number" value={configForm.maxWorkingHours || 8} onChange={(e) => setConfigForm({ ...configForm, maxWorkingHours: Number(e.target.value) })} className="h-9 text-xs font-mono" />
+                  </div>
+                  <div className="space-y-1 col-span-2">
+                    <Label className="text-xs font-semibold">Health & Breathalyzer Check Schedule</Label>
+                    <Input value={configForm.healthCheckSchedule || ""} onChange={(e) => setConfigForm({ ...configForm, healthCheckSchedule: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SUBTAB 5: STUDENT POLICIES */}
+            {configSubTab === "students" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Student & Pass Discipline Rules</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Boarding Point Rules</Label>
+                    <Input value={configForm.boardingRules || ""} onChange={(e) => setConfigForm({ ...configForm, boardingRules: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Lost Pass Policy</Label>
+                    <Input value={configForm.lostPassPolicy || ""} onChange={(e) => setConfigForm({ ...configForm, lostPassPolicy: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <Label className="text-xs font-semibold">Bus Discipline Rules</Label>
+                    <Textarea rows={2} value={configForm.disciplineRules || ""} onChange={(e) => setConfigForm({ ...configForm, disciplineRules: e.target.value })} className="text-xs" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SUBTAB 6: GPS & TRACKING */}
+            {configSubTab === "gps" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">AIS-140 GPS & Telematics Provider Settings</h4>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">GPS Provider</Label>
+                    <Input value={configForm.gpsProvider || ""} onChange={(e) => setConfigForm({ ...configForm, gpsProvider: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Speed Alert Limit (km/h)</Label>
+                    <Input type="number" value={configForm.speedAlertLimitKmvh || 55} onChange={(e) => setConfigForm({ ...configForm, speedAlertLimitKmvh: Number(e.target.value) })} className="h-9 text-xs font-mono" />
+                  </div>
+                  <div className="space-y-1 col-span-2">
+                    <Label className="text-xs font-semibold">SOS & Panic Button Tracking Integration</Label>
+                    <Input value={configForm.sosTracking || ""} onChange={(e) => setConfigForm({ ...configForm, sosTracking: e.target.value })} className="h-9 text-xs" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SUBTAB 7: NOTIFICATIONS */}
+            {configSubTab === "notifications" && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Notification & Delay Alert Rules</h4>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Route Delay Alert Threshold (Mins)</Label>
+                    <Input type="number" value={configForm.routeDelayAlertMin || 10} onChange={(e) => setConfigForm({ ...configForm, routeDelayAlertMin: Number(e.target.value) })} className="h-9 text-xs font-mono" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Pass Expiry Warning (Days Prior)</Label>
+                    <Input type="number" value={configForm.passExpiryNotificationDays || 15} onChange={(e) => setConfigForm({ ...configForm, passExpiryNotificationDays: Number(e.target.value) })} className="h-9 text-xs font-mono" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <DialogFooter className="pt-3 border-t border-border flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsPreviewOpen(true)} className="text-xs gap-1">
+                  <Eye className="size-3.5 text-primary" /> Preview Changes
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsHistoryOpen(true)} className="text-xs gap-1">
+                  <History className="size-3.5 text-muted-foreground" /> Config History
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button type="button" variant="ghost" size="sm" onClick={handleResetConfig} className="text-xs">
+                  Reset
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => setIsConfigOpen(false)} className="text-xs">
+                  Cancel
+                </Button>
+                <Button type="submit" size="sm" className="bg-brand-gradient text-white text-xs font-semibold gap-1.5">
+                  <CheckCircle2 className="size-3.5" /> Save Configuration
+                </Button>
+              </div>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

@@ -561,6 +561,20 @@ export function resolveTargetUrlForUser(
     return url === "/dashboard" ? "/super-admin/dashboard" : url;
   }
 
+  const deanRoutes: Record<string, string> = {
+    academic_dean: "/staff/academic-dean",
+    student_dean: "/staff/student-dean",
+    iqac_dean: "/staff/iqac",
+    ima_dean: "/staff/ima",
+    research_dean: "/staff/research-development",
+    finance_dean: "/staff/finance-dean",
+    examination_dean: "/staff/examination-dean",
+    placement_dean: "/staff/placement-dean",
+  };
+  if (role in deanRoutes && (url === "/dashboard" || url === "/staff")) {
+    return deanRoutes[role];
+  }
+
   if (role === "student") {
     if (url === "/dashboard") return "/student/dashboard";
     if (url === "/academics") return "/student/courses";

@@ -166,7 +166,7 @@ export function Topbar() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="super-admin">1. Super Admin</SelectItem>
-              <SelectItem value="staff">2. Staff (Faculty)</SelectItem>
+              <SelectItem value="staff">2. Staff (Placement Officer)</SelectItem>
               <SelectItem value="student">3. Student</SelectItem>
               <SelectItem value="parent">4. Parent</SelectItem>
               <SelectItem value="external-user">5. External User</SelectItem>
