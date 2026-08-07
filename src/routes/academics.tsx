@@ -8,7 +8,13 @@ const academicsSearchSchema = z.object({
 });
 
 export const Route = createFileRoute("/academics")({
-  validateSearch: (search) => academicsSearchSchema.parse(search),
+  validateSearch: (search: Record<string, unknown>) => {
+    const rawTab = search["tab"];
+    const tabStr = typeof rawTab === "string" ? rawTab : undefined;
+    const validTabs = ["courses", "departments", "curriculum"];
+    const tab = validTabs.includes(tabStr || "") ? (tabStr as any) : undefined;
+    return { tab };
+  },
   head: () => ({
     meta: [{ title: "Academics & Curriculum — EduSuite Pro" }],
   }),

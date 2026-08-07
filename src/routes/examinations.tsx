@@ -1,16 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { ExaminationsModuleView } from "@/modules/examinations";
 
 export const Route = createFileRoute("/examinations")({
   head: () => ({ meta: [{ title: "Examinations & Evaluation — EduSuite Pro" }] }),
-  component: ExaminationsPage,
+  component: ExaminationsLayout,
 });
 
-export function ExaminationsPage() {
+export function ExaminationsLayout() {
   return (
     <DashboardLayout>
-      <ExaminationsModuleView />
+      <Outlet />
     </DashboardLayout>
   );
 }

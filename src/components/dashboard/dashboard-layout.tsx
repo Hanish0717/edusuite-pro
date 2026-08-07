@@ -6,30 +6,33 @@ import { Topbar } from "@/components/dashboard/topbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { brand } from "@/config/branding";
 import { useRole } from "@/context/role-context";
+import { LibrarianTabProvider } from "@/context/librarian-context";
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const { profile } = useRole();
   const showAi = profile.featureFlags?.["aiAssistant"] !== false;
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
-        <AppSidebar />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <Topbar />
-          <main className="animate-fade-in-soft flex-1 px-4 sm:px-6 lg:px-8 py-6">{children}</main>
-          <footer className="border-t border-border px-4 sm:px-6 lg:px-8 py-4 text-xs text-muted-foreground">
-
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <span>
-                &copy; {new Date().getFullYear()} {brand.name}. All rights reserved.
-              </span>
-              <span>Academic Year 2024-25 &middot; Multi-campus SaaS</span>
-            </div>
-          </footer>
+    <LibrarianTabProvider>
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full bg-background">
+          <AppSidebar />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <Topbar />
+            <main className="animate-fade-in-soft flex-1 px-4 py-6 md:px-6">{children}</main>
+            <footer className="border-t border-border px-4 py-4 text-xs text-muted-foreground md:px-6">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span>
+                  &copy; {new Date().getFullYear()} {brand.name}. All rights reserved.
+                </span>
+                <span>Academic Year 2024-25 &middot; Multi-campus SaaS</span>
+              </div>
+            </footer>
+          </div>
+          {showAi && <AiAssistant />}
         </div>
-        {showAi && <AiAssistant />}
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </LibrarianTabProvider>
   );
 }
+

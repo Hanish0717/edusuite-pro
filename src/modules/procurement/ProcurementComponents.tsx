@@ -552,7 +552,7 @@ export function ProcurementModuleView() {
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold">Department</Label>
                 <Select
-                  value={formData.department}
+                  value={formData.department || ""}
                   onValueChange={(val) => setFormData({ ...formData, department: val })}
                 >
                   <SelectTrigger className="h-9 text-xs">
@@ -625,7 +625,7 @@ export function ProcurementModuleView() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <FileText className="size-5 text-primary" /> Purchase Order Dossier
+              <FileText className="size-5 text-primary" /> Purchase Order Details
             </DialogTitle>
           </DialogHeader>
 
@@ -683,7 +683,7 @@ export function ProcurementModuleView() {
                   onClick={() => setIsViewDialogOpen(false)}
                   className="w-full text-xs"
                 >
-                  Close Dossier
+                  Close Details
                 </Button>
               </DialogFooter>
             </div>
