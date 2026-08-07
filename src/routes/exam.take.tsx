@@ -5,6 +5,7 @@ import {
   FileCheck2,
   Clock,
   Shield,
+  ShieldCheck,
   CheckCircle,
   AlertTriangle,
   Code2,
@@ -21,6 +22,8 @@ import {
   Key,
   Building,
   Check,
+  Zap,
+  Sparkles,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -288,19 +291,34 @@ function StudentLiveExamPage() {
     >
       {/* 1. INITIAL STUDENT COLLEGE LOGIN & ENTRY GATE MODAL */}
       {!isExamStarted && (
-        <div className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-6 overflow-y-auto">
-          <div className="w-full max-w-xl bg-white border border-slate-200 rounded-3xl p-8 space-y-6 text-center shadow-2xl animate-fade-up my-auto">
-            <div className="size-16 rounded-full bg-blue-50 border-2 border-blue-200 grid place-items-center mx-auto text-blue-600">
-              <User className="size-8" />
+        <div className="fixed inset-0 z-[100] bg-slate-50/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px]">
+          {/* Ambient Background Glow Blobs */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-indigo-400/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="w-full max-w-xl bg-white/95 backdrop-blur-xl border border-slate-200/90 rounded-3xl p-6 sm:p-9 space-y-6 text-center shadow-2xl shadow-slate-300/50 animate-fade-up my-auto relative overflow-hidden">
+            {/* Top Accent Gradient Bar */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500 absolute top-0 left-0" />
+
+            {/* Shield Icon Badge */}
+            <div className="relative size-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 p-0.5 shadow-xl shadow-blue-500/20 mx-auto">
+              <div className="w-full h-full bg-white rounded-[14px] grid place-items-center text-blue-600">
+                <ShieldCheck className="size-8" />
+              </div>
+              <span className="size-3.5 bg-emerald-500 rounded-full ring-2 ring-white absolute -top-1 -right-1 animate-pulse" />
             </div>
 
-            <div className="space-y-1">
-              <Badge className="bg-blue-600 text-white font-mono">STUDENT COLLEGE AUTHENTICATION GATE</Badge>
-              <h2 className="text-2xl font-extrabold font-sans text-slate-900">
-                Official College Student Verification
+            <div className="space-y-1.5">
+              <Badge className="bg-blue-50 text-blue-700 border border-blue-200/80 font-mono text-[0.68rem] tracking-wider uppercase px-3 py-1 rounded-full shadow-2xs inline-flex items-center gap-1.5">
+                <Sparkles className="size-3 text-blue-600" />
+                STUDENT COLLEGE AUTHENTICATION GATE
+              </Badge>
+              <h2 className="text-2xl sm:text-3xl font-black font-sans text-slate-900 tracking-tight">
+                Official Student Verification
               </h2>
-              <p className="text-xs text-slate-500 font-mono">
-                Google Cloud Systems &amp; Coding Assessment 2026 • Placement Drive
+              <p className="text-xs sm:text-sm text-slate-500 font-medium flex items-center justify-center gap-1.5 pt-0.5">
+                <Building className="size-3.5 text-slate-400" />
+                Google Cloud Systems &amp; Coding Assessment 2026 &bull; Placement Drive
               </p>
             </div>
 
@@ -316,66 +334,94 @@ function StudentLiveExamPage() {
                 setIsExamStarted(true);
                 toast.success(`Welcome ${studentName}! Proctored security restrictions enabled.`);
               }}
-              className="space-y-4 text-left text-xs font-sans"
+              className="space-y-5 text-left text-xs font-sans"
             >
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-700 flex items-center gap-1">
-                    <Mail className="size-3.5 text-blue-600" /> Official College Email ID
-                  </label>
-                  <Input
-                    type="email"
-                    value={studentEmail}
-                    onChange={(e) => setStudentEmail(e.target.value)}
-                    required
-                    placeholder="e.g. alex.2022cse015@college.edu.in"
-                    className="h-10 text-xs rounded-xl font-mono"
-                  />
+                  <div className="flex items-center justify-between text-xs">
+                    <label className="font-bold text-slate-700 flex items-center gap-1.5">
+                      <Mail className="size-3.5 text-blue-600" /> Official College Email ID
+                    </label>
+                    <span className="text-[0.65rem] text-slate-400 font-medium">Required</span>
+                  </div>
+                  <div className="relative rounded-2xl border border-slate-200 bg-slate-50/50 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all shadow-2xs">
+                    <Input
+                      type="email"
+                      value={studentEmail}
+                      onChange={(e) => setStudentEmail(e.target.value)}
+                      required
+                      placeholder="e.g. alex.2022cse015@college.edu.in"
+                      className="h-11 border-none bg-transparent text-xs rounded-2xl font-mono text-slate-900 focus-visible:ring-0 focus-visible:ring-offset-0 px-3.5"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-700 flex items-center gap-1">
-                    <Key className="size-3.5 text-blue-600" /> Default Student Passkey / Password
-                  </label>
-                  <Input
-                    type="password"
-                    value={studentPassword}
-                    onChange={(e) => setStudentPassword(e.target.value)}
-                    required
-                    placeholder="EduSuite@2026#"
-                    className="h-10 text-xs rounded-xl font-mono"
-                  />
+                  <div className="flex items-center justify-between text-xs">
+                    <label className="font-bold text-slate-700 flex items-center gap-1.5">
+                      <Key className="size-3.5 text-blue-600" /> Default Student Passkey / Password
+                    </label>
+                    <span className="text-[0.65rem] text-slate-400 font-medium">Required</span>
+                  </div>
+                  <div className="relative rounded-2xl border border-slate-200 bg-slate-50/50 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all shadow-2xs">
+                    <Input
+                      type="password"
+                      value={studentPassword}
+                      onChange={(e) => setStudentPassword(e.target.value)}
+                      required
+                      placeholder="EduSuite@2026#"
+                      className="h-11 border-none bg-transparent text-xs rounded-2xl font-mono text-slate-900 focus-visible:ring-0 focus-visible:ring-offset-0 px-3.5"
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* LIVE AUTO-DERIVED STUDENT PROFILE CARD */}
-              <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/80 text-xs font-mono space-y-2 text-blue-950 shadow-xs">
-                <p className="font-bold text-blue-800 text-[0.7rem] uppercase tracking-wider flex items-center justify-between">
-                  <span>⚡ Auto-Detected Student Record</span>
-                  <span className="text-[0.62rem] bg-blue-600 text-white px-2 py-0.5 rounded-md font-sans">Verified ID</span>
-                </p>
-                <div className="grid grid-cols-3 gap-2 pt-1 text-[0.68rem]">
-                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
-                    <span className="text-slate-500 block text-[0.6rem]">Student Name</span>
-                    <strong className="text-slate-900 font-sans">{studentName}</strong>
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50/80 via-slate-50/60 to-indigo-50/50 border border-blue-200/80 text-xs font-mono space-y-3 text-slate-900 shadow-sm relative overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-blue-900 text-[0.72rem] tracking-wide uppercase flex items-center gap-1.5">
+                    <Zap className="size-3.5 text-blue-600 animate-bounce" /> Auto-Detected Student Record
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[0.63rem] bg-emerald-600 text-white px-2.5 py-0.5 rounded-full font-sans font-bold shadow-xs">
+                    <CheckCircle className="size-3" /> VERIFIED ID
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-[0.68rem]">
+                  <div className="bg-white/90 p-2.5 rounded-xl border border-blue-100/90 shadow-2xs space-y-0.5">
+                    <span className="text-slate-400 block text-[0.6rem] font-sans uppercase tracking-wider font-semibold">Student Name</span>
+                    <strong className="text-slate-900 font-sans text-xs font-extrabold truncate block">{studentName}</strong>
                   </div>
-                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
-                    <span className="text-slate-500 block text-[0.6rem]">Roll / Hall Ticket</span>
-                    <strong className="text-blue-700 font-mono">{studentRollNo}</strong>
+                  <div className="bg-white/90 p-2.5 rounded-xl border border-blue-100/90 shadow-2xs space-y-0.5">
+                    <span className="text-slate-400 block text-[0.6rem] font-sans uppercase tracking-wider font-semibold">Hall Ticket / Roll</span>
+                    <strong className="text-blue-700 font-mono text-xs font-bold truncate block">{studentRollNo}</strong>
                   </div>
-                  <div className="bg-white/80 p-2 rounded-xl border border-blue-100">
-                    <span className="text-slate-500 block text-[0.6rem]">Derived Department</span>
-                    <strong className="text-emerald-700 font-sans">{parsedInfo.dept}</strong>
+                  <div className="bg-white/90 p-2.5 rounded-xl border border-blue-100/90 shadow-2xs space-y-0.5">
+                    <span className="text-slate-400 block text-[0.6rem] font-sans uppercase tracking-wider font-semibold">Department</span>
+                    <strong className="text-emerald-700 font-sans text-xs font-bold truncate block">{parsedInfo.dept}</strong>
                   </div>
                 </div>
+              </div>
+
+              {/* SECURITY & PROCTORING READINESS BADGES */}
+              <div className="flex items-center justify-between gap-2 px-1 py-1 text-[0.65rem] text-slate-500 font-medium border-t border-slate-100 pt-3">
+                <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                  <Check className="size-3 text-emerald-500" /> Fullscreen Lock
+                </span>
+                <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                  <Check className="size-3 text-emerald-500" /> AI Proctor Active
+                </span>
+                <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                  <Check className="size-3 text-emerald-500" /> 256-Bit SSL Encrypted
+                </span>
               </div>
 
               <Button
                 type="submit"
                 size="lg"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl h-11 gap-2 shadow-xl shadow-emerald-600/30 cursor-pointer"
+                className="w-full bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs sm:text-sm rounded-2xl h-12 gap-2.5 shadow-xl shadow-emerald-600/25 hover:shadow-emerald-600/40 hover:scale-[1.005] active:scale-[0.995] transition-all cursor-pointer"
               >
-                <Play className="size-4" /> Verify Credentials, Start Exam &amp; Enter Fullscreen
+                <Play className="size-4 fill-white" /> Verify Credentials, Start Exam &amp; Enter Fullscreen
               </Button>
             </form>
           </div>
@@ -384,8 +430,8 @@ function StudentLiveExamPage() {
 
       {/* 2. FULLSCREEN ENFORCEMENT OVERLAY GUARD */}
       {isExamStarted && !isFullscreenActive && !isExamSubmitted && (
-        <div className="fixed inset-0 z-[90] bg-slate-950/90 backdrop-blur-2xl flex items-center justify-center p-6">
-          <div className="w-full max-w-md bg-white border border-rose-200 rounded-3xl p-8 space-y-5 text-center shadow-2xl">
+        <div className="fixed inset-0 z-[90] bg-white flex items-center justify-center p-6">
+          <div className="w-full max-w-md bg-white border border-rose-200 rounded-3xl p-8 space-y-5 text-center shadow-2xl shadow-rose-100/50">
             <div className="size-20 rounded-full bg-rose-50 border-2 border-rose-200 grid place-items-center mx-auto text-rose-600">
               <AlertTriangle className="size-10" />
             </div>
