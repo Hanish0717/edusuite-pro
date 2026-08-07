@@ -111,8 +111,6 @@ import {
   type PolicyComplianceStatus,
 } from "./HostelService";
 
-import { useLocation } from "@tanstack/react-router";
-
 export function HostelModuleView() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -152,7 +150,6 @@ export function HostelModuleView() {
       }
     };
   }, [todayStr]);
-
   const [loading, setLoading] = useState(false);
 
   // Filters state for Resident Roster

@@ -300,253 +300,93 @@ export function TimetableModuleView() {
         </div>
       </div>
 
-      {/* VIEW 1: WEEKLY TIMETABLE GRID (EXACT REPLICATED UI FORMAT FROM REFERENCE IMAGE) */}
+      {/* VIEW 1: WEEKLY TIMETABLE GRID (MONDAY TO SATURDAY X PERIOD 1 TO 8) */}
       {viewMode === "grid" && (
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 space-y-4 shadow-sm">
+        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <div>
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                <CalendarRange className="size-4 text-primary" /> Master Weekly Timetable Matrix
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Class: <strong className="text-primary">{selectedBranch} - Semester {selectedSem} ({selectedSec})</strong> • Academic Year 2026-2027
+              </p>
+            </div>
+            <div className="flex items-center gap-3 text-xs font-medium">
+              <span className="flex items-center gap-1"><span className="size-2.5 rounded-full bg-blue-500"></span> Core Theory</span>
+              <span className="flex items-center gap-1"><span className="size-2.5 rounded-full bg-amber-500"></span> Practical Lab</span>
+            </div>
+          </div>
+
           {loading || !gridData ? (
             <div className="py-12 text-center space-y-2">
               <RefreshCw className="size-8 animate-spin mx-auto text-primary" />
-              <p className="text-xs text-muted-foreground font-medium">Loading schedule matrix...</p>
+              <p className="text-xs text-muted-foreground font-medium">Loading schedule grid...</p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-              <table className="w-full text-center text-xs border-collapse font-sans bg-white dark:bg-slate-950">
-                <thead>
-                  {/* Row 1: Navy Header with Break (Orange) and Lunch (Green) Badges */}
-                  <tr className="bg-[#0B192C] text-white font-bold text-xs border-b border-slate-700">
-                    <th className="py-3.5 px-4 border-r border-slate-700 w-[80px] bg-[#0B192C] text-white">Timing</th>
-                    <th className="py-3.5 px-4 border-r border-slate-700 min-w-[130px]">Period 1</th>
-                    <th className="py-3.5 px-4 border-r border-slate-700 min-w-[130px]">Period 2</th>
-                    <th className="py-3.5 px-3 border-r border-slate-700 bg-[#F97316] text-white font-bold w-[75px]">Break</th>
-                    <th className="py-3.5 px-4 border-r border-slate-700 min-w-[130px]">Period 3</th>
-                    <th className="py-3.5 px-4 border-r border-slate-700 min-w-[130px]">Period 4</th>
-                    <th className="py-3.5 px-3 border-r border-slate-700 bg-[#10B981] text-white font-bold w-[75px]">Lunch</th>
-                    <th className="py-3.5 px-4 border-r border-slate-700 min-w-[130px]">Period 5</th>
-                    <th className="py-3.5 px-4 border-r border-slate-700 min-w-[130px]">Period 6</th>
-                    <th className="py-3.5 px-4 min-w-[130px]">Period 7</th>
-                  </tr>
-
-                  {/* Row 2: Start Time */}
-                  <tr className="bg-slate-50/80 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 text-xs border-b border-slate-200 dark:border-slate-800">
-                    <td className="py-2.5 px-4 font-bold text-[#0B192C] dark:text-white border-r border-slate-200 dark:border-slate-800 text-left pl-5">Start Time</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">09:00 AM</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">10:00 AM</td>
-                    <td className="py-2.5 px-2 border-r border-slate-200 dark:border-slate-800 text-slate-400 font-mono">—</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">11:10 AM</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">12:10 PM</td>
-                    <td className="py-2.5 px-2 border-r border-slate-200 dark:border-slate-800 text-slate-400 font-mono">—</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">02:00 PM</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">03:00 PM</td>
-                    <td className="py-2.5 px-3 font-medium">04:00 PM</td>
-                  </tr>
-
-                  {/* Row 3: End Time */}
-                  <tr className="bg-slate-50/40 dark:bg-slate-900/30 text-slate-700 dark:text-slate-300 text-xs border-b border-slate-200 dark:border-slate-800">
-                    <td className="py-2.5 px-4 font-bold text-[#0B192C] dark:text-white border-r border-slate-200 dark:border-slate-800 text-left pl-5">End Time</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">10:00 AM</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">11:00 AM</td>
-                    <td className="py-2.5 px-2 border-r border-slate-200 dark:border-slate-800 text-slate-400 font-mono">—</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">12:10 PM</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">01:10 PM</td>
-                    <td className="py-2.5 px-2 border-r border-slate-200 dark:border-slate-800 text-slate-400 font-mono">—</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">03:00 PM</td>
-                    <td className="py-2.5 px-3 border-r border-slate-200 dark:border-slate-800 font-medium">04:00 PM</td>
-                    <td className="py-2.5 px-3 font-medium">05:00 PM</td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead className="bg-muted/60 border-b border-border text-muted-foreground font-bold uppercase tracking-wider text-[0.68rem]">
+                  <tr>
+                    <th className="py-3 px-3 w-[120px]">Period / Time</th>
+                    {DAYS.map((day) => (
+                      <th key={day} className="py-3 px-3 text-center border-l border-border/60 min-w-[150px]">
+                        {day}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
-
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                  {[
-                    { key: "Monday", shortName: "MON" },
-                    { key: "Tuesday", shortName: "TUE" },
-                    { key: "Wednesday", shortName: "WED" },
-                    { key: "Thursday", shortName: "THU" },
-                    { key: "Friday", shortName: "FRI" },
-                    { key: "Saturday", shortName: "SAT" },
-                  ].map((dayObj, dayIdx) => {
-                    const dayKey = dayObj.key as TimetablePeriod["day"];
-                    const daySchedule = gridData.schedule.filter((p) => p.day === dayKey);
-
-                    // Cell Pastel Color Styling Per Period Column
-                    const getCellCardStyle = (periodNum: number) => {
-                      switch (periodNum) {
-                        case 1:
-                          return "bg-[#EBF5FF] border-[#BEE3F8] dark:bg-blue-950/40 dark:border-blue-800 text-[#0F172A] dark:text-blue-100";
-                        case 2:
-                          return "bg-[#F3E8FF] border-[#E9D5FF] dark:bg-purple-950/40 dark:border-purple-800 text-[#0F172A] dark:text-purple-100";
-                        case 3:
-                          return "bg-[#FEF3C7] border-[#FDE68A] dark:bg-amber-950/40 dark:border-amber-800 text-[#0F172A] dark:text-amber-100";
-                        case 4:
-                          return "bg-[#DCFCE7] border-[#BBF7D0] dark:bg-emerald-950/40 dark:border-emerald-800 text-[#0F172A] dark:text-emerald-100";
-                        case 5:
-                          return "bg-[#FCE7F3] border-[#FBCFE8] dark:bg-pink-950/40 dark:border-pink-800 text-[#0F172A] dark:text-pink-100";
-                        case 6:
-                          return "bg-[#E0F2FE] border-[#BAE6FD] dark:bg-cyan-950/40 dark:border-cyan-800 text-[#0F172A] dark:text-cyan-100";
-                        case 7:
-                          return "bg-[#FFEDD5] border-[#FED7AA] dark:bg-orange-950/40 dark:border-orange-800 text-[#0F172A] dark:text-orange-100";
-                        default:
-                          return "bg-slate-100 border-slate-200 text-slate-900";
-                      }
-                    };
-
+                <tbody className="divide-y divide-border/60">
+                  {PERIOD_SLOTS.map((slot) => {
+                    const isLunch = slot.periodNumber === 4;
                     return (
-                      <tr key={dayObj.key}>
-                        {/* Day Name */}
-                        <td className="py-3.5 px-3 font-bold text-[#0F172A] dark:text-slate-200 border-r border-slate-200 dark:border-slate-800 text-xs tracking-wider">
-                          {dayObj.shortName}
+                      <tr key={slot.periodNumber} className="hover:bg-muted/10 transition-colors">
+                        {/* Period & Time Slot */}
+                        <td className="py-3 px-3 font-mono font-bold border-r border-border/60 bg-muted/20">
+                          <span className="text-primary block text-xs">Period {slot.periodNumber}</span>
+                          <span className="text-[0.68rem] text-muted-foreground font-normal block">{slot.startTime} - {slot.endTime}</span>
                         </td>
 
-                        {/* Period 1 Cell */}
-                        {(() => {
-                          const p = daySchedule.find((slot) => slot.periodNumber === 1);
+                        {/* 6 Day Columns */}
+                        {DAYS.map((day) => {
+                          const periodSlot = gridData.schedule.find((p) => p.day === day && p.periodNumber === slot.periodNumber);
+
+                          if (!periodSlot) {
+                            return (
+                              <td key={day} className="py-3 px-3 border-l border-border/60 text-center text-muted-foreground font-mono">
+                                —
+                              </td>
+                            );
+                          }
+
+                          const isLab = periodSlot.isLab;
+
                           return (
-                            <td key="p1" className="p-2 border-r border-slate-200 dark:border-slate-800 align-middle">
-                              {p && (
-                                <div
-                                  onClick={() => handleOpenEditCell(p)}
-                                  className={`p-2.5 rounded-xl border cursor-pointer text-center space-y-0.5 ${getCellCardStyle(1)}`}
-                                >
-                                  <div className="font-bold text-xs md:text-sm text-[#0F172A] dark:text-white">{p.subjectCode}</div>
-                                  <div className="text-[0.72rem] font-medium text-slate-600 dark:text-slate-300 truncate">{p.facultyName}</div>
+                            <td key={day} className="p-1.5 border-l border-border/60 align-top">
+                              <div
+                                onClick={() => handleOpenEditCell(periodSlot)}
+                                className={`p-2.5 rounded-xl border transition-all cursor-pointer hover:shadow-md hover:scale-[1.02] space-y-1 ${
+                                  isLab
+                                    ? "bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/80 dark:border-amber-900/50 text-amber-950 dark:text-amber-200"
+                                    : "bg-blue-50/80 dark:bg-blue-950/30 border-blue-200/80 dark:border-blue-900/50 text-blue-950 dark:text-blue-200"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <Badge className={`text-[0.65rem] font-mono px-1.5 py-0 ${isLab ? "bg-amber-600 text-white" : "bg-blue-600 text-white"}`}>
+                                    {periodSlot.subjectCode}
+                                  </Badge>
+                                  {isLab && <FlaskConical className="size-3 text-amber-600" />}
                                 </div>
-                              )}
+                                <h4 className="font-bold text-[0.72rem] line-clamp-1">{periodSlot.subjectName}</h4>
+                                <p className="text-[0.68rem] font-semibold opacity-90 truncate">{periodSlot.facultyName}</p>
+                                <div className="text-[0.65rem] font-mono opacity-80 pt-0.5 border-t border-black/10 dark:border-white/10 flex items-center justify-between">
+                                  <span>{periodSlot.roomNo}</span>
+                                  <span className="font-bold text-[0.6rem] uppercase">{isLab ? "LAB" : "THEORY"}</span>
+                                </div>
+                              </div>
                             </td>
                           );
-                        })()}
-
-                        {/* Period 2 Cell */}
-                        {(() => {
-                          const p = daySchedule.find((slot) => slot.periodNumber === 2);
-                          return (
-                            <td key="p2" className="p-2 border-r border-slate-200 dark:border-slate-800 align-middle">
-                              {p && (
-                                <div
-                                  onClick={() => handleOpenEditCell(p)}
-                                  className={`p-2.5 rounded-xl border cursor-pointer text-center space-y-0.5 ${getCellCardStyle(2)}`}
-                                >
-                                  <div className="font-bold text-xs md:text-sm text-[#0F172A] dark:text-white">{p.subjectCode}</div>
-                                  <div className="text-[0.72rem] font-medium text-slate-600 dark:text-slate-300 truncate">{p.facultyName}</div>
-                                </div>
-                              )}
-                            </td>
-                          );
-                        })()}
-
-                        {/* Break Vertical Spanning Column (Rendered only on MON row) */}
-                        {dayIdx === 0 && (
-                          <td rowSpan={6} className="bg-amber-500/5 border-r border-slate-200 dark:border-slate-800 text-center p-0 align-middle">
-                            <div className="flex flex-col items-center justify-center font-extrabold text-[#F97316] text-xs tracking-[0.35em] space-y-2 py-4">
-                              <span>B</span>
-                              <span>R</span>
-                              <span>E</span>
-                              <span>A</span>
-                              <span>K</span>
-                            </div>
-                          </td>
-                        )}
-
-                        {/* Period 3 Cell */}
-                        {(() => {
-                          const p = daySchedule.find((slot) => slot.periodNumber === 3);
-                          return (
-                            <td key="p3" className="p-2 border-r border-slate-200 dark:border-slate-800 align-middle">
-                              {p && (
-                                <div
-                                  onClick={() => handleOpenEditCell(p)}
-                                  className={`p-2.5 rounded-xl border cursor-pointer text-center space-y-0.5 ${getCellCardStyle(3)}`}
-                                >
-                                  <div className="font-bold text-xs md:text-sm text-[#0F172A] dark:text-white">{p.subjectCode}</div>
-                                  <div className="text-[0.72rem] font-medium text-slate-600 dark:text-slate-300 truncate">{p.facultyName}</div>
-                                </div>
-                              )}
-                            </td>
-                          );
-                        })()}
-
-                        {/* Period 4 Cell */}
-                        {(() => {
-                          const p = daySchedule.find((slot) => slot.periodNumber === 4);
-                          return (
-                            <td key="p4" className="p-2 border-r border-slate-200 dark:border-slate-800 align-middle">
-                              {p && (
-                                <div
-                                  onClick={() => handleOpenEditCell(p)}
-                                  className={`p-2.5 rounded-xl border cursor-pointer text-center space-y-0.5 ${getCellCardStyle(4)}`}
-                                >
-                                  <div className="font-bold text-xs md:text-sm text-[#0F172A] dark:text-white">{p.subjectCode}</div>
-                                  <div className="text-[0.72rem] font-medium text-slate-600 dark:text-slate-300 truncate">{p.facultyName}</div>
-                                </div>
-                              )}
-                            </td>
-                          );
-                        })()}
-
-                        {/* Lunch Vertical Spanning Column (Rendered only on MON row) */}
-                        {dayIdx === 0 && (
-                          <td rowSpan={6} className="bg-emerald-500/5 border-r border-slate-200 dark:border-slate-800 text-center p-0 align-middle">
-                            <div className="flex flex-col items-center justify-center font-extrabold text-[#10B981] text-xs tracking-[0.35em] space-y-2 py-4">
-                              <span>L</span>
-                              <span>U</span>
-                              <span>N</span>
-                              <span>C</span>
-                              <span>H</span>
-                            </div>
-                          </td>
-                        )}
-
-                        {/* Period 5 Cell */}
-                        {(() => {
-                          const p = daySchedule.find((slot) => slot.periodNumber === 5);
-                          return (
-                            <td key="p5" className="p-2 border-r border-slate-200 dark:border-slate-800 align-middle">
-                              {p && (
-                                <div
-                                  onClick={() => handleOpenEditCell(p)}
-                                  className={`p-2.5 rounded-xl border cursor-pointer text-center space-y-0.5 ${getCellCardStyle(5)}`}
-                                >
-                                  <div className="font-bold text-xs md:text-sm text-[#0F172A] dark:text-white">{p.subjectCode}</div>
-                                  <div className="text-[0.72rem] font-medium text-slate-600 dark:text-slate-300 truncate">{p.facultyName}</div>
-                                </div>
-                              )}
-                            </td>
-                          );
-                        })()}
-
-                        {/* Period 6 Cell */}
-                        {(() => {
-                          const p = daySchedule.find((slot) => slot.periodNumber === 6);
-                          return (
-                            <td key="p6" className="p-2 border-r border-slate-200 dark:border-slate-800 align-middle">
-                              {p && (
-                                <div
-                                  onClick={() => handleOpenEditCell(p)}
-                                  className={`p-2.5 rounded-xl border cursor-pointer text-center space-y-0.5 ${getCellCardStyle(6)}`}
-                                >
-                                  <div className="font-bold text-xs md:text-sm text-[#0F172A] dark:text-white">{p.subjectCode}</div>
-                                  <div className="text-[0.72rem] font-medium text-slate-600 dark:text-slate-300 truncate">{p.facultyName}</div>
-                                </div>
-                              )}
-                            </td>
-                          );
-                        })()}
-
-                        {/* Period 7 Cell */}
-                        {(() => {
-                          const p = daySchedule.find((slot) => slot.periodNumber === 7);
-                          return (
-                            <td key="p7" className="p-2 align-middle">
-                              {p && (
-                                <div
-                                  onClick={() => handleOpenEditCell(p)}
-                                  className={`p-2.5 rounded-xl border cursor-pointer text-center space-y-0.5 ${getCellCardStyle(7)}`}
-                                >
-                                  <div className="font-bold text-xs md:text-sm text-[#0F172A] dark:text-white">{p.subjectCode}</div>
-                                  <div className="text-[0.72rem] font-medium text-slate-600 dark:text-slate-300 truncate">{p.facultyName}</div>
-                                </div>
-                              )}
-                            </td>
-                          );
-                        })()}
+                        })}
                       </tr>
                     );
                   })}

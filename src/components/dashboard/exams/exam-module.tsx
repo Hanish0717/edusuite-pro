@@ -1,5 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
-import { useLocation } from "@tanstack/react-router";
+import { useState, useMemo } from "react";
 import { FileSpreadsheet, RefreshCw, Download, Search, Filter, ChevronDown } from "lucide-react";
 import type { ExamModuleData, ExamItem, ExamStudentMark, EvaluationProgressInfo } from "./types";
 import { StatisticsCards } from "./statistics-cards";
@@ -28,22 +27,8 @@ interface ExamModuleProps {
 }
 
 export function ExamModule({ data, facultyName, academicYear, semester }: ExamModuleProps) {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const tabFromUrl = searchParams.get("tab");
-
   // Tabs navigation control state
   const [activeTab, setActiveTab] = useState("timetable");
-
-  useEffect(() => {
-    if (tabFromUrl === "schedule" || tabFromUrl === "schedules" || tabFromUrl === "timetable") {
-      setActiveTab("timetable");
-    } else if (tabFromUrl === "hall-tickets" || tabFromUrl === "hall-allocation") {
-      setActiveTab("hall-allocation");
-    } else if (tabFromUrl === "marks" || tabFromUrl === "marks-entry") {
-      setActiveTab("marks-entry");
-    }
-  }, [tabFromUrl]);
 
   // Local state for interactive updates
   const [marksMap, setMarksMap] = useState<Record<string, ExamStudentMark[]>>(data.marksSubmissionList);
