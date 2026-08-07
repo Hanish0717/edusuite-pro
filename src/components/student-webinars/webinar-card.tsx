@@ -1,25 +1,16 @@
 import React from "react";
 import { Webinar } from "./types";
-import { Bookmark, BookmarkCheck, Check, Radio, Loader2 } from "lucide-react";
+import { Bookmark, BookmarkCheck, Check, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface WebinarCardProps {
   webinar: Webinar;
   onRegisterToggle: (webinarId: string) => void;
   onSelectWebinar: (webinar: Webinar) => void;
-  newlyRegisteredIds?: string[];
-  registeringId?: string | null;
-  onBookmarkToggle?: (webinarId: string) => void;
+  onToggleBookmark?: (webinarId: string) => void;
 }
 
-export function WebinarCard({
-  webinar,
-  onRegisterToggle,
-  onSelectWebinar,
-  newlyRegisteredIds = [],
-  registeringId = null,
-  onBookmarkToggle,
-}: WebinarCardProps) {
+export function WebinarCard({ webinar, onRegisterToggle, onSelectWebinar, onToggleBookmark }: WebinarCardProps) {
   return (
     <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-md transition-all duration-200 overflow-hidden">
       {/* Top Banner Image with Floating Badges */}
@@ -95,37 +86,25 @@ export function WebinarCard({
         {/* Action Button Row */}
         <div className="pt-1 mt-auto flex items-center gap-2">
           <Button
-            disabled={webinar.isRegistered || registeringId === webinar.id}
             onClick={() => onRegisterToggle(webinar.id)}
             className={`flex-1 h-9 rounded-xl text-xs font-bold transition-all ${
               webinar.isRegistered
-                ? "bg-emerald-600 text-white opacity-95 cursor-default pointer-events-none"
+                ? "bg-emerald-600 hover:bg-emerald-500 text-white"
                 : "bg-[#091024] hover:bg-[#152248] text-white shadow-xs"
             }`}
           >
-            {registeringId === webinar.id ? (
+            {webinar.isRegistered ? (
               <>
-                <Loader2 className="size-3.5 mr-1.5 animate-spin" />
-                Loading...
+                <Check className="size-3.5 mr-1" /> Registered
               </>
-            ) : webinar.isRegistered ? (
-              newlyRegisteredIds.includes(webinar.id) ? (
-                <>
-                  <Check className="size-3.5 mr-1" /> Registered ✓
-                </>
-              ) : (
-                <>
-                  <Check className="size-3.5 mr-1" /> Already Registered
-                </>
-              )
             ) : (
               "Register Now"
             )}
           </Button>
 
           <button
-            onClick={() => onBookmarkToggle ? onBookmarkToggle(webinar.id) : onRegisterToggle(webinar.id)}
-            className="size-9 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shrink-0"
+            onClick={() => onToggleBookmark ? onToggleBookmark(webinar.id) : onRegisterToggle(webinar.id)}
+            className="size-9 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
             title="Bookmark"
           >
             {webinar.isBookmarked ? (

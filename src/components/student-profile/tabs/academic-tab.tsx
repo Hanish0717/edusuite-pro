@@ -26,9 +26,9 @@ export function AcademicTab({ student, onContactMentor }: AcademicTabProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const academicFields = [
-    { label: "Admission Number", value: student.rollNumber, isMono: true },
+    { label: "Roll Number", value: student.rollNumber, isMono: true },
     { label: "Registration Number", value: student.registrationNumber, isMono: true },
-    { label: "System Admission ID", value: student.admissionNumber, isMono: true },
+    { label: "Admission Number", value: student.admissionNumber, isMono: true },
     { label: "Program", value: student.program },
     { label: "Degree", value: student.degree },
     { label: "Branch / Department", value: student.branch },

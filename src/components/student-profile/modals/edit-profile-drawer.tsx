@@ -38,7 +38,7 @@ export function EditProfileDrawer({ open, onOpenChange, student, onSave }: EditP
             <Edit className="h-5 w-5 text-blue-600" /> Edit Student ERP Record
           </SheetTitle>
           <SheetDescription className="text-xs text-slate-500">
-            Update personal, contact, and emergency records for Admission Number (Adm No): <strong className="text-slate-700 dark:text-slate-300 font-mono">{student.rollNumber}</strong>
+            Update personal, contact, and emergency records for Roll No: <strong className="text-slate-700 dark:text-slate-300 font-mono">{student.rollNumber}</strong>
           </SheetDescription>
         </SheetHeader>
 
@@ -234,7 +234,7 @@ export function EditProfileDrawer({ open, onOpenChange, student, onSave }: EditP
 
           <div className="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-900/40 text-[11px] text-amber-800 dark:text-amber-300 flex items-start gap-2">
             <ShieldAlert className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
-            <span>Note: Academic fields (Admission Number, Department, CGPA) are locked and require Admin authorization to alter.</span>
+            <span>Note: Academic fields (Roll No, Department, CGPA) are locked and require Admin authorization to alter.</span>
           </div>
 
           <SheetFooter className="pt-4 border-t border-slate-200 dark:border-slate-800 gap-2">

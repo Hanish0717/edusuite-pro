@@ -15,17 +15,20 @@ import { Input } from "@/components/ui/input";
 import {
   Download,
   History,
+  Lock,
+  ArrowRight,
   Search,
+  CheckCircle2,
   Ticket,
   Layers,
+  ChevronRight,
   Eye,
   Printer,
   Clock,
+  AlertTriangle,
   FileCheck,
-  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
-import { isCourseNptelExempted } from "./nptel-service";
 
 interface HallTicketProps {
   profile: StudentExamProfile;
@@ -38,7 +41,6 @@ interface HallTicketProps {
   onSemesterChange: (sem: number) => void;
   onOpenModal: (ht?: HallTicketRecordItem) => void;
   onNavigateToExamReg: () => void;
-  nptelDeclarations?: Record<string, any>;
 }
 
 export function HallTicket({
@@ -52,19 +54,13 @@ export function HallTicket({
   onSemesterChange,
   onOpenModal,
   onNavigateToExamReg,
-  nptelDeclarations = {},
 }: HallTicketProps) {
   const [selectedCategory, setSelectedCategory] = useState<HallTicketCategory | null>("regular");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [pastHallTickets] = useState<HallTicketRecordItem[]>(MOCK_PAST_HALL_TICKETS);
 
-  // Dynamically filter active exams: EXCLUDE completed/verified NPTEL courses
-  const filteredActiveExams = exams.filter((ex) => {
-    // If exam has course ID or matching code in nptel declarations, check exemption
-    const isExempt = isCourseNptelExempted(ex.id, nptelDeclarations) || isCourseNptelExempted(ex.subjectCode, nptelDeclarations);
-    return !isExempt;
-  });
+  const isExamRegCompleted = examRegStatus === "Paid & Registered" || selectedSemester < 5;
 
   // Filtered Archive Table
   const filteredPastHallTickets = pastHallTickets.filter((ht) => {
@@ -109,13 +105,13 @@ export function HallTicket({
 ============================================================
 Document: ${title}
 Hall Ticket No: ${htNumber || `HT-2026-SEM${selectedSemester}-0542`}
-Student Name: ${profile.name} (Adm No: ${profile.rollNumber})
+Student Name: ${profile.name} (Roll No: ${profile.rollNumber})
 Degree / Program: ${profile.degree} in ${profile.branch}
 Exam Centre: ${profile.examCenter}
 Session & Time: ${profile.examSession}
 
-OFFICIAL EXAM SCHEDULE (EXCLUDING NPTEL CREDIT TRANSFER COURSES):
-${filteredActiveExams.map((e) => `- ${e.subjectCode}: ${e.subjectName} | ${e.examDate} | ${e.timeSlot} | Hall: ${e.hallNumber}`).join("\n")}
+OFFICIAL EXAM SCHEDULE:
+${exams.map((e) => `- ${e.subjectCode}: ${e.subjectName} | ${e.examDate} | ${e.timeSlot} | Hall: ${e.hallNumber}`).join("\n")}
 
 Rule 1: Candidate must produce ID card along with Hall Ticket.
 Rule 2: Smartwatches and gadgets strictly banned inside examination hall.
@@ -142,92 +138,63 @@ Controller of Examinations Signature`;
   return (
     <div className="space-y-6">
 
-      {/* 1. TOP SUMMARY CARDS — Styled like 2nd Image */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* 1. TOP SUMMARY CARDS */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Released */}
-        <div className="p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
+        <div className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-[13px] font-bold tracking-wider text-[#344054] dark:text-slate-300 uppercase">
-              TICKETS RELEASED
-            </span>
-            <div className="w-11 h-11 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-              <FileCheck className="h-5 w-5" />
+            <span className="text-xs font-semibold text-slate-500">Hall Tickets Released</span>
+            <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600">
+              <FileCheck className="h-4 w-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="flex items-baseline">
-              <span className="text-3xl font-bold text-[#101828] dark:text-white">{releasedCount}</span>
-              <span className="text-sm font-medium text-[#667085] dark:text-slate-400 ml-2">issued</span>
-            </div>
-            <p className="text-xs font-normal text-[#98a2b3] dark:text-slate-500 mt-1.5">
-              Verified & Available
-            </p>
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white font-display">
+            {releasedCount}
           </div>
+          <span className="text-[11px] text-emerald-600 font-medium">Verified & Available for download</span>
         </div>
 
         {/* Card 2: Downloaded */}
-        <div className="p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
+        <div className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-[13px] font-bold tracking-wider text-[#344054] dark:text-slate-300 uppercase">
-              DOWNLOADED
-            </span>
-            <div className="w-11 h-11 rounded-full bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:blue-400 flex items-center justify-center shrink-0">
-              <Download className="h-5 w-5" />
+            <span className="text-xs font-semibold text-slate-500">Downloaded</span>
+            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600">
+              <Download className="h-4 w-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="flex items-baseline">
-              <span className="text-3xl font-bold text-[#101828] dark:text-white">{downloadedCount}</span>
-              <span className="text-sm font-medium text-[#667085] dark:text-slate-400 ml-2">saved</span>
-            </div>
-            <p className="text-xs font-normal text-[#98a2b3] dark:text-slate-500 mt-1.5">
-              Archived locally
-            </p>
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white font-display">
+            {downloadedCount}
           </div>
+          <span className="text-[11px] text-blue-600 font-medium">Archived to local storage</span>
         </div>
 
         {/* Card 3: Pending */}
-        <div className="p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
+        <div className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-[13px] font-bold tracking-wider text-[#344054] dark:text-slate-300 uppercase">
-              PENDING RELEASE
-            </span>
-            <div className="w-11 h-11 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-              <Clock className="h-5 w-5" />
+            <span className="text-xs font-semibold text-slate-500">Pending Release</span>
+            <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600">
+              <Clock className="h-4 w-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="flex items-baseline">
-              <span className="text-3xl font-bold text-[#101828] dark:text-white">{pendingCount}</span>
-              <span className="text-sm font-medium text-[#667085] dark:text-slate-400 ml-2">pending</span>
-            </div>
-            <p className="text-xs font-normal text-[#98a2b3] dark:text-slate-500 mt-1.5">
-              Under Exam Review
-            </p>
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white font-display">
+            {pendingCount}
           </div>
+          <span className="text-[11px] text-amber-600 font-medium">Under Exam Branch review</span>
         </div>
 
         {/* Card 4: Supplementary */}
-        <div className="p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
+        <div className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-[13px] font-bold tracking-wider text-[#344054] dark:text-slate-300 uppercase">
-              SUPPLEMENTARY
-            </span>
-            <div className="w-11 h-11 rounded-full bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-              <Layers className="h-5 w-5" />
+            <span className="text-xs font-semibold text-slate-500">Supplementary</span>
+            <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600">
+              <Layers className="h-4 w-4" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="flex items-baseline">
-              <span className="text-3xl font-bold text-[#101828] dark:text-white">{supplementaryCount}</span>
-              <span className="text-sm font-medium text-[#667085] dark:text-slate-400 ml-2">eligible</span>
-            </div>
-            <p className="text-xs font-normal text-[#98a2b3] dark:text-slate-500 mt-1.5">
-              Special Exam Records
-            </p>
+          <div className="text-2xl font-extrabold text-slate-900 dark:text-white font-display">
+            {supplementaryCount}
           </div>
+          <span className="text-[11px] text-purple-600 font-medium">Backlog & special exams</span>
         </div>
-
       </div>
 
       {/* 2. CATEGORY SELECTION & LIVE ADMIT CARD PREVIEW */}
@@ -247,7 +214,7 @@ Controller of Examinations Signature`;
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white">{profile.name}</h3>
               <p className="text-xs text-slate-500 font-mono">
-                Adm No: <strong className="text-blue-600">{profile.rollNumber}</strong> &middot; HT No: <strong className="text-slate-800 dark:text-slate-200">HT-2026-SEM{selectedSemester}-0542</strong>
+                Roll No: <strong className="text-blue-600">{profile.rollNumber}</strong> &middot; HT No: <strong className="text-slate-800 dark:text-slate-200">HT-2026-SEM{selectedSemester}-0542</strong>
               </p>
             </div>
           </div>
@@ -304,25 +271,17 @@ Controller of Examinations Signature`;
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {filteredActiveExams.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="p-6 text-center text-slate-400 text-xs">
-                      No written exams scheduled for this semester (All courses completed via NPTEL / Course Exempted).
-                    </td>
+                {exams.map((ex) => (
+                  <tr key={ex.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                    <td className="p-3 font-mono font-bold text-blue-600">{ex.subjectCode}</td>
+                    <td className="p-3 font-semibold text-slate-900 dark:text-white">{ex.subjectName}</td>
+                    <td className="p-3 font-mono text-slate-700 dark:text-slate-300">{ex.examDate}</td>
+                    <td className="p-3 text-slate-600 dark:text-slate-400">{ex.timeSlot}</td>
+                    <td className="p-3 font-mono text-amber-600 font-bold">09:00 AM</td>
+                    <td className="p-3 font-mono font-bold text-slate-800 dark:text-slate-200">{ex.hallNumber}</td>
+                    <td className="p-3 font-mono font-bold text-emerald-600">{ex.seatNumber}</td>
                   </tr>
-                ) : (
-                  filteredActiveExams.map((ex) => (
-                    <tr key={ex.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
-                      <td className="p-3 font-mono font-bold text-blue-600">{ex.subjectCode}</td>
-                      <td className="p-3 font-semibold text-slate-900 dark:text-white">{ex.subjectName}</td>
-                      <td className="p-3 font-mono text-slate-700 dark:text-slate-300">{ex.examDate}</td>
-                      <td className="p-3 text-slate-600 dark:text-slate-400">{ex.timeSlot}</td>
-                      <td className="p-3 font-mono text-amber-600 font-bold">09:00 AM</td>
-                      <td className="p-3 font-mono font-bold text-slate-800 dark:text-slate-200">{ex.hallNumber}</td>
-                      <td className="p-3 font-mono font-bold text-emerald-600">{ex.seatNumber}</td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
           </div>
@@ -399,6 +358,7 @@ Controller of Examinations Signature`;
                     <td className="p-3">{getStatusBadge(ht.status)}</td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        {/* 1. VIEW HALL TICKET BUTTON */}
                         <Button
                           size="sm"
                           variant="ghost"
@@ -408,6 +368,7 @@ Controller of Examinations Signature`;
                           <Eye className="h-3.5 w-3.5" /> View
                         </Button>
 
+                        {/* 2. DOWNLOAD PDF BUTTON */}
                         <Button
                           size="sm"
                           variant="outline"
@@ -417,6 +378,7 @@ Controller of Examinations Signature`;
                           <Download className="h-3.5 w-3.5 text-blue-600" /> PDF
                         </Button>
 
+                        {/* 3. PRINT BUTTON */}
                         <Button
                           size="sm"
                           variant="ghost"

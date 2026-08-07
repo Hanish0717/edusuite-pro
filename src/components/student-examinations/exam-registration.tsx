@@ -1,80 +1,98 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   AvailableCourseItem,
   StudentExamProfile,
-  ExamRegistrationItem,
-  CourseRegWorkflowStatus,
-  ExamRegWorkflowStatus,
   AcademicYearOption,
   YEAR_TO_SEMESTERS_MAP,
 } from "./types";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import {
   FileText,
   Info,
   CheckCircle2,
-  CheckSquare,
-  FileCheck,
   AlertCircle,
-  ShieldCheck,
+  Clock,
+  XCircle,
+  Send,
 } from "lucide-react";
-import { isCourseNptelExempted } from "./nptel-service";
+import { toast } from "sonner";
+import { useExamStore, submitDirectExamRegistration } from "./exam-store";
 
 interface ExamRegistrationProps {
   profile: StudentExamProfile;
-  examRegistrations: ExamRegistrationItem[];
   courses: AvailableCourseItem[];
-  courseRegStatus: CourseRegWorkflowStatus;
-  examRegStatus: ExamRegWorkflowStatus;
   selectedYear: AcademicYearOption;
   selectedSemester: number;
   onYearChange: (year: AcademicYearOption) => void;
   onSemesterChange: (sem: number) => void;
-  onRegisterExam: (id: string) => void;
-  onCompleteAllExamReg: () => void;
-  onNavigateToCourseReg: () => void;
-  onNavigateToHallTicket: () => void;
-  nptelDeclarations?: Record<string, {
-    fileName: string;
-    fileSize: string;
-    comments: string;
-    pdfUrl: string;
-    isNptel: boolean;
-    verificationStatus?: string;
-  }>;
+  onNavigateToCourseReg?: () => void;
 }
 
 export function ExamRegistration({
-  courses,
-  examRegistrations,
-  courseRegStatus,
-  examRegStatus,
+  profile,
+  courses = [],
   selectedYear,
   selectedSemester,
   onYearChange,
   onSemesterChange,
-  onRegisterExam,
-  onCompleteAllExamReg,
   onNavigateToCourseReg,
-  onNavigateToHallTicket,
-  nptelDeclarations = {},
 }: ExamRegistrationProps) {
-  const isCourseRegCompleted = courseRegStatus === "Completed";
-  const isExamRegPaid = examRegStatus === "Paid & Registered";
   const availableSemesters = YEAR_TO_SEMESTERS_MAP[selectedYear] || [5, 6];
+  const { registeredCourseIds = [], examRegistrations = [] } = useExamStore();
 
-  // Dynamically filter courses for selected semester - registered courses
-  const filteredCourses = courses.filter((c) => c.semester === selectedSemester && c.isRegistered);
+  const safeRegisteredCourseIds = registeredCourseIds || [];
+  const safeExamRegistrations = examRegistrations || [];
+  const safeCourses = courses || [];
 
-  // Separate exam-eligible courses vs NPTEL exempted courses
-  const nptelExemptedCourses = filteredCourses.filter((c) => c.isNptel && isCourseNptelExempted(c.id, nptelDeclarations));
-  const examEligibleCourses = filteredCourses.filter((c) => !(c.isNptel && isCourseNptelExempted(c.id, nptelDeclarations)));
+  // Display ONLY courses registered in Course Registration for selected semester
+  const registeredCourses = safeCourses.filter(
+    (c) => c.semester === selectedSemester && safeRegisteredCourseIds.includes(c.id)
+  );
 
-  const allExamRegistered = examEligibleCourses.length > 0 && examEligibleCourses.every((c) => {
-    const reg = examRegistrations.find((r) => r.subjectCode === c.code);
-    return reg?.status === "Registered" || isExamRegPaid;
-  });
+  // Selected checkboxes for exam submission
+  const [selectedExamCourseIds, setSelectedExamCourseIds] = useState<string[]>([]);
+
+  // Initialize selectedExamCourseIds with courses already submitted/registered
+  useEffect(() => {
+    const defaultSelected = registeredCourses.map((c) => c.id);
+    setSelectedExamCourseIds(defaultSelected);
+  }, [selectedSemester, registeredCourses.length]);
+
+  const handleToggleSelectExam = (courseId: string) => {
+    setSelectedExamCourseIds((prev) =>
+      prev.includes(courseId)
+        ? prev.filter((id) => id !== courseId)
+        : [...prev, courseId]
+    );
+  };
+
+  const handleSubmitExamRegistration = () => {
+    if (registeredCourses.length === 0) {
+      toast.error("No registered courses found. Please complete Course Registration first.");
+      return;
+    }
+
+    if (selectedExamCourseIds.length === 0) {
+      toast.error("Please select at least one course for examination.");
+      return;
+    }
+
+    const selectedCoursesToRegister = registeredCourses.filter((c) => selectedExamCourseIds.includes(c.id));
+
+    submitDirectExamRegistration(
+      {
+        studentId: profile.studentId,
+        studentName: profile.name,
+        rollNumber: profile.rollNumber,
+        department: profile.branch,
+      },
+      selectedCoursesToRegister
+    );
+
+    toast.success(`Exam Registration Submitted Successfully for ${selectedCoursesToRegister.length} course(s)! Status: ✓ Exam Registered.`);
+  };
 
   return (
     <div className="space-y-6">
@@ -118,156 +136,148 @@ export function ExamRegistration({
             </div>
           </div>
 
-          {/* NPTEL EXEMPTION SUMMARY WIDGET */}
-          {nptelExemptedCourses.length > 0 && (
-            <div className="p-4 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 text-xs space-y-2">
-              <div className="flex items-center gap-1.5 font-bold text-emerald-800 dark:text-emerald-300">
-                <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
-                <span>NPTEL Credit Transfer Exemption</span>
-              </div>
-              <p className="text-[11px] leading-relaxed text-emerald-700 dark:text-emerald-300">
-                <strong>{nptelExemptedCourses.length} NPTEL course(s)</strong> have verified certificates and are automatically <strong>excluded</strong> from written exams and hall tickets.
-              </p>
-            </div>
-          )}
-
           {/* NOTE BOX */}
           <div className="p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/50 text-xs space-y-1 text-blue-900 dark:text-blue-200">
             <div className="flex items-center gap-1.5 font-bold text-blue-700 dark:text-blue-300">
               <Info className="h-4 w-4 text-blue-600 shrink-0" />
-              <span>Exam Registration Rules</span>
+              <span>Exam Registration</span>
             </div>
             <p className="text-[11px] leading-relaxed text-blue-800 dark:text-blue-300">
-              Click <strong>"Register All Eligible Courses"</strong> to finalize exam registration for all non-exempted semester courses.
+              Select the courses you want to register for examinations and click &quot;Submit Exam Registration&quot;.
             </p>
+          </div>
+
+          {/* REGISTRATION SUMMARY */}
+          <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-xs space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">Registered Courses:</span>
+              <span className="font-bold text-slate-900 dark:text-white">{registeredCourses.length}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">Selected for Exam:</span>
+              <span className="font-bold text-blue-600">{selectedExamCourseIds.length}</span>
+            </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: COURSE EXAM REGISTRATION (8 COLUMNS) */}
+        {/* RIGHT COLUMN: REGISTERED COURSES EXAM CATALOG (8 COLUMNS) */}
         <div className="lg:col-span-8 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-5">
           
-          {/* HEADER BAR WITH REGISTER ALL BUTTON */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+          {/* HEADER */}
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-blue-600" />
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Course Exam Registration</h3>
-                <span className="text-[11px] text-slate-400 font-medium">Sem {selectedSemester} &middot; {examEligibleCourses.length} Exam-Eligible Subject(s)</span>
-              </div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Exam Registration</h3>
             </div>
-
-            {/* REGISTER ALL ELIGIBLE COURSES ACTION BUTTON */}
-            {examEligibleCourses.length > 0 && (
-              <Button
-                onClick={onCompleteAllExamReg}
-                size="sm"
-                disabled={allExamRegistered}
-                className={`text-xs font-bold rounded-xl gap-2 shadow-sm transition-all ${
-                  allExamRegistered
-                    ? "bg-emerald-600 text-white cursor-default opacity-100"
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
-                }`}
-              >
-                <CheckSquare className="h-4 w-4" />
-                <span>{allExamRegistered ? "All Courses Registered ✓" : "Register All Eligible Courses"}</span>
-              </Button>
-            )}
+            <span className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-600 border border-blue-100 dark:border-blue-900/60">
+              Sem {selectedSemester} Registered Exams
+            </span>
           </div>
 
-          {/* COURSES CARD GRID */}
-          {filteredCourses.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-slate-200 rounded-2xl space-y-3">
-              <p>No registered courses found for Semester {selectedSemester} yet.</p>
-              <Button
-                onClick={onNavigateToCourseReg}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-9 px-4 rounded-xl shadow-sm"
-              >
-                Go to Course Registration
-              </Button>
+          {/* EMPTY STATE OR COURSE GRID */}
+          {registeredCourses.length === 0 ? (
+            <div className="p-10 text-center text-xs space-y-3 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50">
+              <AlertCircle className="h-8 w-8 text-amber-500 mx-auto" />
+              <p className="font-bold text-sm text-slate-900 dark:text-white">No registered courses found.</p>
+              <p className="text-slate-500 text-xs max-w-md mx-auto">
+                You must complete Course Registration first before registering for examinations in Semester {selectedSemester}.
+              </p>
+              {onNavigateToCourseReg && (
+                <Button onClick={onNavigateToCourseReg} variant="outline" size="sm" className="mt-2 text-xs font-semibold border-blue-200 text-blue-600">
+                  Go to Course Registration
+                </Button>
+              )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredCourses.map((c) => {
-                const isNptelCourse = c.isNptel;
-                const isExempted = isNptelCourse && isCourseNptelExempted(c.id, nptelDeclarations);
-                const nptelData = nptelDeclarations[c.id];
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {registeredCourses.map((c) => {
+                  const existingReg = safeExamRegistrations.find((r) => r.courseId === c.id);
+                  const isPendingVerification = existingReg?.status === "Pending Verification";
+                  const isRejected = existingReg?.status === "Rejected";
+                  const isExamRegistered = existingReg?.status === "Registered";
 
-                const matchingReg = examRegistrations.find((r) => r.subjectCode === c.code);
-                const isRegisteredForExam = matchingReg?.status === "Registered" || isExamRegPaid;
+                  const isChecked = selectedExamCourseIds.includes(c.id);
 
-                return (
-                  <div
-                    key={c.id}
-                    className={`p-4 rounded-2xl border transition-all flex flex-col justify-between space-y-3 ${
-                      isExempted
-                        ? "border-amber-200 dark:border-amber-900/40 bg-amber-50/20 dark:bg-amber-950/10 shadow-sm"
-                        : isRegisteredForExam
-                        ? "border-emerald-100 dark:border-emerald-900/30 bg-emerald-50/10 dark:bg-emerald-950/5 shadow-sm"
-                        : "border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md"
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono font-bold text-blue-600">{c.code}</span>
-                          {isNptelCourse && (
-                            <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 font-bold hover:bg-amber-500/10 text-[9px] px-1.5 py-0">
-                              NPTEL
-                            </Badge>
-                          )}
-                        </div>
-                        <span className="text-[11px] text-slate-400 font-medium">
-                          {c.category === "Core" ? "Normal Subject" : c.category}
-                        </span>
-                      </div>
-
-                      <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">{c.name}</h4>
-                      
-                      <div className="mt-2 space-y-1 text-xs text-slate-500">
-                        <p className="font-mono text-[11px]">Credits: {c.credits.toFixed(1)} &bull; Semester: {c.semester}</p>
-                        <p className="text-[11px]">Mentor: <span className="text-blue-600 font-semibold">{c.faculty}</span></p>
-                      </div>
-
-                      {/* NPTEL Exemption Notice Banner */}
-                      {isExempted && (
-                        <div className="mt-3 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] space-y-1 text-amber-900 dark:text-amber-200">
-                          <div className="flex items-center gap-1 font-bold text-amber-800 dark:text-amber-300">
-                            <FileCheck className="h-4 w-4 text-amber-600 shrink-0" />
-                            <span>Excluded from Exam & Hall Ticket</span>
+                  return (
+                    <div
+                      key={c.id}
+                      onClick={() => handleToggleSelectExam(c.id)}
+                      className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-3 ${
+                        isExamRegistered
+                          ? "border-emerald-500/40 bg-emerald-50/30 dark:bg-emerald-950/10"
+                          : isPendingVerification
+                          ? "border-amber-500/40 bg-amber-50/30 dark:bg-amber-950/10"
+                          : isRejected
+                          ? "border-rose-500/40 bg-rose-50/30 dark:bg-rose-950/10"
+                          : isChecked
+                          ? "border-blue-600 bg-blue-50/30 dark:bg-blue-950/20 shadow-sm"
+                          : "border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md"
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between text-xs mb-2">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id={`exam-check-${c.id}`}
+                              checked={isChecked}
+                              onCheckedChange={() => handleToggleSelectExam(c.id)}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            <span className="font-mono font-bold text-blue-600">{c.code}</span>
                           </div>
-                          <p className="text-[10px] text-amber-800 dark:text-amber-300 leading-normal">
-                            NPTEL Certificate Verified ✓ Course credits transferred directly.
-                          </p>
+                          <Badge variant="outline" className="text-[10px]">
+                            {c.category}
+                          </Badge>
                         </div>
-                      )}
-                    </div>
 
-                    {/* STATUS ACTION BUTTON */}
-                    {isExempted ? (
-                      <Button
-                        disabled
-                        className="w-full h-9 text-xs font-bold rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 cursor-default opacity-100"
-                      >
-                        NPTEL Credit Transfer (Exam Exempted) ✓
-                      </Button>
-                    ) : isRegisteredForExam ? (
-                      <Button
-                        disabled
-                        className="w-full h-9 text-xs font-bold rounded-xl bg-emerald-600 text-white cursor-default opacity-100 shadow-sm"
-                      >
-                        <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Exam Registered
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => onRegisterExam(matchingReg?.id || c.id)}
-                        className="w-full h-9 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-                      >
-                        Register for Exam
-                      </Button>
-                    )}
-                  </div>
-                );
-              })}
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">{c.name}</h4>
+                        
+                        <div className="mt-2 space-y-1 text-xs text-slate-500">
+                          <p className="font-mono text-[11px]">Credits: {c.credits.toFixed(1)} &bull; Semester: {c.semester}</p>
+                          <p className="text-[11px]">Faculty: <span className="text-blue-600 font-semibold">{c.faculty}</span></p>
+                        </div>
+                      </div>
+
+                      {/* Status Badge / Selection Button */}
+                      <div className="pt-2">
+                        {isPendingVerification ? (
+                          <div className="w-full h-9 flex items-center justify-center text-xs font-bold rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 gap-1.5">
+                            <Clock className="h-4 w-4 text-amber-500 animate-spin" /> Pending NPTEL Verification
+                          </div>
+                        ) : isRejected ? (
+                          <div className="w-full h-9 flex items-center justify-center text-xs font-bold rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30 gap-1.5">
+                            <XCircle className="h-4 w-4 text-rose-500" /> NPTEL Rejected
+                          </div>
+                        ) : isExamRegistered ? (
+                          <div className="w-full h-9 flex items-center justify-center text-xs font-bold rounded-xl bg-emerald-600 text-white shadow-sm gap-1.5">
+                            <CheckCircle2 className="h-4 w-4" /> Exam Registered ✓
+                          </div>
+                        ) : (
+                          <div className={`w-full h-9 flex items-center justify-center text-xs font-bold rounded-xl border transition-all ${
+                            isChecked
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
+                          }`}>
+                            {isChecked ? "Selected for Exam" : "Select for Exam"}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* BOTTOM SUBMIT BUTTON */}
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                <Button
+                  onClick={handleSubmitExamRegistration}
+                  className="w-full md:w-auto px-8 h-12 text-sm font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 gap-2"
+                >
+                  <Send className="h-4 w-4" />
+                  Submit Exam Registration
+                </Button>
+              </div>
             </div>
           )}
 

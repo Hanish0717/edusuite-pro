@@ -8,7 +8,6 @@ import {
   ClipboardCheck,
   CalendarRange,
   BookOpen,
-  Layers,
   FileSpreadsheet,
   Award,
   Library,
@@ -49,16 +48,6 @@ import {
 
 import type { LoginRole } from "@/config/roles";
 import { hasPermission, type UserPermissionContext } from "@/lib/permissions";
-import { ACADEMIC_DEAN_NAVIGATION } from "./navigation/academic-dean";
-import { STUDENT_DEAN_NAVIGATION } from "./navigation/student-dean";
-import { IQAC_NAVIGATION } from "./navigation/iqac";
-import { IMA_NAVIGATION } from "./navigation/ima";
-import { RESEARCH_NAVIGATION } from "./navigation/research";
-import { FINANCE_NAVIGATION } from "./navigation/finance";
-import { EXAMINATION_NAVIGATION } from "./navigation/examination";
-import { PLACEMENT_NAVIGATION } from "./navigation/placement";
-
-export const DEAN_NAVIGATION = ACADEMIC_DEAN_NAVIGATION;
 
 export interface NavItem {
   title: string;
@@ -92,7 +81,7 @@ export const studentNavigation: NavSection[] = [
       { title: "Hostel", url: "/student/hostel", icon: BedDouble },
       { title: "Discussion Forum", url: "/student/discussion-forum", icon: MessageCircle },
       { title: "Finance", url: "/student/finance", icon: CreditCard },
-      { title: "Library", url: "/student/library", icon: Library },
+      { title: "OPAC", url: "/student/library", icon: Library },
       { title: "Updates", url: "/student/updates", icon: Sparkles },
       { title: "Webinars", url: "/student/webinars", icon: Video },
       { title: "Student ID Card", url: "/student/id-card", icon: BadgeCheck },
@@ -128,10 +117,8 @@ export const navigation: NavSection[] = [
     label: "Menu",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-      { title: "Approval Center", url: "/approval-center", icon: GitBranch, badge: "Inbox" },
       { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
       { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
-      { title: "Emergency Broadcast", url: "/emergency", icon: Siren, roles: ["super-admin", "staff"], badge: "Instant" },
     ],
   },
   {
@@ -182,17 +169,7 @@ export const navigation: NavSection[] = [
         moduleId: "alumni",
         children: [
           { title: "Dashboard", url: "/alumni?tab=dashboard" },
-          { title: "Alumni Directory", url: "/alumni?tab=directory" },
-          { title: "Placement Portal", url: "/alumni?tab=placement-collaboration" },
-          { title: "Career Services", url: "/alumni?tab=career" },
-          { title: "Mentorship Hub", url: "/alumni?tab=mentorship" },
-          { title: "Guest Lectures", url: "/alumni?tab=guest-lectures" },
-          { title: "Student Networking", url: "/alumni?tab=student-networking" },
-          { title: "Events & Reunions", url: "/alumni?tab=events" },
-          { title: "News & Articles", url: "/alumni?tab=news-announcements" },
-          { title: "Invitations Hub", url: "/alumni?tab=invitations" },
-          { title: "Verification Queue", url: "/alumni?tab=verification-queue" },
-          { title: "Donations & Giving", url: "/alumni?tab=donations" },
+          { title: "Directory", url: "/alumni?tab=directory" },
           { title: "Analytics", url: "/alumni?tab=analytics" },
         ],
       },
@@ -203,7 +180,6 @@ export const navigation: NavSection[] = [
 function resolveUrlForUser(url: string, user: UserPermissionContext, title?: string): string {
   // Preserve standalone module URLs without rewriting
   if (
-    url.startsWith("/alumni") ||
     [
       "/employee-management",
       "/leave",
@@ -216,20 +192,8 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/grievance",
       "/alumni",
       "/approval-workflows",
-      "/emergency",
-      "/super-admin/emergency",
-
-      "/approval-center",
-      "/reports",
-      "/academic-calendar",
-      "/promotions",
-      "/resources",
-      "/communication",
-      "/audit-logs",
-      "/settings",
     ].includes(url)
   ) {
-
     return url;
   }
 
@@ -275,8 +239,6 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     if (flags.includes("isDean")) {
       if (url === "/dashboard") return "/dean/dashboard";
       if (url === "/settings") return "/faculty/profile";
-      if (url === "/subject-allocation" || title === "Subject Allocation" || title === "Workload") return "/dean/subject-allocation";
-      return url;
     }
     if (flags.includes("isExamController")) {
       if (url === "/dashboard") return "/examination/dashboard";
@@ -358,60 +320,10 @@ export const RECRUITER_NAVIGATION: NavSection[] = [
   },
 ];
 
-export const ACADEMIC_MANAGEMENT_NAVIGATION: NavSection[] = [
-  {
-    label: "Academic Management",
-    items: [
-      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-      { title: "Approval Center", url: "/approval-center", icon: GitBranch, badge: "Inbox" },
-      { title: "Departments", url: "/departments", icon: Building2 },
-      { title: "Faculty", url: "/faculty-management", icon: UserCog },
-      { title: "Subjects", url: "/subject-management", icon: BookOpen },
-      { title: "Curriculum", url: "/curriculum-management", icon: Layers },
-      { title: "Timetable", url: "/timetable", icon: CalendarRange },
-      { title: "Classrooms & Labs", url: "/resources", icon: Building2 },
-      { title: "Academic Calendar", url: "/academic-calendar", icon: CalendarCheck },
-      { title: "Attendance", url: "/attendance", icon: CalendarCheck },
-      { title: "Examinations", url: "/examinations", icon: FileSpreadsheet },
-      { title: "Results", url: "/results", icon: Award },
-      { title: "Promotions & Graduation", url: "/promotions", icon: GraduationCap },
-      { title: "Reports", url: "/reports", icon: BarChart3 },
-      { title: "Notifications", url: "/communication", icon: Bell, badge: "New" },
-      { title: "Audit Logs", url: "/audit-logs", icon: ShieldCheck },
-      { title: "Settings", url: "/settings", icon: Settings },
-    ],
-  },
-];
-
 export function navigationForUser(user: UserPermissionContext): NavSection[] {
   // Student Portal Navigation
   if (user.role === "student") {
     return studentNavigation;
-  }
-
-  // Academic Management Portal Navigation
-  if (user.role === "academic_management" || user.flags.includes("isAcademicManagement")) {
-    return ACADEMIC_MANAGEMENT_NAVIGATION;
-  }
-
-  // Dean specific navigation — each dean sees ONLY their own modules
-  const deanNavMap: Record<string, NavSection[]> = {
-    academic_dean: ACADEMIC_DEAN_NAVIGATION,
-    student_dean: STUDENT_DEAN_NAVIGATION,
-    iqac_dean: IQAC_NAVIGATION,
-    ima_dean: IMA_NAVIGATION,
-    research_dean: RESEARCH_NAVIGATION,
-    finance_dean: FINANCE_NAVIGATION,
-    examination_dean: EXAMINATION_NAVIGATION,
-    placement_dean: PLACEMENT_NAVIGATION,
-  };
-  const deanKey = (user.externalPersona || user.role) as string;
-  if (deanKey && deanKey in deanNavMap) {
-    return deanNavMap[deanKey] as NavSection[];
-  }
-  // Legacy generic dean flag fallback (isDean without specific role)
-  if (user.role !== "super-admin" && user.flags.includes("isDean")) {
-    return DEAN_NAVIGATION;
   }
 
   // Placement Officer specific navigation menu
