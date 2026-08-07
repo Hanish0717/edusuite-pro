@@ -27,8 +27,6 @@ import {
   BarChart3,
   Filter,
   FileSpreadsheet,
-  HeartPulse,
-  Sparkles,
   Utensils,
   XCircle,
   FileDown,
@@ -150,6 +148,10 @@ export function HostelModuleView() {
       }
     };
   }, [todayStr]);
+=======
+  const [activeTab, setActiveTab] = useState<"blocks" | "residents" | "compliance" | "analytics">("blocks");
+
+>>>>>>> origin/feature/dean-erp-and-superadmin-updates
   const [loading, setLoading] = useState(false);
 
   // Filters state for Resident Roster
@@ -473,6 +475,13 @@ export function HostelModuleView() {
         >
           3. Compliance, Security & Gate Pass Monitoring
         </button>
+        <button
+          onClick={() => setActiveTab("analytics")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
+            activeTab === "analytics" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          4. Hostel Analytics & Reports
         <button
           onClick={() => setActiveTab("analytics")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
@@ -1255,8 +1264,7 @@ export function HostelModuleView() {
         </div>
       )}
 
-=======
->>>>>>> origin/feature/student-portal-complete-sync
+      {/* SECTION 7: VIEW DETAILS READ-ONLY MODAL */}
       {/* SECTION 7: VIEW DETAILS READ-ONLY MODAL */}
       <Dialog open={isViewDetailsOpen} onOpenChange={setIsViewDetailsOpen}>
         <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">

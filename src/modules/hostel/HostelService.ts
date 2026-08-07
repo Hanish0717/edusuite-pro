@@ -578,6 +578,8 @@ export const INITIAL_PASSES: GatePassRequest[] = [
     passType: "Outing Pass",
     reason: "Project research equipment procurement",
     fromDate: "2026-08-04",
+    toDate: "2026-08-04",
+    status: "Pending",
   },
 ];
 
@@ -709,7 +711,6 @@ export const INITIAL_ACTIVITIES: HostelActivityLog[] = [
   },
 ];
 
->>>>>>> origin/feature/student-portal-complete-sync
 export const DEFAULT_STAFF_SUMMARY: HostelStaffSummary = {
   chiefWarden: "Dr. Rajesh Kumar (Prof. Mechanical)",
   assistantWardensCount: 6,
@@ -728,6 +729,7 @@ export const DEFAULT_POLICY_COMPLIANCE: PolicyComplianceStatus = {
   insuranceStatus: "Active Comprehensive Cover",
   lastAuditDate: "2026-07-28",
 };
+
 // Warden API Implementations
 
 export async function fetchHostelRooms(): Promise<HostelRoom[]> {

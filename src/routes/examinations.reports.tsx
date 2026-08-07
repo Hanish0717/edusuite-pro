@@ -6,6 +6,6 @@ export const Route = createFileRoute("/examinations/reports")({
   component: ExamReportsPage,
 });
 
-function ExamReportsPage() {
+export function ExamReportsPage() {
   return <ExamReportsComponent />;
 }
