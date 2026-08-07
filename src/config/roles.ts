@@ -14,6 +14,8 @@ export type LoginRole =
   | "principal"
   | "vice_principal"
   | "dean"
+  // Core staff roles
+  | "staff"
   | "hod"
   | "faculty"
   | "student"
