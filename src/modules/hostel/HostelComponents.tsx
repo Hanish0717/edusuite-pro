@@ -41,8 +41,12 @@ import {
   Info,
   Shield,
   Printer,
+<<<<<<< Updated upstream
   ChevronRight,
   BookOpen,
+=======
+  X,
+>>>>>>> Stashed changes
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -90,7 +94,7 @@ export function HostelModuleView() {
   const [rooms, setRooms] = useState<HostelRoom[]>(INITIAL_ROOMS);
   const [residents, setResidents] = useState<ResidentStudent[]>(INITIAL_RESIDENTS);
   const [passes, setPasses] = useState<GatePassRequest[]>(INITIAL_PASSES);
-  
+
   // Tabs: governance, rooms, residents, passes, analytics, staff
   const [activeTab, setActiveTab] = useState<"governance" | "rooms" | "residents" | "passes" | "analytics" | "staff">("governance");
 

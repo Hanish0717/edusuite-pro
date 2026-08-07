@@ -14,6 +14,11 @@ export type LoginRole =
   | "principal"
   | "vice_principal"
   | "dean"
+<<<<<<< Updated upstream
+=======
+  // Core staff roles
+  | "staff"
+>>>>>>> Stashed changes
   | "hod"
   | "faculty"
   | "student"
