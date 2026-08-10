@@ -1,0 +1,25 @@
+{
+  "name": "edusuite-pro-attendance-and-finance",
+  "version": "1.0.0",
+  "description": "Extracted Attendance & Finance modules for EduSuite Pro ERP",
+  "main": "index.ts",
+  "keywords": [
+    "attendance",
+    "finance",
+    "education",
+    "erp",
+    "react",
+    "nextjs",
+    "vite",
+    "typescript"
+  ],
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "lucide-react": ">=0.400.0",
+    "sonner": ">=1.5.0",
+    "recharts": ">=2.12.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.3.0"
+  }
+}
