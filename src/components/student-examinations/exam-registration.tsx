@@ -59,55 +59,7 @@ export function ExamRegistration({
   return (
     <div className="space-y-6">
 
-      {/* WORKFLOW COMPLETION STATUS STRIP */}
-      <div className={`p-4 rounded-2xl border shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-        isExamRegPaid
-          ? "border-emerald-200 dark:border-emerald-900/40 bg-emerald-50/30 dark:bg-emerald-950/20"
-          : isCourseRegCompleted
-          ? "border-amber-200 dark:border-amber-900/40 bg-amber-50/30 dark:bg-amber-950/20"
-          : "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40"
-      }`}>
-        <div className="flex items-center gap-2 text-xs">
-          {isExamRegPaid ? (
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-          ) : (
-            <Lock className="h-4 w-4 text-amber-600 shrink-0" />
-          )}
-          <span className="font-semibold text-slate-700 dark:text-slate-200">
-            Exam Registration Status:{" "}
-            <strong className={isExamRegPaid ? "text-emerald-600" : isCourseRegCompleted ? "text-amber-600" : "text-slate-500"}>
-              {examRegStatus}
-            </strong>
-          </span>
-        </div>
 
-        <div className="flex items-center gap-2">
-          {!isExamRegPaid ? (
-            <Button
-              onClick={() => {
-                if (!isCourseRegCompleted) {
-                  toast.error("Complete Course Registration First!");
-                  onNavigateToCourseReg();
-                  return;
-                }
-                onCompleteAllExamReg();
-              }}
-              size="sm"
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5 shadow-sm"
-            >
-              <CheckCircle2 className="h-3.5 w-3.5" /> Pay All Exam Fees & Register
-            </Button>
-          ) : (
-            <Button
-              onClick={onNavigateToHallTicket}
-              size="sm"
-              className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 shadow-sm"
-            >
-              View Hall Ticket <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          )}
-        </div>
-      </div>
 
       {/* TWO COLUMN LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

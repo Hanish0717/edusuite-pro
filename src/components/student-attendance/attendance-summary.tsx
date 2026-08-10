@@ -67,68 +67,82 @@ export function AttendanceSummary({
     <div className="space-y-6">
 
       {/* 1. TOP CARDS GRID */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
 
         {/* Card 1: Overall Attendance % */}
         <div className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Overall Attendance %</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider">Overall Attendance</span>
             <CalendarCheck className="h-4 w-4 text-[#0b193c] dark:text-blue-400" />
           </div>
           <div className="text-2xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display pt-1">
             {profile.overallAttendancePct}%
           </div>
           <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">
-            Target: 75% Cutoff
+            Target: 75%
           </Badge>
         </div>
 
-        {/* Card 2: Today's Attendance */}
+        {/* Card 2: Present Days */}
         <div className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Today's Attendance</span>
-            <CheckCircle2 className="h-4 w-4 text-[#0b193c] dark:text-blue-400" />
+            <span className="text-[11px] font-bold uppercase tracking-wider">Present Days</span>
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           </div>
           <div className="text-2xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display pt-1">
-            {profile.todayAttendanceStatus}
+            {profile.presentClasses || 168}
           </div>
-          <span className="text-[10px] text-slate-400 block font-mono">Biometric Verified</span>
+          <span className="text-[10px] text-slate-400 block font-mono">Classes Attended</span>
         </div>
 
-        {/* Card 3: Present / Absent Classes */}
+        {/* Card 3: Absent Days */}
         <div className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Present / Absent</span>
-            <XCircle className="h-4 w-4 text-[#0b193c] dark:text-blue-400" />
+            <span className="text-[11px] font-bold uppercase tracking-wider">Absent Days</span>
+            <XCircle className="h-4 w-4 text-rose-500" />
           </div>
-          <div className="text-xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display pt-1">
-            {profile.presentClasses}P / <span>{profile.absentClasses}A</span>
+          <div className="text-2xl font-extrabold text-rose-600 font-display pt-1">
+            {profile.absentClasses || 12}
           </div>
-          <span className="text-[10px] text-slate-400 block font-mono">Leaves: {profile.leaveClasses}</span>
+          <span className="text-[10px] text-slate-400 block font-mono">Unexcused</span>
         </div>
 
-        {/* Card 4: Condonation Status */}
+        {/* Card 4: Late Entries */}
         <div className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Condonation Status</span>
-            <ShieldCheck className="h-4 w-4 text-[#0b193c] dark:text-blue-400" />
+            <span className="text-[11px] font-bold uppercase tracking-wider">Late Entries</span>
+            <Clock className="h-4 w-4 text-amber-500" />
           </div>
-          <div className="text-xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display pt-1">
-            {profile.condonationStatus}
+          <div className="text-2xl font-extrabold text-amber-600 font-display pt-1">
+            4
           </div>
-          <span className="text-[10px] text-slate-400 block font-mono">No Fine Required</span>
+          <span className="text-[10px] text-slate-400 block font-mono">After 09:35 AM</span>
         </div>
 
-        {/* Card 5: Current Streak */}
+        {/* Card 5: Classes Conducted */}
         <div className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Attendance Streak</span>
-            <Flame className="h-4 w-4 text-[#0b193c] dark:text-blue-400" />
+            <span className="text-[11px] font-bold uppercase tracking-wider">Classes Conducted</span>
+            <BookOpen className="h-4 w-4 text-[#0b193c] dark:text-blue-400" />
           </div>
           <div className="text-2xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display pt-1">
-            {profile.currentStreak} Days
+            184
           </div>
-          <span className="text-[10px] text-slate-400 block font-mono font-semibold text-[#0b193c] dark:text-blue-400">Active High Streak</span>
+          <span className="text-[10px] text-slate-400 block font-mono">Total Periods</span>
+        </div>
+
+        {/* Card 6: Attendance Eligibility */}
+        <div className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-slate-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider">Eligibility</span>
+            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+          </div>
+          <div className="text-xl font-extrabold text-emerald-600 font-display pt-1">
+            {profile.condonationStatus || "Eligible"}
+          </div>
+          <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px]">
+            Exam Clearance OK
+          </Badge>
         </div>
 
       </div>

@@ -135,7 +135,7 @@ export const NoticeCards: React.FC<NoticeCardsProps> = ({
                   className={`h-8 px-2 text-xs ${
                     notice.bookmarked ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-foreground"
                   }`}
-                  title={notice.bookmarked ? "Remove Bookmark" : "Bookmark Notice"}
+                  title={notice.bookmarked ? "Remove Bookmark" : "Bookmark Update"}
                 >
                   <Bookmark className={`h-4 w-4 ${notice.bookmarked ? "fill-amber-500" : ""}`} />
                 </Button>
@@ -145,7 +145,7 @@ export const NoticeCards: React.FC<NoticeCardsProps> = ({
                   size="sm"
                   onClick={(e) => handleShare(notice, e)}
                   className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
-                  title="Share Notice Link"
+                  title="Share Update Link"
                 >
                   {copiedId === notice.id ? (
                     <CheckCircle2 className="h-4 w-4 text-emerald-500" />

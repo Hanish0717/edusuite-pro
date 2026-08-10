@@ -13,7 +13,7 @@ export function AiLearningWidget() {
     {
       id: "m-1",
       sender: "ai",
-      text: "Hi Aditya! I'm your AI LMS Tutor. Ask me to summarize lecture notes, generate flashcards, create practice MCQs, or simplify tough concepts!",
+      text: "Hi Sai Teja! I'm your AI LMS Tutor. Ask me to summarize lecture notes, generate flashcards, create practice MCQs, or simplify tough concepts!",
     },
   ]);
 
@@ -33,30 +33,33 @@ export function AiLearningWidget() {
     const userMsg = { id: `u-${Date.now()}`, sender: "user" as const, text: q };
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setChatInput("");
+    toast.success("AI Tutor is processing your request...");
 
     setTimeout(() => {
       let responseText = "Analyzing your course repository with EduSuite Neural Engine...";
       const queryLower = q.toLowerCase();
 
       if (queryLower.includes("summarize")) {
-        responseText = "Summary of CS401 Distributed Systems: Key focus areas are Vector Clocks, Consensus (Raft/Paxos), and MapReduce execution model.";
-      } else if (queryLower.includes("notes") || queryLower.includes("generate notes")) {
-        responseText = "Generated Quick Notes:\n1. Raft Leader Election: Heartbeat timeout triggers Candidate state.\n2. Log Replication: Uncommitted entries require quorum write.";
-      } else if (queryLower.includes("flashcards")) {
-        responseText = "Flashcards Created!\nCard 1: Q: What is AES-256? A: Symmetric block cipher using 14 rounds of substitution/permutation.\nCard 2: Q: What is 3NF? A: Relation in 2NF with no transitive dependencies.";
-      } else if (queryLower.includes("mcqs") || queryLower.includes("mcq")) {
-        responseText = "MCQ Practice:\nQ: Which automaton accepts Context-Free Languages?\nA) FSA  B) Pushdown Automata  C) Turing Machine\nCorrect: B (PDA with stack memory).";
-      } else if (queryLower.includes("explain")) {
-        responseText = "Simplifying Concept: Byzantine Fault Tolerance (BFT) ensures agreement even if nodes actively lie or send conflicting messages. Requires 3f+1 total nodes to handle f malicious nodes.";
+        responseText = "Summary of CS401 Distributed Systems: Key focus areas are Vector Clocks, Consensus Protocols (Raft/Paxos), Fault Tolerance, and MapReduce execution model.";
+      } else if (queryLower.includes("notes")) {
+        responseText = "Generated Quick Notes for CS401:\n1. Raft Leader Election: Heartbeat timeout triggers Candidate state.\n2. Log Replication: Uncommitted entries require majority quorum write.\n3. Lamport Clocks: Increment counter before internal events & update on receive.";
+      } else if (queryLower.includes("flashcard")) {
+        responseText = "Flashcards Created!\n• Card 1: Q: What is AES-256? A: Symmetric block cipher using 14 rounds.\n• Card 2: Q: What is 3NF? A: Relation in 2NF with no transitive dependencies.\n• Card 3: Q: What is Paxos? A: Consensus protocol ensuring agreement in asynchronous network.";
+      } else if (queryLower.includes("mcq")) {
+        responseText = "Practice MCQ:\nQ: Which automaton accepts Context-Free Languages (CFL)?\nA) Finite Automata  B) Pushdown Automata  C) Turing Machine\nCorrect Answer: B (Pushdown Automata with stack memory).";
+      } else if (queryLower.includes("explain") || queryLower.includes("difficult")) {
+        responseText = "Simplifying Concept: Byzantine Fault Tolerance (BFT) ensures agreement even if nodes actively lie or send conflicting messages. Requires at least 3f+1 total nodes to handle f malicious nodes.";
       } else if (queryLower.includes("revision") || queryLower.includes("exam")) {
-        responseText = "7-Day LMS Exam Revision Roadmap: Day 1-2 (TOC Automata), Day 3-4 (Crypto RSA/AES), Day 5-6 (Cloud Virtualization), Day 7 (Practice 30 Quizzes).";
+        responseText = "7-Day LMS Exam Revision Plan:\n• Day 1-2: TOC Automata & Grammars\n• Day 3-4: Cryptography & Security\n• Day 5-6: Cloud Virtualization & Containers\n• Day 7: Attempt 30 Mock Quiz Questions.";
+      } else {
+        responseText = `AI Tutor Response for "${q}": Based on your B.Tech CSE Semester V syllabus, we recommend reviewing lecture slides from Module 3 and attempting the practice quiz on EduSuite LMS.`;
       }
 
       setMessages((prev) => [
         ...prev,
         { id: `a-${Date.now()}`, sender: "ai" as const, text: responseText },
       ]);
-    }, 500);
+    }, 400);
   };
 
   return (

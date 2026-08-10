@@ -174,16 +174,44 @@ export function StudentDashboardPage() {
             onGenerateBonafide={() => setBonafideOpen(true)}
           />
 
+          {/* DISPATCHED PLACEMENT ASSESSMENT LIVE LINK BANNER */}
+          <div className="p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 shadow-sm space-y-3 font-sans">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-emerald-500/20 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-emerald-600 text-white grid place-items-center font-extrabold text-sm shadow-xs shrink-0">
+                  ⚡
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-emerald-600 text-white font-mono text-[0.62rem]">LIVE DISPATCHED EXAM</Badge>
+                    <span className="text-[0.68rem] text-muted-foreground font-mono font-bold">Campus Hiring Drive Assessment</span>
+                  </div>
+                  <h3 className="font-bold text-sm text-foreground font-display">
+                    Google Cloud Aptitude &amp; Coding Round 1
+                  </h3>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => navigate({ to: "/exam/take" })}
+                  className="h-9 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl px-4 cursor-pointer gap-1.5 shadow-glow"
+                >
+                  Attempt Test Now 🚀
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between text-xs text-muted-foreground font-mono gap-2 pt-1">
+              <span>Company: <strong className="text-foreground font-sans">Google Cloud India</strong></span>
+              <span>Duration: <strong className="text-foreground">90 Mins</strong></span>
+              <span>Total Marks: <strong className="text-emerald-700 dark:text-emerald-300">100 Marks (Passing: 75%)</strong></span>
+              <span>Target Batch: <strong className="text-foreground font-sans">2023 Series (23341A4229)</strong></span>
+            </div>
+          </div>
+
           {/* SECTION 2: ACADEMIC OVERVIEW KPI CARDS */}
           <AcademicOverview onNavigate={handleNavigate} />
-
-          {/* SECTION 17: QUICK ACTIONS */}
-          <QuickActions
-            onNavigate={handleNavigate}
-            onOpenLeaveModal={() => setLeaveModalOpen(true)}
-            onOpenDigitalId={() => setDigitalIdOpen(true)}
-            onGenerateBonafide={() => setBonafideOpen(true)}
-          />
 
           {/* SECTION 20: MODULE SHORTCUTS NAVIGATOR */}
           <Shortcuts onNavigate={handleNavigate} />
@@ -200,13 +228,10 @@ export function StudentDashboardPage() {
                 onViewTimetable={() => handleNavigate("/student/timetable")}
               />
 
-              {/* SECTION 4: MY ACTION TASKS */}
-              <MyTasks tasks={MOCK_TASKS} onNavigate={handleNavigate} />
-
               {/* MODULE SNAPSHOTS GRID (2 COLUMNS INSIDE LEFT) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* SECTION 6: ATTENDANCE */}
-                <AttendanceWidget attendance={MOCK_ATTENDANCE_SNAPSHOT} onNavigate={handleNavigate} />
+                <AttendanceWidget percentage={86.4} classesNeeded={0} onViewAttendance={() => handleNavigate("/student/attendance")} />
 
                 {/* SECTION 7: EXAMINATION */}
                 <ExamWidget exam={MOCK_EXAM_SNAPSHOT} onNavigate={handleNavigate} />
@@ -218,7 +243,7 @@ export function StudentDashboardPage() {
                 <LmsWidget lms={MOCK_LMS_SNAPSHOT} onNavigate={handleNavigate} />
 
                 {/* SECTION 10: LIBRARY */}
-                <LibraryWidget library={MOCK_LIBRARY_SNAPSHOT} onNavigate={handleNavigate} />
+                <LibraryWidget onOpenLibrary={() => handleNavigate("/student/library")} />
 
                 {/* SECTION 11: HOSTEL */}
                 <HostelWidget hostel={MOCK_HOSTEL_SNAPSHOT} onNavigate={handleNavigate} />

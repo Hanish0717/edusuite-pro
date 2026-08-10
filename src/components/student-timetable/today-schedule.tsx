@@ -2,12 +2,12 @@ import React from "react";
 import { TimetableSlot } from "./types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "@tanstack/react-router";
 import { 
   Clock, 
   MapPin, 
   User, 
   Video, 
-  Navigation, 
   Eye, 
   CheckCircle2, 
   AlertCircle,
@@ -22,6 +22,7 @@ interface TodayScheduleProps {
 }
 
 export function TodaySchedule({ slots, onSelectSlot }: TodayScheduleProps) {
+  const navigate = useNavigate();
   const getClassTypeBadge = (type: string) => {
     switch (type) {
       case "Lecture": return "bg-blue-500/10 text-blue-600 border-blue-500/20";
@@ -157,18 +158,18 @@ export function TodaySchedule({ slots, onSelectSlot }: TodayScheduleProps) {
               </div>
 
               {/* ACTION BUTTONS */}
-              <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800 w-full min-w-0 overflow-hidden">
+              <div className={`grid gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800 w-full min-w-0 overflow-hidden ${slot.isOnline ? "grid-cols-3" : "grid-cols-2"}`}>
                 <Button
                   onClick={() => onSelectSlot(slot)}
                   size="sm"
                   variant="outline"
-                  className="h-8 text-[11px] px-1 font-semibold rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 w-full min-w-0 overflow-hidden gap-1"
+                  className="h-8 text-[11px] px-2 font-semibold rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 w-full min-w-0 overflow-hidden gap-1.5 cursor-pointer"
                 >
-                  <Eye className="h-3 w-3 shrink-0 text-purple-600" />
+                  <Eye className="h-3.5 w-3.5 shrink-0 text-purple-600" />
                   <span className="truncate">Details</span>
                 </Button>
 
-                {slot.isOnline ? (
+                {slot.isOnline && (
                   <a
                     href={slot.onlineJoinUrl || "#"}
                     target="_blank"
@@ -177,30 +178,23 @@ export function TodaySchedule({ slots, onSelectSlot }: TodayScheduleProps) {
                   >
                     <Button
                       size="sm"
-                      className="h-8 text-[11px] px-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-1 w-full min-w-0 overflow-hidden"
+                      className="h-8 text-[11px] px-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold gap-1 w-full min-w-0 overflow-hidden cursor-pointer"
                     >
-                      <Video className="h-3 w-3 shrink-0 animate-pulse" />
+                      <Video className="h-3.5 w-3.5 shrink-0 animate-pulse" />
                       <span className="truncate">Join</span>
                     </Button>
                   </a>
-                ) : (
-                  <Button
-                    onClick={() => handleNavigateClassroom(slot.roomNumber, slot.building)}
-                    size="sm"
-                    variant="outline"
-                    className="h-8 text-[11px] px-1 font-semibold rounded-xl border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 w-full min-w-0 overflow-hidden gap-1"
-                  >
-                    <Navigation className="h-3 w-3 text-blue-600 shrink-0" />
-                    <span className="truncate">Map</span>
-                  </Button>
                 )}
 
                 <Button
-                  onClick={() => toast.info(`Navigating to ${slot.subjectCode} course hub...`)}
+                  onClick={() => {
+                    toast.info(`Navigating to ${slot.subjectName} (${slot.subjectCode}) course on LMS...`);
+                    navigate({ to: "/student/lms" as any });
+                  }}
                   size="sm"
-                  className="h-8 text-[11px] px-1 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold gap-1 w-full min-w-0 overflow-hidden"
+                  className="h-8 text-[11px] px-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold gap-1.5 w-full min-w-0 overflow-hidden cursor-pointer"
                 >
-                  <span className="truncate">LMS</span> <ExternalLink className="h-3 w-3 shrink-0" />
+                  <span className="truncate">LMS</span> <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                 </Button>
               </div>
             </div>

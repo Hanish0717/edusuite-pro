@@ -1,22 +1,18 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useRole } from "@/context/role-context";
+import { createFileRoute } from "@tanstack/react-router";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { LMSModuleView } from "@/modules/lms";
 
 export const Route = createFileRoute("/lms")({
-  component: LmsRedirect,
+  head: () => ({
+    meta: [{ title: "Learning Management System — EduSuite Pro" }],
+  }),
+  component: LmsPage,
 });
 
-function LmsRedirect() {
-  const { role } = useRole();
-
-  if (role === "super-admin") {
-    return <Navigate to="/super-admin/dashboard" replace />;
-  }
-  if (role === "student") {
-    return <Navigate to="/student/lms" replace />;
-  }
-  if (role === "staff") {
-    return <Navigate to="/faculty/lms" replace />;
-  }
-
-  return <Navigate to="/login" replace />;
+function LmsPage() {
+  return (
+    <DashboardLayout>
+      <LMSModuleView />
+    </DashboardLayout>
+  );
 }

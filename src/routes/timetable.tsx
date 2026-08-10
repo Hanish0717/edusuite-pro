@@ -1,14 +1,18 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useRole } from "@/context/role-context";
-import { getDefaultRouteForUser } from "@/config/roles";
+import { createFileRoute } from "@tanstack/react-router";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { TimetableModuleView } from "@/modules/timetable";
 
 export const Route = createFileRoute("/timetable")({
-  component: TimetableRedirect,
+  head: () => ({
+    meta: [{ title: "Timetable & Schedule — EduSuite Pro" }],
+  }),
+  component: TimetablePage,
 });
 
-function TimetableRedirect() {
-  const { role, flags } = useRole();
-  const defaultRoute = getDefaultRouteForUser(role, flags);
-
-  return <Navigate to={defaultRoute} replace />;
+function TimetablePage() {
+  return (
+    <DashboardLayout>
+      <TimetableModuleView />
+    </DashboardLayout>
+  );
 }

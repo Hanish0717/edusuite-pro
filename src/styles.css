@@ -109,14 +109,14 @@
   --chart-4: oklch(0.76 0.15 75);
   --chart-5: oklch(0.35 0.12 268);
 
-  --sidebar: oklch(0.24 0.085 265);
-  --sidebar-foreground: oklch(0.9 0.02 255);
-  --sidebar-primary: oklch(0.55 0.2 262);
-  --sidebar-primary-foreground: oklch(0.99 0.005 250);
-  --sidebar-accent: oklch(0.31 0.09 265);
-  --sidebar-accent-foreground: oklch(0.98 0.008 250);
-  --sidebar-border: oklch(0.33 0.07 265);
-  --sidebar-ring: oklch(0.55 0.2 262);
+  --sidebar: #0F1B44;
+  --sidebar-foreground: #F5F7FF;
+  --sidebar-primary: #4D78FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #162B63;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #24356B;
+  --sidebar-ring: #4D78FF;
 
   --gradient-brand: linear-gradient(135deg, oklch(0.35 0.15 266), oklch(0.56 0.21 259));
   --gradient-brand-soft: linear-gradient(135deg, oklch(0.97 0.02 255), oklch(0.93 0.05 254));
@@ -271,4 +271,20 @@
   to {
     opacity: 1;
   }
+}
+
+/* Hide default browser scrollbars on sidebar & overflow containers */
+.no-scrollbar::-webkit-scrollbar,
+[data-sidebar="content"]::-webkit-scrollbar,
+aside::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+.no-scrollbar,
+[data-sidebar="content"],
+aside {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }

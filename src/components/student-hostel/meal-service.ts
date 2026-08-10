@@ -35,7 +35,6 @@ const TOTAL_HOSTEL_STUDENTS = 420;
 
 // Helper: Check if cutoff time for a given meal has passed for a given date string
 export function isMealCutoffPassed(mealType: MealType, dateStr: string): boolean {
-  const now = new Date();
   const todayStr = now.toISOString().split("T")[0] || "";
 
   // If date is in the past, cutoff is passed

@@ -256,14 +256,57 @@ export function getBasePermissions(
     scope: "own",
   };
 
-  if (role === "super-admin") {
+  if (role === "super-admin" || role === "super_admin") {
     return { read: true, create: true, update: true, delete: true, approve: true, scope: "global" };
+  }
+
+  // Admin and management roles have full access to all modules
+  if (
+    [
+      "admin",
+      "principal",
+      "vice_principal",
+      "dean",
+      "hod",
+      "faculty",
+      "exam_cell",
+      "librarian",
+      "placement",
+      "warden",
+      "transport",
+      "accounts",
+      "lms",
+      "alumni_coordinator",
+      "staff",
+    ].includes(role)
+  ) {
+    return {
+      read: true,
+      create: true,
+      update: true,
+      delete: true,
+      approve: true,
+      scope: "institution",
+    };
   }
 
   switch (role) {
     case "student":
       // Students have read-only access to most things and own-scoped access
-      if (["student-info", "attendance", "examination", "lms", "results"].includes(moduleId)) {
+      if (
+        [
+          "student-info",
+          "attendance",
+          "examination",
+          "lms",
+          "results",
+          "library",
+          "transport",
+          "hostel",
+          "campus-events",
+          "events",
+        ].includes(moduleId)
+      ) {
         return {
           read: true,
           create: false,
@@ -283,16 +326,6 @@ export function getBasePermissions(
           scope: "own",
         }; // Pay fees
       }
-      if (moduleId === "transport" || moduleId === "library") {
-        return {
-          read: true,
-          create: false,
-          update: false,
-          delete: false,
-          approve: false,
-          scope: "own",
-        };
-      }
       if (moduleId === "grievance") {
         return {
           read: true,
@@ -308,9 +341,16 @@ export function getBasePermissions(
     case "parent":
       // Parents view their child's data
       if (
-        ["student-info", "attendance", "examination", "results", "finance", "transport"].includes(
-          moduleId,
-        )
+        [
+          "student-info",
+          "attendance",
+          "examination",
+          "results",
+          "finance",
+          "transport",
+          "campus-events",
+          "events",
+        ].includes(moduleId)
       ) {
         return {
           read: true,
@@ -357,7 +397,7 @@ export function getBasePermissions(
           scope: "own",
         };
       }
-      if (externalPersona === "vendor" && moduleId === "inventory") {
+      if (externalPersona === "vendor" && (moduleId === "inventory" || moduleId === "procurement")) {
         return {
           read: true,
           create: false,
@@ -367,7 +407,7 @@ export function getBasePermissions(
           scope: "own",
         };
       }
-      if (externalPersona === "guest-faculty" && moduleId === "academics") {
+      if (externalPersona === "guest-faculty" && (moduleId === "academics" || moduleId === "events" || moduleId === "campus-events")) {
         return {
           read: true,
           create: false,
@@ -375,40 +415,6 @@ export function getBasePermissions(
           delete: false,
           approve: false,
           scope: "own",
-        };
-      }
-      break;
-
-    case "staff":
-      // Default Staff access: Profile, Attendance, Leave, Calendar, Documents, LMS
-      if (["student-info", "attendance", "academics", "lms"].includes(moduleId)) {
-        return {
-          read: true,
-          create: true,
-          update: true,
-          delete: false,
-          approve: false,
-          scope: "department",
-        };
-      }
-      if (["examination", "library", "transport", "hostel"].includes(moduleId)) {
-        return {
-          read: true,
-          create: false,
-          update: false,
-          delete: false,
-          approve: false,
-          scope: "institution",
-        };
-      }
-      if (["communication", "grievance"].includes(moduleId)) {
-        return {
-          read: true,
-          create: true,
-          update: true,
-          delete: false,
-          approve: false,
-          scope: "department",
         };
       }
       break;
@@ -453,4 +459,207 @@ export function hasPermission(
     allowed: permissions[action],
     scope: permissions.scope,
   };
+}
+
+export function canAccessModule(
+  user: UserPermissionContext,
+  moduleId: string,
+  action: PermissionAction = "read",
+): boolean {
+  return hasPermission(user, moduleId, action).allowed;
+}
+
+export function canAccessRoute(user: UserPermissionContext, routeUrl: string): boolean {
+  if (routeUrl === "/dashboard" || routeUrl === "/approval-workflows") return true;
+
+  // Map route URLs to module IDs
+  const routeToModuleMap: Record<string, string> = {
+    "/admission": "admission",
+    "/academics": "academics",
+    "/students": "student-info",
+    "/faculty": "hrms",
+    "/attendance": "attendance",
+    "/timetable": "academics",
+    "/lms": "lms",
+    "/examinations": "examination",
+    "/results": "examination",
+    "/library": "library",
+    "/hostel": "hostel",
+    "/transport": "transport",
+    "/placements": "placement",
+    "/inventory": "inventory",
+    "/procurement": "procurement",
+    "/campus-events": "events",
+    "/grievance": "grievance",
+    "/alumni": "alumni",
+    "/employee-management": "hrms",
+    "/leave": "hrms",
+    "/payroll": "finance",
+    "/finance": "finance",
+    "/hr": "hrms",
+    "/accreditation": "accreditation",
+    "/reports": "student-info",
+    "/communication": "communication",
+  };
+
+  const moduleId = routeToModuleMap[routeUrl];
+  if (!moduleId) return true;
+
+  return canAccessModule(user, moduleId, "read");
+}
+
+export function getDashboardKeyForUser(user: UserPermissionContext): string {
+  const { role, flags } = user;
+
+  if (role === "staff") {
+    if (flags.includes("isAdmin") || flags.includes("isOperationsAdmin")) return "admin";
+    if (flags.includes("isHod")) return "hod";
+    if (flags.includes("isDean")) return "dean";
+    if (flags.includes("isExamController")) return "exam_cell";
+    if (flags.includes("isPlacementOfficer")) return "placement";
+    if (flags.includes("isLibraryAdmin")) return "librarian";
+    if (flags.includes("isTransportOfficer")) return "transport";
+    if (flags.includes("isHostelWarden")) return "warden";
+    if (flags.includes("isFinanceOfficer")) return "accounts";
+    if (flags.includes("isPrincipal")) return "principal";
+    if (flags.includes("isVicePrincipal")) return "vice_principal";
+    if (flags.includes("isSystemAdmin")) return "super_admin";
+    return "staff";
+  }
+
+  if (role === "super-admin" || role === "super_admin") return "super_admin";
+  return role;
+}
+
+export function resolveTargetUrlForUser(
+  user: UserPermissionContext,
+  url: string,
+  title?: string,
+): string {
+  if (
+    [
+      "/employee-management",
+      "/leave",
+      "/payroll",
+      "/inventory",
+      "/procurement",
+      "/campus-events",
+      "/admission",
+      "/accreditation",
+      "/grievance",
+      "/alumni",
+      "/approval-workflows",
+    ].includes(url)
+  ) {
+    return url;
+  }
+
+  const role = user.role;
+  const flags = user.flags;
+
+  if (role === "super-admin" || role === "super_admin") {
+    return url === "/dashboard" ? "/super-admin/dashboard" : url;
+  }
+
+  const deanRoutes: Record<string, string> = {
+    academic_dean: "/staff/academic-dean",
+    student_dean: "/staff/student-dean",
+    iqac_dean: "/staff/iqac",
+    ima_dean: "/staff/ima",
+    research_dean: "/staff/research-development",
+    finance_dean: "/staff/finance-dean",
+    examination_dean: "/staff/examination-dean",
+    placement_dean: "/staff/placement-dean",
+  };
+  if (role in deanRoutes && (url === "/dashboard" || url === "/staff")) {
+    return deanRoutes[role];
+  }
+
+  if (role === "student") {
+    if (url === "/dashboard") return "/student/dashboard";
+    if (url === "/academics") return "/student/courses";
+    if (url === "/results") return "/student/results";
+    if (url === "/attendance") return "/student/attendance";
+    if (url === "/lms") return "/student/lms";
+    if (url === "/settings") return "/student/profile";
+  }
+
+  if (role === "parent") {
+    if (url === "/dashboard") return "/parent/dashboard";
+    if (url === "/attendance") return "/parent/attendance";
+    if (url === "/finance") return "/parent/fees";
+    if (url === "/transport") return "/parent/transport";
+    if (url === "/settings") return "/parent/dashboard";
+  }
+
+  if (role === "staff") {
+    if (flags.includes("isHod")) {
+      if (url === "/dashboard") return "/hod/dashboard";
+      if (url === "/faculty") return "/hod/faculty";
+      if (url === "/attendance") return "/hod/attendance";
+      if (url === "/reports") return "/hod/reports";
+      if (url === "/settings") return "/faculty/profile";
+    }
+    if (flags.includes("isDean")) {
+      if (url === "/dashboard") return "/dean/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+    }
+    if (flags.includes("isExamController")) {
+      if (url === "/dashboard") return "/examination/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+    }
+    if (flags.includes("isPlacementOfficer")) {
+      if (url === "/dashboard" || url === "/placements") return "/placement/dashboard";
+      if (url === "/students") return "/placement/students";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Companies") return "/placement/companies";
+      if (title === "Drives") return "/placement/drives";
+      if (title === "Students") return "/placement/students";
+    }
+    if (flags.includes("isLibraryAdmin")) {
+      if (url === "/dashboard" || url === "/library") return "/library/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Books" || title === "Search Catalogue" || title === "Catalogue")
+        return "/library/books";
+      if (title === "Issues" || title === "Circulation") return "/library/issues";
+    }
+    if (flags.includes("isTransportOfficer")) {
+      if (url === "/dashboard" || url === "/transport") return "/transport/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Routes") return "/transport/routes";
+      if (title === "Buses" || title === "Vehicles") return "/transport/buses";
+    }
+    if (flags.includes("isHostelWarden")) {
+      if (url === "/dashboard" || url === "/hostel") return "/hostel/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Rooms" || title === "Allotment") return "/hostel/rooms";
+      if (title === "Students") return "/hostel/students";
+    }
+    if (flags.includes("isHRManager")) {
+      if (url === "/dashboard" || url === "/hr") return "/hr/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Employees") return "/hr/employees";
+      if (title === "Payroll") return "/hr/payroll";
+    }
+    if (flags.includes("isFinanceOfficer")) {
+      if (url === "/dashboard" || url === "/finance") return "/finance/dashboard";
+      if (url === "/settings") return "/faculty/profile";
+      if (title === "Fees") return "/finance/fees";
+      if (title === "Reports") return "/finance/reports";
+    }
+
+    if (url === "/dashboard") return "/faculty/dashboard";
+    if (url === "/attendance") return "/faculty/attendance";
+    if (url === "/lms") return "/faculty/lms";
+    if (url === "/examinations") return "/faculty/examinations";
+    if (url === "/results") return "/faculty/results";
+    if (url === "/settings") return "/faculty/profile";
+  }
+
+  if (role === "external-user") {
+    if (url === "/dashboard") return "/external-user/dashboard";
+    if (url === "/settings") return "/external-user/dashboard";
+  }
+
+  return url;
 }

@@ -1,25 +1,37 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useRole } from "@/context/role-context";
+import { createFileRoute } from "@tanstack/react-router";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { AcademicsModuleView, type AcademicsSubpart } from "@/modules/academics";
+
+const VALID_TABS: AcademicsSubpart[] = [
+  "courses",
+  "departments",
+  "curriculum",
+  "faculty-status",
+  "attendance-mark",
+  "syllabus-tracker",
+  "all-classes-attendance",
+];
 
 export const Route = createFileRoute("/academics")({
-  component: AcademicsRedirect,
+  validateSearch: (search: Record<string, unknown>) => {
+    const tabStr = typeof search?.tab === "string" ? search.tab : undefined;
+    const tab = VALID_TABS.includes(tabStr as AcademicsSubpart)
+      ? (tabStr as AcademicsSubpart)
+      : undefined;
+    return { tab };
+  },
+  head: () => ({
+    meta: [{ title: "Academics & Faculty Governance — EduSuite Pro" }],
+  }),
+  component: AcademicsPage,
 });
 
-function AcademicsRedirect() {
-  const { role } = useRole();
-
-  if (role === "super-admin") {
-    return <Navigate to="/super-admin/courses" replace />;
-  }
-  if (role === "student") {
-    return <Navigate to="/student/courses" replace />;
-  }
-  if (role === "staff") {
-    return <Navigate to="/faculty/dashboard" replace />;
-  }
-  if (role === "parent") {
-    return <Navigate to="/parent/dashboard" replace />;
-  }
-
-  return <Navigate to="/login" replace />;
+function AcademicsPage() {
+  const search = Route.useSearch();
+  const tab = search?.tab as AcademicsSubpart | undefined;
+  return (
+    <DashboardLayout>
+      <AcademicsModuleView initialTab={tab || "departments"} />
+    </DashboardLayout>
+  );
 }

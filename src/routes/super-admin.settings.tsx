@@ -5,5 +5,5 @@ export const Route = createFileRoute("/super-admin/settings")({
   head: () => ({
     meta: [{ title: "Settings — EduSuite Pro" }],
   }),
-  component: SettingsPage,
+  component: () => <SettingsPage withLayout={false} />,
 });

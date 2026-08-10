@@ -4,6 +4,7 @@ import { MOCK_STUDENT_PROFILE } from "@/components/student-profile/mock-data";
 import { StudentProfileData } from "@/components/student-profile/types";
 import { StudentHeaderCard } from "@/components/student-profile/header-card";
 import { OverviewCardsGrid } from "@/components/student-profile/overview-cards";
+import { downloadStudentIdCardPdf } from "@/components/student-profile/download-id-card";
 
 // Modals
 import { DigitalIdCardModal } from "@/components/student-profile/modals/digital-id-card-modal";
@@ -60,7 +61,7 @@ import {
   TrendingUp,
   DollarSign,
   Library,
-  Home as HostelIcon,
+  Building2 as HostelIcon,
   Bus,
   Calendar,
   Settings as SettingsIcon,
@@ -94,7 +95,7 @@ function StudentProfilePage() {
 
   // Download handlers
   const handleDownloadPdf = () => {
-    toast.success("Downloading full Student Profile Dossier (PDF)...");
+    downloadStudentIdCardPdf(student);
   };
 
   const handleExportExcel = () => {
@@ -115,7 +116,7 @@ function StudentProfilePage() {
     setTimeout(() => setIsLoading(false), 1200);
   };
 
-  // List of all 16 tabs
+  // List of core profile tabs
   const tabItems = [
     { id: "overview", label: "Overview", icon: Sparkles },
     { id: "personal", label: "Personal Details", icon: User },
@@ -123,15 +124,7 @@ function StudentProfilePage() {
     { id: "guardian", label: "Guardian Details", icon: Users },
     { id: "address", label: "Address", icon: MapPin },
     { id: "documents", label: "Documents", icon: FileText },
-    { id: "medical", label: "Medical", icon: Heart },
     { id: "achievements", label: "Achievements", icon: Trophy },
-    { id: "disciplinary", label: "Disciplinary Records", icon: ShieldAlert },
-    { id: "attendance", label: "Attendance Summary", icon: TrendingUp },
-    { id: "fees", label: "Fees Summary", icon: DollarSign },
-    { id: "library", label: "Library Summary", icon: Library },
-    { id: "hostel", label: "Hostel", icon: HostelIcon },
-    { id: "transport", label: "Transport", icon: Bus },
-    { id: "timeline", label: "Timeline", icon: Calendar },
     { id: "settings", label: "Settings", icon: SettingsIcon },
   ];
 
@@ -180,10 +173,10 @@ function StudentProfilePage() {
           {/* HEADER CARD */}
           <StudentHeaderCard
             student={student}
-            onOpenIdCard={() => setIdCardOpen(true)}
+            onOpenIdCard={() => {}}
             onOpenQr={() => setQrOpen(true)}
             onOpenEdit={() => setEditDrawerOpen(true)}
-            onDownloadPdf={handleDownloadPdf}
+            onDownloadPdf={() => {}}
             onPrint={handlePrint}
           />
 
@@ -247,43 +240,11 @@ function StudentProfilePage() {
               />
             </TabsContent>
 
-            <TabsContent value="medical" className="mt-0">
-              <MedicalTab student={student} />
-            </TabsContent>
-
             <TabsContent value="achievements" className="mt-0">
               <AchievementsTab
                 student={student}
                 onAddAchievement={() => setAddAchievementModalOpen(true)}
               />
-            </TabsContent>
-
-            <TabsContent value="disciplinary" className="mt-0">
-              <DisciplinaryTab student={student} />
-            </TabsContent>
-
-            <TabsContent value="attendance" className="mt-0">
-              <AttendanceTab student={student} onApplyLeave={() => setLeaveModalOpen(true)} />
-            </TabsContent>
-
-            <TabsContent value="fees" className="mt-0">
-              <FeesTab student={student} onPayFees={() => setPayFeesModalOpen(true)} />
-            </TabsContent>
-
-            <TabsContent value="library" className="mt-0">
-              <LibraryTab student={student} onSearchBook={() => toast.info("Searching campus book catalog...")} />
-            </TabsContent>
-
-            <TabsContent value="hostel" className="mt-0">
-              <HostelTab student={student} />
-            </TabsContent>
-
-            <TabsContent value="transport" className="mt-0">
-              <TransportTab student={student} />
-            </TabsContent>
-
-            <TabsContent value="timeline" className="mt-0">
-              <TimelineTab student={student} />
             </TabsContent>
 
             <TabsContent value="settings" className="mt-0">

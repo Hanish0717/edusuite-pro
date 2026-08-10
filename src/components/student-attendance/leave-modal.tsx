@@ -160,11 +160,26 @@ export function LeaveModal({ isOpen, onClose, onSubmitLeave }: LeaveModalProps) 
 
           {/* FOOTER BUTTONS */}
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setReason("");
+                setFromDate("2025-01-25");
+                setToDate("2025-01-25");
+                setFileName(null);
+                toast.info("Form reset.");
+              }}
+              size="sm"
+              className="rounded-xl text-slate-500"
+            >
+              Reset
+            </Button>
             <Button type="button" variant="outline" onClick={onClose} size="sm" className="rounded-xl">
               Cancel
             </Button>
             <Button type="submit" size="sm" className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold gap-1.5 px-4">
-              <CheckCircle2 className="h-4 w-4" /> Submit Application
+              <CheckCircle2 className="h-4 w-4" /> Submit
             </Button>
           </div>
 

@@ -23,6 +23,8 @@ export const defaultFeatureFlags = {
   library: true,
 };
 
+import { canAccessModule as checkModuleAccess, canAccessRoute as checkRouteAccess, type PermissionAction } from "@/lib/permissions";
+
 interface RoleContextValue {
   role: LoginRole;
   setRole: (role: LoginRole) => void;
@@ -33,6 +35,7 @@ interface RoleContextValue {
     featureFlags: Record<string, boolean>;
     personaName: string;
     personaMeta: string;
+    email?: string;
   };
   flags: string[];
   setFlags: (flags: string[]) => void;
@@ -43,6 +46,8 @@ interface RoleContextValue {
   featureFlags: Record<string, boolean>;
   setFeatureFlags: (flags: Record<string, boolean>) => void;
   hasFlag: (flag: string) => boolean;
+  canAccessModule: (moduleId: string, action?: PermissionAction) => boolean;
+  canAccessRoute: (routeUrl: string) => boolean;
 }
 
 const RoleContext = createContext<RoleContextValue | null>(null);
@@ -154,6 +159,27 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
   const profile = useMemo(() => {
     const baseProfile = roleProfiles[role];
+    const computedName =
+      role === "external-user" && externalPersona
+        ? externalPersona === "recruiter"
+          ? (typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterName") ? localStorage.getItem("loggedInRecruiterName")! : "David Miller")
+          : externalPersona === "applicant"
+            ? "John Doe"
+            : externalPersona === "alumni"
+              ? "Sarah Jenkins"
+              : externalPersona === "vendor"
+                ? "Robert Chen"
+                : "Prof. Alan Turing"
+        : baseProfile.personaName;
+
+    const computedInitials = computedName
+      .split(" ")
+      .map((n) => n[0])
+      .filter(Boolean)
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || "HR";
+
     return {
       ...baseProfile,
       role,
@@ -161,23 +187,12 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       department,
       externalPersona,
       featureFlags,
-      // Dynamic adjustments based on active settings
-      personaName:
-        role === "external-user" && externalPersona
-          ? externalPersona === "recruiter"
-            ? "David Miller"
-            : externalPersona === "applicant"
-              ? "John Doe"
-              : externalPersona === "alumni"
-                ? "Sarah Jenkins"
-                : externalPersona === "vendor"
-                  ? "Robert Chen"
-                  : "Prof. Alan Turing"
-          : baseProfile.personaName,
+      personaName: computedName,
+      initials: computedInitials,
       personaMeta:
         role === "external-user" && externalPersona
           ? externalPersona === "recruiter"
-            ? "Campus Recruiter (Google)"
+            ? `Campus Recruiter (${(typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterCompany")) || "Google"})`
             : externalPersona === "applicant"
               ? "B.Tech Admissions Applicant"
               : externalPersona === "alumni"
@@ -185,11 +200,19 @@ export function RoleProvider({ children }: { children: ReactNode }) {
                 : externalPersona === "vendor"
                   ? "Cafeteria Services Vendor"
                   : "Guest Speaker / Professor"
-          : role === "staff" && department
-            ? `Faculty - ${department} Department`
+          : role === "staff"
+            ? "Placement Officer - Training & Placement Cell"
             : baseProfile.personaMeta,
     };
   }, [role, flags, department, externalPersona, featureFlags]);
+
+  const canAccessModule = (moduleId: string, action: PermissionAction = "read") => {
+    return checkModuleAccess({ role, flags, department, externalPersona, featureFlags }, moduleId, action);
+  };
+
+  const canAccessRoute = (routeUrl: string) => {
+    return checkRouteAccess({ role, flags, department, externalPersona, featureFlags }, routeUrl);
+  };
 
   const value = useMemo<RoleContextValue>(
     () => ({
@@ -205,6 +228,8 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       featureFlags,
       setFeatureFlags,
       hasFlag,
+      canAccessModule,
+      canAccessRoute,
     }),
     [role, profile, flags, department, externalPersona, featureFlags],
   );

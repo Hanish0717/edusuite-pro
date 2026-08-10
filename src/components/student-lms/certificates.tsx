@@ -27,7 +27,31 @@ export function Certificates({ certificates, searchQuery }: CertificatesProps) {
   });
 
   const handleDownloadPdf = (cert: CertificateItem) => {
-    toast.success(`Downloading verified PDF certificate for '${cert.title}'...`);
+    const certText = `EDUSUITE PRO ACADEMIC CREDENTIAL & CERTIFICATE
+=====================================================
+CERTIFICATE OF ACCOMPLISHMENT
+=====================================================
+Awarded to: Sai Teja (Roll No: 22CS101)
+Credential: ${cert.title}
+Certificate Type: ${cert.type}
+Issuing Authority: ${cert.issuer}
+Date of Issue: ${cert.issueDate}
+Verification ID: CERT-${cert.id}-2026-VERIFIED
+
+This certifies that the candidate has successfully fulfilled all academic criteria, assignments, and practical evaluations.
+
+Verified Digital Credential — EduSuite ERP`;
+
+    const blob = new Blob([certText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Certificate_${cert.title.replace(/[\s,]+/g, "_")}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded Verified PDF Certificate for ${cert.title}`);
   };
 
   return (

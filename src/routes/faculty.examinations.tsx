@@ -1,27 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FileSpreadsheet } from "lucide-react";
-import { ModulePage } from "@/components/dashboard/module-page";
+import { useRole } from "@/context/role-context";
+import {
+  FACULTY_DASHBOARD_DATA_BY_DEPT,
+  type FacultyDashboardData,
+} from "@/data/faculty-mock-data";
+import { ExamModule } from "@/components/dashboard/exams/exam-module";
 
 export const Route = createFileRoute("/faculty/examinations")({
   head: () => ({
-    meta: [{ title: "Examinations — EduSuite Pro" }],
+    meta: [{ title: "Examination Management — EduSuite Pro" }],
   }),
   component: FacultyExaminationsPage,
 });
 
 function FacultyExaminationsPage() {
+  const { profile } = useRole();
+  const deptCode = profile.department || "CSE";
+
+  // Retrieve mock data dynamically based on active department
+  const dashboardData = (
+    FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] ??
+    FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"]
+  ) as FacultyDashboardData;
+
   return (
-    <ModulePage
-      title="Examinations"
-      description="Schedules, hall tickets and internals"
-      icon={FileSpreadsheet}
-      tabs={["Exam Schedule", "Hall Tickets", "Internal Marks"]}
-      highlights={[
-        { label: "Upcoming", value: "3" },
-        { label: "Halls", value: "24" },
-        { label: "Hall Tickets", value: "2,980" },
-        { label: "Invigilators", value: "140" },
-      ]}
+    <ExamModule
+      data={dashboardData.examsList}
+      facultyName={dashboardData.facultyName}
+      academicYear={dashboardData.academicYear}
+      semester={dashboardData.semester}
     />
   );
 }

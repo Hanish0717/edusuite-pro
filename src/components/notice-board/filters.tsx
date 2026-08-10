@@ -11,7 +11,9 @@ export const CATEGORY_TABS: NoticeCategory[] = [
   "Scholarships",
   "Events",
   "Hostel",
-  "Transport"
+  "Transport",
+  "Library",
+  "Finance"
 ];
 
 interface NoticeFiltersProps {

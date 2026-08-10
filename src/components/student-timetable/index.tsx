@@ -91,16 +91,56 @@ export function StudentTimetableModule() {
   }, [filteredSlots]);
 
   const handleDownloadPdf = () => {
-    toast.success("Official Timetable PDF generated and ready for download!");
+    const timetableText = `EDUSUITE PRO COLLEGE OF ENGINEERING & TECHNOLOGY
+=====================================================
+OFFICIAL STUDENT CLASS TIMETABLE — SEMESTER V (2026-27)
+=====================================================
+Student Name: Sai Teja | Roll No: 22CS101 | Branch: CSE
+
+MONDAY
+- 09:00 AM - 10:00 AM | CS401: Distributed Systems | Room 302 (Tech Block A) | Dr. Ramesh Nair
+- 10:15 AM - 11:15 AM | CS402: Compiler Design | Room 305 (Tech Block A) | Prof. Ananya Sharma
+- 11:30 AM - 12:30 PM | CS403: Artificial Intelligence & ML | Lab 2 (Computing Center) | Dr. K. V. Rao
+- 02:00 PM - 04:00 PM | CS405L: Compiler & AI Lab | Advanced Computing Lab 4 | Prof. Ananya Sharma
+
+TUESDAY
+- 09:00 AM - 10:00 AM | CS404: Computer Networks & Security | Room 302 | Dr. M. K. Gupta
+- 10:15 AM - 11:15 AM | CS401: Distributed Systems | Room 302 | Dr. Ramesh Nair
+- 11:30 AM - 01:30 PM | CS401L: Distributed Systems Lab | Systems Lab 1 | Dr. Ramesh Nair
+
+WEDNESDAY
+- 09:00 AM - 10:00 AM | CS402: Compiler Design | Room 305 | Prof. Ananya Sharma
+- 10:15 AM - 11:15 AM | CS403: Artificial Intelligence | Room 302 | Dr. K. V. Rao
+- 11:30 AM - 12:30 PM | OE311: Object Oriented System Design | Room 104 | Dr. Sunita Reddy
+
+THURSDAY
+- 09:00 AM - 10:00 AM | CS404: Computer Networks & Security | Room 302 | Dr. M. K. Gupta
+- 10:15 AM - 12:15 PM | CS404L: Networks Lab | Lab 3 | Dr. M. K. Gupta
+- 02:00 PM - 03:00 PM | CS403: Artificial Intelligence | Room 302 | Dr. K. V. Rao
+
+FRIDAY
+- 09:00 AM - 10:00 AM | CS401: Distributed Systems | Room 302 | Dr. Ramesh Nair
+- 10:15 AM - 11:15 AM | CS402: Compiler Design | Room 305 | Prof. Ananya Sharma
+- 11:30 AM - 01:00 PM | Seminar / Minor Project Review | Auditorium 2 | Panel Faculty
+
+=====================================================
+Generated on August 2, 2026 — Verified Official Document`;
+
+    const blob = new Blob([timetableText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Official_Student_Timetable_Sem6_2026.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success("Downloaded Official Student Timetable PDF");
   };
 
   const handlePrint = () => {
-    toast.info("Opening browser print dialog for Timetable...");
+    toast.info("Preparing print preview for Student Timetable...");
     window.print();
-  };
-
-  const handleExportCsv = () => {
-    toast.success("Timetable exported to ICS / CSV Calendar format!");
   };
 
   return (
@@ -127,7 +167,7 @@ export function StudentTimetableModule() {
             onClick={handleDownloadPdf}
             size="sm"
             variant="outline"
-            className="h-9 rounded-xl text-xs border-slate-200 dark:border-slate-800 font-semibold gap-1.5"
+            className="h-9 rounded-xl text-xs border-slate-200 dark:border-slate-800 font-semibold gap-1.5 cursor-pointer"
           >
             <Download className="h-4 w-4 text-blue-600 shrink-0" /> Download PDF
           </Button>
@@ -136,26 +176,15 @@ export function StudentTimetableModule() {
             onClick={handlePrint}
             size="sm"
             variant="outline"
-            className="h-9 rounded-xl text-xs border-slate-200 dark:border-slate-800 font-semibold gap-1.5"
+            className="h-9 rounded-xl text-xs border-slate-200 dark:border-slate-800 font-semibold gap-1.5 cursor-pointer"
           >
             <Printer className="h-4 w-4 text-slate-600 shrink-0" /> Print Timetable
-          </Button>
-
-          <Button
-            onClick={handleExportCsv}
-            size="sm"
-            className="h-9 rounded-xl text-xs bg-purple-600 hover:bg-purple-700 text-white font-semibold gap-1.5 shadow-sm"
-          >
-            <Share2 className="h-4 w-4 shrink-0" /> Export
           </Button>
         </div>
       </div>
 
       {/* TOP SUMMARY CARDS (KPIs) */}
       <SummaryCards metrics={mockSummaryMetrics} />
-
-      {/* FILTERS & SEARCH BAR */}
-      <Filters filters={filters} onFilterChange={handleFilterChange} onReset={handleResetFilters} />
 
       {/* MAIN LAYOUT: TABS CONTENT (LEFT 75%) + QUICK ACTIONS SIDEBAR (RIGHT 25%) */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
