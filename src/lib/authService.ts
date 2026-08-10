@@ -430,7 +430,7 @@ export function resolveRoleContextFromSelection(
     toastMessage: `Logged in as Staff: ${designation.toUpperCase()} — Branch: ${deptCode}`,
     targetRoute,
   };
-}
+
   if (coreRole === "student") {
     const deptCode = (branch as DepartmentCode) || "CSE";
     return {

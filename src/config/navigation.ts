@@ -392,7 +392,6 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
       }
     ];
   }
-  }
 
   // Librarian Portal Navigation
   if (user.role === "librarian" || user.flags.includes("isLibraryAdmin")) {
