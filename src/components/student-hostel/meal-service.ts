@@ -292,7 +292,13 @@ export async function exportMessReportPDF(dateStr: string, period: "daily" | "we
   const toastId = toast.loading(`Generating ${period.toUpperCase()} Mess Preparation PDF...`);
 
   try {
-    const jsPDFModule = await import("jspdf");
+    let jsPDFModule: any;
+    try {
+      jsPDFModule = await Function('return import("jspdf")')();
+    } catch {
+      toast.error("PDF generation module is not installed. Please export as CSV.", { id: toastId });
+      return;
+    }
     const jsPDF = jsPDFModule.jsPDF || jsPDFModule.default;
 
     const doc = new jsPDF({

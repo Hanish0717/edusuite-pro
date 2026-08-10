@@ -1775,3 +1775,12 @@ export function TransportModuleView() {
     </div>
   );
 }
+
+// Sub-route view aliases rendering central TransportModuleView
+export const TransportNotificationsView = TransportModuleView;
+export const TransportFeesManagementView = TransportModuleView;
+export const TransportSettingsView = TransportModuleView;
+export const TransportBusesView = TransportModuleView;
+export const TransportPassengersView = TransportModuleView;
+export const TransportRoutesView = TransportModuleView;
+

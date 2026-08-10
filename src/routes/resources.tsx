@@ -15,7 +15,7 @@ export const Route = createFileRoute("/resources")({
   component: ResourcesPage,
 });
 
-export function ResourcesPage() {
+function ResourcesPage() {
   return (
     <DashboardLayout>
       <ResourceManagementModuleView />

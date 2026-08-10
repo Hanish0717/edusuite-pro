@@ -7,7 +7,7 @@ export const Route = createFileRoute("/library")({
   component: LibraryPage,
 });
 
-export function LibraryPage() {
+function LibraryPage() {
   return (
     <DashboardLayout>
       <LibraryModuleView />
