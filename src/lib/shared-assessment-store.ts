@@ -256,3 +256,39 @@ export function updateStudentSubmissionRecord(updated: StudentSubmissionRecord):
   }
 }
 
+export interface DriveApplicationForm {
+  id: string;
+  title: string;
+  company: string;
+}
+
+export const SHARED_DRIVE_APPLICATION_FORMS: DriveApplicationForm[] = [
+  {
+    id: "APP-FORM-2026-GGL",
+    title: "Google Cloud SDE Placement Drive 2026",
+    company: "Google Cloud India",
+  },
+  {
+    id: "APP-FORM-2026-MSF",
+    title: "Microsoft Azure Technical Recruitment",
+    company: "Microsoft India",
+  },
+];
+
+export const SHARED_DRIVE_APPLICATIONS: any[] = [];
+
+export function saveStudentDriveApplication(application: any): void {
+  SHARED_DRIVE_APPLICATIONS.push(application);
+  try {
+    const saved = localStorage.getItem("edusuite_drive_applications");
+    const list = saved ? JSON.parse(saved) : [];
+    list.push(application);
+    localStorage.setItem("edusuite_drive_applications", JSON.stringify(list));
+  } catch (e) {
+    console.error("Failed to save student drive application to localStorage", e);
+  }
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("storage"));
+  }
+}
+

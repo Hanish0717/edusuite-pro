@@ -7,7 +7,7 @@ export const Route = createFileRoute("/approval-center")({
   component: ApprovalCenterPage,
 });
 
-export function ApprovalCenterPage() {
+function ApprovalCenterPage() {
   return (
     <DashboardLayout>
       <ApprovalCenterModuleView />

@@ -86,7 +86,10 @@ export function ResultsModuleView() {
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.rollNo || !form.studentName) return toast.error("Enter roll no and student name");
+    if (!form.rollNo || !form.studentName) {
+      toast.error("Enter roll no and student name");
+      return;
+    }
     const created = await uploadBatchResults(form);
     setResults((prev) => [created, ...prev]);
     setIsAddOpen(false);
@@ -271,8 +274,8 @@ export function ResultsModuleView() {
 
       {/* DIALOG 2: TRANSCRIPT DOSSIER */}
       <Dialog open={isDossierOpen} onOpenChange={setIsDossierOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle className="text-lg font-bold">Official Grade Transcript Dossier</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle className="text-lg font-bold flex items-center justify-between pr-6">Official Transcript <Badge className="bg-emerald-500/10 text-emerald-600 ml-2">Verified</Badge></DialogTitle></DialogHeader>
           {selectedStudent && (
             <div className="space-y-4 pt-1 text-xs">
               <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-1">

@@ -57,7 +57,19 @@ const institutionLevelRoles = [
   "exam_controller",
 ];
 
-export function LoginPage() {
+const DEAN_ROUTE_MAP: Record<string, string> = {
+  academic_dean: "/staff/academic-dean",
+  student_dean: "/staff/student-dean",
+  iqac_dean: "/staff/iqac",
+  ima_dean: "/staff/ima",
+  research_dean: "/staff/research-development",
+  finance_dean: "/staff/finance-dean",
+  examination_dean: "/staff/examination-dean",
+  placement_dean: "/staff/placement-dean",
+  dean: "/dean/dashboard",
+};
+
+function LoginPage() {
   const { setRole, setFlags, setDepartment, setExternalPersona } = useRole();
   const navigate = useNavigate();
 
@@ -147,7 +159,13 @@ export function LoginPage() {
     if (resolved.externalPersona) setExternalPersona(resolved.externalPersona);
 
     toast.success(resolved.toastMessage);
-    navigate({ to: "/dashboard" });
+
+    if (step1CoreRole === "staff" && DEAN_ROUTE_MAP[step2Designation]) {
+      navigate({ to: DEAN_ROUTE_MAP[step2Designation] as any });
+    } else {
+      const target = resolved.targetRoute || (step2Designation === "admission_desk" ? "/dashboard/admission" : "/dashboard");
+      navigate({ to: target });
+    }
   };
 
   return (

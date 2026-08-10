@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   BadgeCheck,
   GraduationCap,
+  School,
   Users,
   UserCog,
   CalendarCheck,
@@ -51,6 +52,7 @@ import {
 
 import type { LoginRole } from "@/config/roles";
 import { hasPermission, type UserPermissionContext } from "@/lib/permissions";
+import { getNavigationByRole } from "./navigation/index";
 
 export interface NavItem {
   title: string;
@@ -128,7 +130,8 @@ export const navigation: NavSection[] = [
   {
     label: "Academics",
     items: [
-      { title: "Admissions", url: "/admission", icon: GraduationCap, moduleId: "admission" },
+      { title: "Pre-Admission Portal", url: "/pre-admission", icon: School, moduleId: "pre-admission" },
+      { title: "Admission Office", url: "/admission", icon: GraduationCap, moduleId: "admission" },
       { title: "Academics", url: "/academics", icon: GraduationCap, moduleId: "academics" },
       { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
       { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
@@ -147,9 +150,14 @@ export const navigation: NavSection[] = [
         moduleId: "examination",
         roles: ["super-admin", "staff"],
         children: [
-          { title: "Exam Schedule", url: "/examinations", moduleId: "examination" },
-          { title: "Hall Tickets", url: "/examinations", moduleId: "examination" },
-          { title: "Internal Marks", url: "/examinations", moduleId: "examination" },
+          { title: "Dashboard", url: "/examinations", moduleId: "examination" },
+          { title: "Exam Schedule", url: "/examinations/schedule", moduleId: "examination" },
+          { title: "Hall Tickets", url: "/examinations/hall-tickets", moduleId: "examination" },
+          { title: "Internal Marks", url: "/examinations/internal-marks", moduleId: "examination" },
+          { title: "Revaluation", url: "/examinations/revaluation", moduleId: "examination" },
+          { title: "Exam Analytics", url: "/examinations/analytics", moduleId: "examination" },
+          { title: "Reports", url: "/examinations/reports", moduleId: "examination" },
+          { title: "Notifications", url: "/examinations/notifications", moduleId: "examination" },
         ],
       },
       { title: "Results", url: "/results", icon: Award, moduleId: "examination" },
@@ -184,6 +192,8 @@ export const navigation: NavSection[] = [
 function resolveUrlForUser(url: string, user: UserPermissionContext, title?: string): string {
   // Preserve standalone module URLs without rewriting
   if (
+    url.startsWith("/staff") ||
+    url.startsWith("/alumni") ||
     [
       "/employee-management",
       "/leave",
@@ -191,6 +201,7 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/inventory",
       "/procurement",
       "/campus-events",
+      "/pre-admission",
       "/admission",
       "/accreditation",
       "/grievance",
@@ -249,13 +260,6 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     if (flags.includes("isDean")) {
       if (url === "/dashboard") return "/dean/dashboard";
       if (url === "/settings") return "/faculty/profile";
-      if (url === "/attendance") return "/attendance";
-      if (url === "/timetable") return "/timetable";
-      if (url === "/examinations") return "/examinations";
-      if (url === "/results") return "/results";
-      if (url === "/faculty") return "/faculty";
-      if (url === "/students") return "/students";
-      if (url === "/academics") return "/academics";
       if (url === "/subject-allocation" || title === "Subject Allocation" || title === "Workload") return "/dean/subject-allocation";
       return url;
     }
@@ -367,6 +371,18 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
     return studentNavigation;
   }
 
+  // Dean specific navigation — each dean sees ONLY their own modules
+  const deanKey = (user.externalPersona || user.role) as LoginRole;
+  if (deanKey) {
+    const deanNav = getNavigationByRole(deanKey);
+    if (deanNav && deanNav.length > 0) {
+      return deanNav;
+    }
+  }
+  // Legacy generic dean flag fallback (isDean without specific role)
+  if (user.role !== "super-admin" && user.flags.includes("isDean")) {
+    return getNavigationByRole("academic_dean" as any);
+  }
   // Placement Officer specific navigation menu
   if (user.role !== "super-admin" && (user.role === "placement" || user.flags.includes("isPlacementOfficer"))) {
     return PLACEMENT_OFFICER_NAVIGATION;
@@ -449,7 +465,7 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
 
           return true;
         })
-        .map((item) => {
+        .map((item): NavItem => {
           const newUrl = resolveUrlForUser(item.url, user, item.title);
           let newChildren = item.children?.map((child) => ({
             ...child,
@@ -501,7 +517,7 @@ export function navigationForUser(user: UserPermissionContext): NavSection[] {
             title: "Evaluations & Marks",
             url: resolveUrlForUser("/faculty/evaluation-and-marks", user, "Evaluations & Marks"),
             icon: FileSpreadsheet,
-          }
+          } as NavItem
         ];
       }
 

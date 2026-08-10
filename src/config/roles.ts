@@ -125,6 +125,7 @@ export interface RoleProfile {
   flags: string[];
   department?: DepartmentCode | undefined;
   externalPersona?: ExternalPersona | undefined;
+  email?: string;
 }
 
 export const RESPONSIBILITY_FLAGS = [

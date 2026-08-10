@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "@tanstack/react-router";
 import {
   Building,
   Plus,
@@ -18,8 +19,32 @@ import {
   KeyRound,
   Calendar,
   Sparkles,
+  PieChart,
+  Wrench,
+  BellRing,
+  UserCheck,
+  ShieldAlert,
+  BarChart3,
+  FileSpreadsheet,
+  Utensils,
+  XCircle,
+  FileDown,
+  Loader2,
+  TrendingUp,
+  PhoneCall,
+  Flame,
+  Lock,
+  Printer,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  getWardenMessSummary,
+  exportMessReportCSV,
+  exportMessReportPDF,
+  getAllStoredConfirmations,
+  MealType,
+} from "@/components/student-hostel/meal-service";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,18 +78,53 @@ import {
   type HostelRoom,
   type ResidentStudent,
   type GatePassRequest,
+  INITIAL_BLOCKS,
+  type HostelBlockInfo,
 } from "./HostelService";
 
 const BLOCKS = ["All Blocks", "Block A (Boys)", "Block B (Girls)", "Block C (PG Scholars)"] as const;
 
 export function HostelModuleView() {
+  const location = useLocation();
+  const searchParams = location.search as any;
+  const tabFromUrl = searchParams?.tab;
+  const [blocks] = useState<HostelBlockInfo[]>(INITIAL_BLOCKS);
   const [rooms, setRooms] = useState<HostelRoom[]>(INITIAL_ROOMS);
   const [residents, setResidents] = useState<ResidentStudent[]>(INITIAL_RESIDENTS);
   const [passes, setPasses] = useState<GatePassRequest[]>(INITIAL_PASSES);
-  const [activeTab, setActiveTab] = useState<"rooms" | "residents" | "passes">("rooms");
+  const [activeTab, setActiveTab] = useState<"rooms" | "residents" | "passes" | "mess">("rooms");
 
   const [search, setSearch] = useState("");
   const [selectedBlock, setSelectedBlock] = useState<string>("All Blocks");
+
+  useEffect(() => {
+    if (tabFromUrl === "rooms" || tabFromUrl === "blocks") setActiveTab("rooms");
+    else if (tabFromUrl === "residents") setActiveTab("residents");
+    else if (tabFromUrl === "compliance" || tabFromUrl === "passes") setActiveTab("passes");
+    else if (tabFromUrl === "mess") setActiveTab("mess");
+  }, [tabFromUrl]);
+
+  const todayStr = new Date().toISOString().split("T")[0] || "";
+  const [messSummary, setMessSummary] = useState(() => getWardenMessSummary(todayStr));
+
+  const reloadMessSummary = () => {
+    setMessSummary(getWardenMessSummary(todayStr));
+  };
+
+  useEffect(() => {
+    reloadMessSummary();
+    const handleUpdate = () => reloadMessSummary();
+    if (typeof window !== "undefined") {
+      window.addEventListener("meal-confirmations-updated", handleUpdate);
+      window.addEventListener("storage", handleUpdate);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("meal-confirmations-updated", handleUpdate);
+        window.removeEventListener("storage", handleUpdate);
+      }
+    };
+  }, [todayStr]);
   const [loading, setLoading] = useState(false);
 
   // Dialog State
@@ -79,8 +139,32 @@ export function HostelModuleView() {
     status: "Available",
   });
 
-  const loadData = async () => {
-    setLoading(true);
+  // Governance Telemetry & Lists
+  const [gatePassDetails] = useState<any[]>([]);
+  const [complaintDetails] = useState<any[]>([]);
+  const [healthStatus] = useState<any>({ healthStatus: "Healthy" });
+  const [maintenanceSummary] = useState<any>({ openRequests: 0 });
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [activities, setActivities] = useState<any[]>([]);
+  const [staffSummary] = useState<any>({ totalStaff: 0 });
+  const [compliance] = useState<any>({});
+  const [securityMetrics] = useState<any>({});
+  const [complaintCompliance] = useState<any>({});
+  const [analytics] = useState<any>({});
+
+  const addActivityLog = (action: string, category: string) => {
+    const newLog = {
+      id: `ACT-${Date.now()}`,
+      date: new Date().toISOString().replace("T", " ").substring(0, 16),
+      user: "Super Admin (Executive)",
+      action,
+      category,
+    };
+    setActivities((prev) => [newLog, ...prev]);
+  };
+
+  const loadData = async (isSilent = false) => {
+    if (!isSilent) setLoading(true);
     const [rm, res, ps] = await Promise.all([
       fetchHostelRooms(),
       fetchHostelResidents(),
@@ -89,11 +173,15 @@ export function HostelModuleView() {
     setRooms(rm);
     setResidents(res);
     setPasses(ps);
-    setLoading(false);
+    if (!isSilent) setLoading(false);
   };
 
   useEffect(() => {
     loadData();
+    const interval = setInterval(() => {
+      loadData(true);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const filteredRooms = rooms.filter((r) => {
@@ -106,7 +194,10 @@ export function HostelModuleView() {
 
   const handleAddRoomSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!roomForm.roomNo) return toast.error("Enter room number");
+    if (!roomForm.roomNo) {
+      toast.error("Enter room number");
+      return;
+    }
     const created = await createHostelRoom(roomForm);
     setRooms((prev) => [created, ...prev]);
     setIsAddRoomOpen(false);
@@ -158,7 +249,7 @@ export function HostelModuleView() {
 
         {/* Action Buttons - Top Right Corner */}
         <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
-          <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="h-9 gap-2 text-xs font-medium">
+          <Button variant="outline" size="sm" onClick={() => loadData(false)} disabled={loading} className="h-9 gap-2 text-xs font-medium">
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
           </Button>
           <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-9 gap-2 text-xs font-medium">
@@ -219,6 +310,9 @@ export function HostelModuleView() {
         </button>
         <button onClick={() => setActiveTab("passes")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === "passes" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
           3. Gate Passes & Complaints ({passes.length})
+        </button>
+        <button onClick={() => setActiveTab("mess")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${activeTab === "mess" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
+          <Utensils className="size-3.5 text-amber-500" /> 5. Mess Preparation Dashboard
         </button>
       </div>
 
@@ -352,3 +446,25 @@ export function HostelModuleView() {
     </div>
   );
 }
+
+// Sub-route view aliases rendering the central HostelModuleView
+export const HostelBlocksView = HostelModuleView;
+export const HostelAttendanceView = HostelModuleView;
+export const HostelComplaintsView = HostelModuleView;
+export const HostelDeviceManagementView = HostelModuleView;
+export const HostelFeesView = HostelModuleView;
+export const HostelGuestBillingView = HostelModuleView;
+export const HostelLeavesSuspensionView = HostelModuleView;
+export const HostelLogHistoryView = HostelModuleView;
+export const HostelMaintenanceView = HostelModuleView;
+export const HostelMessFeesView = HostelModuleView;
+export const HostelMessManagementView = HostelModuleView;
+export const HostelMessMenusView = HostelModuleView;
+export const HostelNotificationsView = HostelModuleView;
+export const HostelOutingApprovalsView = HostelModuleView;
+export const HostelOutingLogHistoryView = HostelModuleView;
+export const HostelRoomsView = HostelModuleView;
+export const HostelSettingsView = HostelModuleView;
+export const HostelUserManagementView = HostelModuleView;
+export const HostelVisitorsView = HostelModuleView;
+

@@ -53,8 +53,7 @@ import {
 export function TransportModuleView() {
   const [routes, setRoutes] = useState<BusRoute[]>(INITIAL_ROUTES);
   const [passes, setPasses] = useState<TransportPass[]>(INITIAL_PASSES);
-  const [activeTab, setActiveTab] = useState<"routes" | "passes">("routes");
-
+  const [activeTab, setActiveTab] = useState<"routes" | "passes" | "health" | "analytics" | "governance">("routes");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -313,3 +312,12 @@ export function TransportModuleView() {
     </div>
   );
 }
+
+// Sub-route view aliases rendering central TransportModuleView
+export const TransportNotificationsView = TransportModuleView;
+export const TransportFeesManagementView = TransportModuleView;
+export const TransportSettingsView = TransportModuleView;
+export const TransportBusesView = TransportModuleView;
+export const TransportPassengersView = TransportModuleView;
+export const TransportRoutesView = TransportModuleView;
+

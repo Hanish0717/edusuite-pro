@@ -58,7 +58,7 @@ const CATEGORIES = ["All Categories", "Computer Science", "Electronics", "Mechan
 export function LibraryModuleView() {
   const [books, setBooks] = useState<LibraryBook[]>(INITIAL_BOOKS);
   const [issues, setIssues] = useState<BookIssueRecord[]>(INITIAL_ISSUES);
-  const [activeTab, setActiveTab] = useState<"catalog" | "issues" | "ejournals">("catalog");
+  const [activeTab, setActiveTab] = useState<"catalog" | "issues" | "ejournals" | "overdue" | "staff">("catalog");
 
   const [search, setSearch] = useState("");
   const [selectedCat, setSelectedCat] = useState<string>("All Categories");
@@ -109,7 +109,10 @@ export function LibraryModuleView() {
 
   const handleAddBookSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!bookForm.title || !bookForm.author) return toast.error("Enter book title and author");
+    if (!bookForm.title || !bookForm.author) {
+      toast.error("Enter book title and author");
+      return;
+    }
     const created = await createLibraryBook(bookForm);
     setBooks((prev) => [created, ...prev]);
     setIsAddBookOpen(false);
@@ -118,7 +121,10 @@ export function LibraryModuleView() {
 
   const handleIssueBookSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!issueForm.rollNo || !issueForm.bookTitle) return toast.error("Enter student roll number and book title");
+    if (!issueForm.rollNo || !issueForm.bookTitle) {
+      toast.error("Enter student roll number and book title");
+      return;
+    }
     const created = await issueLibraryBook(issueForm);
     setIssues((prev) => [created, ...prev]);
     setIsIssueBookOpen(false);
