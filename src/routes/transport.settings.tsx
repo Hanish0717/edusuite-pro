@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { TransportSettingsView } from "@/modules/transport";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { TransportModuleView } from "@/modules/transport";
 
 export const Route = createFileRoute("/transport/settings")({
-  head: () => ({
-    meta: [{ title: "Settings & Profile Details — EduSuite Pro" }],
-  }),
-  component: TransportSettingsPage,
+  head: () => ({ meta: [{ title: "Transport Settings — EduSuite Pro" }] }),
+  component: () => (
+    <DashboardLayout>
+      <TransportModuleView />
+    </DashboardLayout>
+  ),
 });
-
-function TransportSettingsPage() {
-  return <TransportSettingsView />;
-}
