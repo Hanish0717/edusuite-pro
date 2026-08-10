@@ -81,7 +81,6 @@ export interface ClassStudentAttendance {
   avatar?: string;
   status: "Present" | "Absent" | "Late";
 }
-export type ClassStudent = ClassStudentAttendance;
 
 export interface AttendanceSubmission {
   classId: string;
@@ -127,7 +126,6 @@ export interface AllClassesAttendanceItem {
   classTeacher: string;
   status: "Normal" | "Defaulter Warning";
 }
-export type AllClassesAttendance = AllClassesAttendanceItem;
 
 // 1. EXTENDED DEPARTMENT MOCK DATA ROSTER
 export const ALL_MOCK_COURSES: AcademicCourse[] = [

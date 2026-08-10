@@ -315,30 +315,248 @@ export const INITIAL_ROOMS: HostelRoom[] = [
   },
 ];
 
-export const INITIAL_RESIDENTS: ResidentStudent[] = [
+export const ENHANCED_RESIDENTS: EnhancedResidentStudent[] = [
   {
     id: "RES-001",
     rollNo: "22CSE001",
     name: "Aarav Sharma",
     department: "CSE",
+    year: "3rd Year",
     roomNo: "A-201",
     block: "Block A (Boys)",
+    checkInDate: "2024-08-01",
     feeStatus: "Paid",
+    attendanceStatus: "98% Present",
+    disciplinaryStatus: "Clean Record",
     contact: "+91 9876543210",
     emergencyContact: "+91 9876500001",
+    medicalAlerts: "None",
+    residentStatus: "Present",
+    isInternational: false,
+    isScholarship: true,
   },
   {
     id: "RES-002",
     rollNo: "22ECE042",
     name: "Ananya Iyer",
     department: "ECE",
+    year: "3rd Year",
     roomNo: "B-105",
     block: "Block B (Girls)",
+    checkInDate: "2024-08-02",
     feeStatus: "Paid",
+    attendanceStatus: "96% Present",
+    disciplinaryStatus: "Clean Record",
     contact: "+91 9123456789",
     emergencyContact: "+91 9123400002",
+    medicalAlerts: "Asthma (Inhaler in Room)",
+    residentStatus: "Present",
+    isInternational: false,
+    isScholarship: false,
+  },
+  {
+    id: "RES-003",
+    rollNo: "23MECH018",
+    name: "Rohan Verma",
+    department: "Mechanical",
+    year: "2nd Year",
+    roomNo: "A-202",
+    block: "Block A (Boys)",
+    checkInDate: "2025-07-25",
+    feeStatus: "Paid",
+    attendanceStatus: "92% Present",
+    disciplinaryStatus: "Clean Record",
+    contact: "+91 9811223344",
+    emergencyContact: "+91 9811220000",
+    medicalAlerts: "None",
+    residentStatus: "Weekend Outing",
+    isInternational: false,
+    isScholarship: true,
+  },
+  {
+    id: "RES-004",
+    rollNo: "24CIVIL009",
+    name: "Priya Nair",
+    department: "Civil",
+    year: "1st Year",
+    roomNo: "B-106",
+    block: "Block B (Girls)",
+    checkInDate: "2025-08-10",
+    feeStatus: "Partial",
+    attendanceStatus: "95% Present",
+    disciplinaryStatus: "Clean Record",
+    contact: "+91 9744556677",
+    emergencyContact: "+91 9744550000",
+    medicalAlerts: "Dust Allergy",
+    residentStatus: "On Leave",
+    isInternational: true,
+    isScholarship: false,
   },
 ];
+
+export const DEFAULT_SECURITY_METRICS: GatePassSecurityMetrics = {
+  requestsToday: 18,
+  approved: 14,
+  rejected: 2,
+  pending: 2,
+  emergencyPasses: 3,
+  avgApprovalTime: "45 Mins",
+  securityIncidents: 0,
+  lateEntries: 4,
+  visitorRecords: 24,
+};
+
+export const INITIAL_GATE_PASS_DETAILS: GatePassDetailItem[] = [
+  {
+    id: "GPD-101",
+    studentName: "Aarav Sharma",
+    rollNo: "22CSE001",
+    department: "Computer Science",
+    hostelBlock: "Block A (Boys)",
+    passType: "Home Leave",
+    exitTime: "2026-08-02 09:00 AM",
+    expectedReturn: "2026-08-04 08:00 PM",
+    status: "Approved",
+  },
+  {
+    id: "GPD-102",
+    studentName: "Priya Nair",
+    rollNo: "24CIVIL009",
+    department: "Civil Engineering",
+    hostelBlock: "Block B (Girls)",
+    passType: "Outing Pass",
+    exitTime: "2026-08-04 04:30 PM",
+    expectedReturn: "2026-08-04 08:30 PM",
+    status: "Pending",
+  },
+  {
+    id: "GPD-103",
+    studentName: "Rohan Verma",
+    rollNo: "23MECH018",
+    department: "Mechanical",
+    hostelBlock: "Block A (Boys)",
+    passType: "Outing Pass",
+    exitTime: "2026-08-03 05:00 PM",
+    expectedReturn: "2026-08-03 08:30 PM",
+    status: "Late Return",
+  },
+  {
+    id: "GPD-104",
+    studentName: "Ananya Iyer",
+    rollNo: "22ECE042",
+    department: "Electronics",
+    hostelBlock: "Block B (Girls)",
+    passType: "Emergency Pass",
+    exitTime: "2026-08-05 10:15 AM",
+    expectedReturn: "2026-08-05 06:00 PM",
+    status: "Approved",
+  },
+  {
+    id: "GPD-105",
+    studentName: "Vikram Malhotra",
+    rollNo: "23AIDS012",
+    department: "AI & Data Science",
+    hostelBlock: "Block C (PG Scholars)",
+    passType: "Outing Pass",
+    exitTime: "2026-08-05 02:00 PM",
+    expectedReturn: "2026-08-05 07:00 PM",
+    status: "Rejected",
+  },
+];
+
+export const INITIAL_COMPLAINT_DETAILS: HostelComplaintDetailItem[] = [
+  {
+    id: "CMP-001",
+    complaintId: "CMP-2026-084",
+    studentName: "Rohan Verma",
+    hostelBlock: "Block A (Boys)",
+    category: "Plumbing",
+    priority: "High",
+    assignedWarden: "Dr. Rajesh Kumar",
+    status: "In Progress",
+  },
+  {
+    id: "CMP-002",
+    complaintId: "CMP-2026-089",
+    studentName: "Priya Nair",
+    hostelBlock: "Block B (Girls)",
+    category: "Wi-Fi Network",
+    priority: "Medium",
+    assignedWarden: "Dr. Meenakshi Sundaram",
+    status: "Open",
+  },
+  {
+    id: "CMP-003",
+    complaintId: "CMP-2026-072",
+    studentName: "Aarav Sharma",
+    hostelBlock: "Block A (Boys)",
+    category: "Electrical",
+    priority: "Low",
+    assignedWarden: "Dr. Rajesh Kumar",
+    status: "Resolved",
+  },
+  {
+    id: "CMP-004",
+    complaintId: "CMP-2026-091",
+    studentName: "Siddharth Nambiar",
+    hostelBlock: "Block C (PG Scholars)",
+    category: "Furniture / Maintenance",
+    priority: "High",
+    assignedWarden: "Prof. Vikramaditya",
+    status: "In Progress",
+  },
+  {
+    id: "CMP-005",
+    complaintId: "CMP-2026-065",
+    studentName: "Ananya Iyer",
+    hostelBlock: "Block B (Girls)",
+    category: "Plumbing",
+    priority: "Low",
+    assignedWarden: "Dr. Meenakshi Sundaram",
+    status: "Resolved",
+  },
+];
+
+export const DEFAULT_COMPLAINT_COMPLIANCE: ComplaintComplianceSummary = {
+  complaints: {
+    open: 2,
+    inProgress: 3,
+    resolved: 48,
+    escalated: 0,
+  },
+  compliance: {
+    fireSafety: "100% Certified (Valid Dec 2026)",
+    hostelRules: "Fully Compliant",
+    visitorRegister: "Biometric & Digital Logged",
+    securityAudit: "Grade A+ (Passed July 2026)",
+    inspectionStatus: "Passed Municipal Audit",
+    governmentCompliance: "100% Certified",
+  },
+};
+
+export const DEFAULT_ANALYTICS: ExecutiveHostelAnalyticsData = {
+  monthlyOccupancyTrend: [
+    { month: "Jan", occupancyPct: 92.4 },
+    { month: "Feb", occupancyPct: 93.1 },
+    { month: "Mar", occupancyPct: 94.0 },
+    { month: "Apr", occupancyPct: 94.5 },
+    { month: "May", occupancyPct: 91.2 },
+    { month: "Jun", occupancyPct: 88.0 },
+    { month: "Jul", occupancyPct: 93.8 },
+    { month: "Aug", occupancyPct: 94.8 },
+  ],
+  hostelRevenue: "₹8.78 Cr",
+  maintenanceCost: "₹12.4 Lakhs",
+  messUtilization: "96.5%",
+  studentSatisfaction: "4.8 / 5.0",
+  complaintTrend: "-15% MoM Decrease",
+  gatePassStats: "428 Passes Issued / Month",
+  feeCollection: "98.2% Realized",
+  mostOccupiedHostel: "Block A (Boys Hostel - 96.2%)",
+  leastOccupiedHostel: "Block C (PG Scholars - 88.0%)",
+  maintenanceTrend: "Low Backlog (Avg 24h SLA)",
+  inspectionReports: "3/3 Audits Passed (100%)",
+};
 
 export const INITIAL_PASSES: GatePassRequest[] = [
   {
@@ -349,6 +567,17 @@ export const INITIAL_PASSES: GatePassRequest[] = [
     passType: "Home Leave",
     reason: "Family function during weekend",
     fromDate: "2026-08-02",
+    toDate: "2026-08-04",
+    status: "Approved",
+  },
+  {
+    id: "PASS-502",
+    rollNo: "24CIVIL009",
+    studentName: "Priya Nair",
+    roomNo: "B-106",
+    passType: "Outing Pass",
+    reason: "Project research equipment procurement",
+    fromDate: "2026-08-04",
     toDate: "2026-08-04",
     status: "Pending",
   },
@@ -511,12 +740,12 @@ export async function fetchHostelRooms(): Promise<HostelRoom[]> {
   return INITIAL_ROOMS;
 }
 
-export async function fetchHostelResidents(): Promise<EnhancedResidentStudent[]> {
+export async function fetchHostelResidents(): Promise<ResidentStudent[]> {
   try {
     const res = await api.get("/api/hostel/residents");
     if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
   } catch {}
-  return ENHANCED_RESIDENTS;
+  return INITIAL_RESIDENTS;
 }
 
 export async function fetchGatePasses(): Promise<GatePassRequest[]> {
