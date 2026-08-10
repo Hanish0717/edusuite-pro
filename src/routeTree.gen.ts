@@ -53,7 +53,6 @@ import { Route as PayrollRouteImport } from './routes/payroll'
 import { Route as PlacementRouteImport } from './routes/placement'
 import { Route as PlacementExamRouteImport } from './routes/placement-exam'
 import { Route as PlacementsRouteImport } from './routes/placements'
-import { Route as PreAdmissionRouteImport } from './routes/pre-admission'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ProcurementRouteImport } from './routes/procurement'
 import { Route as PromotionsRouteImport } from './routes/promotions'
@@ -79,9 +78,7 @@ import { Route as AiAnalyticsNotificationsRouteImport } from './routes/ai-analyt
 import { Route as AiAnalyticsReportsRouteImport } from './routes/ai-analytics.reports'
 import { Route as AiAnalyticsSettingsRouteImport } from './routes/ai-analytics.settings'
 import { Route as AiAnalyticsStudentRiskRouteImport } from './routes/ai-analytics.student-risk'
-import { Route as DashboardAdmissionRouteImport } from './routes/dashboard.admission'
 import { Route as DashboardLibrarianRouteImport } from './routes/dashboard.librarian'
-import { Route as DashboardPreAdmissionRouteImport } from './routes/dashboard.pre-admission'
 import { Route as DeanIndexRouteImport } from './routes/dean.index'
 import { Route as DeanDashboardRouteImport } from './routes/dean.dashboard'
 import { Route as DeanSubjectAllocationRouteImport } from './routes/dean.subject-allocation'
@@ -862,11 +859,6 @@ const PlacementsRoute = PlacementsRouteImport.update({
   path: '/placements',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PreAdmissionRoute = PreAdmissionRouteImport.update({
-  id: '/pre-admission',
-  path: '/pre-admission',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
@@ -995,19 +987,9 @@ const AiAnalyticsStudentRiskRoute = AiAnalyticsStudentRiskRouteImport.update({
   path: '/student-risk',
   getParentRoute: () => AiAnalyticsRoute,
 } as any)
-const DashboardAdmissionRoute = DashboardAdmissionRouteImport.update({
-  id: '/admission',
-  path: '/admission',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const DashboardLibrarianRoute = DashboardLibrarianRouteImport.update({
   id: '/librarian',
   path: '/librarian',
-  getParentRoute: () => DashboardRoute,
-} as any)
-const DashboardPreAdmissionRoute = DashboardPreAdmissionRouteImport.update({
-  id: '/pre-admission',
-  path: '/pre-admission',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DeanIndexRoute = DeanIndexRouteImport.update({
@@ -4165,7 +4147,6 @@ export interface FileRoutesByFullPath {
   '/placement': typeof PlacementRouteWithChildren
   '/placement-exam': typeof PlacementExamRoute
   '/placements': typeof PlacementsRoute
-  '/pre-admission': typeof PreAdmissionRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
   '/promotions': typeof PromotionsRoute
@@ -4190,9 +4171,7 @@ export interface FileRoutesByFullPath {
   '/ai-analytics/reports': typeof AiAnalyticsReportsRoute
   '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
   '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
-  '/dashboard/admission': typeof DashboardAdmissionRoute
   '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
-  '/dashboard/pre-admission': typeof DashboardPreAdmissionRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/drive/apply': typeof DriveApplyRoute
@@ -4785,7 +4764,6 @@ export interface FileRoutesByTo {
   '/payroll': typeof PayrollRoute
   '/placement-exam': typeof PlacementExamRoute
   '/placements': typeof PlacementsRoute
-  '/pre-admission': typeof PreAdmissionRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
   '/promotions': typeof PromotionsRoute
@@ -4805,8 +4783,6 @@ export interface FileRoutesByTo {
   '/ai-analytics/reports': typeof AiAnalyticsReportsRoute
   '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
   '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
-  '/dashboard/admission': typeof DashboardAdmissionRoute
-  '/dashboard/pre-admission': typeof DashboardPreAdmissionRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/drive/apply': typeof DriveApplyRoute
@@ -5406,7 +5382,6 @@ export interface FileRoutesById {
   '/placement': typeof PlacementRouteWithChildren
   '/placement-exam': typeof PlacementExamRoute
   '/placements': typeof PlacementsRoute
-  '/pre-admission': typeof PreAdmissionRoute
   '/pricing': typeof PricingRoute
   '/procurement': typeof ProcurementRoute
   '/promotions': typeof PromotionsRoute
@@ -5431,9 +5406,7 @@ export interface FileRoutesById {
   '/ai-analytics/reports': typeof AiAnalyticsReportsRoute
   '/ai-analytics/settings': typeof AiAnalyticsSettingsRoute
   '/ai-analytics/student-risk': typeof AiAnalyticsStudentRiskRoute
-  '/dashboard/admission': typeof DashboardAdmissionRoute
   '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
-  '/dashboard/pre-admission': typeof DashboardPreAdmissionRoute
   '/dean/dashboard': typeof DeanDashboardRoute
   '/dean/subject-allocation': typeof DeanSubjectAllocationRoute
   '/drive/apply': typeof DriveApplyRoute
@@ -6042,7 +6015,6 @@ export interface FileRouteTypes {
     | '/placement'
     | '/placement-exam'
     | '/placements'
-    | '/pre-admission'
     | '/pricing'
     | '/procurement'
     | '/promotions'
@@ -6067,9 +6039,7 @@ export interface FileRouteTypes {
     | '/ai-analytics/reports'
     | '/ai-analytics/settings'
     | '/ai-analytics/student-risk'
-    | '/dashboard/admission'
     | '/dashboard/librarian'
-    | '/dashboard/pre-admission'
     | '/dean/dashboard'
     | '/dean/subject-allocation'
     | '/drive/apply'
@@ -6662,7 +6632,6 @@ export interface FileRouteTypes {
     | '/payroll'
     | '/placement-exam'
     | '/placements'
-    | '/pre-admission'
     | '/pricing'
     | '/procurement'
     | '/promotions'
@@ -6682,8 +6651,6 @@ export interface FileRouteTypes {
     | '/ai-analytics/reports'
     | '/ai-analytics/settings'
     | '/ai-analytics/student-risk'
-    | '/dashboard/admission'
-    | '/dashboard/pre-admission'
     | '/dean/dashboard'
     | '/dean/subject-allocation'
     | '/drive/apply'
@@ -7282,7 +7249,6 @@ export interface FileRouteTypes {
     | '/placement'
     | '/placement-exam'
     | '/placements'
-    | '/pre-admission'
     | '/pricing'
     | '/procurement'
     | '/promotions'
@@ -7307,9 +7273,7 @@ export interface FileRouteTypes {
     | '/ai-analytics/reports'
     | '/ai-analytics/settings'
     | '/ai-analytics/student-risk'
-    | '/dashboard/admission'
     | '/dashboard/librarian'
-    | '/dashboard/pre-admission'
     | '/dean/dashboard'
     | '/dean/subject-allocation'
     | '/drive/apply'
@@ -7917,7 +7881,6 @@ export interface RootRouteChildren {
   PlacementRoute: typeof PlacementRouteWithChildren
   PlacementExamRoute: typeof PlacementExamRoute
   PlacementsRoute: typeof PlacementsRoute
-  PreAdmissionRoute: typeof PreAdmissionRoute
   PricingRoute: typeof PricingRoute
   ProcurementRoute: typeof ProcurementRoute
   PromotionsRoute: typeof PromotionsRoute
@@ -8252,13 +8215,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlacementsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pre-admission': {
-      id: '/pre-admission'
-      path: '/pre-admission'
-      fullPath: '/pre-admission'
-      preLoaderRoute: typeof PreAdmissionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/pricing': {
       id: '/pricing'
       path: '/pricing'
@@ -8434,25 +8390,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AiAnalyticsStudentRiskRouteImport
       parentRoute: typeof AiAnalyticsRoute
     }
-    '/dashboard/admission': {
-      id: '/dashboard/admission'
-      path: '/admission'
-      fullPath: '/dashboard/admission'
-      preLoaderRoute: typeof DashboardAdmissionRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/dashboard/librarian': {
       id: '/dashboard/librarian'
       path: '/librarian'
       fullPath: '/dashboard/librarian'
       preLoaderRoute: typeof DashboardLibrarianRouteImport
-      parentRoute: typeof DashboardRoute
-    }
-    '/dashboard/pre-admission': {
-      id: '/dashboard/pre-admission'
-      path: '/pre-admission'
-      fullPath: '/dashboard/pre-admission'
-      preLoaderRoute: typeof DashboardPreAdmissionRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dean/': {
@@ -12431,9 +12373,7 @@ const DashboardLibrarianRouteWithChildren =
   DashboardLibrarianRoute._addFileChildren(DashboardLibrarianRouteChildren)
 
 interface DashboardRouteChildren {
-  DashboardAdmissionRoute: typeof DashboardAdmissionRoute
   DashboardLibrarianRoute: typeof DashboardLibrarianRouteWithChildren
-  DashboardPreAdmissionRoute: typeof DashboardPreAdmissionRoute
   DashboardAcademicsFacultyStatusRoute: typeof DashboardAcademicsFacultyStatusRoute
   DashboardAcademicsSyllabusTrackerRoute: typeof DashboardAcademicsSyllabusTrackerRoute
   DashboardAcademicsTimetableRoute: typeof DashboardAcademicsTimetableRoute
@@ -12441,9 +12381,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardAdmissionRoute: DashboardAdmissionRoute,
   DashboardLibrarianRoute: DashboardLibrarianRouteWithChildren,
-  DashboardPreAdmissionRoute: DashboardPreAdmissionRoute,
   DashboardAcademicsFacultyStatusRoute: DashboardAcademicsFacultyStatusRoute,
   DashboardAcademicsSyllabusTrackerRoute:
     DashboardAcademicsSyllabusTrackerRoute,
@@ -13970,7 +13908,6 @@ const rootRouteChildren: RootRouteChildren = {
   PlacementRoute: PlacementRouteWithChildren,
   PlacementExamRoute: PlacementExamRoute,
   PlacementsRoute: PlacementsRoute,
-  PreAdmissionRoute: PreAdmissionRoute,
   PricingRoute: PricingRoute,
   ProcurementRoute: ProcurementRoute,
   PromotionsRoute: PromotionsRoute,
