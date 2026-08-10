@@ -358,6 +358,80 @@ export const RECRUITER_NAVIGATION: NavSection[] = [
   },
 ];
 
+export const SUPER_ADMIN_NAVIGATION: NavSection[] = [
+  {
+    label: "Super Admin Control Center",
+    items: [
+      { title: "Super Admin Cockpit", url: "/super-admin/dashboard", icon: ShieldCheck, badge: "Master" },
+      { title: "Emergency Broadcast", url: "/emergency", icon: Siren, badge: "Instant" },
+      { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
+      { title: "AI System Health", url: "/ai-analytics", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Academics & Admissions",
+    items: [
+      { title: "Pre-Admission Portal", url: "/pre-admission", icon: School },
+      { title: "Admission Office", url: "/admission", icon: GraduationCap },
+      { title: "Academic Management", url: "/academics", icon: GraduationCap },
+      { title: "Students Directory", url: "/students", icon: Users },
+      { title: "Faculty & Staff HR", url: "/faculty", icon: UserCog },
+      { title: "Attendance & Biometrics", url: "/attendance", icon: CalendarCheck },
+      { title: "Master Timetable", url: "/timetable", icon: CalendarRange },
+      { title: "LMS & Learning", url: "/lms", icon: BookOpen },
+    ],
+  },
+  {
+    label: "Examinations & Evaluation",
+    items: [
+      {
+        title: "Examinations",
+        url: "/examinations",
+        icon: FileSpreadsheet,
+        children: [
+          { title: "Dashboard", url: "/examinations" },
+          { title: "Exam Schedule", url: "/examinations/schedule" },
+          { title: "Hall Tickets", url: "/examinations/hall-tickets" },
+          { title: "Internal Marks", url: "/examinations/internal-marks" },
+          { title: "Revaluation", url: "/examinations/revaluation" },
+          { title: "Exam Analytics", url: "/examinations/analytics" },
+          { title: "Reports", url: "/examinations/reports" },
+          { title: "Notifications", url: "/examinations/notifications" },
+        ],
+      },
+      { title: "Results & Grade Cards", url: "/results", icon: Award },
+    ],
+  },
+  {
+    label: "Campus Services & Facilities",
+    items: [
+      { title: "Library Management", url: "/library", icon: Library },
+      { title: "Hostel & Resident Welfare", url: "/hostel", icon: BedDouble },
+      { title: "Transport & Fleet Management", url: "/transport", icon: Bus },
+      { title: "Placements & Recruiters", url: "/placements", icon: Briefcase },
+      { title: "Financial Ledger & Fees", url: "/finance", icon: Wallet },
+      { title: "Inventory & Assets", url: "/inventory", icon: Package },
+      { title: "Procurement & Purchases", url: "/procurement", icon: Package },
+      { title: "Campus Events", url: "/campus-events", icon: CalendarRange },
+      { title: "Grievances & Support", url: "/grievance", icon: ShieldAlert },
+      { title: "Alumni Network", url: "/alumni", icon: Globe },
+    ],
+  },
+  {
+    label: "Executive Deans Portfolios",
+    items: [
+      { title: "Academic Dean", url: "/staff/academic-dean", icon: GraduationCap },
+      { title: "Student Dean", url: "/staff/student-dean", icon: Users },
+      { title: "IQAC Quality", url: "/staff/iqac", icon: BadgeCheck },
+      { title: "IMA Governance", url: "/staff/ima", icon: Building2 },
+      { title: "Research & Dev", url: "/staff/research-development", icon: TrendingUp },
+      { title: "Finance Dean", url: "/staff/finance-dean", icon: Wallet },
+      { title: "Examination Dean", url: "/staff/examination-dean", icon: FileSpreadsheet },
+      { title: "Placement Dean", url: "/staff/placement-dean", icon: Briefcase },
+    ],
+  },
+];
+
 export function navigationForUser(user: UserPermissionContext, currentPath?: string): NavSection[] {
   // Path-based Dean portfolio navigation matching (guarantees ONLY that dean's sidebar is shown)
   if (currentPath) {
@@ -371,6 +445,11 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
     if (currentPath.startsWith("/staff/finance-dean")) return FINANCE_NAVIGATION;
     if (currentPath.startsWith("/staff/examination-dean")) return EXAMINATION_NAVIGATION;
     if (currentPath.startsWith("/staff/placement-dean")) return PLACEMENT_NAVIGATION;
+  }
+
+  // Super Admin Navigation
+  if (user.role === "super-admin" || user.role === "super_admin") {
+    return SUPER_ADMIN_NAVIGATION;
   }
 
   // If user has isExamController (Officer), return the exact sidebar configurations
