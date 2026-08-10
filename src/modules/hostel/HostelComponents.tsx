@@ -36,6 +36,7 @@ import {
   Lock,
   Printer,
   X,
+  HeartPulse,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -86,8 +87,8 @@ const BLOCKS = ["All Blocks", "Block A (Boys)", "Block B (Girls)", "Block C (PG 
 
 export function HostelModuleView() {
   const location = useLocation();
-  const searchParams = location.search as any;
-  const tabFromUrl = searchParams?.tab;
+  const searchObj = (location.search || {}) as { tab?: string };
+  const tabFromUrl = typeof location.search === "string" ? new URLSearchParams(location.search).get("tab") : searchObj.tab;
   const [blocks] = useState<HostelBlockInfo[]>(INITIAL_BLOCKS);
   const [rooms, setRooms] = useState<HostelRoom[]>(INITIAL_ROOMS);
   const [residents, setResidents] = useState<ResidentStudent[]>(INITIAL_RESIDENTS);
@@ -247,8 +248,8 @@ export function HostelModuleView() {
           </div>
         </div>
 
-        {/* Action Buttons - Top Right Corner */}
-        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
+        {/* Action Buttons - Executive Governance */}
+        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto flex-wrap">
           <Button variant="outline" size="sm" onClick={() => loadData(false)} disabled={loading} className="h-9 gap-2 text-xs font-medium">
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
           </Button>

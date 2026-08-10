@@ -511,12 +511,12 @@ export async function fetchHostelRooms(): Promise<HostelRoom[]> {
   return INITIAL_ROOMS;
 }
 
-export async function fetchHostelResidents(): Promise<ResidentStudent[]> {
+export async function fetchHostelResidents(): Promise<EnhancedResidentStudent[]> {
   try {
     const res = await api.get("/api/hostel/residents");
     if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
   } catch {}
-  return INITIAL_RESIDENTS;
+  return ENHANCED_RESIDENTS;
 }
 
 export async function fetchGatePasses(): Promise<GatePassRequest[]> {

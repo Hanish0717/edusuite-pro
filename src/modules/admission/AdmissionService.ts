@@ -28,7 +28,7 @@ export interface ConvenerQuotaDetails {
   counselingPhase: "Phase 1" | "Phase 2" | "Final Phase" | "Spot Admission";
   reservationVerified: boolean;
   isGovtFeeReimbursementEligible: boolean;
-  reimbursementScheme?: "AP Jagananna Vidya Deevena" | "Telangana ePASS" | "N/A";
+  reimbursementScheme?: "AP Jagananna Vidya Deevena" | "Telangana ePASS" | "N/A" | undefined;
 }
 
 export interface ManagementQuotaDetails {
@@ -40,22 +40,22 @@ export interface ManagementQuotaDetails {
   boardName: string;
   passingYear: number;
   preferredBranch: string;
-  secondaryBranchPref?: string;
-  tertiaryBranchPref?: string;
-  interviewStatus?: "Not Required" | "Scheduled" | "Completed / Cleared";
+  secondaryBranchPref?: string | undefined;
+  tertiaryBranchPref?: string | undefined;
+  interviewStatus?: "Not Required" | "Scheduled" | "Completed / Cleared" | undefined;
   seatAvailabilityStatus: "Available" | "Waitlisted" | "Allocated";
-  feeQuotationGiven?: number;
+  feeQuotationGiven?: number | undefined;
 }
 
 export interface DocumentVerificationItem {
   name: string;
   required: boolean;
   status: GranularDocumentStatus;
-  uploadedFileName?: string;
-  uploadedTime?: string;
-  verifiedAt?: string;
-  verifiedBy?: string;
-  remarks?: string;
+  uploadedFileName?: string | undefined;
+  uploadedTime?: string | undefined;
+  verifiedAt?: string | undefined;
+  verifiedBy?: string | undefined;
+  remarks?: string | undefined;
 }
 
 export interface FeeBreakdown {
@@ -69,11 +69,11 @@ export interface FeeBreakdown {
   pendingAmount: number;
   paymentStatus: "Unpaid" | "Partial" | "Paid";
   seatLockStatus: "Unreserved" | "Seat Reserved" | "Seat Locked";
-  paymentRef?: string;
-  paymentMethod?: "Online UPI" | "Net Banking" | "Bank Challan / DD" | "Cash";
-  paymentDate?: string;
-  receiptNumber?: string;
-  qrVerificationCode?: string;
+  paymentRef?: string | undefined;
+  paymentMethod?: "Online UPI" | "Net Banking" | "Bank Challan / DD" | "Cash" | undefined;
+  paymentDate?: string | undefined;
+  receiptNumber?: string | undefined;
+  qrVerificationCode?: string | undefined;
 }
 
 export interface AuditTrailItem {
@@ -81,7 +81,7 @@ export interface AuditTrailItem {
   officerName: string;
   action: string;
   timestamp: string;
-  remarks?: string;
+  remarks?: string | undefined;
 }
 
 export interface ERPActivationModuleStatus {
@@ -139,21 +139,21 @@ export interface AdmissionApplication {
   name: string;
   email: string;
   phone: string;
-  dob?: string;
-  gender?: "Male" | "Female" | "Other";
-  address?: string;
-  aadhaarNumber?: string;
+  dob?: string | undefined;
+  gender?: "Male" | "Female" | "Other" | undefined;
+  address?: string | undefined;
+  aadhaarNumber?: string | undefined;
   targetBranch: string;
-  branchChoices?: string[];
+  branchChoices?: string[] | undefined;
   status: AdmissionLifecycleStage;
   currentWorkflowStep: number; // 1 to 9
   dateSubmitted: string;
-  admissionNumber?: string;
-  waitlistPosition?: number;
+  admissionNumber?: string | undefined;
+  waitlistPosition?: number | undefined;
   
   // Payloads
-  convenerDetails?: ConvenerQuotaDetails;
-  managementDetails?: ManagementQuotaDetails;
+  convenerDetails?: ConvenerQuotaDetails | undefined;
+  managementDetails?: ManagementQuotaDetails | undefined;
   
   // Verification and Financials
   documents: Record<string, DocumentVerificationItem>;
@@ -161,10 +161,10 @@ export interface AdmissionApplication {
 
   // Audit Logs & ERP Connections
   auditTrail: AuditTrailItem[];
-  provisionedStudent?: Provisioned10ModulesDetails;
-  notificationsLog?: NotificationLog[];
-  remarks?: string;
-  qrVerificationCode?: string;
+  provisionedStudent?: Provisioned10ModulesDetails | undefined;
+  notificationsLog?: NotificationLog[] | undefined;
+  remarks?: string | undefined;
+  qrVerificationCode?: string | undefined;
 }
 
 export interface SuperAdminAdmissionSettings {
@@ -434,7 +434,7 @@ export async function submitCategoryAConvenerApplication(payload: {
     targetBranch: payload.allottedBranch,
     status: "Application Submitted",
     currentWorkflowStep: 1,
-    dateSubmitted: new Date().toISOString().split("T")[0],
+    dateSubmitted: new Date().toISOString().split("T")[0] || "",
     qrVerificationCode: qrCode,
     convenerDetails: {
       eamcetHallTicketNo: payload.eamcetHallTicketNo,
@@ -528,7 +528,7 @@ export async function submitCategoryBManagementApplication(payload: {
     branchChoices: [payload.preferredBranch, payload.secondaryBranchPref, payload.tertiaryBranchPref].filter(Boolean) as string[],
     status: "Application Submitted",
     currentWorkflowStep: 1,
-    dateSubmitted: new Date().toISOString().split("T")[0],
+    dateSubmitted: new Date().toISOString().split("T")[0] || "",
     qrVerificationCode: qrCode,
     managementDetails: {
       fatherName: payload.fatherName,

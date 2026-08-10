@@ -35,8 +35,7 @@ const TOTAL_HOSTEL_STUDENTS = 420;
 
 // Helper: Check if cutoff time for a given meal has passed for a given date string
 export function isMealCutoffPassed(mealType: MealType, dateStr: string): boolean {
-  const now = new Date();
-  const todayStr = now.toISOString().split("T")[0];
+  const todayStr = now.toISOString().split("T")[0] || "";
 
   // If date is in the past, cutoff is passed
   if (dateStr < todayStr) return true;
@@ -69,7 +68,7 @@ export function getAllStoredConfirmations(): MealConfirmationRecord[] {
 
 // Initial mock dataset for Warden Dashboard forecasting
 function getInitialMockConfirmations(): MealConfirmationRecord[] {
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = new Date().toISOString().split("T")[0] || "";
 
   const records: MealConfirmationRecord[] = [
     {
@@ -155,8 +154,8 @@ export function saveStudentMealConfirmation(
   );
 
   // If already existing and locked, return without changing
-  if (existingIdx >= 0 && all[existingIdx].isLocked) {
-    return all[existingIdx];
+  if (existingIdx >= 0 && all[existingIdx]?.isLocked) {
+    return all[existingIdx]!;
   }
 
   const updatedRecord: MealConfirmationRecord = {
