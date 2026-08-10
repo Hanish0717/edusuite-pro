@@ -35,7 +35,6 @@ interface RoleContextValue {
     featureFlags: Record<string, boolean>;
     personaName: string;
     personaMeta: string;
-    email?: string;
   };
   flags: string[];
   setFlags: (flags: string[]) => void;
@@ -159,27 +158,6 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
   const profile = useMemo(() => {
     const baseProfile = roleProfiles[role];
-    const computedName =
-      role === "external-user" && externalPersona
-        ? externalPersona === "recruiter"
-          ? (typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterName") ? localStorage.getItem("loggedInRecruiterName")! : "David Miller")
-          : externalPersona === "applicant"
-            ? "John Doe"
-            : externalPersona === "alumni"
-              ? "Sarah Jenkins"
-              : externalPersona === "vendor"
-                ? "Robert Chen"
-                : "Prof. Alan Turing"
-        : baseProfile.personaName;
-
-    const computedInitials = computedName
-      .split(" ")
-      .map((n) => n[0])
-      .filter(Boolean)
-      .join("")
-      .toUpperCase()
-      .slice(0, 2) || "HR";
-
     return {
       ...baseProfile,
       role,
@@ -187,12 +165,23 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       department,
       externalPersona,
       featureFlags,
-      personaName: computedName,
-      initials: computedInitials,
+      // Dynamic adjustments based on active settings
+      personaName:
+        role === "external-user" && externalPersona
+          ? externalPersona === "recruiter"
+            ? "David Miller"
+            : externalPersona === "applicant"
+              ? "John Doe"
+              : externalPersona === "alumni"
+                ? "Sarah Jenkins"
+                : externalPersona === "vendor"
+                  ? "Robert Chen"
+                  : "Prof. Alan Turing"
+          : baseProfile.personaName,
       personaMeta:
         role === "external-user" && externalPersona
           ? externalPersona === "recruiter"
-            ? `Campus Recruiter (${(typeof window !== "undefined" && localStorage.getItem("loggedInRecruiterCompany")) || "Google"})`
+            ? "Campus Recruiter (Google)"
             : externalPersona === "applicant"
               ? "B.Tech Admissions Applicant"
               : externalPersona === "alumni"
@@ -200,8 +189,8 @@ export function RoleProvider({ children }: { children: ReactNode }) {
                 : externalPersona === "vendor"
                   ? "Cafeteria Services Vendor"
                   : "Guest Speaker / Professor"
-          : role === "staff"
-            ? "Placement Officer - Training & Placement Cell"
+          : role === "staff" && department
+            ? `Faculty - ${department} Department`
             : baseProfile.personaMeta,
     };
   }, [role, flags, department, externalPersona, featureFlags]);

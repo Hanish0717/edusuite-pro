@@ -1,13 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import {
   SHARED_ASSESSMENT_REQUESTS,
   getAllStudentSubmissions,
   updateStudentSubmissionRecord,
   type StudentSubmissionRecord,
-  SHARED_DRIVE_APPLICATION_FORMS,
-  SHARED_STUDENT_DRIVE_APPLICATIONS,
-  type DriveApplicationForm,
-  type StudentDriveApplication,
 } from "@/lib/shared-assessment-store";
 
 import {
@@ -328,39 +324,10 @@ const PIPELINE_STAGES: RequestStatus[] = [
 
 export function AssessmentRequestsApprovalWorkspace() {
   const [requests, setRequests] = useState<AssessmentRequestRecord[]>(SHARED_ASSESSMENT_REQUESTS);
-  const [appForms, setAppForms] = useState<DriveApplicationForm[]>(SHARED_DRIVE_APPLICATION_FORMS);
-  const [viewingApplicantsForm, setViewingApplicantsForm] = useState<DriveApplicationForm | null>(null);
-  const [isViewApplicantsModalOpen, setIsViewApplicantsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [companyFilter, setCompanyFilter] = useState("All");
-  const [roleFilter, setRoleFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [stageFilter, setStageFilter] = useState<string>("All");
-
-  // Dynamic list of all Companies across requests, application forms & stored scorecards
-  const allAvailableCompanies = useMemo(() => {
-    const set = new Set<string>();
-    requests.forEach((r) => r.company && set.add(r.company));
-    appForms.forEach((f) => f.company && set.add(f.company));
-    ["Google Cloud India", "Infosys Limited", "TCS (Tata Consultancy Services)", "Microsoft India", "Accenture Solutions", "Wipro Technologies", "Qualcomm India", "Amazon AWS"].forEach((c) => set.add(c));
-    return Array.from(set).sort();
-  }, [requests, appForms]);
-
-  // Dynamic list of all Job Roles across requests, application forms & stored scorecards
-  const allAvailableRoles = useMemo(() => {
-    const set = new Set<string>();
-    appForms.forEach((f) => f.role && set.add(f.role));
-    requests.forEach((r) => r.name && set.add(r.name));
-    set.add("Software Engineer I (Cloud Solutions)");
-    set.add("Specialist Programmer (SP)");
-    set.add("Digital Systems Engineer (DSE)");
-    set.add("Systems Engineer (SE)");
-    set.add("TCS Ninja");
-    set.add("TCS Digital");
-    set.add("Cloud Data Engineer");
-    set.add("DevOps Engineer");
-    return Array.from(set).sort();
-  }, [requests, appForms]);
 
   // Selected Request Drawer
   const [selectedReq, setSelectedReq] = useState<AssessmentRequestRecord | null>(null);
@@ -418,58 +385,8 @@ export function AssessmentRequestsApprovalWorkspace() {
   const [dispatchMinCgpa, setDispatchMinCgpa] = useState("7.5");
   const [sharedAssessmentIds, setSharedAssessmentIds] = useState<Record<string, boolean>>({});
 
+  // Student Submissions State & Edit Modal State
   const [studentSubmissionsList, setStudentSubmissionsList] = useState<StudentSubmissionRecord[]>(() => getAllStudentSubmissions());
-
-  const filteredAppForms = useMemo(() => {
-    return appForms.filter((form) => {
-      const q = searchQuery.toLowerCase();
-      const matchesSearch =
-        !searchQuery ||
-        form.title.toLowerCase().includes(q) ||
-        form.id.toLowerCase().includes(q) ||
-        form.company.toLowerCase().includes(q) ||
-        form.role.toLowerCase().includes(q);
-      const matchesCompany = companyFilter === "All" || form.company === companyFilter;
-      const matchesRole = roleFilter === "All" || form.role === roleFilter;
-      return matchesSearch && matchesCompany && matchesRole;
-    });
-  }, [appForms, searchQuery, companyFilter, roleFilter]);
-
-  const filteredRequests = useMemo(() => {
-    return requests.filter((r) => {
-      const q = searchQuery.toLowerCase();
-      const matchesSearch =
-        !searchQuery ||
-        r.name.toLowerCase().includes(q) ||
-        r.assessmentId.toLowerCase().includes(q) ||
-        r.company.toLowerCase().includes(q) ||
-        r.recruiterName.toLowerCase().includes(q);
-      const matchesCompany = companyFilter === "All" || r.company === companyFilter;
-      const matchesRole = roleFilter === "All" || r.name.toLowerCase().includes(roleFilter.toLowerCase());
-      const matchesPriority = priorityFilter === "All" || r.priority === priorityFilter;
-      const matchesStage = stageFilter === "All" || r.status === stageFilter;
-      return matchesSearch && matchesCompany && matchesRole && matchesPriority && matchesStage;
-    });
-  }, [requests, searchQuery, companyFilter, roleFilter, priorityFilter, stageFilter]);
-
-  const filteredStudentSubmissions = useMemo(() => {
-    return studentSubmissionsList.filter((sub) => {
-      const q = searchQuery.toLowerCase();
-      const comp = sub.company || (sub.assessmentTitle.includes("Infosys") ? "Infosys Limited" : sub.assessmentTitle.includes("Microsoft") ? "Microsoft India" : "Google Cloud India");
-      const role = sub.role || (sub.assessmentTitle.includes("SP") ? "Specialist Programmer (SP)" : sub.assessmentTitle.includes("DSE") ? "Digital Systems Engineer (DSE)" : "Software Engineer I (Cloud Solutions)");
-      const matchesSearch =
-        !searchQuery ||
-        sub.studentName.toLowerCase().includes(q) ||
-        sub.rollNo.toLowerCase().includes(q) ||
-        sub.studentEmail.toLowerCase().includes(q) ||
-        sub.assessmentTitle.toLowerCase().includes(q) ||
-        comp.toLowerCase().includes(q) ||
-        role.toLowerCase().includes(q);
-      const matchesCompany = companyFilter === "All" || comp === companyFilter;
-      const matchesRole = roleFilter === "All" || role === roleFilter || sub.assessmentTitle.toLowerCase().includes(roleFilter.toLowerCase());
-      return matchesSearch && matchesCompany && matchesRole;
-    });
-  }, [studentSubmissionsList, searchQuery, companyFilter, roleFilter]);
   const [editingSub, setEditingSub] = useState<StudentSubmissionRecord | null>(null);
   const [isEditSubModalOpen, setIsEditSubModalOpen] = useState(false);
   const [editPassStatus, setEditPassStatus] = useState<boolean>(true);
@@ -633,7 +550,19 @@ export function AssessmentRequestsApprovalWorkspace() {
     toast.success("Bulk approved all pending recruiter assessment requests!");
   };
 
+  const filteredRequests = requests.filter((r) => {
+    const matchesSearch =
+      r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.assessmentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.recruiterName.toLowerCase().includes(searchQuery.toLowerCase());
 
+    const matchesCompany = companyFilter === "All" || r.company === companyFilter;
+    const matchesPriority = priorityFilter === "All" || r.priority === priorityFilter;
+    const matchesStage = stageFilter === "All" || r.status === stageFilter;
+
+    return matchesSearch && matchesCompany && matchesPriority && matchesStage;
+  });
 
   return (
     <div className="space-y-6 animate-fade-up">
@@ -752,31 +681,18 @@ export function AssessmentRequestsApprovalWorkspace() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            {/* Company Filter Dropdown */}
             <select
               value={companyFilter}
               onChange={(e) => setCompanyFilter(e.target.value)}
-              className="h-10 rounded-xl border border-input bg-card px-3 text-xs font-bold text-foreground cursor-pointer"
+              className="h-10 rounded-xl border border-input bg-card px-3 text-xs font-semibold text-foreground cursor-pointer"
             >
-              <option value="All">All Companies ({allAvailableCompanies.length})</option>
-              {allAvailableCompanies.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
+              <option value="All">All Companies</option>
+              <option value="Google Cloud India">Google Cloud India</option>
+              <option value="Microsoft India">Microsoft India</option>
+              <option value="Amazon AWS">Amazon AWS</option>
+              <option value="Qualcomm India">Qualcomm India</option>
             </select>
 
-            {/* Job Role Filter Dropdown */}
-            <select
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="h-10 rounded-xl border border-input bg-card px-3 text-xs font-bold text-foreground cursor-pointer max-w-[200px] truncate"
-            >
-              <option value="All">All Job Roles ({allAvailableRoles.length})</option>
-              {allAvailableRoles.map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-
-            {/* Priority Filter Dropdown */}
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
@@ -787,117 +703,9 @@ export function AssessmentRequestsApprovalWorkspace() {
               <option value="Medium">Medium</option>
               <option value="Standard">Standard</option>
             </select>
-
-            {(companyFilter !== "All" || roleFilter !== "All" || priorityFilter !== "All" || searchQuery) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setCompanyFilter("All");
-                  setRoleFilter("All");
-                  setPriorityFilter("All");
-                  setSearchQuery("");
-                  setStageFilter("All");
-                  toast.info("Reset all company, role & search filters!");
-                }}
-                className="h-10 text-xs rounded-xl text-blue-600 font-bold cursor-pointer hover:bg-blue-50"
-              >
-                <RotateCcw className="size-3.5 mr-1" /> Reset Filters
-              </Button>
-            )}
           </div>
         </div>
       </div>
-
-      {/* 4.5 RECRUITER DRIVE APPLICATION FORMS QUEUE */}
-      <Panel title="Student Application Forms Queue (Recruiter Placement Registrations)">
-        <div className="overflow-x-auto pt-1">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-border bg-muted/30 text-muted-foreground font-mono uppercase text-[0.65rem]">
-                <th className="p-3">Drive Title & ID</th>
-                <th className="p-3">Company & Role</th>
-                <th className="p-3">CTC</th>
-                <th className="p-3">Registration Deadline</th>
-                <th className="p-3 text-center">Applicants Registered</th>
-                <th className="p-3">Status</th>
-                <th className="p-3 text-right">TPO Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/50 font-medium">
-              {filteredAppForms.map((form) => {
-                const filledApps = SHARED_STUDENT_DRIVE_APPLICATIONS.filter((a) => a.formId === form.id);
-                return (
-                  <tr key={form.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="p-3">
-                      <p className="font-bold text-foreground text-xs">{form.title}</p>
-                      <span className="text-[0.65rem] font-mono text-primary font-bold">{form.id}</span>
-                    </td>
-                    <td className="p-3">
-                      <p className="font-bold text-foreground">{form.company}</p>
-                      <span className="text-[0.68rem] text-muted-foreground">{form.role}</span>
-                    </td>
-                    <td className="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                      {form.ctc}
-                    </td>
-                    <td className="p-3 font-mono text-[0.68rem] text-slate-500">
-                      {form.deadlineDate}
-                    </td>
-                    <td className="p-3 text-center">
-                      <Badge variant="outline" className="bg-blue-500/10 text-blue-700 dark:text-blue-400 font-mono font-bold text-xs">
-                        {filledApps.length} Students
-                      </Badge>
-                    </td>
-                    <td className="p-3">
-                      <Badge className={form.status === "Dispatched to Students" ? "bg-emerald-600 text-white" : "bg-amber-600 text-white"}>
-                        {form.status}
-                      </Badge>
-                    </td>
-                    <td className="p-3 text-right space-x-1.5">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          const origin = typeof window !== "undefined" ? window.location.origin : "";
-                          copyToClipboard(`${origin}/drive/apply?id=${form.id}`, "Student Registration Form Link");
-                        }}
-                        className="h-7 text-[0.65rem] rounded-lg cursor-pointer border-blue-300 text-blue-600 font-bold"
-                      >
-                        <Copy className="size-3 mr-1" /> Copy Form Link
-                      </Button>
-
-                      {form.status !== "Dispatched to Students" && (
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            setAppForms((prev) => prev.map((f) => f.id === form.id ? { ...f, status: "Dispatched to Students" } : f));
-                            toast.success(`Dispatched application link /drive/apply?id=${form.id} to all eligible students!`);
-                          }}
-                          className="h-7 text-[0.65rem] rounded-lg cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
-                        >
-                          <Send className="size-3 mr-1" /> Dispatch Link to Students
-                        </Button>
-                      )}
-
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => {
-                          setViewingApplicantsForm(form);
-                          setIsViewApplicantsModalOpen(true);
-                        }}
-                        className="h-7 text-[0.65rem] rounded-lg cursor-pointer font-bold"
-                      >
-                        <Eye className="size-3 mr-1" /> View Applicants ({filledApps.length})
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </Panel>
 
       {/* 5. REQUEST DIRECTORY TABLE */}
       <Panel title="Recruiter Assessment Requests Queue">
@@ -1008,9 +816,8 @@ export function AssessmentRequestsApprovalWorkspace() {
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
                           copyToClipboard(
-                            `${origin}/exam/take?id=${req.assessmentId}`,
+                            `http://192.168.1.122:8082/exam/take?id=${req.assessmentId}`,
                             `exam link for ${req.name}`
                           );
                         }}
@@ -1098,7 +905,6 @@ export function AssessmentRequestsApprovalWorkspace() {
               <thead>
                 <tr className="border-b border-border bg-muted/40 text-muted-foreground font-mono uppercase text-[0.65rem]">
                   <th className="p-3">Candidate / Roll No</th>
-                  <th className="p-3">Company & Job Role</th>
                   <th className="p-3">College Email</th>
                   <th className="p-3">Dept</th>
                   <th className="p-3">Assessment Title</th>
@@ -1110,22 +916,15 @@ export function AssessmentRequestsApprovalWorkspace() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/50 font-mono text-[0.72rem]">
-                {filteredStudentSubmissions.map((sub) => {
-                  const compName = sub.company || (sub.assessmentTitle.includes("Infosys") ? "Infosys Limited" : sub.assessmentTitle.includes("Microsoft") ? "Microsoft India" : "Google Cloud India");
-                  const roleName = sub.role || (sub.assessmentTitle.includes("SP") ? "Specialist Programmer (SP)" : sub.assessmentTitle.includes("DSE") ? "Digital Systems Engineer (DSE)" : "Software Engineer I (Cloud Solutions)");
-                  return (
-                    <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
-                      <td className="p-3 font-sans font-bold text-foreground">{sub.studentName} ({sub.rollNo})</td>
-                      <td className="p-3 font-sans">
-                        <p className="font-bold text-foreground text-xs">{compName}</p>
-                        <span className="text-[0.68rem] text-muted-foreground font-mono">{roleName}</span>
-                      </td>
-                      <td className="p-3 text-blue-600">{sub.studentEmail}</td>
-                      <td className="p-3 text-muted-foreground font-bold">{sub.department}</td>
-                      <td className="p-3 font-sans max-w-xs truncate">{sub.assessmentTitle}</td>
-                      <td className="p-3 font-bold text-foreground">{sub.mcqScore} / {sub.mcqTotal}</td>
-                      <td className="p-3 font-bold text-blue-600">{sub.codingScore} / {sub.codingTotal}</td>
-                      <td className="p-3 font-bold text-emerald-600">{sub.totalPercentage}%</td>
+                {studentSubmissionsList.map((sub) => (
+                  <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
+                    <td className="p-3 font-sans font-bold text-foreground">{sub.studentName} ({sub.rollNo})</td>
+                    <td className="p-3 text-blue-600">{sub.studentEmail}</td>
+                    <td className="p-3 text-muted-foreground font-bold">{sub.department}</td>
+                    <td className="p-3 font-sans max-w-xs truncate">{sub.assessmentTitle}</td>
+                    <td className="p-3 font-bold text-foreground">{sub.mcqScore} / {sub.mcqTotal}</td>
+                    <td className="p-3 font-bold text-purple-600">{sub.codingScore} / {sub.codingTotal}</td>
+                    <td className="p-3 font-bold text-emerald-600">{sub.totalPercentage}%</td>
                     <td className="p-3">
                       <div className="space-y-1">
                         <button
@@ -1185,8 +984,7 @@ export function AssessmentRequestsApprovalWorkspace() {
                       </div>
                     </td>
                   </tr>
-                );
-              })}
+                ))}
               </tbody>
             </table>
           </div>
@@ -1267,16 +1065,13 @@ export function AssessmentRequestsApprovalWorkspace() {
                       <Badge className="bg-emerald-600 text-white text-[0.62rem]">Active Test Link</Badge>
                     </div>
                     <div className="flex items-center gap-2 p-2 rounded-xl bg-background border font-mono text-xs text-blue-600">
-                      <a href={`/exam/take?id=${selectedReq.assessmentId}`} target="_blank" rel="noreferrer" className="truncate underline hover:text-blue-800">
-                        {(typeof window !== "undefined" ? window.location.origin : "") + `/exam/take?id=${selectedReq.assessmentId}`}
-                      </a>
+                      <span className="truncate">http://192.168.1.122:8082/exam/take?id={selectedReq.assessmentId}</span>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
                           copyToClipboard(
-                            `${origin}/exam/take?id=${selectedReq.assessmentId}`,
+                            `http://192.168.1.122:8082/exam/take?id=${selectedReq.assessmentId}`,
                             "Student Exam URL"
                           );
                         }}
@@ -1466,9 +1261,7 @@ export function AssessmentRequestsApprovalWorkspace() {
               <div className="p-3.5 rounded-xl bg-white dark:bg-card border border-border/80 text-foreground font-mono text-[0.68rem] space-y-2 shadow-2xs">
                 <p className="font-bold text-emerald-600 dark:text-emerald-400">📨 Email Preview Dispatched to Students:</p>
                 <p className="text-muted-foreground font-sans">"Dear Student (e.g. 23341a4229@college.edu.in), you are invited to attempt the official online assessment '{dispatchReq.name}'. Please use your student college email ID to log in."</p>
-                <a href={`/exam/take?id=${dispatchReq.assessmentId}`} target="_blank" rel="noreferrer" className="text-blue-600 dark:text-blue-400 underline font-bold block truncate">
-                  {(typeof window !== "undefined" ? window.location.origin : "") + `/exam/take?id=${dispatchReq.assessmentId}`}
-                </a>
+                <p className="text-blue-600 dark:text-blue-400 underline font-bold">http://192.168.1.122:8082/exam/take?id={dispatchReq.assessmentId}</p>
               </div>
 
               <DialogFooter className="pt-2 gap-2">
@@ -1814,101 +1607,6 @@ export function AssessmentRequestsApprovalWorkspace() {
               </Button>
             </DialogFooter>
           </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* VIEW REGISTERED APPLICANTS MODAL */}
-      <Dialog open={isViewApplicantsModalOpen} onOpenChange={setIsViewApplicantsModalOpen}>
-        <DialogContent className="sm:max-w-4xl max-h-[85vh] overflow-y-auto rounded-3xl">
-          <DialogHeader className="pb-3 border-b border-border">
-            <div className="flex items-center gap-3">
-              <div className="size-11 rounded-2xl bg-blue-600 text-white grid place-items-center shadow-md">
-                <Users className="size-6" />
-              </div>
-              <div>
-                <DialogTitle className="font-extrabold text-base">
-                  Registered Applicants ({viewingApplicantsForm ? SHARED_STUDENT_DRIVE_APPLICATIONS.filter(a => a.formId === viewingApplicantsForm.id).length : 0})
-                </DialogTitle>
-                <DialogDescription className="text-xs font-mono">
-                  {viewingApplicantsForm?.title} • {viewingApplicantsForm?.company}
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-
-          <div className="space-y-4 pt-2">
-            {viewingApplicantsForm && (
-              <div className="p-3 rounded-2xl bg-blue-50 border border-blue-200 text-xs font-mono text-blue-900 flex items-center justify-between">
-                <span>Registration Link: <strong>{typeof window !== "undefined" ? window.location.origin : ""}/drive/apply?id={viewingApplicantsForm.id}</strong></span>
-                <Badge className="bg-blue-600 text-white text-[0.65rem]">Active Link</Badge>
-              </div>
-            )}
-
-            <div className="space-y-3">
-              {viewingApplicantsForm &&
-                SHARED_STUDENT_DRIVE_APPLICATIONS.filter((a) => a.formId === viewingApplicantsForm.id).map((app) => (
-                  <div key={app.id} className="p-4 rounded-2xl bg-card border border-border/80 space-y-3 shadow-2xs">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <img src={app.passportPhotoUrl} alt={app.studentName} className="size-12 rounded-full object-cover border-2 border-blue-500 shadow-xs" />
-                        <div>
-                          <p className="font-bold text-sm text-foreground">{app.studentName}</p>
-                          <p className="text-xs font-mono text-primary font-semibold">{app.rollNo} ({app.department}) • {app.studentEmail}</p>
-                          <p className="text-[0.68rem] text-muted-foreground font-mono">Phone: {app.phone} • Submitted: {app.submittedAt}</p>
-                        </div>
-                      </div>
-
-                      <Badge className="bg-emerald-600 text-white font-mono text-[0.65rem]">
-                        ✓ {app.qualificationStream}
-                      </Badge>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono bg-muted/40 p-3 rounded-xl">
-                      {/* 10TH DETAILS */}
-                      <div className="space-y-1">
-                        <span className="text-muted-foreground block text-[0.65rem] uppercase tracking-wider font-bold text-blue-600">10th (High School)</span>
-                        <p className="font-bold text-foreground">{app.tenthSchoolName}</p>
-                        <p className="text-[0.68rem] text-muted-foreground">Board: {app.tenthBoard} • Marks: <strong className="text-emerald-600">{app.tenthPercentage}%</strong> ({app.tenthYearOfPassing})</p>
-                      </div>
-
-                      {/* INTER OR DIPLOMA DETAILS */}
-                      <div className="space-y-1">
-                        <span className="text-muted-foreground block text-[0.65rem] uppercase tracking-wider font-bold text-purple-600">{app.qualificationStream} Record</span>
-                        {app.qualificationStream === "Intermediate" ? (
-                          <>
-                            <p className="font-bold text-foreground">{app.interCollegeName}</p>
-                            <p className="text-[0.68rem] text-muted-foreground">Board: {app.interBoard} • Marks: <strong className="text-purple-600">{app.interPercentage}%</strong> ({app.interYearOfPassing})</p>
-                          </>
-                        ) : (
-                          <>
-                            <p className="font-bold text-foreground">{app.diplomaCollegeName}</p>
-                            <p className="text-[0.68rem] text-muted-foreground">Branch: {app.diplomaBranch} • Marks: <strong className="text-purple-600">{app.diplomaPercentage}%</strong> ({app.diplomaYearOfPassing})</p>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-1 border-t text-xs font-mono">
-                      <span className="text-muted-foreground">Attached Document: <strong>{app.resumeFileName}</strong></span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => toast.info(`Viewing PDF Resume: ${app.resumeFileName}`)}
-                        className="h-7 text-xs rounded-lg cursor-pointer gap-1"
-                      >
-                        <FileText className="size-3 text-blue-600" /> View Resume PDF
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-
-          <DialogFooter className="pt-3 border-t border-border">
-            <Button type="button" variant="outline" onClick={() => setIsViewApplicantsModalOpen(false)} className="rounded-xl text-xs">
-              Close Applicants Window
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

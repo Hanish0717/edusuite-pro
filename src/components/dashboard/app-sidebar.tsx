@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search, ChevronRight } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,10 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { navigationForUser } from "@/config/navigation";
@@ -29,7 +33,7 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const href = useRouterState({ select: (r) => r.location.href });
 
-  const sections = navigationForUser({ role, flags, department, externalPersona, featureFlags }, pathname)
+  const sections = navigationForUser({ role, flags, department, externalPersona, featureFlags })
     .map((section) => ({
       ...section,
       items: section.items.filter((item) =>
@@ -68,17 +72,16 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu className="space-y-0.5">
                 {section.items.map((item) => {
-                  const currentCleanPath = (pathname || "").split("?")[0] || "";
+                  const currentCleanPath = (pathname || "").split("?")[0] ?? "";
                   const hasQueryParam = item.url.includes("?");
-                  const itemCleanPath = (item.url || "").split("?")[0] || "";
-                  const itemSlug = itemCleanPath.replace(/^\//, "").split("/")[0] || "";
                   let isItemActive = false;
 
+                  const itemCleanPath = item.url.split("?")[0] ?? "";
+                  const itemSlug = item.url.split("/")[1] ?? "";
                   const isChildActive =
-                    item.children?.some((child) => {
-                      const childPath = (child.url || "").split("?")[0] || "";
-                      return currentCleanPath === childPath || (childPath !== "/" && currentCleanPath.startsWith(childPath));
-                    }) ?? false;
+                    item.children?.some(
+                      (child) => (child.url.split("?")[0] ?? "") === currentCleanPath
+                    ) ?? false;
 
                   if (hasQueryParam) {
                     isItemActive =
@@ -103,37 +106,34 @@ export function AppSidebar() {
                       >
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
-                            <button
-                              type="button"
-                              className={cn(
-                                "flex w-full items-center gap-3.5 px-3 py-1.5 text-[15px] font-normal leading-[24px] text-white bg-transparent hover:bg-white/[0.04] transition-colors duration-150 cursor-pointer border-0 shadow-none outline-none focus:outline-none rounded-none",
-                                isItemActive && "bg-white/[0.07] text-white"
-                              )}
+                            <SidebarMenuButton
+                              isActive={isItemActive}
+                              tooltip={item.title}
+                              className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
                             >
                               <item.icon className="size-5 shrink-0 text-white stroke-[1.75]" />
                               <span className="truncate">{item.title}</span>
                               <ChevronRight className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-90 text-[#7C88A5]" />
-                            </button>
+                            </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent className="transition-all duration-150 ease-in-out">
                             <div className="ml-4 border-l border-[#172242] pl-2 space-y-0.5 my-1">
                               {item.children.map((child) => {
-                                const childCleanPath = (child.url || "").split("?")[0] || "";
+                                const childCleanPath = child.url.split("?")[0] ?? "";
                                 const hasSubParam = child.url.includes("?");
                                 const isSubActive = hasSubParam
                                   ? href.includes(child.url) || (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard"))
                                   : currentCleanPath === childCleanPath || (childCleanPath !== "/" && currentCleanPath.startsWith(childCleanPath));
                                 return (
-                                  <Link
-                                    key={child.title}
-                                    to={child.url}
-                                    className={cn(
-                                      "flex w-full items-center px-3 py-1.5 text-[14px] font-normal leading-[24px] text-white bg-transparent hover:bg-white/[0.04] transition-colors duration-150 cursor-pointer border-0 shadow-none outline-none rounded-none",
-                                      isSubActive && "bg-white/[0.07] text-white"
-                                    )}
-                                  >
-                                    <span className="truncate">{child.title}</span>
-                                  </Link>
+                                  <SidebarMenuSubItem key={child.title}>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      isActive={isSubActive}
+                                      className="text-xs text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:font-bold data-[active=true]:text-[#4D78FF] data-[active=true]:bg-[#1A285D] rounded-[10px] px-3 py-1.5 transition-all duration-200"
+                                    >
+                                      <Link to={child.url as any}>{child.title}</Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
                                 );
                               })}
                             </div>
@@ -145,21 +145,22 @@ export function AppSidebar() {
 
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <Link
-                        to={item.url}
-                        className={cn(
-                          "flex w-full items-center gap-3.5 px-3 py-1.5 text-[15px] font-normal leading-[24px] text-white bg-transparent hover:bg-white/[0.04] transition-colors duration-150 cursor-pointer border-0 shadow-none outline-none rounded-none",
-                          isItemActive && "bg-white/[0.07] text-white"
-                        )}
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isItemActive}
+                        tooltip={item.title}
+                        className="h-10 px-3 rounded-[14px] text-[#F5F7FF] hover:bg-[#162B63] hover:text-white data-[active=true]:bg-[#1A285D] data-[active=true]:text-[#4D78FF] data-[active=true]:font-bold data-[active=true]:shadow-md data-[active=true]:shadow-[#4D78FF]/20 transition-all duration-200 cursor-pointer"
                       >
-                        <item.icon className="size-5 shrink-0 text-white stroke-[1.75]" />
-                        <span className="truncate">{item.title}</span>
-                        {item.badge && !collapsed && (
-                          <Badge className="ml-auto h-5 bg-white/20 px-1.5 text-[0.65rem] text-white font-medium rounded border-0">
-                            {item.badge}
-                          </Badge>
-                        )}
-                      </Link>
+                        <Link to={item.url}>
+                          <item.icon className="size-5 shrink-0 text-white stroke-[1.75]" />
+                          <span className="truncate">{item.title}</span>
+                          {item.badge && !collapsed && (
+                            <Badge className="ml-auto h-5 bg-white/20 px-1.5 text-[0.65rem] text-white font-medium rounded border-0">
+                              {item.badge}
+                            </Badge>
+                          )}
+                        </Link>
+                      </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
                 })}
