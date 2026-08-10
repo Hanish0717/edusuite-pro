@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StaffDashboard } from "@/components/dashboard/role/staff-dashboard";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { TransportModuleView } from "@/modules/transport";
 
 export const Route = createFileRoute("/transport/dashboard")({
-  head: () => ({
-    meta: [{ title: "Transport Dashboard — EduSuite Pro" }],
-  }),
-  component: StaffDashboard,
+  head: () => ({ meta: [{ title: "Transport Dashboard — EduSuite Pro" }] }),
+  component: () => (
+    <DashboardLayout>
+      <TransportModuleView />
+    </DashboardLayout>
+  ),
 });
