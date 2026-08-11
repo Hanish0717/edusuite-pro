@@ -51,7 +51,6 @@ import {
   Lock,
   Printer,
   X,
->>>>>>> origin/main
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -2810,3 +2809,15 @@ export function HostelSettingsView() {
   );
 }
 
+// Sub-route view aliases rendering the central HostelModuleView
+export const HostelBlocksView = HostelModuleView;
+export const HostelDeviceManagementView = HostelModuleView;
+export const HostelGuestBillingView = HostelModuleView;
+export const HostelLeavesSuspensionView = HostelModuleView;
+export const HostelLogHistoryView = HostelModuleView;
+export const HostelMaintenanceView = HostelModuleView;
+export const HostelMessManagementView = HostelModuleView;
+export const HostelOutingApprovalsView = HostelModuleView;
+export const HostelOutingLogHistoryView = HostelModuleView;
+export const HostelRoomsView = HostelModuleView;
+export const HostelUserManagementView = HostelModuleView;

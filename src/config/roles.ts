@@ -16,6 +16,7 @@ export type LoginRole =
   // Core staff roles
   | "staff"
   | "hod"
+  | "dean"
   | "faculty"
   | "student"
   | "parent"

@@ -30,3 +30,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Temporary scratch and backup folders
+scratch/
+src/librarian/backups/
