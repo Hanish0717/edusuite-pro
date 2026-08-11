@@ -27,9 +27,9 @@ function SubPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Enrolled Students" value={data.kpis.totalStudents.toLocaleString()} icon={Users} tone="info" />
-        <KpiCard label="Average Attendance" value={data.kpis.avgAttendance} icon={CalendarCheck} tone="success" />
-        <KpiCard label="Active Grievances" value={data.kpis.activeGrievances} icon={ShieldAlert} tone="warning" />
-        <KpiCard label="Scholarships" value={data.kpis.scholarshipsDisbursed} icon={Award} tone="purple" />
+        <KpiCard label="Average Attendance" value={data.kpis.overallAttendancePct} icon={CalendarCheck} tone="success" />
+        <KpiCard label="Active Grievances" value={String(data.kpis.activeGrievances)} icon={ShieldAlert} tone="warning" />
+        <KpiCard label="Scholarships" value={data.kpis.scholarshipsApproved} icon={Award} tone="purple" />
       </div>
 
       <Panel title="Student Profiles Directory" description="Searchable ERP records.">
