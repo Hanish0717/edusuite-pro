@@ -463,7 +463,9 @@ export function Topbar() {
                   {c.last ? (
                     <BreadcrumbPage>{c.label}</BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink href={c.href}>{c.label}</BreadcrumbLink>
+                    <BreadcrumbLink asChild>
+                      <Link to={c.href as any}>{c.label}</Link>
+                    </BreadcrumbLink>
                   )}
                 </BreadcrumbItem>
               </span>

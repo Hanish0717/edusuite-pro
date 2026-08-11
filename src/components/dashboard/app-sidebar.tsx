@@ -33,7 +33,7 @@ export function AppSidebar() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const href = useRouterState({ select: (r) => r.location.href });
 
-  const sections = navigationForUser({ role, flags, department, externalPersona, featureFlags })
+  const sections = navigationForUser({ role, flags, department, externalPersona, featureFlags }, pathname)
     .map((section) => ({
       ...section,
       items: section.items.filter((item) =>
@@ -73,27 +73,28 @@ export function AppSidebar() {
               <SidebarMenu className="space-y-0.5">
                 {section.items.map((item) => {
                   const currentCleanPath = (pathname || "").split("?")[0] ?? "";
+                  const itemCleanPath = (item.url || "").split("?")[0] ?? "";
                   const hasQueryParam = item.url.includes("?");
+
+                  const isChildActive =
+                    item.children?.some((child) => {
+                      const childCleanPath = (child.url || "").split("?")[0] ?? "";
+                      return child.url.includes("?")
+                        ? href === child.url || href.includes(child.url)
+                        : currentCleanPath === childCleanPath ||
+                            (childCleanPath !== "/" && currentCleanPath.startsWith(`${childCleanPath}/`));
+                    }) ?? false;
+
                   let isItemActive = false;
 
-                  const itemCleanPath = item.url.split("?")[0] ?? "";
-                  const itemSlug = item.url.split("/")[1] ?? "";
-                  const isChildActive =
-                    item.children?.some(
-                      (child) => (child.url.split("?")[0] ?? "") === currentCleanPath
-                    ) ?? false;
-
                   if (hasQueryParam) {
-                    isItemActive =
-                      href.includes(item.url) ||
-                      (!href.includes("?module=") && item.url.includes("module=dashboard"));
+                    isItemActive = href === item.url || href.includes(item.url);
                   } else if (itemCleanPath === "/dashboard" || itemCleanPath === "/") {
                     isItemActive = currentCleanPath === "/dashboard" || currentCleanPath === "/";
                   } else {
                     isItemActive =
                       currentCleanPath === itemCleanPath ||
-                      (itemCleanPath !== "/" && currentCleanPath.startsWith(itemCleanPath)) ||
-                      (itemSlug !== "" && currentCleanPath.includes(`/${itemSlug}`)) ||
+                      (itemCleanPath !== "/" && currentCleanPath.startsWith(`${itemCleanPath}/`)) ||
                       isChildActive;
                   }
 
@@ -119,11 +120,12 @@ export function AppSidebar() {
                           <CollapsibleContent className="transition-all duration-150 ease-in-out">
                             <div className="ml-4 border-l border-[#172242] pl-2 space-y-0.5 my-1">
                               {item.children.map((child) => {
-                                const childCleanPath = child.url.split("?")[0] ?? "";
+                                const childCleanPath = (child.url || "").split("?")[0] ?? "";
                                 const hasSubParam = child.url.includes("?");
                                 const isSubActive = hasSubParam
-                                  ? href.includes(child.url) || (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard"))
-                                  : currentCleanPath === childCleanPath || (childCleanPath !== "/" && currentCleanPath.startsWith(childCleanPath));
+                                  ? href === child.url || href.includes(child.url)
+                                  : currentCleanPath === childCleanPath ||
+                                    (childCleanPath !== "/" && currentCleanPath.startsWith(`${childCleanPath}/`));
                                 return (
                                   <SidebarMenuSubItem key={child.title}>
                                     <SidebarMenuSubButton
