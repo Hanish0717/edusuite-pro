@@ -101,8 +101,8 @@ function ScholarshipsPage() {
                       <td className="p-3 text-center font-mono font-bold text-emerald-600">{s.amount}</td>
                       <td className="p-3 font-mono text-muted-foreground">{s.appliedDate}</td>
                       <td className="p-3 text-center">
-                        <Badge className={s.status === "Approved" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-amber-500/10 text-amber-600 font-mono text-[0.65rem]"}>
-                          {s.status}
+                        <Badge className={s["status"] === "Approved" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-amber-500/10 text-amber-600 font-mono text-[0.65rem]"}>
+                          {s["status"]}
                         </Badge>
                       </td>
                     </tr>

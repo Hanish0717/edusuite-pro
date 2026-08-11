@@ -49,7 +49,7 @@ function SubPageComponent() {
       );
       const matchStatus =
         statusFilter === "all" ||
-        (item.status && String(item.status).toLowerCase().includes(statusFilter.toLowerCase()));
+        (item["status"] && String(item["status"]).toLowerCase().includes(statusFilter.toLowerCase()));
       return matchSearch && matchStatus;
     });
   }, [rawItems, search, statusFilter]);

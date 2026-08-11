@@ -99,7 +99,7 @@ function GrievancePage() {
   });
 
   const isCommitteeMember =
-    role === "super-admin" ||
+    (role as any) === "super-admin" || (role as any) === "super_admin" ||
     hasFlag("isDisciplinaryCommittee") ||
     hasFlag("isHod");
 

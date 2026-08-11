@@ -106,7 +106,10 @@ export function FinanceModuleView() {
 
   const handleCollectFeeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!feeForm.rollNo || !feeForm.studentName) return toast.error("Enter student roll number and name");
+    if (!feeForm.rollNo || !feeForm.studentName) {
+      toast.error("Enter student roll number and name");
+      return;
+    }
     const created = await collectFeePayment(feeForm);
     setTransactions((prev) => [created, ...prev]);
     setIsCollectFeeOpen(false);
@@ -115,7 +118,10 @@ export function FinanceModuleView() {
 
   const handleAddVoucherSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!voucherForm.description) return toast.error("Enter voucher description");
+    if (!voucherForm.description) {
+      toast.error("Enter voucher description");
+      return;
+    }
     const created = await createExpenseVoucher(voucherForm);
     setVouchers((prev) => [created, ...prev]);
     setIsAddVoucherOpen(false);

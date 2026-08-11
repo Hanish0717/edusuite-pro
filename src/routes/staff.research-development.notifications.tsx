@@ -623,7 +623,7 @@ function NotificationsPage() {
   const filteredMsgs = useMemo(() => {
     return currentList.filter((m) => {
       const matchSearch =
-        m.subject.toLowerCase().includes(search.toLowerCase()) ||
+        m["subject"].toLowerCase().includes(search.toLowerCase()) ||
         m.message.toLowerCase().includes(search.toLowerCase()) ||
         (m.sender && m.sender.toLowerCase().includes(search.toLowerCase())) ||
         (m.receiver && m.receiver.toLowerCase().includes(search.toLowerCase())) ||
@@ -634,7 +634,7 @@ function NotificationsPage() {
   }, [currentList, search, priorityFilter]);
 
   const unreadCount = useMemo(() => {
-    return receivedMsgs.filter((m) => m.status === "Unread").length;
+    return receivedMsgs.filter((m) => m["status"] === "Unread").length;
   }, [receivedMsgs]);
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -795,7 +795,7 @@ function NotificationsPage() {
                         {m.priority} Priority
                       </Badge>
                       <Badge className="bg-purple-500/10 text-purple-600 font-mono text-[0.65rem]">{m.category}</Badge>
-                      {tab === "received" && m.status === "Unread" && (
+                      {tab === "received" && m["status"] === "Unread" && (
                         <Badge className="bg-emerald-500 text-white font-mono text-[0.60rem]">New</Badge>
                       )}
                     </div>
@@ -803,7 +803,7 @@ function NotificationsPage() {
                   </div>
 
                   <h4 className="font-bold text-sm text-foreground flex items-center gap-2 pt-1">
-                    <Bell className="size-4 text-primary shrink-0" /> {m.subject}
+                    <Bell className="size-4 text-primary shrink-0" /> {m["subject"]}
                   </h4>
 
                   <p className="text-xs text-muted-foreground leading-relaxed pl-6">{m.message}</p>
@@ -824,7 +824,7 @@ function NotificationsPage() {
                         </span>
                       )}
 
-                      {tab === "received" && m.status === "Unread" && (
+                      {tab === "received" && m["status"] === "Unread" && (
                         <Button size="sm" variant="ghost" onClick={() => handleMarkAsRead(m.id)} className="h-6 text-[0.70rem] gap-1 px-2 cursor-pointer text-emerald-600">
                           <MailCheck className="size-3" /> Mark Read
                         </Button>

@@ -62,7 +62,7 @@ export const Route = createFileRoute("/settings")({
 
 function SettingsRedirect() {
   const { role, flags } = useRole();
-  if (role === "super-admin") {
+  if ((role as any) === "super-admin" || (role as any) === "super_admin") {
     return <Navigate to="/super-admin/settings" replace />;
   }
   const defaultRoute = getDefaultRouteForUser(role, flags);

@@ -90,8 +90,8 @@ function HostelManagementPage() {
                   <td className="p-3 font-bold">{h.issue}</td>
                   <td className="p-3 font-mono text-muted-foreground">{h.warden}</td>
                   <td className="p-3 text-center">
-                    <Badge className={h.status === "Resolved" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-amber-500/10 text-amber-600 font-mono text-[0.65rem]"}>
-                      {h.status}
+                    <Badge className={h["status"] === "Resolved" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-amber-500/10 text-amber-600 font-mono text-[0.65rem]"}>
+                      {h["status"]}
                     </Badge>
                   </td>
                 </tr>

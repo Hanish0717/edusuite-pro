@@ -28,10 +28,10 @@ function MyTimetablePage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Today's Classes" value={myTimetable.todaysClasses.length} icon={Clock} tone="info" />
-        <KpiCard label="Assigned Subjects" value={myTimetable.assignedSubjects.length} icon={BookOpen} tone="purple" />
-        <KpiCard label="Assigned Sections" value={myTimetable.sections.length} icon={User} tone="success" />
-        <KpiCard label="Pending Attendance" value={myTimetable.pendingAttendanceCount} icon={CheckCircle2} tone="warning" />
+        <KpiCard label="Today's Classes" value={String(myTimetable.todaysClasses.length)} icon={Clock} tone="info" />
+        <KpiCard label="Assigned Subjects" value={String(myTimetable.assignedSubjects.length)} icon={BookOpen} tone="purple" />
+        <KpiCard label="Assigned Sections" value={String(myTimetable.sections.length)} icon={User} tone="success" />
+        <KpiCard label="Pending Attendance" value={String(myTimetable.pendingAttendanceCount)} icon={CheckCircle2} tone="warning" />
       </div>
 
       <Panel title="Today's Scheduled Teaching Sessions" description="Live schedule of classes for today.">

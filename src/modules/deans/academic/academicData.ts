@@ -1,4 +1,3 @@
-import { QuickAction, RecentActivity, Notification } from '@/modules/deans/types';
 import { toast } from 'sonner';
 import { Check, X, Download } from 'lucide-react';
 

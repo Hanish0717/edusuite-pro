@@ -23,7 +23,7 @@ function ProgramsPage() {
     (p) =>
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.code.toLowerCase().includes(search.toLowerCase()) ||
-      p.department.toLowerCase().includes(search.toLowerCase()) ||
+      p["department"].toLowerCase().includes(search.toLowerCase()) ||
       p.coordinator.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -37,9 +37,9 @@ function ProgramsPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <KpiCard label="Total Degree Programs" value={data.programs.length} icon={BookOpen} tone="purple" />
+        <KpiCard label="Total Degree Programs" value={String(data.programs.length)} icon={BookOpen} tone="purple" />
         <KpiCard label="Active Enrolled Students" value={data.kpis.students.toLocaleString()} icon={GraduationCap} tone="success" />
-        <KpiCard label="Program Coordinators" value={data.programs.length} icon={CheckCircle2} tone="info" />
+        <KpiCard label="Program Coordinators" value={String(data.programs.length)} icon={CheckCircle2} tone="info" />
       </div>
 
       <Panel title="Degree Programs Register" description="Filter programs by name, department, or coordinator.">
@@ -72,12 +72,12 @@ function ProgramsPage() {
                   <tr key={p.id} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-mono font-bold text-primary">{p.code}</td>
                     <td className="p-3 font-bold text-foreground">{p.name}</td>
-                    <td className="p-3 text-muted-foreground">{p.department}</td>
+                    <td className="p-3 text-muted-foreground">{p["department"]}</td>
                     <td className="p-3 font-mono">{p.duration}</td>
                     <td className="p-3 text-right font-mono font-bold text-emerald-600">{p.students}</td>
                     <td className="p-3 font-medium">{p.coordinator}</td>
                     <td className="p-3 text-center">
-                      <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]">{p.status}</Badge>
+                      <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]">{p["status"]}</Badge>
                     </td>
                   </tr>
                 ))}

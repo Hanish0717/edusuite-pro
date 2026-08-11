@@ -174,11 +174,12 @@ function CorrectionAnalysisPage() {
 
       {/* KPI Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Allocated booklets" value={String(kpis.allocated)} icon={FileText} tone="default" />
+        <KpiCard label="Allocated booklets" value={String(kpis.allocated)} icon={FileText} tone="purple" />
         <KpiCard label="Papers Corrected" value={String(kpis.corrected)} icon={CheckCircle2} tone="success" />
         <KpiCard label="Pending Correction" value={String(kpis.pending)} icon={Clock} tone="warning" />
         <KpiCard label="Valuation Rate" value={`${kpis.rate}%`} icon={Percent} tone="info" />
       </div>
+
 
       {/* Branch Wise Analysis Cards */}
       <div className="space-y-3.5">
@@ -243,7 +244,8 @@ function CorrectionAnalysisPage() {
 
       {/* Faculty-Wise Breakdown Table */}
       {selectedBranch && (
-        <Panel title={`Faculty Valuation Breakdown — ${selectedBranch} Department`} icon={Users}>
+        <Panel title={`Faculty Valuation Breakdown — ${selectedBranch} Department`}>
+
           {activeFacultyList.length === 0 ? (
             <div className="text-center py-10 text-muted-foreground text-xs font-semibold">
               No active faculty correction allocations registered for this department.

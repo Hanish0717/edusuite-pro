@@ -220,7 +220,10 @@ export function AcademicCalendarModuleView() {
 
   const handleSaveEvent = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!eventForm.title?.trim()) return toast.error("Please enter event title.");
+    if (!eventForm.title?.trim()) {
+      toast.error("Please enter event title.");
+      return;
+    }
 
     if (formMode === "add") {
       const newEvt: AcademicEvent = {

@@ -128,8 +128,8 @@ export const navigation: NavSection[] = [
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
       { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
-      { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
-      { title: "Emergency Broadcast", url: "/emergency", icon: Siren, roles: ["super-admin", "staff"], badge: "Instant" },
+      { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super_admin", "staff", "student", "parent"] },
+      { title: "Emergency Broadcast", url: "/emergency", icon: Siren, roles: ["super_admin", "staff"], badge: "Instant" },
     ],
   },
   {
@@ -138,7 +138,7 @@ export const navigation: NavSection[] = [
       { title: "Pre-Admission Portal", url: "/pre-admission", icon: School, moduleId: "pre-admission" },
       { title: "Admission Office", url: "/admission", icon: GraduationCap, moduleId: "admission" },
       { title: "Academics", url: "/academics", icon: GraduationCap, moduleId: "academics" },
-      { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
+      { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super_admin", "staff"] },
       { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
       { title: "Attendance", url: "/attendance", icon: CalendarCheck, moduleId: "attendance" },
       { title: "Timetable", url: "/timetable", icon: CalendarRange, moduleId: "academics" },
@@ -153,7 +153,7 @@ export const navigation: NavSection[] = [
         url: "/examinations",
         icon: FileSpreadsheet,
         moduleId: "examination",
-        roles: ["super-admin", "staff"],
+        roles: ["super_admin", "staff"],
         children: [
           { title: "Dashboard", url: "/examinations", moduleId: "examination" },
           { title: "Exam Schedule", url: "/examinations/schedule", moduleId: "examination" },
@@ -552,12 +552,12 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
     return deanNavMap[user.role] as NavSection[];
   }
   // Legacy generic dean flag fallback (isDean without specific role)
-  if (user.role !== "super-admin" && user.flags.includes("isDean")) {
+  if ((user.role as any) !== "super-admin" && user.role !== "super_admin" && user.flags.includes("isDean")) {
     return DEAN_NAVIGATION;
   }
 
   // Placement Officer specific navigation menu
-  if (user.role !== "super-admin" && (user.role === "placement" || user.flags.includes("isPlacementOfficer"))) {
+  if ((user.role as any) !== "super-admin" && user.role !== "super_admin" && (user.role === "placement" || user.flags.includes("isPlacementOfficer"))) {
     return PLACEMENT_OFFICER_NAVIGATION;
   }
 

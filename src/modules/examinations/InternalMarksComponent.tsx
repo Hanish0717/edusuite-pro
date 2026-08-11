@@ -68,7 +68,10 @@ export function InternalMarksView() {
   });
 
   const handleMarkChange = (id: string, field: keyof StudentInternalMark, value: string) => {
-    if (isLocked) return toast.error("Marks are locked and cannot be edited.");
+    if (isLocked) {
+      toast.error("Marks are locked and cannot be edited.");
+      return;
+    }
     const numValue = Number(value) || 0;
     
     // Validation rules
@@ -97,12 +100,18 @@ export function InternalMarksView() {
   };
 
   const handleSave = () => {
-    if (isLocked) return toast.error("Cannot save. Marks are locked.");
+    if (isLocked) {
+      toast.error("Cannot save. Marks are locked.");
+      return;
+    }
     toast.success("Draft saved successfully! (Audit log updated)");
   };
 
   const handlePublish = () => {
-    if (isLocked) return toast.error("Marks are already locked and published.");
+    if (isLocked) {
+      toast.error("Marks are already locked and published.");
+      return;
+    }
     setIsPublishing(true);
     setTimeout(() => {
       setIsPublishing(false);

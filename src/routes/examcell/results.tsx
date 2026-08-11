@@ -124,7 +124,8 @@ function ResultsConsolidationPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Consolidation Console */}
         <div className="lg:col-span-1 space-y-6">
-          <Panel title="Select Examination" icon={Award}>
+          <Panel title="Select Examination">
+
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-bold text-muted-foreground block mb-1">

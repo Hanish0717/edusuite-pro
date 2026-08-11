@@ -256,7 +256,7 @@ export function getBasePermissions(
     scope: "own",
   };
 
-  if (role === "super-admin" || role === "super_admin") {
+  if ((role as any) === "super-admin" || role === "super_admin") {
     return { read: true, create: true, update: true, delete: true, approve: true, scope: "global" };
   }
 
@@ -527,7 +527,7 @@ export function getDashboardKeyForUser(user: UserPermissionContext): string {
     return "staff";
   }
 
-  if (role === "super-admin" || role === "super_admin") return "super_admin";
+  if ((role as any) === "super-admin" || role === "super_admin") return "super_admin";
   return role;
 }
 
@@ -557,7 +557,7 @@ export function resolveTargetUrlForUser(
   const role = user.role;
   const flags = user.flags;
 
-  if (role === "super-admin" || role === "super_admin") {
+  if ((role as any) === "super-admin" || role === "super_admin") {
     return url === "/dashboard" ? "/super-admin/dashboard" : url;
   }
 

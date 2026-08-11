@@ -24,9 +24,9 @@ function TimetablePage() {
     const list = data?.facultyTimetables || [];
     return list.filter(
       (f) =>
-        (f.facultyName || "").toLowerCase().includes(facultySearch.toLowerCase()) ||
-        (f.department || "").toLowerCase().includes(facultySearch.toLowerCase()) ||
-        (f.subject || "").toLowerCase().includes(facultySearch.toLowerCase())
+        (f["facultyName"] || "").toLowerCase().includes(facultySearch.toLowerCase()) ||
+        (f["department"] || "").toLowerCase().includes(facultySearch.toLowerCase()) ||
+        (f["subject"] || "").toLowerCase().includes(facultySearch.toLowerCase())
     );
   }, [data?.facultyTimetables, facultySearch]);
 
@@ -94,7 +94,7 @@ function TimetablePage() {
                   <tr key={idx} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-bold text-primary font-mono">{s.day}</td>
                     <td className="p-3 font-mono text-muted-foreground">{s.period}</td>
-                    <td className="p-3 font-bold text-foreground">{s.subject}</td>
+                    <td className="p-3 font-bold text-foreground">{s["subject"]}</td>
                     <td className="p-3 font-mono">{s.section}</td>
                     <td className="p-3 font-mono">{s.room}</td>
                     <td className="p-3 text-center">
@@ -134,9 +134,9 @@ function TimetablePage() {
                 <tbody className="divide-y divide-border font-medium">
                   {filteredFacultyTimetables.map((f, idx) => (
                     <tr key={idx} className="hover:bg-muted/30 transition-colors">
-                      <td className="p-3 font-bold text-foreground">{f.facultyName}</td>
-                      <td className="p-3 font-mono font-bold text-primary">{f.department}</td>
-                      <td className="p-3 font-bold">{f.subject}</td>
+                      <td className="p-3 font-bold text-foreground">{f["facultyName"]}</td>
+                      <td className="p-3 font-mono font-bold text-primary">{f["department"]}</td>
+                      <td className="p-3 font-bold">{f["subject"]}</td>
                       <td className="p-3 font-mono">{f.day}</td>
                       <td className="p-3 font-mono text-muted-foreground">{f.period}</td>
                       <td className="p-3 text-center font-mono font-bold">{f.room}</td>

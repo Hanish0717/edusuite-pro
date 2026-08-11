@@ -10,7 +10,7 @@ export const Route = createFileRoute("/examination")({
 
 function ExaminationLayout() {
   const { role, flags } = useRole();
-  const isSuperAdmin = role === "super-admin" || role === "super_admin";
+  const isSuperAdmin = (role as any) === "super-admin" || (role as any) === "super_admin" || role === "super_admin";
 
   if (!isSuperAdmin && (role !== "staff" || !flags.includes("isExamController"))) {
     return (

@@ -29,7 +29,7 @@ function AcademicReportsPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <KpiCard label="Generated Dossiers" value={data.reports.length} icon={FileText} tone="info" />
+        <KpiCard label="Generated Dossiers" value={String(data.reports.length)} icon={FileText} tone="info" />
         <KpiCard label="Syllabus Completion" value="94.8%" icon={ShieldCheck} tone="success" />
         <KpiCard label="Result Pass Rate" value="92.6%" icon={ShieldCheck} tone="purple" />
       </div>

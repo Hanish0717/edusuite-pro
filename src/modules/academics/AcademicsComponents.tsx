@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { cn } from "@/lib/utils";
 import { useAcademic } from "@/context/academic-context";
 import { getDashboardData, type AcademicDashboardData } from "./AcademicsDashboardService";
 import {
@@ -25,23 +26,6 @@ import {
   ShieldCheck,
   Calendar,
   PieChart,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-  Check,
-  UserCheck,
-  UserX,
-  Play,
-  RotateCcw,
-  BarChart2,
-  CalendarDays,
-  CalendarRange,
-  ExternalLink,
-  MapPin,
-  Mail,
-  User,
-  Coffee,
-  X,
   UserCog,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -50,7 +34,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -70,37 +53,16 @@ import { Label } from "@/components/ui/label";
 
 import {
   fetchAcademicDepartments,
-  fetchCurriculumSchemes,
-  fetchLiveFacultyStatus,
-  fetchClassStudents,
-  submitAttendanceMark,
-  fetchSyllabusProgress,
-  updateSyllabusUnitStatus,
-  fetchAllClassesAttendance,
-  fetchFacultyFullDaySchedule,
   createAcademicCourse,
   createAcademicDepartment,
   createCurriculumScheme,
   updateAcademicCourse,
   deleteAcademicCourse,
-  INITIAL_COURSES,
-  INITIAL_DEPARTMENTS,
-  INITIAL_CURRICULUM_SCHEMES,
-  INITIAL_FACULTY_STATUS,
-  INITIAL_CLASS_STUDENTS,
-  INITIAL_SYLLABUS_PROGRESS,
-  INITIAL_ALL_CLASSES_ATTENDANCE,
   getSubjects,
   getCurriculum,
   type AcademicCourse,
   type AcademicDepartment,
   type CurriculumScheme,
-  type LiveFacultyStatus,
-  type ClassStudentAttendance,
-  type SyllabusProgress,
-  type SyllabusUnit,
-  type AllClassesAttendanceItem,
-  type FacultyFullDaySchedule,
 } from "./AcademicsService";
 
 const DEPARTMENTS_LIST = [
@@ -113,21 +75,57 @@ const DEPARTMENTS_LIST = [
   "MBA",
 ];
 
-export type AcademicsSubpart = "departments" | "courses" | "curriculum";
+export function AcademicsModuleView({ initialTab }: { initialTab?: "courses" | "departments" | "curriculum" }) {
+  const { selectedDepartment, setSelectedDepartment, deanName, departments: academicDepartments } = useAcademic();
+  const activeDeptInfo = academicDepartments.find((d) => d.code === selectedDepartment);
+  const activeDeptName = activeDeptInfo ? activeDeptInfo.name : "Computer Science & Engineering (CSE)";
 
-export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubpart }) {
-  const { selectedDepartment, setSelectedDepartment } = useAcademic();
-  const [courses, setCourses] = useState<AcademicCourse[]>(INITIAL_COURSES);
-  const [departments, setDepartments] = useState<AcademicDepartment[]>(INITIAL_DEPARTMENTS);
-  const [curriculumSchemes, setCurriculumSchemes] = useState<CurriculumScheme[]>(INITIAL_CURRICULUM_SCHEMES);
+  const [courses, setCourses] = useState<AcademicCourse[]>([]);
+  const [departments, setDepartments] = useState<AcademicDepartment[]>([]);
+  const [curriculumSchemes, setCurriculumSchemes] = useState<CurriculumScheme[]>([]);
 
-  // Active Subpart Tab
-  const [activeSubpart, setActiveSubpart] = useState<AcademicsSubpart>(initialTab || "departments");
+  // Active Subpart Tab state: "courses" | "departments" | "curriculum"
+  const [activeSubpart, setActiveSubpart] = useState<"courses" | "departments" | "curriculum">(initialTab || "departments");
 
-  // Filters & Loading
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDeptFilter, setSelectedDeptFilter] = useState("All Departments");
-  const [selectedSemFilter, setSelectedSemFilter] = useState("All Semesters");
+  // Dashboard states
+  const [dashboardData, setDashboardData] = useState<AcademicDashboardData | null>(null);
+  const [dashboardLoading, setDashboardLoading] = useState<boolean>(true);
+  const [dashboardError, setDashboardError] = useState<string | null>(null);
+
+  // Fetch department-aware metrics when department changes
+  useEffect(() => {
+    let active = true;
+    setDashboardLoading(true);
+    setDashboardError(null);
+
+    getDashboardData(selectedDepartment)
+      .then((data) => {
+        if (active) {
+          setDashboardData(data);
+          setDashboardLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (active) {
+          setDashboardError("Failed to synchronize department analytics.");
+          setDashboardLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [selectedDepartment]);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveSubpart(initialTab);
+    }
+  }, [initialTab]);
+
+  const [search, setSearch] = useState("");
+  const [selectedDept, setSelectedDept] = useState(selectedDepartment);
+  const [selectedSem, setSelectedSem] = useState("All Semesters");
   const [loading, setLoading] = useState(false);
 
   // Dynamic Semester mapping based on active department
@@ -141,17 +139,17 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
     return list;
   }, [selectedDepartment]);
 
-  // Synchronize local filter selectedDeptFilter with global context selection
+  // Synchronize local filter selectedDept with global context selection
   useEffect(() => {
-    setSelectedDeptFilter(selectedDepartment);
+    setSelectedDept(selectedDepartment);
   }, [selectedDepartment]);
 
   // Reset selected semester if it falls outside the mapped semesters list of the department
   useEffect(() => {
-    if (!semestersList.includes(selectedSemFilter)) {
-      setSelectedSemFilter("All Semesters");
+    if (!semestersList.includes(selectedSem)) {
+      setSelectedSem("All Semesters");
     }
-  }, [semestersList, selectedSemFilter]);
+  }, [semestersList, selectedSem]);
 
   // Fetch filtered courses and curriculum schemes
   useEffect(() => {
@@ -162,8 +160,8 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
         const [crs, cur] = await Promise.all([
           getSubjects({
             department: selectedDepartment,
-            semester: selectedSemFilter !== "All Semesters" ? selectedSemFilter : undefined,
-            search: searchQuery || undefined,
+            semester: selectedSem !== "All Semesters" ? selectedSem : undefined,
+            search: search || undefined,
           }),
           getCurriculum(selectedDepartment),
         ]);
@@ -183,7 +181,7 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
     return () => {
       active = false;
     };
-  }, [selectedDepartment, selectedSemFilter, searchQuery]);
+  }, [selectedDepartment, selectedSem, search]);
 
   // Fetch static departments list once
   useEffect(() => {
@@ -199,10 +197,13 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
   // Dialog States
   const [isAddCourseOpen, setIsAddCourseOpen] = useState(false);
   const [isEditCourseOpen, setIsEditCourseOpen] = useState(false);
+  const [isViewCourseOpen, setIsViewCourseOpen] = useState(false);
   const [isAddDeptOpen, setIsAddDeptOpen] = useState(false);
   const [isAddSchemeOpen, setIsAddSchemeOpen] = useState(false);
 
-  // Forms
+  const [selectedCourse, setSelectedCourse] = useState<AcademicCourse | null>(null);
+
+  // Form States
   const [courseForm, setCourseForm] = useState<Partial<AcademicCourse>>({
     code: "",
     name: "",
@@ -210,96 +211,100 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
     semester: "Semester 5",
     credits: 3,
     type: "Core Theory",
-    instructor: "",
+    instructor: "Dr. K. Sai Teja",
     regulations: "R24 Regulation",
-    prerequisite: "",
+    prerequisite: "None",
     syllabusOverview: "",
   });
 
   const [deptForm, setDeptForm] = useState<Partial<AcademicDepartment>>({
-    code: "",
-    name: "",
-    hodName: "",
-    facultyCount: 30,
+    code: "CIVIL",
+    name: "Civil & Structural Engineering",
+    hodName: "Dr. N. R. Prasad",
+    facultyCount: 35,
     studentCapacity: 480,
-    laboratoriesCount: 6,
+    laboratoriesCount: 7,
     accreditation: "NAAC A+",
-    establishedYear: "2026",
+    establishedYear: "2012",
   });
 
   const [schemeForm, setSchemeForm] = useState<Partial<CurriculumScheme>>({
     regulationCode: "R24 Regulation",
-    programName: "",
+    programName: "B.Tech AI & Data Science",
     effectiveBatch: "2024-2028",
     totalCredits: 160,
-    coreTheoryCredits: 80,
-    labCredits: 32,
-    electiveCredits: 28,
+    coreTheoryCredits: 76,
+    labCredits: 34,
+    electiveCredits: 30,
     projectCredits: 20,
   });
 
-  useEffect(() => {
-    if (initialTab) {
-      setActiveSubpart(initialTab);
-    }
-  }, [initialTab]);
-
+  // Re-fetch all data manually on refresh
   const loadAllData = async () => {
     setLoading(true);
-    const [crs, dpt, sch] = await Promise.all([
-      fetchAcademicCourses(),
-      fetchAcademicDepartments(),
-      fetchCurriculumSchemes(),
-    ]);
-    setCourses(crs);
-    setDepartments(dpt);
-    setCurriculumSchemes(sch);
-    setLoading(false);
+    try {
+      const [crs, dps, cur] = await Promise.all([
+        getSubjects({
+          department: selectedDepartment,
+          semester: selectedSem !== "All Semesters" ? selectedSem : undefined,
+          search: search || undefined,
+        }),
+        fetchAcademicDepartments(),
+        getCurriculum(selectedDepartment),
+      ]);
+      setCourses(crs);
+      setDepartments(dps);
+      setCurriculumSchemes(cur);
+    } catch (err) {
+      toast.error("Failed to load academic records.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => {
-    loadAllData();
-  }, []);
-
-  // Filtered lists
+  // Filtered Courses (Fallback Client Filter)
   const filteredCourses = courses.filter((c) => {
     const matchesSearch =
-      c.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.instructor.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDept = selectedDeptFilter === "All Departments" || c.department === selectedDeptFilter;
-    const matchesSem = selectedSemFilter === "All Semesters" || c.semester === selectedSemFilter;
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.code.toLowerCase().includes(search.toLowerCase()) ||
+      c.department.toLowerCase().includes(search.toLowerCase()) ||
+      c.instructor.toLowerCase().includes(search.toLowerCase());
+
+    const matchesDept = selectedDept === "All Departments" || c.department === selectedDept;
+    const matchesSem = selectedSem === "All Semesters" || c.semester === selectedSem;
+
     return matchesSearch && matchesDept && matchesSem;
   });
 
-  const filteredDepts = departments.filter((d) => {
-    return (
-      d.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.hodName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  // Filtered Departments
+  const filteredDepts = departments.filter(
+    (d) =>
+      d.name.toLowerCase().includes(search.toLowerCase()) ||
+      d.code.toLowerCase().includes(search.toLowerCase()) ||
+      d.hodName.toLowerCase().includes(search.toLowerCase()),
+  );
 
-  const filteredSchemes = curriculumSchemes.filter((s) => {
-    return (
-      s.programName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.regulationCode.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  // Filtered Schemes
+  const filteredSchemes = curriculumSchemes.filter(
+    (s) =>
+      s.programName.toLowerCase().includes(search.toLowerCase()) ||
+      s.regulationCode.toLowerCase().includes(search.toLowerCase()) ||
+      s.effectiveBatch.toLowerCase().includes(search.toLowerCase()),
+  );
 
   // Handlers for Courses
   const handleOpenAddCourse = () => {
     setCourseForm({
-      code: "",
-      name: "",
+      code: "CS405",
+      name: "Cloud Computing & Microservices Architecture",
       department: "CSE",
-      semester: "Semester 5",
-      credits: 3,
+      semester: "Semester 7",
+      credits: 4,
       type: "Core Theory",
-      instructor: "",
+      instructor: "Dr. S. K. Gupta",
       regulations: "R24 Regulation",
-      prerequisite: "",
-      syllabusOverview: "",
+      prerequisite: "CS301: Computer Networks",
+      syllabusOverview: "AWS/GCP Cloud Native Services, Docker Containerization, and Kubernetes.",
     });
     setIsAddCourseOpen(true);
   };
@@ -313,20 +318,21 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
     const created = await createAcademicCourse(courseForm);
     setCourses((prev) => [created, ...prev]);
     setIsAddCourseOpen(false);
-    toast.success(`Course ${created.code}: ${created.name} added successfully!`);
+    toast.success(`Course ${created.code}: "${created.name}" created!`);
   };
 
-  const handleOpenEditCourse = (course: AcademicCourse) => {
-    setCourseForm(course);
+  const handleOpenEditCourse = (c: AcademicCourse) => {
+    setSelectedCourse(c);
+    setCourseForm({ ...c });
     setIsEditCourseOpen(true);
   };
 
   const handleEditCourseSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!courseForm.id) return;
-    await updateAcademicCourse(courseForm.id, courseForm);
+    if (!selectedCourse) return;
+    await updateAcademicCourse(selectedCourse.id, courseForm);
     setCourses((prev) =>
-      prev.map((c) => (c.id === courseForm.id ? ({ ...c, ...courseForm } as AcademicCourse) : c))
+      prev.map((c) => (c.id === selectedCourse.id ? ({ ...c, ...courseForm } as AcademicCourse) : c)),
     );
     setIsEditCourseOpen(false);
     toast.success(`Course ${courseForm.code} updated!`);
@@ -374,26 +380,27 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
     if (activeSubpart === "courses") {
       filename = `Academic_Course_Catalog_${new Date().toISOString().split("T")[0]}.csv`;
       headers = ["Course ID", "Code", "Title", "Department", "Semester", "Credits", "Type", "Instructor"];
-      rows = filteredCourses.map((c) => [c.id, c.code, `"${c.name}"`, c.department, `"${c.semester}"`, c.credits, `"${c.type}"`, `"${c.instructor}"`]);
+      rows = filteredCourses.map((c) => [
+        c.id, c.code, `"${c.name}"`, c.department, `"${c.semester}"`, c.credits, `"${c.type}"`, `"${c.instructor}"`
+      ]);
     } else if (activeSubpart === "departments") {
       filename = `Academic_Departments_${new Date().toISOString().split("T")[0]}.csv`;
       headers = ["Department ID", "Code", "Department Name", "HOD", "Faculty Count", "Student Capacity", "Labs", "Accreditation"];
-      rows = filteredDepts.map((d) => [d.id, d.code, `"${d.name}"`, `"${d.hodName}"`, d.facultyCount, d.studentCapacity, d.laboratoriesCount, `"${d.accreditation}"`]);
-    } else if (activeSubpart === "faculty-status") {
-      filename = `Faculty_Live_Status_Period_${selectedPeriod}_${new Date().toISOString().split("T")[0]}.csv`;
-      headers = ["Faculty Name", "Department", "Live Status", "Assigned Class", "Subject", "Room No", "Time Slot"];
-      rows = filteredFacultyStatus.map((f) => [f.name, f.department, f.status, f.currentClass || "N/A", f.subject || "N/A", f.roomNo || "N/A", f.timeSlot || "N/A"]);
-    } else if (activeSubpart === "all-classes-attendance") {
-      filename = `All_Classes_Attendance_${attendanceViewMode}_${new Date().toISOString().split("T")[0]}.csv`;
-      headers = ["Class Name", "Department", "Total Students", "Present", "Absent", "Late", "Daily %", "Weekly %", "Monthly %", "Class Teacher", "Status"];
-      rows = filteredAllClassesAttendance.map((c) => [c.className, c.department, c.totalStudents, c.presentCount, c.absentCount, c.lateCount, c.dailyPct, c.weeklyPct, c.monthlyPct, `"${c.classTeacher}"`, c.status]);
+      rows = filteredDepts.map((d) => [
+        d.id, d.code, `"${d.name}"`, `"${d.hodName}"`, d.facultyCount, d.studentCapacity, d.laboratoriesCount, `"${d.accreditation}"`
+      ]);
     } else {
       filename = `Academic_Curriculum_Schemes_${new Date().toISOString().split("T")[0]}.csv`;
       headers = ["Scheme ID", "Regulation", "Program Name", "Batch", "Total Credits", "Core Credits", "Lab Credits", "Elective Credits"];
-      rows = filteredSchemes.map((s) => [s.id, s.regulationCode, `"${s.programName}"`, s.effectiveBatch, s.totalCredits, s.coreTheoryCredits, s.labCredits, s.electiveCredits]);
+      rows = filteredSchemes.map((s) => [
+        s.id, s.regulationCode, `"${s.programName}"`, s.effectiveBatch, s.totalCredits, s.coreTheoryCredits, s.labCredits, s.electiveCredits
+      ]);
     }
 
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -415,128 +422,325 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold font-display tracking-tight text-foreground">
-                Academics & Faculty Management Portal
+                Academics & Curriculum Management Module
               </h1>
               <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">
                 Academic Council Core
               </Badge>
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-              Click any faculty card to inspect full-day period timetable. Live Faculty Status, Attendance & Syllabus Tracker.
+              Comprehensive control of Academic Departments, Course Cataloging, and Curriculum Schemes.
+              <span className="block mt-1.5 font-semibold text-primary/95 flex items-center gap-1.5 bg-primary/5 px-2.5 py-1 rounded-lg border border-primary/10 w-fit">
+                <Building2 className="size-3.5 shrink-0" />
+                Active Department: {activeDeptName} &middot; Dean: {deanName}
+              </span>
             </p>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
-          <Button variant="outline" size="sm" onClick={loadAllData} disabled={loading} className="h-9 gap-2 text-xs font-medium">
-            <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
+        {/* Action Buttons - Top Right Corner */}
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0 self-start sm:self-auto">
+          {/* Global Department Selector */}
+          <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+            <SelectTrigger className="h-9 w-[260px] text-xs font-semibold bg-card border-border" aria-label="Selected Department">
+              <Building2 className="size-3.5 mr-1.5 text-primary shrink-0" />
+              <SelectValue placeholder="Department Scope" />
+            </SelectTrigger>
+            <SelectContent>
+              {academicDepartments.map((d) => (
+                <SelectItem key={d.code} value={d.code} className="text-xs">
+                  {d.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={loadAllData}
+            disabled={loading}
+            className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent"
+          >
+            <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} />
+            Refresh
           </Button>
 
-          <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-9 gap-2 text-xs font-medium">
-            <Download className="size-3.5" /> Export Data
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportCSV}
+            className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent"
+          >
+            <Download className="size-3.5" /> Export {activeSubpart.toUpperCase()}
           </Button>
 
           {activeSubpart === "courses" && (
-            <Button size="sm" onClick={handleOpenAddCourse} className="h-9 bg-brand-gradient text-white gap-2 font-semibold text-xs shadow-glow">
+            <Button
+              size="sm"
+              onClick={handleOpenAddCourse}
+              className="h-9 bg-brand-gradient text-white gap-2 font-semibold text-xs shadow-glow hover:opacity-95"
+            >
               <Plus className="size-4" /> Add New Course
             </Button>
           )}
 
           {activeSubpart === "departments" && (
-            <Button size="sm" onClick={() => setIsAddDeptOpen(true)} className="h-9 bg-brand-gradient text-white gap-2 font-semibold text-xs shadow-glow">
+            <Button
+              size="sm"
+              onClick={() => setIsAddDeptOpen(true)}
+              className="h-9 bg-brand-gradient text-white gap-2 font-semibold text-xs shadow-glow hover:opacity-95"
+            >
               <Building2 className="size-4" /> Add Department
+            </Button>
+          )}
+
+          {activeSubpart === "curriculum" && (
+            <Button
+              size="sm"
+              onClick={() => setIsAddSchemeOpen(true)}
+              className="h-9 bg-brand-gradient text-white gap-2 font-semibold text-xs shadow-glow hover:opacity-95"
+            >
+              <Bookmark className="size-4" /> New Scheme
             </Button>
           )}
         </div>
       </div>
 
-      {/* KPI Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Academic Departments</span>
-            <Building2 className="size-4 text-primary" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-primary">{departments.length} Depts</p>
-          <p className="text-[0.68rem] text-muted-foreground font-mono">CSE, ECE, EEE, ME, Civil, MBA</p>
+      {/* Department-Aware KPI Metrics Dashboard */}
+      {dashboardError && (
+        <div className="p-3.5 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive text-xs font-semibold animate-fade-in">
+          {dashboardError}
         </div>
+      )}
 
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Course Catalog</span>
-            <BookOpen className="size-4 text-blue-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-blue-600">{courses.length} Subjects</p>
-          <p className="text-[0.68rem] text-muted-foreground">Theory, Labs & Electives</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Curriculum Schemes</span>
-            <Bookmark className="size-4 text-purple-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-purple-600">{curriculumSchemes.length} Regulations</p>
-          <p className="text-[0.68rem] text-purple-600 font-medium">R24, R22 Approved Frameworks</p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Accreditation Standard</span>
-            <Award className="size-4 text-emerald-500" />
-          </div>
-          <p className="text-2xl font-bold font-mono text-emerald-600">NAAC A+</p>
-          <p className="text-[0.68rem] text-emerald-600 font-medium">NBA Accredited Programs</p>
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3.5">
+        {[
+          { label: "Total Students", value: dashboardData?.totalStudents, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10 border-blue-500/25" },
+          { label: "Total Faculty", value: dashboardData?.totalFaculty, icon: UserCog, color: "text-indigo-500", bg: "bg-indigo-500/10 border-indigo-500/25" },
+          { label: "Total Subjects", value: dashboardData?.totalSubjects, icon: BookOpen, color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/25" },
+          { label: "Current Semester", value: dashboardData?.currentSemester, icon: Calendar, color: "text-amber-500", bg: "bg-amber-500/10 border-amber-500/25" },
+          { label: "Active Courses", value: dashboardData?.activeCourses, icon: Layers, color: "text-violet-500", bg: "bg-violet-500/10 border-violet-500/25" },
+          { label: "Avg Attendance", value: dashboardData ? `${dashboardData.averageAttendance}%` : undefined, icon: PieChart, color: "text-rose-500", bg: "bg-rose-500/10 border-rose-500/25" },
+          { label: "Pass Percentage", value: dashboardData ? `${dashboardData.passPercentage}%` : undefined, icon: Award, color: "text-teal-500", bg: "bg-teal-500/10 border-teal-500/25" },
+          { label: "Upcoming Exams", value: dashboardData?.upcomingExams, icon: FileText, color: "text-sky-500", bg: "bg-sky-500/10 border-sky-500/25" },
+          { label: "Grade Approvals", value: dashboardData?.pendingGradeApprovals, icon: CheckCircle, color: "text-emerald-600", bg: "bg-emerald-500/10 border-emerald-500/25" },
+          { label: "Total Credits", value: dashboardData?.totalCredits, icon: Bookmark, color: "text-primary", bg: "bg-primary/10 border-primary/25" },
+        ].map((card, index) => {
+          const Icon = card.icon;
+          return (
+            <div key={index} className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1 hover:border-primary/30 transition-all duration-300">
+              <div className="flex items-center justify-between text-[0.65rem] font-semibold text-muted-foreground uppercase tracking-wider">
+                <span className="truncate mr-1">{card.label}</span>
+                <span className={cn("p-1 rounded-lg", card.bg)}>
+                  <Icon className={cn("size-3.5", card.color)} />
+                </span>
+              </div>
+              {dashboardLoading ? (
+                <div className="h-8 w-16 bg-muted/70 animate-pulse rounded-md mt-1.5" />
+              ) : (
+                <p className="text-xl font-bold font-mono text-foreground mt-0.5">{card.value ?? "--"}</p>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* THREE SUBPARTS NAVIGATION TAB BAR */}
-      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
-        <button
-          onClick={() => setActiveSubpart("departments")}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
-            activeSubpart === "departments" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Building2 className="size-3.5" /> Departments ({departments.length})
-        </button>
+      <div className="flex items-center justify-between gap-3 p-1.5 rounded-2xl bg-muted/60 border border-border/80">
+        <div className="flex items-center gap-1.5 w-full overflow-x-auto">
+          <button
+            onClick={() => setActiveSubpart("courses")}
+            className={`flex-1 min-w-[140px] px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              activeSubpart === "courses"
+                ? "bg-card text-primary shadow-sm border border-border/80"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <BookOpen className="size-4" /> 1. Courses Catalog ({courses.length})
+          </button>
 
-        <button
-          onClick={() => setActiveSubpart("courses")}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
-            activeSubpart === "courses" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <BookOpen className="size-3.5" /> Courses ({courses.length})
-        </button>
+          <button
+            onClick={() => setActiveSubpart("departments")}
+            className={`flex-1 min-w-[140px] px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              activeSubpart === "departments"
+                ? "bg-card text-primary shadow-sm border border-border/80"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Building2 className="size-4" /> 2. Departments ({departments.length})
+          </button>
 
-        <button
-          onClick={() => setActiveSubpart("curriculum")}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
-            activeSubpart === "curriculum" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Bookmark className="size-3.5" /> Curriculum
-        </button>
+          <button
+            onClick={() => setActiveSubpart("curriculum")}
+            className={`flex-1 min-w-[140px] px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              activeSubpart === "curriculum"
+                ? "bg-card text-primary shadow-sm border border-border/80"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Bookmark className="size-4" /> 3. Curriculum & Regulations
+          </button>
+        </div>
       </div>
 
-      {/* EXISTING SUBPART: DEPARTMENTS VIEW */}
+      {/* SUBPART 1: COURSES CATALOG VIEW */}
+      {activeSubpart === "courses" && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-card border border-border/80 shadow-sm">
+            <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search course code, title, instructor..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9 h-9 text-xs"
+                />
+              </div>
+
+              <Select value={selectedDept} onValueChange={(val) => {
+                setSelectedDept(val);
+                if (val !== "All Departments") {
+                  setSelectedDepartment(val);
+                }
+              }}>
+                <SelectTrigger className="h-9 w-full sm:w-[160px] text-xs">
+                  <Building2 className="size-3.5 mr-1.5 text-muted-foreground" />
+                  <SelectValue placeholder="Department" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS_LIST.map((d) => (
+                    <SelectItem key={d} value={d} className="text-xs">
+                      {d}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedSem} onValueChange={setSelectedSem}>
+                <SelectTrigger className="h-9 w-full sm:w-[150px] text-xs">
+                  <Filter className="size-3.5 mr-1.5 text-muted-foreground" />
+                  <SelectValue placeholder="Semester" />
+                </SelectTrigger>
+                <SelectContent>
+                  {semestersList.map((s: string) => (
+                    <SelectItem key={s} value={s} className="text-xs">
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <BookOpen className="size-4 text-primary" /> Institutional Course Catalog
+                <Badge variant="secondary" className="font-mono text-xs">
+                  {filteredCourses.length} Courses
+                </Badge>
+              </h3>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                  <tr>
+                    <th className="py-3 px-3">Course Code</th>
+                    <th className="py-3 px-3">Course Title</th>
+                    <th className="py-3 px-3">Dept & Sem</th>
+                    <th className="py-3 px-3">Credits</th>
+                    <th className="py-3 px-3">Type</th>
+                    <th className="py-3 px-3">Lead Instructor</th>
+                    <th className="py-3 px-3">Regulations</th>
+                    <th className="py-3 px-3 text-right pr-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {filteredCourses.map((c) => (
+                    <tr key={c.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="py-3 px-3 font-mono font-bold text-foreground">{c.code}</td>
+                      <td className="py-3 px-3 font-semibold text-foreground">{c.name}</td>
+                      <td className="py-3 px-3 font-medium text-foreground">{c.department} &middot; {c.semester}</td>
+                      <td className="py-3 px-3 font-mono font-bold text-primary text-sm">{c.credits} Credits</td>
+                      <td className="py-3 px-3"><Badge variant="outline" className="font-mono text-[0.68rem]">{c.type}</Badge></td>
+                      <td className="py-3 px-3 font-medium text-foreground">{c.instructor}</td>
+                      <td className="py-3 px-3"><Badge className="bg-purple-500/10 text-purple-600 border-purple-500/20 text-[0.68rem]">{c.regulations}</Badge></td>
+                      <td className="py-3 px-3 text-right pr-4">
+                        <div className="flex items-center justify-end gap-1">
+                          <Button variant="ghost" size="sm" onClick={() => { setSelectedCourse(c); setIsViewCourseOpen(true); }} className="h-7 text-xs font-medium gap-1 text-muted-foreground hover:text-foreground">
+                            <Eye className="size-3.5" /> Details
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleOpenEditCourse(c)} className="size-7 text-muted-foreground hover:text-primary">
+                            <Edit className="size-3.5" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteCourse(c.id, c.code)} className="size-7 text-muted-foreground hover:text-red-600">
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUBPART 2: DEPARTMENTS VIEW */}
       {activeSubpart === "departments" && (
         <div className="space-y-4">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredDepts.map((d) => (
-              <div key={d.id} className="p-5 rounded-2xl border border-border/80 bg-card space-y-3 shadow-sm hover:border-primary/40 transition-all">
-                <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                  <div>
-                    <span className="font-mono text-xs font-bold text-primary">{d.code}</span>
-                    <h3 className="font-bold text-sm text-foreground">{d.name}</h3>
-                  </div>
-                  <Badge variant="outline" className="font-mono text-xs">{d.accreditation}</Badge>
+          <div className="flex items-center justify-between p-3 rounded-2xl bg-card border border-border/80 shadow-sm">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Input
+                placeholder="Search department name, HOD, code..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9 h-9 text-xs"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredDepts.map((dept) => (
+              <div key={dept.id} className="p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/40 transition-all space-y-3">
+                <div className="flex items-center justify-between">
+                  <Badge className="bg-primary/10 text-primary border-primary/20 font-mono text-xs">
+                    {dept.code}
+                  </Badge>
+                  <Badge variant="outline" className="font-mono text-[0.68rem]">
+                    Estd. {dept.establishedYear}
+                  </Badge>
                 </div>
-                <div className="space-y-1.5 text-xs text-muted-foreground">
-                  <p><span className="font-semibold text-foreground">HOD:</span> {d.hodName}</p>
-                  <p><span className="font-semibold text-foreground">Faculty Members:</span> {d.facultyCount} Professors</p>
-                  <p><span className="font-semibold text-foreground">Student Capacity:</span> {d.studentCapacity} Seats</p>
+
+                <div>
+                  <h3 className="text-base font-bold text-foreground">{dept.name}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">HOD: <span className="font-semibold text-foreground">{dept.hodName}</span></p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border/60 text-center font-mono">
+                  <div className="p-2 rounded-xl bg-muted/40">
+                    <p className="text-[0.65rem] text-muted-foreground uppercase font-sans">Faculty</p>
+                    <p className="text-sm font-bold text-primary">{dept.facultyCount}</p>
+                  </div>
+                  <div className="p-2 rounded-xl bg-muted/40">
+                    <p className="text-[0.65rem] text-muted-foreground uppercase font-sans">Students</p>
+                    <p className="text-sm font-bold text-emerald-600">{dept.studentCapacity}</p>
+                  </div>
+                  <div className="p-2 rounded-xl bg-muted/40">
+                    <p className="text-[0.65rem] text-muted-foreground uppercase font-sans">Labs</p>
+                    <p className="text-sm font-bold text-blue-600">{dept.laboratoriesCount}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-xs text-muted-foreground">Accreditation:</span>
+                  <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[0.68rem]">
+                    {dept.accreditation}
+                  </Badge>
                 </div>
               </div>
             ))}
@@ -544,150 +748,112 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
         </div>
       )}
 
-      {/* EXISTING SUBPART: COURSES CATALOG VIEW */}
-      {activeSubpart === "courses" && (
-        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
-                <tr>
-                  <th className="py-3 px-3">Course Code</th>
-                  <th className="py-3 px-3">Course Title</th>
-                  <th className="py-3 px-3">Department</th>
-                  <th className="py-3 px-3">Semester</th>
-                  <th className="py-3 px-3">Credits</th>
-                  <th className="py-3 px-3">Instructor</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/60">
-                {filteredCourses.map((c) => (
-                  <tr key={c.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="py-3 px-3 font-mono font-bold text-foreground">{c.code}</td>
-                    <td className="py-3 px-3 font-bold text-foreground">{c.name}</td>
-                    <td className="py-3 px-3">{c.department}</td>
-                    <td className="py-3 px-3">{c.semester}</td>
-                    <td className="py-3 px-3 font-mono font-bold text-primary">{c.credits} Credits</td>
-                    <td className="py-3 px-3 text-muted-foreground">{c.instructor}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* SUBPART 3: CURRICULUM & REGULATIONS VIEW */}
+      {activeSubpart === "curriculum" && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredSchemes.map((scheme) => (
+              <div key={scheme.id} className="p-5 rounded-2xl bg-card border border-border/80 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                  <div>
+                    <Badge className="bg-purple-500/10 text-purple-600 border-purple-500/20 font-mono text-xs mb-1">
+                      {scheme.regulationCode}
+                    </Badge>
+                    <h3 className="text-base font-bold text-foreground">{scheme.programName}</h3>
+                    <p className="text-xs text-muted-foreground">Effective Batch: <span className="font-mono font-semibold">{scheme.effectiveBatch}</span></p>
+                  </div>
+                  <Badge variant="outline" className="font-mono text-xs text-emerald-600 border-emerald-200">
+                    {scheme.status}
+                  </Badge>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-muted/30 font-mono">
+                    <span className="text-muted-foreground font-sans font-medium">Total Degree Credits:</span>
+                    <span className="font-bold text-base text-primary">{scheme.totalCredits} Credits</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-center">
+                    <div className="p-2 rounded-xl bg-muted/40">
+                      <p className="text-[0.65rem] text-muted-foreground font-sans">Core Theory</p>
+                      <p className="text-xs font-bold text-foreground">{scheme.coreTheoryCredits} C</p>
+                    </div>
+                    <div className="p-2 rounded-xl bg-muted/40">
+                      <p className="text-[0.65rem] text-muted-foreground font-sans">Labs</p>
+                      <p className="text-xs font-bold text-blue-600">{scheme.labCredits} C</p>
+                    </div>
+                    <div className="p-2 rounded-xl bg-muted/40">
+                      <p className="text-[0.65rem] text-muted-foreground font-sans">Electives</p>
+                      <p className="text-xs font-bold text-emerald-600">{scheme.electiveCredits} C</p>
+                    </div>
+                    <div className="p-2 rounded-xl bg-muted/40">
+                      <p className="text-[0.65rem] text-muted-foreground font-sans">Projects</p>
+                      <p className="text-xs font-bold text-purple-600">{scheme.projectCredits} C</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* EXISTING SUBPART: CURRICULUM SCHEMES */}
-      {activeSubpart === "curriculum" && (
-        <div className="grid md:grid-cols-2 gap-4">
-          {filteredSchemes.map((s) => (
-            <div key={s.id} className="p-5 rounded-2xl border border-border/80 bg-card space-y-3 shadow-sm">
-              <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                <div>
-                  <Badge variant="outline" className="font-mono text-xs text-primary">{s.regulationCode}</Badge>
-                  <h3 className="font-bold text-sm text-foreground mt-1">{s.programName}</h3>
-                </div>
-                <Badge className="bg-emerald-500/10 text-emerald-600">{s.status}</Badge>
-              </div>
-              <p className="text-xs text-muted-foreground font-mono">Total Credits: {s.totalCredits} (Core: {s.coreTheoryCredits}, Lab: {s.labCredits}, Electives: {s.electiveCredits})</p>
+      {/* DIALOG 1: ADD COURSE MODAL */}
+      <Dialog open={isAddCourseOpen} onOpenChange={setIsAddCourseOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Plus className="size-5 text-primary" /> Register New Academic Course
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleAddCourseSubmit} className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1"><Label className="text-xs font-semibold">Course Code *</Label><Input required placeholder="CS405" value={courseForm.code || ""} onChange={(e) => setCourseForm({ ...courseForm, code: e.target.value })} className="h-9 text-xs font-mono uppercase" /></div>
+              <div className="space-y-1"><Label className="text-xs font-semibold">Course Title *</Label><Input required placeholder="Cloud Computing" value={courseForm.name || ""} onChange={(e) => setCourseForm({ ...courseForm, name: e.target.value })} className="h-9 text-xs" /></div>
+              <div className="space-y-1"><Label className="text-xs font-semibold">Department</Label><Select value={courseForm.department} onValueChange={(val) => setCourseForm({ ...courseForm, department: val })}><SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger><SelectContent>{DEPARTMENTS_LIST.filter((d) => d !== "All Departments").map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}</SelectContent></Select></div>
+              <div className="space-y-1"><Label className="text-xs font-semibold">Credits</Label><Input type="number" required value={courseForm.credits ?? 3} onChange={(e) => setCourseForm({ ...courseForm, credits: Number(e.target.value) })} className="h-9 text-xs font-mono" /></div>
             </div>
-          ))}
-        </div>
-      )}
+            <div className="space-y-1"><Label className="text-xs font-semibold">Instructor</Label><Input placeholder="Dr. S. K. Gupta" value={courseForm.instructor || ""} onChange={(e) => setCourseForm({ ...courseForm, instructor: e.target.value })} className="h-9 text-xs" /></div>
+            <DialogFooter><Button type="button" variant="outline" onClick={() => setIsAddCourseOpen(false)} className="text-xs">Cancel</Button><Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold">Register Course</Button></DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
-      {/* Add Department Dialog */}
+      {/* DIALOG 2: ADD DEPARTMENT MODAL */}
       <Dialog open={isAddDeptOpen} onOpenChange={setIsAddDeptOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Add New Department</DialogTitle>
-            <DialogDescription>
-              Create a new academic department profile.
-            </DialogDescription>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Building2 className="size-5 text-primary" /> Add New Academic Department
+            </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleAddDeptSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="dept-code">Department Code</Label>
-                <Input
-                  id="dept-code"
-                  placeholder="e.g. CSE"
-                  value={deptForm.code || ""}
-                  onChange={(e) => setDeptForm({ ...deptForm, code: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dept-name">Department Name</Label>
-                <Input
-                  id="dept-name"
-                  placeholder="e.g. Computer Science"
-                  value={deptForm.name || ""}
-                  onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })}
-                  required
-                />
-              </div>
+          <form onSubmit={handleAddDeptSubmit} className="space-y-3 pt-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1"><Label className="text-xs font-semibold">Dept Code *</Label><Input required placeholder="CIVIL" value={deptForm.code || ""} onChange={(e) => setDeptForm({ ...deptForm, code: e.target.value })} className="h-9 text-xs font-mono uppercase" /></div>
+              <div className="space-y-1"><Label className="text-xs font-semibold">Faculty Count</Label><Input type="number" value={deptForm.facultyCount ?? 35} onChange={(e) => setDeptForm({ ...deptForm, facultyCount: Number(e.target.value) })} className="h-9 text-xs font-mono" /></div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="hod-name">HOD Name</Label>
-              <Input
-                id="hod-name"
-                placeholder="e.g. Dr. Sarah Smith"
-                value={deptForm.hodName || ""}
-                onChange={(e) => setDeptForm({ ...deptForm, hodName: e.target.value })}
-                required
-              />
+            <div className="space-y-1"><Label className="text-xs font-semibold">Department Full Name *</Label><Input required placeholder="Civil Engineering" value={deptForm.name || ""} onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })} className="h-9 text-xs" /></div>
+            <div className="space-y-1"><Label className="text-xs font-semibold">Head of Department (HOD)</Label><Input placeholder="Dr. N. R. Prasad" value={deptForm.hodName || ""} onChange={(e) => setDeptForm({ ...deptForm, hodName: e.target.value })} className="h-9 text-xs" /></div>
+            <DialogFooter className="pt-2"><Button type="button" variant="outline" onClick={() => setIsAddDeptOpen(false)} className="text-xs">Cancel</Button><Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold">Create Department</Button></DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* DIALOG 3: ADD CURRICULUM SCHEME MODAL */}
+      <Dialog open={isAddSchemeOpen} onOpenChange={setIsAddSchemeOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Bookmark className="size-5 text-primary" /> Create Curriculum Scheme
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleAddSchemeSubmit} className="space-y-3 pt-2">
+            <div className="space-y-1"><Label className="text-xs font-semibold">Degree Program Name *</Label><Input required placeholder="B.Tech Computer Science" value={schemeForm.programName || ""} onChange={(e) => setSchemeForm({ ...schemeForm, programName: e.target.value })} className="h-9 text-xs" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1"><Label className="text-xs font-semibold">Regulation Code</Label><Input placeholder="R24 Regulation" value={schemeForm.regulationCode || ""} onChange={(e) => setSchemeForm({ ...schemeForm, regulationCode: e.target.value })} className="h-9 text-xs" /></div>
+              <div className="space-y-1"><Label className="text-xs font-semibold">Effective Batch</Label><Input placeholder="2024-2028" value={schemeForm.effectiveBatch || ""} onChange={(e) => setSchemeForm({ ...schemeForm, effectiveBatch: e.target.value })} className="h-9 text-xs font-mono" /></div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="faculty-count">Faculty Count</Label>
-                <Input
-                  id="faculty-count"
-                  type="number"
-                  value={deptForm.facultyCount || ""}
-                  onChange={(e) => setDeptForm({ ...deptForm, facultyCount: parseInt(e.target.value) || 0 })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="student-capacity">Student Capacity</Label>
-                <Input
-                  id="student-capacity"
-                  type="number"
-                  value={deptForm.studentCapacity || ""}
-                  onChange={(e) => setDeptForm({ ...deptForm, studentCapacity: parseInt(e.target.value) || 0 })}
-                  required
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="labs-count">Laboratories Count</Label>
-                <Input
-                  id="labs-count"
-                  type="number"
-                  value={deptForm.laboratoriesCount || ""}
-                  onChange={(e) => setDeptForm({ ...deptForm, laboratoriesCount: parseInt(e.target.value) || 0 })}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="accreditation">Accreditation</Label>
-                <Input
-                  id="accreditation"
-                  placeholder="e.g. NAAC A+"
-                  value={deptForm.accreditation || ""}
-                  onChange={(e) => setDeptForm({ ...deptForm, accreditation: e.target.value })}
-                  required
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsAddDeptOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" className="bg-brand-gradient text-white">
-                Add Department
-              </Button>
-            </DialogFooter>
+            <DialogFooter className="pt-2"><Button type="button" variant="outline" onClick={() => setIsAddSchemeOpen(false)} className="text-xs">Cancel</Button><Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold">Create Scheme</Button></DialogFooter>
           </form>
         </DialogContent>
       </Dialog>

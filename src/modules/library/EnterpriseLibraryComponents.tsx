@@ -1736,7 +1736,7 @@ export function AcquisitionModuleView() {
               {state.acquisitions.map((req) => (
                 <tr key={req.id} className="hover:bg-slate-50">
                   <td className="p-3 font-mono font-semibold text-slate-800">{req.id}</td>
-                  <td className="p-3 font-medium text-slate-900">{req.title} <span className="text-slate-400 font-normal">({Array.isArray((req as any).authors) ? (req as any).authors.join(", ") : (req.author || (req as any).authors || "Unknown Author")})</span></td>
+                  <td className="p-3 font-medium text-slate-900">{req.title} <span className="text-slate-400 font-normal">({(req as any).author || (req.authors ? req.authors.join(", ") : "Unknown Author")})</span></td>
                   <td className="p-3 text-slate-600">{req.department}</td>
                   <td className="p-3 text-slate-700">{req.requestedBy}</td>
                   <td className="p-3 font-bold text-slate-800">{req.quantity}</td>
@@ -2629,15 +2629,15 @@ export function CirculationEnhancementsView() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {borrowHistory.map((h) => (
-                <tr key={h.id} className="hover:bg-slate-50">
-                  <td className="p-3 font-mono font-semibold text-slate-800">{h.id}</td>
-                  <td className="p-3 font-medium text-slate-900">{h.book}</td>
-                  <td className="p-3 text-slate-700">{h.borrower} <span className="text-slate-400">({h.rollNo})</span></td>
-                  <td className="p-3 text-slate-600">{h.issued}</td>
-                  <td className="p-3 text-slate-600">{h.returned}</td>
+              {state.issues.map((i: any) => (
+                <tr key={i.id} className="hover:bg-slate-50">
+                  <td className="p-3 font-mono font-semibold text-slate-800">{i.id}</td>
+                  <td className="p-3 font-medium text-slate-900">{i.bookTitle || i.accessionNo}</td>
+                  <td className="p-3 text-slate-700">{i.memberName || i.memberId} <span className="text-slate-400">({i.memberSourceId || "N/A"})</span></td>
+                  <td className="p-3 text-slate-600">{i.issueDate}</td>
+                  <td className="p-3 text-slate-600">{i.actualReturnDate || i.dueDate}</td>
                   <td className="p-3">
-                    <Badge className="bg-emerald-100 text-emerald-700">{h.status}</Badge>
+                    <Badge className="bg-emerald-100 text-emerald-700">{i.status}</Badge>
                   </td>
                 </tr>
               ))}
@@ -3087,11 +3087,11 @@ export function EnhancedSettingsView() {
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Student Loan (Days)</label>
-              <Input type="number" value={settingsForm.borrowPeriodDaysStudent} onChange={(e) => setSettingsForm({ ...settingsForm, borrowPeriodDaysStudent: Number(e.target.value) })} className="h-9" />
+              <Input type="number" value={settingsForm.loanPeriodStudent} onChange={(e) => setSettingsForm({ ...settingsForm, loanPeriodStudent: Number(e.target.value) })} className="h-9" />
             </div>
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Faculty Loan (Days)</label>
-              <Input type="number" value={settingsForm.borrowPeriodDaysFaculty} onChange={(e) => setSettingsForm({ ...settingsForm, borrowPeriodDaysFaculty: Number(e.target.value) })} className="h-9" />
+              <Input type="number" value={settingsForm.loanPeriodFaculty} onChange={(e) => setSettingsForm({ ...settingsForm, loanPeriodFaculty: Number(e.target.value) })} className="h-9" />
             </div>
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Max Books — Student</label>
@@ -3112,15 +3112,15 @@ export function EnhancedSettingsView() {
           <div className="grid grid-cols-3 gap-3 text-xs">
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Per Day Fine (₹)</label>
-              <Input type="number" value={settingsForm.finePerDayOverdue} onChange={(e) => setSettingsForm({ ...settingsForm, finePerDayOverdue: Number(e.target.value) })} className="h-9" />
+              <Input type="number" value={settingsForm.finePerDay} onChange={(e) => setSettingsForm({ ...settingsForm, finePerDay: Number(e.target.value) })} className="h-9" />
             </div>
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Maximum Fine (₹)</label>
-              <Input type="number" value={settingsForm.maxFineLimit} onChange={(e) => setSettingsForm({ ...settingsForm, maxFineLimit: Number(e.target.value) })} className="h-9" />
+              <Input type="number" value={settingsForm.maxFine} onChange={(e) => setSettingsForm({ ...settingsForm, maxFine: Number(e.target.value) })} className="h-9" />
             </div>
             <div>
               <label className="font-semibold text-slate-700 block mb-1">Grace Period (Days)</label>
-              <Input type="number" value={settingsForm.gracePeriodDays} onChange={(e) => setSettingsForm({ ...settingsForm, gracePeriodDays: Number(e.target.value) })} className="h-9" />
+              <Input type="number" value={settingsForm.gracePeriod} onChange={(e) => setSettingsForm({ ...settingsForm, gracePeriod: Number(e.target.value) })} className="h-9" />
             </div>
           </div>
         </div>
@@ -3141,16 +3141,27 @@ export function EnhancedIDCardManagementView() {
 
   const handleIssueCard = (e: React.FormEvent) => {
     e.preventDefault();
+    const member = state.members.find(m => m.id === issueCardMemberId);
     dispatch({
       type: "ISSUE_ID_CARD",
-      payload: { memberId: issueCardMemberId, cardType, rfidTag, issuedBy: "Librarian" },
+      payload: {
+        memberId: issueCardMemberId,
+        memberName: member?.name || "Student Member",
+        memberType: member?.type || "Student",
+        memberSourceId: member?.sourceId || "23341A4219",
+        cardType,
+        rfidTag,
+        issuedBy: "Librarian",
+        issuanceType: "Original",
+        expiryDate: "2027-05-31",
+      },
     });
     setCardSubTab("history");
   };
 
   const handleToggleCardStatus = (cardId: string, currentStatus: string) => {
     const nextStatus = currentStatus === "Active" ? "Suspended" : "Active";
-    dispatch({ type: "UPDATE_CARD_STATUS", payload: { cardId, status: nextStatus, updatedBy: "Librarian" } });
+    dispatch({ type: "UPDATE_CARD_STATUS", payload: { id: cardId, status: nextStatus as any, by: "Librarian" } });
   };
 
   return (

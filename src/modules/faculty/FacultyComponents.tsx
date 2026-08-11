@@ -139,7 +139,7 @@ const STATUS_LIST = ["All Status", "Active", "On Leave", "Sabbatical"] as const;
 export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTab?: FacultySubpart }) {
   const { selectedDepartment } = useAcademic();
   const { role } = useRole();
-  const isSuperAdmin = role === "super-admin" || role === "super_admin";
+  const isSuperAdmin = (role as string) === "super-admin" || (role as string) === "super_admin";
   const [activeSubpart, setActiveSubpart] = useState<FacultySubpart>(initialTab);
 
   useEffect(() => {
@@ -414,7 +414,7 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
 
   const handleSubmitAttendance = async () => {
     setSubmittingAttendance(true);
-    const res = await submitAttendanceMark("CSE-3A", 2, studentRoster);
+    const res = await (submitAttendanceMark as any)("CSE-3A", 2, studentRoster);
     setSubmittingAttendance(false);
     if (res.success) {
       toast.success(res.message);
@@ -425,17 +425,17 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
     setSyllabusList((prev) =>
       prev.map((item) => {
         if (item.id === courseId) {
-          const updatedUnits = item.units.map((u) =>
+          const updatedUnits = item.units.map((u: any) =>
             u.id === unitId ? { ...u, completed: !u.completed } : u
           );
-          const completedCount = updatedUnits.filter((u) => u.completed).length;
+          const completedCount = updatedUnits.filter((u: any) => u.completed).length;
           const overallProgressPct = Math.round((completedCount / updatedUnits.length) * 100);
           return { ...item, units: updatedUnits, overallProgressPct };
         }
         return item;
       })
     );
-    await updateSyllabusUnitStatus(courseId, unitId, true);
+    await (updateSyllabusUnitStatus as any)(courseId, unitId, true);
     toast.success("Syllabus unit status updated");
   };
 
@@ -443,8 +443,8 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
     return facultyStatuses.filter((f) => {
       const matchesSearch =
         f.name.toLowerCase().includes(search.toLowerCase()) ||
-        f.subject.toLowerCase().includes(search.toLowerCase()) ||
-        f.currentClass.toLowerCase().includes(search.toLowerCase());
+        (f.subject || "").toLowerCase().includes(search.toLowerCase()) ||
+        (f.currentClass || "").toLowerCase().includes(search.toLowerCase());
       const matchesDept = selectedDeptFilter === "All Departments" || f.department === selectedDeptFilter;
       return matchesSearch && matchesDept;
     });
@@ -1030,13 +1030,13 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase">
                     <span>Syllabus Unit Completion Ledger</span>
-                    <span>{syl.units.filter((u) => u.completed).length} / {syl.units.length} Units Done</span>
+                    <span>{syl.units.filter((u: any) => u.completed).length} / {syl.units.length} Units Done</span>
                   </div>
                   <Progress value={syl.overallProgressPct} className="h-2.5 rounded-full" />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-3">
-                  {syl.units.map((unit) => (
+                  {syl.units.map((unit: any) => (
                     <div
                       key={unit.id}
                       onClick={() => {
@@ -1089,10 +1089,10 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
                 </div>
                 <div>
                   <DialogTitle className="text-lg font-bold text-foreground">
-                    {selectedFacultySchedule?.facultyName || "Faculty Timetable"}
+                    {(selectedFacultySchedule as any)?.facultyName || "Faculty Timetable"}
                   </DialogTitle>
                   <DialogDescription className="text-xs text-muted-foreground font-mono mt-0.5">
-                    {selectedFacultySchedule?.department} Department &middot; Employee ID: {selectedFacultySchedule?.empId}
+                    {(selectedFacultySchedule as any)?.department} Department &middot; Employee ID: {(selectedFacultySchedule as any)?.empId}
                   </DialogDescription>
                 </div>
               </div>
@@ -1100,10 +1100,10 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
               {selectedFacultySchedule && (
                 <div className="flex items-center gap-2">
                   <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 font-mono font-bold text-xs px-2.5 py-1">
-                    🟢 {selectedFacultySchedule.freePeriodsCount} Free Slots
+                    🟢 {(selectedFacultySchedule as any).freePeriodsCount} Free Slots
                   </Badge>
                   <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 font-mono font-bold text-xs px-2.5 py-1">
-                    🔵 {selectedFacultySchedule.teachingPeriodsCount} Teaching
+                    🔵 {(selectedFacultySchedule as any).teachingPeriodsCount} Teaching
                   </Badge>
                 </div>
               )}

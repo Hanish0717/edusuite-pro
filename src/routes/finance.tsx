@@ -10,7 +10,7 @@ export const Route = createFileRoute("/finance")({
 
 function FinanceLayout() {
   const { role, flags } = useRole();
-  const isSuperAdmin = role === "super-admin" || role === "super_admin";
+  const isSuperAdmin = (role as any) === "super-admin" || (role as any) === "super_admin" || role === "super_admin";
 
   if (!isSuperAdmin && (role !== "staff" || !flags.includes("isFinanceOfficer"))) {
     return (

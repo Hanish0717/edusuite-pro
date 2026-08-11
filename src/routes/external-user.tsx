@@ -10,7 +10,7 @@ export const Route = createFileRoute("/external-user")({
 
 function ExternalUserLayout() {
   const { role } = useRole();
-  const isSuperAdmin = role === "super-admin" || role === "super_admin";
+  const isSuperAdmin = (role as any) === "super-admin" || (role as any) === "super_admin" || role === "super_admin";
 
   if (role !== "external-user" && !isSuperAdmin) {
     return (

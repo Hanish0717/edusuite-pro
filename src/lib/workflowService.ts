@@ -1,4 +1,4 @@
-import {
+import type {
   WorkflowItem,
   WorkflowStep,
   DelegationRecord,
@@ -9,6 +9,19 @@ import {
   RiskLevel,
   WorkflowDomainCategory,
 } from "@/types/approval";
+
+export type {
+  WorkflowItem,
+  WorkflowStep,
+  DelegationRecord,
+  AuditLogEntry,
+  EmergencyOverrideRecord,
+  SlaInfo,
+  WorkflowTemplate,
+  RiskLevel,
+  WorkflowDomainCategory,
+};
+
 
 export const MOCK_DELEGATIONS: DelegationRecord[] = [
   {
@@ -610,11 +623,12 @@ export function getSlaStatus(item: WorkflowItem): SlaInfo {
 export function processStandardStep(
   workflows: WorkflowItem[],
   id: string,
-  action: "approve" | "reject",
+  action: "approve" | "reject" | "escalate" | "forward",
   actorName: string,
-  actorRole: string,
+  actorRole: string = "Approver",
   notes?: string
 ): WorkflowItem[] {
+
   const updated = workflows.map((wf) => {
     if (wf.id !== id) return wf;
 
@@ -843,3 +857,6 @@ export function saveWorkflowTemplate(template: WorkflowTemplate): WorkflowTempla
   }
   return storedTemplates;
 }
+
+export const processWorkflowStep = processStandardStep;
+

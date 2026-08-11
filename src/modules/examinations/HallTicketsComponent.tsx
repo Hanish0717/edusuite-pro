@@ -197,10 +197,10 @@ export function HallTicketsView() {
                     <div className="text-[0.68rem] text-muted-foreground font-mono mt-0.5">{t.rollNo} &middot; {t.department} ({t.semester})</div>
                   </td>
                   <td className="py-3 px-3 text-center">
-                    {t.attendanceEligibility ? <CheckCircle2 className="size-4 text-emerald-500 mx-auto" /> : <XCircle className="size-4 text-red-500 mx-auto" title="< 75% Attendance" />}
+                    {t.attendanceEligibility ? <CheckCircle2 className="size-4 text-emerald-500 mx-auto" /> : <span title="< 75% Attendance"><XCircle className="size-4 text-red-500 mx-auto" /></span>}
                   </td>
                   <td className="py-3 px-3 text-center">
-                    {t.feeCleared ? <CheckCircle2 className="size-4 text-emerald-500 mx-auto" /> : <XCircle className="size-4 text-red-500 mx-auto" title="Pending Dues" />}
+                    {t.feeCleared ? <CheckCircle2 className="size-4 text-emerald-500 mx-auto" /> : <span title="Pending Dues"><XCircle className="size-4 text-red-500 mx-auto" /></span>}
                   </td>
                   <td className="py-3 px-3">
                     <Badge className={

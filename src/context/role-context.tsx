@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 
 import {
   roleProfiles,
+  getDynamicProfile,
   type LoginRole,
   type ExternalPersona,
   type DepartmentCode,
@@ -48,12 +49,13 @@ interface RoleContextValue {
   hasFlag: (flag: string) => boolean;
   canAccessModule: (moduleId: string, action?: PermissionAction) => boolean;
   canAccessRoute: (routeUrl: string) => boolean;
+  clearSession: () => void;
 }
 
 const RoleContext = createContext<RoleContextValue | null>(null);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRoleState] = useState<LoginRole>("super-admin");
+  const [role, setRoleState] = useState<LoginRole>("super_admin");
   const [flags, setFlagsState] = useState<string[]>([]);
   const [department, setDepartmentState] = useState<DepartmentCode | undefined>(undefined);
   const [externalPersona, setExternalPersonaState] = useState<ExternalPersona | undefined>(
@@ -65,7 +67,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   // Initialize from storage or defaults
   useEffect(() => {
     const storedRole = window.localStorage.getItem(ROLE_STORAGE_KEY) as LoginRole | null;
-    const activeRole = storedRole && storedRole in roleProfiles ? storedRole : "super-admin";
+    const activeRole = storedRole && storedRole in roleProfiles ? storedRole : "super_admin";
     setRoleState(activeRole);
 
     const defaultProfile = roleProfiles[activeRole];
@@ -154,11 +156,21 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   };
 
   const hasFlag = (flag: string) => {
-    return role === "super-admin" || flags.includes(flag);
+    return (role as any) === "super-admin" || role === "super_admin" || flags.includes(flag);
+  };
+
+  const clearSession = () => {
+    window.localStorage.removeItem(ROLE_STORAGE_KEY);
+    window.localStorage.removeItem(FLAGS_STORAGE_KEY);
+    window.localStorage.removeItem(DEPT_STORAGE_KEY);
+    window.localStorage.removeItem(PERSONA_STORAGE_KEY);
+    window.localStorage.removeItem("loggedInRecruiterName");
+    window.localStorage.removeItem("loggedInRecruiterCompany");
+    window.sessionStorage.clear();
   };
 
   const profile = useMemo(() => {
-    const baseProfile = roleProfiles[role];
+    const dynamicBase = getDynamicProfile(role, flags, department, externalPersona);
     const computedName =
       role === "external-user" && externalPersona
         ? externalPersona === "recruiter"
@@ -170,7 +182,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
               : externalPersona === "vendor"
                 ? "Robert Chen"
                 : "Prof. Alan Turing"
-        : baseProfile.personaName;
+        : dynamicBase.personaName;
 
     const computedInitials = computedName
       .split(" ")
@@ -178,10 +190,10 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       .filter(Boolean)
       .join("")
       .toUpperCase()
-      .slice(0, 2) || "HR";
+      .slice(0, 2) || dynamicBase.initials;
 
     return {
-      ...baseProfile,
+      ...dynamicBase,
       role,
       flags,
       department,
@@ -200,9 +212,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
                 : externalPersona === "vendor"
                   ? "Cafeteria Services Vendor"
                   : "Guest Speaker / Professor"
-          : role === "staff"
-            ? "Placement Officer - Training & Placement Cell"
-            : baseProfile.personaMeta,
+          : dynamicBase.personaMeta,
     };
   }, [role, flags, department, externalPersona, featureFlags]);
 
@@ -230,6 +240,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       hasFlag,
       canAccessModule,
       canAccessRoute,
+      clearSession,
     }),
     [role, profile, flags, department, externalPersona, featureFlags],
   );

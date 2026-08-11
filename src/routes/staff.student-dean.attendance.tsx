@@ -135,7 +135,7 @@ function AttendancePage() {
                   <tr key={s.rollNo} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-mono font-bold text-primary">{s.rollNo}</td>
                     <td className="p-3 font-bold text-foreground">{s.name}</td>
-                    <td className="p-3 font-mono font-bold">{s.department}</td>
+                    <td className="p-3 font-mono font-bold">{s["department"]}</td>
                     <td className="p-3 font-mono">{s.year} ({s.section})</td>
                     <td className="p-3 text-center font-mono font-bold text-rose-600">{s.attendance}%</td>
                     <td className="p-3 text-center">

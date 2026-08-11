@@ -23,8 +23,8 @@ function CourseAllocationPage() {
     (c) =>
       c.subjectCode.toLowerCase().includes(search.toLowerCase()) ||
       c.subjectName.toLowerCase().includes(search.toLowerCase()) ||
-      c.facultyName.toLowerCase().includes(search.toLowerCase()) ||
-      c.department.toLowerCase().includes(search.toLowerCase()),
+      c["facultyName"].toLowerCase().includes(search.toLowerCase()) ||
+      c["department"].toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -37,9 +37,9 @@ function CourseAllocationPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <KpiCard label="Total Allocated Courses" value={data.courseAllocations.length} icon={BookOpen} tone="purple" />
-        <KpiCard label="Allocated Courses" value={data.courseAllocations.filter((c) => c.status === "Allocated").length} icon={CheckCircle2} tone="success" />
-        <KpiCard label="Pending Sign-offs" value={data.courseAllocations.filter((c) => c.status === "Pending").length} icon={AlertCircle} tone="warning" />
+        <KpiCard label="Total Allocated Courses" value={String(data.courseAllocations.length)} icon={BookOpen} tone="purple" />
+        <KpiCard label="Allocated Courses" value={String(data.courseAllocations.filter((c) => c["status"] === "Allocated").length)} icon={CheckCircle2} tone="success" />
+        <KpiCard label="Pending Sign-offs" value={String(data.courseAllocations.filter((c) => c["status"] === "Pending").length)} icon={AlertCircle} tone="warning" />
       </div>
 
       <Panel title="Semester Course Mapping Ledger" description="View subject code, faculty, department, semester, section, credits, and allocation status.">
@@ -73,14 +73,14 @@ function CourseAllocationPage() {
                   <tr key={c.id} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-mono font-bold text-primary">{c.subjectCode}</td>
                     <td className="p-3 font-bold text-foreground">{c.subjectName}</td>
-                    <td className="p-3 font-medium">{c.facultyName}</td>
-                    <td className="p-3 font-mono font-bold">{c.department}</td>
+                    <td className="p-3 font-medium">{c["facultyName"]}</td>
+                    <td className="p-3 font-mono font-bold">{c["department"]}</td>
                     <td className="p-3 text-center font-mono">Sem {c.semester}</td>
                     <td className="p-3 text-center font-mono">{c.section}</td>
                     <td className="p-3 text-center font-mono font-bold text-emerald-600">{c.credits} Credits</td>
                     <td className="p-3 text-center">
-                      <Badge className={c.status === "Allocated" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-amber-500/10 text-amber-600 font-mono text-[0.65rem]"}>
-                        {c.status}
+                      <Badge className={c["status"] === "Allocated" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-amber-500/10 text-amber-600 font-mono text-[0.65rem]"}>
+                        {c["status"]}
                       </Badge>
                     </td>
                   </tr>

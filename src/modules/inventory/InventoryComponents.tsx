@@ -179,7 +179,7 @@ export function InventoryModuleView() {
     const min = Number(formData.minThreshold) || 5;
     const computedStatus = qty === 0 ? "Out of Stock" : qty <= min ? "Low Stock" : "In Stock";
 
-    const updatedData = { ...formData, status: computedStatus };
+    const updatedData = { ...formData, status: computedStatus as "In Stock" | "Low Stock" | "Out of Stock" };
     await updateInventoryItem(selectedItem.id, updatedData);
     setItems((prev) =>
       prev.map((i) => (i.id === selectedItem.id ? ({ ...i, ...updatedData } as InventoryItem) : i)),

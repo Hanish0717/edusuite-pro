@@ -14,7 +14,7 @@ function LibrarianLayout() {
   const { role, flags } = useRole();
 
   if (
-    role !== "super-admin" &&
+    (role as any) !== "super-admin" && (role as any) !== "super_admin" &&
     role !== "librarian" &&
     (role !== "staff" || !flags.includes("isLibraryAdmin"))
   ) {

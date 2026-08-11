@@ -35,7 +35,8 @@ export const Route = createFileRoute("/faculty/timetable")({
 function FacultyTimetablePage() {
   const { profile } = useRole();
   const deptCode = profile.department || "CSE";
-  const facultyId = profile.employeeId || "EMP-CSE-2041";
+  const facultyId = (profile as any).employeeId || "EMP-CSE-2041";
+
   const facultyName = profile.personaName || "Dr. Ananya Sharma";
 
   const [loading, setLoading] = useState(false);

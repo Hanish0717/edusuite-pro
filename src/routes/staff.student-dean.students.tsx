@@ -29,8 +29,8 @@ function StudentsPage() {
       const matchSearch =
         s.name.toLowerCase().includes(search.toLowerCase()) ||
         s.rollNo.toLowerCase().includes(search.toLowerCase()) ||
-        s.department.toLowerCase().includes(search.toLowerCase());
-      const matchDept = deptFilter === "all" || s.department === deptFilter;
+        s["department"].toLowerCase().includes(search.toLowerCase());
+      const matchDept = deptFilter === "all" || s["department"] === deptFilter;
       const matchQuota = quotaFilter === "all" || s.admissionQuota === quotaFilter;
       return matchSearch && matchDept && matchQuota;
     });
@@ -150,7 +150,7 @@ function StudentsPage() {
                   <tr key={s.rollNo} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-mono font-bold text-primary">{s.rollNo}</td>
                     <td className="p-3 font-bold text-foreground">{s.name}</td>
-                    <td className="p-3 font-mono font-bold">{s.department}</td>
+                    <td className="p-3 font-mono font-bold">{s["department"]}</td>
                     <td className="p-3 font-mono">{s.year} ({s.section})</td>
                     <td className="p-3 font-mono text-muted-foreground">{s.gender}</td>
                     <td className="p-3">
@@ -159,8 +159,8 @@ function StudentsPage() {
                     <td className="p-3 text-center font-mono font-bold text-emerald-600">{s.attendance}%</td>
                     <td className="p-3 text-center font-mono font-bold">{s.cgpa}</td>
                     <td className="p-3 text-center">
-                      <Badge className={s.status === "Active" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-rose-500/10 text-rose-600 font-mono text-[0.65rem]"}>
-                        {s.status}
+                      <Badge className={s["status"] === "Active" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-rose-500/10 text-rose-600 font-mono text-[0.65rem]"}>
+                        {s["status"]}
                       </Badge>
                     </td>
                   </tr>

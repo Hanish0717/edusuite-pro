@@ -245,7 +245,7 @@ export function TimetableModuleView() {
 
   // Publish Timetable
   const handlePublishTimetable = () => {
-    setTimetableSlots((prev) => prev.map((s) => ({ ...s, status: "Published" as const })));
+    setTimetableSlots((prev: any[]) => (prev || []).map((s: any) => ({ ...s, status: "Published" as const })));
     setIsPublishModalOpen(false);
     toast.success("All draft and pending timetables have been published institution-wide!");
   };
@@ -296,13 +296,13 @@ export function TimetableModuleView() {
       duration: "1 hour"
     };
 
-    setTimetableSlots((prev) => [...(prev || []), newSlot]);
+    setTimetableSlots((prev: any[]) => [...(prev || []), newSlot]);
     toast.success(`Successfully added ${newSlot.subjectCode} scheduling slot!`);
   };
 
   // Delete/Cancel Slot
   const handleDeleteSlot = (id: string, name: string) => {
-    setTimetableSlots((prev) => (prev || []).filter((s) => s.id !== id));
+    setTimetableSlots((prev: any[]) => (prev || []).filter((s: any) => s.id !== id));
     toast.warning(`Cancelled scheduled class: ${name}`);
   };
 

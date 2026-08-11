@@ -79,6 +79,7 @@ export function Topbar() {
     setDepartment,
     externalPersona,
     setExternalPersona,
+    clearSession,
   } = useRole();
   const [dark, setDark] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -161,12 +162,12 @@ export function Topbar() {
 
         <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none py-0.5 max-w-full">
           <Select value={role} onValueChange={(v) => setRole(v as LoginRole)}>
-            <SelectTrigger className="h-9 w-[160px] font-semibold text-xs border-primary/40 bg-card" aria-label="5 Core Login Roles">
+            <SelectTrigger className="h-9 w-[170px] font-semibold text-xs border-primary/40 bg-card" aria-label="Core Login Role">
               <SelectValue placeholder="Core Login Role" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="super-admin">1. Super Admin</SelectItem>
-              <SelectItem value="staff">2. Staff (Placement Officer)</SelectItem>
+              <SelectItem value="staff">2. {profile.label || "Staff / Faculty"}</SelectItem>
               <SelectItem value="student">3. Student</SelectItem>
               <SelectItem value="parent">4. Parent</SelectItem>
               <SelectItem value="external-user">5. External User</SelectItem>
@@ -384,7 +385,13 @@ export function Topbar() {
               <DropdownMenuItem asChild>
                 <Link to="/settings?tab=account-profile">Settings</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              <DropdownMenuItem
+                onClick={() => {
+                  clearSession();
+                  toast.success("Signed out successfully.");
+                }}
+                asChild
+              >
                 <Link to="/login">Sign out</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -84,9 +84,9 @@ function TimetableComponent() {
 
   const filteredFaculty = useMemo(() => {
     return facultyTimetables.filter((f: Record<string, any>) =>
-      f.facultyName.toLowerCase().includes(search.toLowerCase()) ||
-      f.department.toLowerCase().includes(search.toLowerCase()) ||
-      f.subject.toLowerCase().includes(search.toLowerCase())
+      f["facultyName"].toLowerCase().includes(search.toLowerCase()) ||
+      f["department"].toLowerCase().includes(search.toLowerCase()) ||
+      f["subject"].toLowerCase().includes(search.toLowerCase())
     );
   }, [facultyTimetables, search]);
 
@@ -183,11 +183,11 @@ function TimetableComponent() {
                   <tr key={s.id} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-bold text-primary font-mono">{s.day}</td>
                     <td className="p-3 font-mono text-muted-foreground">{s.period}</td>
-                    <td className="p-3 font-bold text-foreground">{s.subject}</td>
+                    <td className="p-3 font-bold text-foreground">{s["subject"]}</td>
                     <td className="p-3 font-mono">{s.section}</td>
                     <td className="p-3 font-mono">{s.room}</td>
                     <td className="p-3 text-center">
-                      <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]">{s.status}</Badge>
+                      <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]">{s["status"]}</Badge>
                     </td>
                   </tr>
                 ))}
@@ -226,9 +226,9 @@ function TimetableComponent() {
                 <tbody className="divide-y divide-border font-medium">
                   {filteredFaculty.map((f: any, idx: number) => (
                     <tr key={idx} className="hover:bg-muted/30 transition-colors">
-                      <td className="p-3 font-bold text-foreground">{f.facultyName}</td>
-                      <td className="p-3 font-mono font-bold text-primary">{f.department}</td>
-                      <td className="p-3 font-bold">{f.subject}</td>
+                      <td className="p-3 font-bold text-foreground">{f["facultyName"]}</td>
+                      <td className="p-3 font-mono font-bold text-primary">{f["department"]}</td>
+                      <td className="p-3 font-bold">{f["subject"]}</td>
                       <td className="p-3 font-mono text-muted-foreground">{f.period}</td>
                       <td className="p-3 font-mono font-bold text-emerald-600">{f.freeSlots} Slots Free</td>
                       <td className="p-3 text-center">
@@ -329,13 +329,13 @@ function TimetableComponent() {
                 {history.map((h, idx) => (
                   <tr key={idx} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-mono font-bold text-primary">{h.date}</td>
-                    <td className="p-3 font-bold text-foreground">{h.subject}</td>
+                    <td className="p-3 font-bold text-foreground">{h["subject"]}</td>
                     <td className="p-3 font-mono">{h.originalFaculty}</td>
                     <td className="p-3 font-bold text-primary">{h.assignedFaculty}</td>
                     <td className="p-3 font-mono text-muted-foreground">{h.reason}</td>
                     <td className="p-3 font-mono">{h.approvedBy}</td>
                     <td className="p-3 text-center">
-                      <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]">{h.status}</Badge>
+                      <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]">{h["status"]}</Badge>
                     </td>
                   </tr>
                 ))}

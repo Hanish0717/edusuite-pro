@@ -83,7 +83,7 @@ function AssignSubstitutePage() {
                 <SelectContent>
                   {data.facultyList.map((f) => (
                     <SelectItem key={f.id} value={f.name}>
-                      {f.name} ({f.department})
+                      {f.name} ({f["department"]})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -99,7 +99,7 @@ function AssignSubstitutePage() {
                 <SelectContent>
                   {data.facultyList.map((f) => (
                     <SelectItem key={f.id} value={f.name}>
-                      {f.name} ({f.department})
+                      {f.name} ({f["department"]})
                     </SelectItem>
                   ))}
                 </SelectContent>

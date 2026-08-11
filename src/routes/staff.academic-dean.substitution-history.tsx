@@ -23,8 +23,8 @@ function SubstitutionHistoryPage() {
       const sub = data.facultyList[(idx + 3) % data.facultyList.length];
       return {
         id: `SUB-${20260800 + idx + 1}`,
-        originalFaculty: orig.name,
-        substituteFaculty: sub.name,
+        originalFaculty: orig?.name,
+        substituteFaculty: sub?.name,
         date: `2026-08-${10 + (idx % 10)}`,
         period: `Period ${(idx % 5) + 1}`,
         subject: `CS${501 + (idx % 8)} - Subject Name ${idx + 1}`,
@@ -44,7 +44,7 @@ function SubstitutionHistoryPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <KpiCard label="Total Substitutions" value={historyLogs.length} icon={History} tone="info" />
+        <KpiCard label="Total Substitutions" value={String(historyLogs.length)} icon={History} tone="info" />
         <KpiCard label="Approved & Conducted" value="100%" icon={CheckCircle2} tone="success" />
         <KpiCard label="Faculty Impacted" value="18 Members" icon={UserCheck} tone="purple" />
       </div>
@@ -72,10 +72,10 @@ function SubstitutionHistoryPage() {
                   <td className="p-3 font-bold text-emerald-600">{log.substituteFaculty}</td>
                   <td className="p-3 font-mono text-muted-foreground">{log.date}</td>
                   <td className="p-3 font-mono">{log.period}</td>
-                  <td className="p-3 font-medium">{log.subject}</td>
+                  <td className="p-3 font-medium">{log["subject"]}</td>
                   <td className="p-3 text-muted-foreground">{log.reason}</td>
                   <td className="p-3 text-center">
-                    <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]">{log.status}</Badge>
+                    <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]">{log["status"]}</Badge>
                   </td>
                 </tr>
               ))}

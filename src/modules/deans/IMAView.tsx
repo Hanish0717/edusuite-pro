@@ -22,14 +22,14 @@ export function IMAView() {
         <KpiCard label="Total Equipment Assets" value="1,240 Assets" icon={Cpu} tone="info" />
         <KpiCard label="Working Equipment" value="1,180 (95.1%)" icon={CheckCircle2} tone="success" />
         <KpiCard label="Under Maintenance" value="32 Assets" icon={Wrench} tone="warning" />
-        <KpiCard label="Damaged / Scrapped" value="8 Units" icon={AlertTriangle} tone="danger" />
+        <KpiCard label="Damaged / Scrapped" value="8 Units" icon={AlertTriangle} tone="destructive" />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Pending Maintenance" value="12 Requests" icon={Clock} tone="warning" />
         <KpiCard label="Total Asset Register" value="₹4.82 Cr" icon={Box} tone="purple" />
         <KpiCard label="Pending Purchase Reqs" value="6 Requests" icon={ShoppingCart} tone="info" />
-        <KpiCard label="Warranty Expiring Soon" value="14 Items" icon={ShieldAlert} tone="danger" />
+        <KpiCard label="Warranty Expiring Soon" value="14 Items" icon={ShieldAlert} tone="destructive" />
       </div>
 
       {/* CHARTS */}

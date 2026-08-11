@@ -789,7 +789,8 @@ function libraryReducer(state: LibraryState, action: LibraryAction): LibraryStat
     // ── RENEW BOOK ───────────────────────────────────────────────────────────
     case "RENEW_BOOK": {
       const issue = state.issues.find(i => i.id === action.payload.issueId)!;
-      if (issue.renewCount >= issue.maxRenewals) throw new Error(`Max renewals (${issue.maxRenewals}) reached.`);
+      const maxRenewals = issue.maxRenewals ?? state.settings.maxRenewals;
+      if (issue.renewCount >= maxRenewals) throw new Error(`Max renewals (${maxRenewals}) reached.`);
       const member = state.members.find(m => m.id === issue.memberId)!;
       if (member.pendingFineAmount > 0) throw new Error(`Clear pending fine ₹${member.pendingFineAmount} before renewal.`);
       const newDue = addDays(state.settings.renewalExtensionDays);

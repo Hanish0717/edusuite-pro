@@ -47,7 +47,8 @@ export function ExamNotificationsComponent() {
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.channels.email && !form.channels.sms && !form.channels.inApp) {
-      return toast.error("Please select at least one communication channel.");
+      toast.error("Please select at least one communication channel.");
+      return;
     }
     
     setIsSending(true);

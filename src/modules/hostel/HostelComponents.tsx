@@ -29,6 +29,9 @@ import {
   FileSpreadsheet,
   HeartPulse,
   Sparkles,
+  Utensils,
+  XCircle,
+  FileDown,
   Search,
   Eye,
   Loader2,
@@ -40,6 +43,13 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  getWardenMessSummary,
+  exportMessReportCSV,
+  exportMessReportPDF,
+  getAllStoredConfirmations,
+  MealType,
+} from "@/components/student-hostel/meal-service";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,7 +116,29 @@ export function HostelModuleView() {
   const [rooms, setRooms] = useState<HostelRoom[]>(INITIAL_ROOMS);
   const [residents, setResidents] = useState<EnhancedResidentStudent[]>(ENHANCED_RESIDENTS);
   const [passes, setPasses] = useState<GatePassRequest[]>(INITIAL_PASSES);
-  const [activeTab, setActiveTab] = useState<"blocks" | "residents" | "compliance" | "analytics">("blocks");
+  const [activeTab, setActiveTab] = useState<"blocks" | "residents" | "compliance" | "analytics" | "mess">("blocks");
+
+  const todayStr = new Date().toISOString().split("T")[0];
+  const [messSummary, setMessSummary] = useState(() => getWardenMessSummary(todayStr));
+
+  const reloadMessSummary = () => {
+    setMessSummary(getWardenMessSummary(todayStr));
+  };
+
+  useEffect(() => {
+    reloadMessSummary();
+    const handleUpdate = () => reloadMessSummary();
+    if (typeof window !== "undefined") {
+      window.addEventListener("meal-confirmations-updated", handleUpdate);
+      window.addEventListener("storage", handleUpdate);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("meal-confirmations-updated", handleUpdate);
+        window.removeEventListener("storage", handleUpdate);
+      }
+    };
+  }, [todayStr]);
 
   const [loading, setLoading] = useState(false);
 
@@ -164,20 +196,25 @@ export function HostelModuleView() {
     setActivities((prev) => [newLog, ...prev]);
   };
 
-  const loadData = async () => {
-    setLoading(true);
+  const loadData = async (isSilent = false) => {
+    if (!isSilent) setLoading(true);
     const [rm, res, ps] = await Promise.all([
       fetchHostelRooms(),
       fetchHostelResidents(),
       fetchGatePasses(),
     ]);
     setRooms(rm);
-    setLoading(false);
-    toast.success("Hostel Executive Governance console synced");
+    setResidents(res as any);
+    setPasses(ps);
+    if (!isSilent) setLoading(false);
   };
 
   useEffect(() => {
     loadData();
+    const interval = setInterval(() => {
+      loadData(true);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   // Filtered residents logic
@@ -270,7 +307,7 @@ export function HostelModuleView() {
 
         {/* Action Buttons - Executive Governance */}
         <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto flex-wrap">
-          <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="h-9 gap-2 text-xs font-medium">
+          <Button variant="outline" size="sm" onClick={() => loadData()} disabled={loading} className="h-9 gap-2 text-xs font-medium">
             <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
           </Button>
           <Button variant="outline" size="sm" onClick={handleExportCSV} className="h-9 gap-2 text-xs font-medium">
@@ -432,6 +469,9 @@ export function HostelModuleView() {
           }`}
         >
           4. Hostel Analytics & Reports
+        </button>
+        <button onClick={() => setActiveTab("mess")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${activeTab === "mess" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
+          <Utensils className="size-3.5 text-amber-500" /> 4. Mess Preparation Dashboard
         </button>
       </div>
 
@@ -1204,6 +1244,166 @@ export function HostelModuleView() {
         </div>
       )}
 
+      {/* TAB 5: MESS PREPARATION DASHBOARD */}
+      {activeTab === "mess" && (
+        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-6 shadow-sm">
+          {/* Dashboard Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                <Utensils className="size-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-base text-foreground">
+                    Warden Mess Preparation & Food Forecasting Dashboard
+                  </h3>
+                  <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[10px] font-mono">
+                    LIVE SYNC
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Real-time food counts automatically calculated from student meal confirmations.
+                </p>
+              </div>
+            </div>
+
+            {/* Export Reports Buttons */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportMessReportCSV(todayStr, "daily")}
+                className="h-8 text-xs font-medium gap-1.5"
+              >
+                <Download className="size-3.5 text-emerald-600" /> Daily CSV
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportMessReportPDF(todayStr, "daily")}
+                className="h-8 text-xs font-medium gap-1.5"
+              >
+                <FileDown className="size-3.5 text-red-500" /> Daily PDF
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportMessReportPDF(todayStr, "weekly")}
+                className="h-8 text-xs font-medium gap-1.5"
+              >
+                <FileDown className="size-3.5 text-blue-500" /> Weekly Report
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportMessReportPDF(todayStr, "monthly")}
+                className="h-8 text-xs font-medium gap-1.5"
+              >
+                <FileDown className="size-3.5 text-purple-500" /> Monthly Report
+              </Button>
+            </div>
+          </div>
+
+          {/* Meal Forecasting Cards (Breakfast, Lunch, Snacks, Dinner) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {(["Breakfast", "Lunch", "Snacks", "Dinner"] as MealType[]).map((meal) => {
+              const stat = messSummary.mealStats[meal];
+              return (
+                <div
+                  key={meal}
+                  className="p-4 rounded-xl border border-border/80 bg-muted/20 hover:bg-muted/40 transition-all space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs uppercase tracking-wider text-foreground">
+                      {meal}
+                    </span>
+                    <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/20 text-[10px]">
+                      {stat.percentage}% Opted
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Total Hostel Students:</span>
+                      <strong className="text-foreground font-mono">{messSummary.totalStudents}</strong>
+                    </div>
+
+                    <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
+                      <span className="flex items-center gap-1">
+                        <CheckCircle2 className="size-3.5" /> Will Eat:
+                      </span>
+                      <span className="font-mono">{stat.willEat}</span>
+                    </div>
+
+                    <div className="flex justify-between text-amber-600 dark:text-amber-400 font-bold">
+                      <span className="flex items-center gap-1">
+                        <XCircle className="size-3.5" /> Will Skip:
+                      </span>
+                      <span className="font-mono">{stat.willSkip}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-border/60 flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-muted-foreground">Expected Food Prep:</span>
+                    <span className="text-base font-extrabold text-primary font-mono">
+                      {stat.expected} Meals
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Student Submissions Audit Table */}
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center justify-between">
+              <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <Utensils className="size-4 text-emerald-600" /> Today's Student Submission Logs
+              </h4>
+              <Badge variant="outline" className="text-[10px] font-mono">
+                {getAllStoredConfirmations().filter((r) => r.date === todayStr).length} Submissions Today
+              </Badge>
+            </div>
+
+            <div className="overflow-x-auto border border-border/60 rounded-xl">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/40 text-muted-foreground uppercase text-[10px] font-mono tracking-wider">
+                  <tr>
+                    <th className="py-2.5 px-3">Student Name</th>
+                    <th className="py-2.5 px-3">Student ID</th>
+                    <th className="py-2.5 px-3">Block / Room</th>
+                    <th className="py-2.5 px-3">Meal Type</th>
+                    <th className="py-2.5 px-3">Date</th>
+                    <th className="py-2.5 px-3">Selection</th>
+                    <th className="py-2.5 px-3 text-right pr-4">Submission Time</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60 font-medium">
+                  {getAllStoredConfirmations()
+                    .filter((r) => r.date === todayStr)
+                    .map((log, idx) => (
+                      <tr key={`${log.studentId}-${log.mealType}-${idx}`} className="hover:bg-muted/20">
+                        <td className="py-2.5 px-3 font-bold text-foreground">{log.studentName}</td>
+                        <td className="py-2.5 px-3 font-mono text-muted-foreground">{log.studentId}</td>
+                        <td className="py-2.5 px-3 font-mono">{log.block || "Block A"} - {log.roomNo || "A-302"}</td>
+                        <td className="py-2.5 px-3 font-bold text-primary">{log.mealType}</td>
+                        <td className="py-2.5 px-3 font-mono text-muted-foreground">{log.date}</td>
+                        <td className="py-2.5 px-3">
+                          <Badge className={log.status === "Will Eat" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-bold" : "bg-rose-500/10 text-rose-600 border-rose-500/20 font-bold"}>
+                            {log.status === "Will Eat" ? "✅ Will Eat" : "❌ Will Skip"}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 px-3 text-right pr-4 font-mono text-muted-foreground">{log.submittedAt}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* SECTION 7: VIEW DETAILS READ-ONLY MODAL */}
       <Dialog open={isViewDetailsOpen} onOpenChange={setIsViewDetailsOpen}>
         <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
@@ -1662,28 +1862,3 @@ export function HostelModuleView() {
     </div>
   );
 }
-
-export const HostelComplaintsView = HostelModuleView;
-export const HostelMaintenanceView = HostelModuleView;
-export const HostelFeesView = HostelModuleView;
-export const HostelMessManagementView = HostelModuleView;
-export const HostelVisitorsView = HostelModuleView;
-export const HostelUserManagementView = HostelModuleView;
-export const HostelSettingsView = HostelModuleView;
-export const HostelStudentsView = HostelModuleView;
-export const HostelRoomAllocationView = HostelModuleView;
-export const HostelOutingLogHistoryView = HostelModuleView;
-export const HostelNotificationsView = HostelModuleView;
-export const HostelOutingApprovalsView = HostelModuleView;
-export const HostelMessMenusView = HostelModuleView;
-export const HostelMessFeesView = HostelModuleView;
-export const HostelLogHistoryView = HostelModuleView;
-export const HostelLeavesSuspensionView = HostelModuleView;
-export const HostelGuestBillingView = HostelModuleView;
-export const HostelDeviceManagementView = HostelModuleView;
-export const HostelDashboardView = HostelModuleView;
-export const HostelBlocksView = HostelModuleView;
-export const HostelAttendanceView = HostelModuleView;
-export const HostelResidentsView = HostelModuleView;
-export const HostelRoomsView = HostelModuleView;
-

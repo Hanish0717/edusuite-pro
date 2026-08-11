@@ -213,7 +213,7 @@ export function WebinarDetailModal({
               Session Agenda & Key Takeaways
             </h3>
             <div className="space-y-2">
-              {webinar.agenda.map((item, idx) => (
+              {(webinar.agenda || []).map((item, idx) => (
                 <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-muted/40 text-xs">
                   <span className="flex items-center justify-center size-5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold text-[10px] shrink-0 mt-0.5">
                     {idx + 1}

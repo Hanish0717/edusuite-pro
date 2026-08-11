@@ -39,7 +39,7 @@ function SubPageComponent() {
   const itemsPerPage = 8;
 
   const rawItems = useMemo(() => {
-    return data.placementDrives.map(d => ({ company: d.company, date: d.driveDate, count: d.eligibleStudents + ' Students', status: d.status }));
+    return data.placementDrives.map(d => ({ company: d.company, date: d.driveDate, count: d.eligibleStudents + ' Students', status: d["status"] }));
   }, [data]);
 
   const filteredItems = useMemo(() => {
@@ -49,7 +49,7 @@ function SubPageComponent() {
       );
       const matchStatus =
         statusFilter === "all" ||
-        (item.status && String(item.status).toLowerCase().includes(statusFilter.toLowerCase()));
+        (item["status"] && String(item["status"]).toLowerCase().includes(statusFilter.toLowerCase()));
       return matchSearch && matchStatus;
     });
   }, [rawItems, search, statusFilter]);

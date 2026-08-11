@@ -1,5 +1,5 @@
 // src/config/navigation/index.ts
-import type { NavSection } from "./navigation";
+import type { NavSection } from "../navigation";
 import { ACADEMIC_DEAN_NAVIGATION } from "./academic-dean";
 import { STUDENT_DEAN_NAVIGATION } from "./student-dean";
 import { IQAC_NAVIGATION } from "./iqac";

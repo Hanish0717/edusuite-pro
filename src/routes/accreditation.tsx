@@ -49,7 +49,7 @@ function AccreditationPage() {
   const [criteriaSearch, setCriteriaSearch] = useState("");
 
   const isCoordinator =
-    role === "super-admin" ||
+    (role as any) === "super-admin" || (role as any) === "super_admin" ||
     hasFlag("isNAACCoordinator") ||
     hasFlag("isIQACCoordinator") ||
     hasFlag("isNBACoordinator");

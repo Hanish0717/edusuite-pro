@@ -69,14 +69,14 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
     primaryScope: "Operations & Student Conduct",
     personaName: "Prof. V. K. Murthy",
   },
-  { canonicalRole: "academic_dean", roleName: "Academic Dean", email: "academic_dean@college.com", defaultPassword: "password123", primaryScope: "Academic Leadership", personaName: "Prof. Anand Kumar (Academic Dean)" },
-  { canonicalRole: "student_dean", roleName: "Student Dean", email: "student_dean@college.com", defaultPassword: "password123", primaryScope: "Student Affairs", personaName: "Prof. Student Dean (Student Dean)" },
-  { canonicalRole: "iqac_dean", roleName: "IQAC Dean", email: "iqac_dean@college.com", defaultPassword: "password123", primaryScope: "Quality Assurance", personaName: "Prof. IQAC Dean (IQAC Dean)" },
-  { canonicalRole: "ima_dean", roleName: "IMA Dean", email: "ima_dean@college.com", defaultPassword: "password123", primaryScope: "Industry & Alumni Relations", personaName: "Prof. IMA Dean (IMA Dean)" },
-  { canonicalRole: "research_dean", roleName: "Research & Development Dean", email: "research_dean@college.com", defaultPassword: "password123", primaryScope: "Research & Innovation", personaName: "Prof. Research Dean (Research Dean)" },
-  { canonicalRole: "finance_dean", roleName: "Finance Dean", email: "finance_dean@college.com", defaultPassword: "password123", primaryScope: "Financial Management", personaName: "Prof. Finance Dean (Finance Dean)" },
-  { canonicalRole: "examination_dean", roleName: "Examination Dean", email: "examination_dean@college.com", defaultPassword: "password123", primaryScope: "Exam Administration", personaName: "Prof. Examination Dean (Examination Dean)" },
-  { canonicalRole: "placement_dean", roleName: "Placement Dean", email: "placement_dean@college.com", defaultPassword: "password123", primaryScope: "Career Services", personaName: "Prof. Placement Dean (Placement Dean)" },
+  { canonicalRole: "dean", roleName: "Academic Dean", email: "academic_dean@college.com", defaultPassword: "password123", primaryScope: "Academic Leadership", personaName: "Prof. Anand Kumar (Academic Dean)" },
+  { canonicalRole: "dean", roleName: "Student Dean", email: "student_dean@college.com", defaultPassword: "password123", primaryScope: "Student Affairs", personaName: "Prof. Student Dean (Student Dean)" },
+  { canonicalRole: "dean", roleName: "IQAC Dean", email: "iqac_dean@college.com", defaultPassword: "password123", primaryScope: "Quality Assurance", personaName: "Prof. IQAC Dean (IQAC Dean)" },
+  { canonicalRole: "dean", roleName: "IMA Dean", email: "ima_dean@college.com", defaultPassword: "password123", primaryScope: "Industry & Alumni Relations", personaName: "Prof. IMA Dean (IMA Dean)" },
+  { canonicalRole: "dean", roleName: "Research & Development Dean", email: "research_dean@college.com", defaultPassword: "password123", primaryScope: "Research & Innovation", personaName: "Prof. Research Dean (Research Dean)" },
+  { canonicalRole: "dean", roleName: "Finance Dean", email: "finance_dean@college.com", defaultPassword: "password123", primaryScope: "Financial Management", personaName: "Prof. Finance Dean (Finance Dean)" },
+  { canonicalRole: "dean", roleName: "Examination Dean", email: "examination_dean@college.com", defaultPassword: "password123", primaryScope: "Exam Administration", personaName: "Prof. Examination Dean (Examination Dean)" },
+  { canonicalRole: "dean", roleName: "Placement Dean", email: "placement_dean@college.com", defaultPassword: "password123", primaryScope: "Career Services", personaName: "Prof. Placement Dean (Placement Dean)" },
   {
     canonicalRole: "hod",
     roleName: "Head of Department (HOD)",
@@ -370,14 +370,14 @@ export function resolveRoleContextFromSelection(
   if (coreRole === "super-admin") {
     if (designation === "admission_desk") {
       return {
-        role: "super-admin",
+        role: "super_admin",
         flags: ["isAdmissionsOfficer", "isSystemAdmin"],
         toastMessage: "Logged in as Admission Desk — Admission Office Dashboard",
         targetRoute: "/dashboard/admission",
       };
     }
     return {
-      role: "super-admin",
+      role: "super_admin",
       flags: ["isSystemAdmin", "isPrincipal"],
       toastMessage: `Logged in as Super Admin [${branch}]`,
     };

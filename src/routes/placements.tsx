@@ -8,7 +8,7 @@ export const Route = createFileRoute("/placements")({
 function PlacementsRedirect() {
   const { role } = useRole();
 
-  if (role === "super-admin" || role === "staff") {
+  if ((role as any) === "super-admin" || (role as any) === "super_admin" || role === "staff") {
     return <Navigate to="/placement/dashboard" replace />;
   }
   if (role === "student") {

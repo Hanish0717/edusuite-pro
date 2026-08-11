@@ -228,12 +228,13 @@ function AnalyticsPage() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard label={`${selectedBranch} Pass Percentage`} value={activeStats.passRate} icon={TrendingUp} tone="success" />
         <KpiCard label="Branch Candidates" value={activeStats.candidates} icon={Users} tone="info" />
-        <KpiCard label="Distinctions Mapped" value={activeStats.distinctions} icon={Award} tone="default" />
+        <KpiCard label="Distinctions Mapped" value={activeStats.distinctions} icon={Award} tone="purple" />
         <KpiCard label="Active Evaluators" value={activeStats.evaluators} icon={BarChart3} tone="warning" />
       </div>
 
       {/* Semester Wise Pass & Fail Ratio Analytics Graph */}
-      <Panel title={getChartTitle()} icon={BarChart3}>
+      <Panel title={getChartTitle()}>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Chart Display (2/3 width) */}
           <div className="lg:col-span-2 bg-card border border-border/40 rounded-2xl p-4">

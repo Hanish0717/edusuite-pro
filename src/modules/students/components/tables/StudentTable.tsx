@@ -64,7 +64,7 @@ export function StudentTable({
           {students.map((s) => (
             <tr key={s.id} className="hover:bg-muted/20 transition-colors">
               <td className="py-3 px-3 font-mono font-bold text-foreground">
-                <Link to={`/students/profile/${s.id}`} className="hover:underline hover:text-primary">
+                <Link to={`/students/profile/${s.id}` as any} className="hover:underline hover:text-primary">
                   {s.rollNo}
                 </Link>
               </td>
@@ -118,7 +118,7 @@ export function StudentTable({
                     title="View Dossier"
                     asChild
                   >
-                    <Link to={`/students/profile/${s.id}`}>
+                    <Link to={`/students/profile/${s.id}` as any}>
                       <Eye className="size-3.5" /> Details
                     </Link>
                   </Button>

@@ -1322,13 +1322,10 @@ export function ApprovalCenterModuleView({ mode = "loaded", errorMessage = "Appr
     closeActionDialog();
   };
 
-  const handleRowAction = (action: ApprovalAction, requestId: string) => {
-    setSelectedRequestId(requestId);
-    if (action === "request-info") {
-      openActionDialog(action, [requestId]);
-      return;
-    }
-    openActionDialog(action, [requestId]);
+  const handleRowAction = (action: ApprovalAction, requestIds: string | string[]) => {
+    const ids = Array.isArray(requestIds) ? requestIds : [requestIds];
+    if (ids[0]) setSelectedRequestId(ids[0]);
+    openActionDialog(action, ids);
   };
 
   const handleAddComment = () => {

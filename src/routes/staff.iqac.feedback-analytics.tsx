@@ -57,7 +57,7 @@ function SubPageComponent() {
       const matchSearch = Object.values(item).some((val) =>
         String(val).toLowerCase().includes(search.toLowerCase())
       );
-      const matchFilter = filter === "all" || (item.status && String(item.status).toLowerCase().includes(filter.toLowerCase()));
+      const matchFilter = filter === "all" || (item["status"] && String(item["status"]).toLowerCase().includes(filter.toLowerCase()));
       return matchSearch && matchFilter;
     });
   }, [rawData, search, filter]);

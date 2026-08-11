@@ -33,8 +33,8 @@ function MyClassesPage() {
     });
   }, []);
 
-  const presentCount = students.filter((s) => s.status === "Present").length;
-  const absentCount = students.filter((s) => s.status === "Absent").length;
+  const presentCount = students.filter((s) => s["status"] === "Present").length;
+  const absentCount = students.filter((s) => s["status"] === "Absent").length;
   const attendancePct = Math.round((presentCount / students.length) * 100);
 
   return (
@@ -47,7 +47,7 @@ function MyClassesPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Scheduled Sessions" value={data.myTimetable.todaysClasses.length} icon={Clock} tone="info" />
+        <KpiCard label="Scheduled Sessions" value={String(data.myTimetable.todaysClasses.length)} icon={Clock} tone="info" />
         <KpiCard label="Enrolled Students / Class" value="60 Students" icon={Users} tone="purple" />
         <KpiCard label="Average Attendance %" value={`${attendancePct}%`} icon={CheckCircle2} tone="success" />
         <KpiCard label="Pending Attendance" value="1 Session" icon={UserCheck} tone="warning" />
@@ -102,8 +102,8 @@ function MyClassesPage() {
                       <td className="p-3 font-mono font-bold text-primary">{st.rollNo}</td>
                       <td className="p-3 font-bold text-foreground">{st.name}</td>
                       <td className="p-3 text-center">
-                        <Badge className={st.status === "Present" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : st.status === "Absent" ? "bg-rose-500/10 text-rose-600 font-mono text-[0.65rem]" : "bg-amber-500/10 text-amber-600 font-mono text-[0.65rem]"}>
-                          {st.status}
+                        <Badge className={st["status"] === "Present" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : st["status"] === "Absent" ? "bg-rose-500/10 text-rose-600 font-mono text-[0.65rem]" : "bg-amber-500/10 text-amber-600 font-mono text-[0.65rem]"}>
+                          {st["status"]}
                         </Badge>
                       </td>
                     </tr>

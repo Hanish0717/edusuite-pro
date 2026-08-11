@@ -164,7 +164,10 @@ export function HRModuleView() {
 
   const handleOnboardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!empForm.name || !empForm.email) return toast.error("Enter employee name and official email");
+    if (!empForm.name || !empForm.email) {
+      toast.error("Enter employee name and official email");
+      return;
+    }
     const created = await onboardEmployee(empForm);
     setEmployees((prev) => [created, ...prev]);
     setIsOnboardOpen(false);
@@ -173,7 +176,10 @@ export function HRModuleView() {
 
   const handlePostReqSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!reqForm.positionTitle) return toast.error("Enter position title");
+    if (!reqForm.positionTitle) {
+      toast.error("Enter position title");
+      return;
+    }
     const created = await postJobRequisition(reqForm);
     setRequisitions((prev) => [created, ...prev]);
     setIsPostReqOpen(false);

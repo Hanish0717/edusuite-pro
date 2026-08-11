@@ -28,7 +28,7 @@ export function fetchExamBatches(): StatusListItem[] {
   return [
     { id: "EX-1", title: "B.Tech Sem 6 End Examinations 2026", meta: "Aug 1 - Aug 12", status: "Valuation Complete", statusTone: "success" },
     { id: "EX-2", title: "M.Tech Sem 2 Regular Examinations", meta: "Aug 15 - Aug 22", status: "Hall Tickets Ready", statusTone: "info" },
-    { id: "EX-3", title: "MBA Semester 4 Final Viva & Project", meta: "Jul 28 - Jul 30", status: "Marks Locked", statusTone: "default" },
+    { id: "EX-3", title: "MBA Semester 4 Final Viva & Project", meta: "Jul 28 - Jul 30", status: "Marks Locked", statusTone: "info" },
   ];
 }
 

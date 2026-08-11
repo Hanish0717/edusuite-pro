@@ -65,13 +65,13 @@ function SubPage() {
                     <tr key={s.rollNo} className="hover:bg-muted/30 transition-colors">
                       <td className="p-3 font-mono font-bold text-primary">{s.rollNo}</td>
                       <td className="p-3 font-bold text-foreground">{s.name}</td>
-                      <td className="p-3 font-mono font-bold">{s.department}</td>
+                      <td className="p-3 font-mono font-bold">{s["department"]}</td>
                       <td className="p-3 font-mono">{s.year}</td>
                       <td className="p-3 text-center font-mono font-bold text-emerald-600">{s.attendance}%</td>
                       <td className="p-3 text-center font-mono font-bold">{s.cgpa}</td>
                       <td className="p-3 text-center">
-                        <Badge className={s.status === "Active" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-rose-500/10 text-rose-600 font-mono text-[0.65rem]"}>
-                          {s.status}
+                        <Badge className={s["status"] === "Active" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-rose-500/10 text-rose-600 font-mono text-[0.65rem]"}>
+                          {s["status"]}
                         </Badge>
                       </td>
                     </tr>

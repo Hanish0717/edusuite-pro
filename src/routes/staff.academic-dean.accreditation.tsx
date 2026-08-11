@@ -57,7 +57,7 @@ function AccreditationPage() {
                   <td className="p-3 font-mono">{d.accreditation}</td>
                   <td className="p-3">
                     <Badge className="bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]">
-                      {d.status}
+                      {d["status"]}
                     </Badge>
                   </td>
                   <td className="p-3 text-right">

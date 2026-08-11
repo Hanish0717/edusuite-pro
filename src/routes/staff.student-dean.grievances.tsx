@@ -86,8 +86,8 @@ function GrievancesPage() {
                       <td className="p-3 font-mono">{g.assignedOfficer}</td>
                       <td className="p-3 font-mono text-muted-foreground">{g.timeline}</td>
                       <td className="p-3 text-center">
-                        <Badge className={g.status === "Closed" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-amber-500/10 text-amber-600 font-mono text-[0.65rem]"}>
-                          {g.status}
+                        <Badge className={g["status"] === "Closed" ? "bg-emerald-500/10 text-emerald-600 font-mono text-[0.65rem]" : "bg-amber-500/10 text-amber-600 font-mono text-[0.65rem]"}>
+                          {g["status"]}
                         </Badge>
                       </td>
                     </tr>

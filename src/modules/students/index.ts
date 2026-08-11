@@ -7,6 +7,8 @@ export * from "./services/StudentService";
 export * from "./hooks/useStudents";
 export * from "./hooks/useStudentPermissions";
 export * from "./pages/Dashboard";
-export * from "./pages/Students";
+export { Students as StudentsPage } from "./pages/Students";
+
 export * from "./pages/StudentProfile";
+
 export * from "./components/layout/StudentsModuleView";

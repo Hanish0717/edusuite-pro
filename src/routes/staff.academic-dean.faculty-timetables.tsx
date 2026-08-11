@@ -21,7 +21,7 @@ function FacultyTimetablesPage() {
   const filteredFaculty = data.facultyList.filter(
     (f) =>
       f.name.toLowerCase().includes(search.toLowerCase()) ||
-      f.department.toLowerCase().includes(search.toLowerCase()) ||
+      f["department"].toLowerCase().includes(search.toLowerCase()) ||
       f.subjects.some((s) => s.toLowerCase().includes(search.toLowerCase())),
   );
 
@@ -35,7 +35,7 @@ function FacultyTimetablesPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <KpiCard label="Total Faculty" value={data.facultyList.length} icon={Users} tone="info" />
+        <KpiCard label="Total Faculty" value={String(data.facultyList.length)} icon={Users} tone="info" />
         <KpiCard label="Departments Covered" value="15 Depts" icon={Building2} tone="purple" />
         <KpiCard label="Weekly Slots" value="480 Slots" icon={Clock} tone="success" />
       </div>
@@ -69,7 +69,7 @@ function FacultyTimetablesPage() {
                   <tr key={f.id} className="hover:bg-muted/30 transition-colors">
                     <td className="p-3 font-mono font-bold text-primary">{f.facultyId}</td>
                     <td className="p-3 font-bold text-foreground">{f.name}</td>
-                    <td className="p-3 font-mono font-bold">{f.department}</td>
+                    <td className="p-3 font-mono font-bold">{f["department"]}</td>
                     <td className="p-3 text-muted-foreground">{f.designation}</td>
                     <td className="p-3 text-muted-foreground">{f.subjects.join(", ")}</td>
                     <td className="p-3 text-center font-mono font-bold text-emerald-600">

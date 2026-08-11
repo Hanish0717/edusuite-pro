@@ -22,7 +22,7 @@ function FacultyWorkloadPage() {
   const filteredFaculty = data.facultyList.filter(
     (f) =>
       f.name.toLowerCase().includes(search.toLowerCase()) ||
-      f.department.toLowerCase().includes(search.toLowerCase()),
+      f["department"].toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -72,7 +72,7 @@ function FacultyWorkloadPage() {
                   return (
                     <tr key={f.id} className="hover:bg-muted/30 transition-colors">
                       <td className="p-3 font-bold text-foreground">{f.name}</td>
-                      <td className="p-3 font-mono font-bold text-primary">{f.department}</td>
+                      <td className="p-3 font-mono font-bold text-primary">{f["department"]}</td>
                       <td className="p-3 text-muted-foreground">{f.subjects.join(", ")}</td>
                       <td className="p-3 text-center font-mono font-bold text-emerald-600">{f.workloadHours} Hrs</td>
                       <td className="p-3 text-center font-mono">{remaining} Hrs</td>

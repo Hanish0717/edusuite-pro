@@ -422,11 +422,11 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
   },
   staff: {
     id: "staff",
-    label: "Staff (Placement Officer)",
-    personaName: "Mr. Karthik Nair",
-    personaMeta: "Placement Officer - Training & Placement Cell",
-    initials: "KN",
-    flags: ["isPlacementOfficer"],
+    label: "Staff (Faculty)",
+    personaName: "Dr. Ravi Kumar",
+    personaMeta: "Faculty & Staff Workspace",
+    initials: "FC",
+    flags: ["isMentor", "isClassAdvisor"],
     department: "CSE",
   },
   "external-user": {
@@ -447,6 +447,126 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     flags: ["isAcademicManagement"],
   },
 };
+
+export function getDynamicProfile(
+  role: LoginRole,
+  flags: string[],
+  department?: DepartmentCode,
+  externalPersona?: ExternalPersona,
+): RoleProfile {
+  const baseProfile = roleProfiles[role] || roleProfiles["staff"];
+
+  if (role === "staff") {
+    if (flags.includes("isExamController")) {
+      return {
+        ...baseProfile,
+        label: "Staff (Exam Controller)",
+        personaName: "Prof. K. Rama Rao",
+        personaMeta: "Exam Controller - Examination Management",
+        initials: "EC",
+      };
+    }
+    if (flags.includes("isPlacementOfficer")) {
+      return {
+        ...baseProfile,
+        label: "Staff (Placement Officer)",
+        personaName: "Dr. Ananya Sen",
+        personaMeta: "Placement Officer - Training & Placement Cell",
+        initials: "PO",
+      };
+    }
+    if (flags.includes("isHod")) {
+      return {
+        ...baseProfile,
+        label: "Staff (HOD)",
+        personaName: "Dr. Suresh Babu",
+        personaMeta: `Head of Department (${department || "CSE"})`,
+        initials: "HD",
+      };
+    }
+    if (flags.includes("isDean")) {
+      return {
+        ...baseProfile,
+        label: "Staff (Dean)",
+        personaName: "Dr. Clara Oswald",
+        personaMeta: "Dean - Academic Planning",
+        initials: "DN",
+      };
+    }
+    if (flags.includes("isLibraryAdmin")) {
+      return {
+        ...baseProfile,
+        label: "Staff (Library Admin)",
+        personaName: "Mrs. G. Sujatha",
+        personaMeta: "Library Admin - Library Operations",
+        initials: "LA",
+      };
+    }
+    if (flags.includes("isHostelWarden")) {
+      return {
+        ...baseProfile,
+        label: "Staff (Hostel Warden)",
+        personaName: "B. Devendra",
+        personaMeta: "Hostel Warden - Campus Housing",
+        initials: "HW",
+      };
+    }
+    if (flags.includes("isTransportOfficer")) {
+      return {
+        ...baseProfile,
+        label: "Staff (Transport Officer)",
+        personaName: "M. Gangadhar",
+        personaMeta: "Transport Officer - Fleet Management",
+        initials: "TM",
+      };
+    }
+    if (flags.includes("isFinanceOfficer")) {
+      return {
+        ...baseProfile,
+        label: "Staff (Finance Officer)",
+        personaName: "V. K. Viswanathan",
+        personaMeta: "Finance Officer - Financial Operations",
+        initials: "FO",
+      };
+    }
+    if (flags.includes("isHRManager")) {
+      return {
+        ...baseProfile,
+        label: "Staff (HR Manager)",
+        personaName: "R. Srinivas",
+        personaMeta: "HR Manager - Human Resources",
+        initials: "HR",
+      };
+    }
+    if (flags.includes("isPrincipal")) {
+      return {
+        ...baseProfile,
+        label: "Staff (Principal)",
+        personaName: "Dr. M. S. Reddi",
+        personaMeta: "Principal - Academic Head",
+        initials: "PR",
+      };
+    }
+    if (flags.includes("isVicePrincipal")) {
+      return {
+        ...baseProfile,
+        label: "Staff (Vice Principal)",
+        personaName: "Dr. K. V. Sharma",
+        personaMeta: "Vice Principal - Administration",
+        initials: "VP",
+      };
+    }
+    return {
+      ...baseProfile,
+      label: "Staff (Faculty)",
+      personaName: "Dr. Ravi Kumar",
+      personaMeta: `Faculty - ${department || "CSE"} Department`,
+      initials: "FC",
+    };
+  }
+
+  return baseProfile;
+}
 
 export const roleOrder: LoginRole[] = [
   "super_admin",
@@ -486,7 +606,7 @@ export interface RoleHighlight {
 
 export const roleList: RoleHighlight[] = [
   {
-    id: "super-admin",
+    id: "super_admin",
     label: "Super Admin",
     summary: "Institution-wide control, module access matrix and system health.",
     icon: ShieldCheck,
@@ -545,7 +665,7 @@ export const ERP_MODULES = [
 ] as const;
 
 export function getDefaultRouteForUser(role: LoginRole, flags: string[]): string {
-  if (role === "super-admin") return "/super-admin/dashboard";
+  if ((role as any) === "super-admin" || role === "super_admin") return "/super-admin/dashboard";
   if (role === "student") return "/student/dashboard";
   if (role === "parent") return "/parent/dashboard";
   if (role === "external-user") return "/external-user/dashboard";
@@ -582,7 +702,7 @@ export const DEMO_USERS: DemoUser[] = [
     id: "super-admin",
     name: "Super Admin",
     email: "admin@edusuite.edu",
-    role: "super-admin",
+    role: "super_admin",
     title: "Super Admin",
     category: "Core Roles",
     avatarInitials: "SA",

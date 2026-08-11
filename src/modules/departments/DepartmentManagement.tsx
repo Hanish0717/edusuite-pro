@@ -524,7 +524,7 @@ export function DepartmentManagement() {
                       <div className="flex items-center gap-1.5">
                         {dept.departmentCode}
                         {dept.attentionRequired && (
-                          <AlertTriangle className="size-3.5 text-red-500" title={dept.attentionReason} />
+                          <span title={dept.attentionReason}><AlertTriangle className="size-3.5 text-red-500" /></span>
                         )}
                       </div>
                     </td>

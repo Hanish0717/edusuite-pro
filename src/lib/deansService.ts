@@ -257,7 +257,7 @@ export interface CounsellingRecord {
 export interface StudentRequestRecord {
   id: string;
   student: string;
-  requestType: "Bonafide" | "Transfer Certificate (TC)" | "Migration" | "ID Card Reissue" | "Fee Receipt" | "Hall Ticket" | "Conduct Certificate";
+  requestType: "Bonafide" | "Bonafide Certificate" | "Transfer Certificate (TC)" | "Migration" | "ID Card Reissue" | "Fee Receipt" | "Conduct Certificate" | "Fee Receipt Duplicate" | "Hall Ticket";
   appliedDate: string;
   status: "Approved" | "In Process" | "Rejected";
 }

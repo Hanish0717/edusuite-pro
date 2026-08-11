@@ -39,7 +39,7 @@ function SubPageComponent() {
   const itemsPerPage = 8;
 
   const rawItems = useMemo(() => {
-    return data.complianceAudits.map(c => ({ area: c.area, standard: c.standard, compliance: c.compliance, status: c.status }));
+    return data.complianceAudits.map(c => ({ area: c.area, standard: c.standard, compliance: c.compliance, status: c["status"] }));
   }, [data]);
 
   const filteredItems = useMemo(() => {
@@ -49,7 +49,7 @@ function SubPageComponent() {
       );
       const matchStatus =
         statusFilter === "all" ||
-        (item.status && String(item.status).toLowerCase().includes(statusFilter.toLowerCase()));
+        (item["status"] && String(item["status"]).toLowerCase().includes(statusFilter.toLowerCase()));
       return matchSearch && matchStatus;
     });
   }, [rawItems, search, statusFilter]);

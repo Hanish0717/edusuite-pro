@@ -1527,7 +1527,7 @@ const generateStudyMaterialsData = (branchCode: string): StudyMaterialItem[] => 
         { versionNum: "v0.9", updatedBy: "Dr. A. Sharma", updatedDate: "2026-08-01", changeSummary: "Draft prepared for review" },
       ],
       timeline: [
-        { event: "Draft Created", date: "2026-08-01", status: "In Progress" },
+        { event: "Draft Created", date: "2026-08-01", status: "Upcoming" },
       ],
     },
   ];

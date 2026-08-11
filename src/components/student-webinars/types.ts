@@ -26,6 +26,7 @@ export interface Webinar {
   status: WebinarStatus;
   dateBadge: { month: string; day: string }; // e.g. { month: "AUG", day: "10" }
   startDate: string; // ISO date
+  displayDate?: string; // e.g. "Aug 10, 2026"
   displayTime: string; // e.g. "11:00 AM - 12:30 PM"
   duration: string; // e.g. "1h 30m"
   speaker: Speaker;

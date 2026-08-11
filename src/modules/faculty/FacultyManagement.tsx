@@ -591,7 +591,7 @@ export function FacultyManagement() {
           <Button
             onClick={handleResetFilters}
             variant="outline"
-            size="xs"
+            size="sm"
             className="h-8 font-semibold shrink-0 self-end sm:self-auto"
           >
             Reset Filters

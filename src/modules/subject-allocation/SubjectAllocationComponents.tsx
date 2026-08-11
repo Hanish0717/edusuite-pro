@@ -199,7 +199,7 @@ export function SearchFilterBar({ search, onSearch, semesterFilter, onSemester, 
 interface AssignDialogProps {
   open: boolean;
   onClose: () => void;
-  onAssign: (payload: { facultyId: string; subjectId: string; semester: string; section: string; academicYear: string }) => Promise<void>;
+  onAssign: (payload: { facultyId: string; subjectId: string; semester: string; section: string; academicYear: string; department?: string }) => Promise<void>;
   faculty: AllocationFaculty[];
   subjects: AllocationSubject[];
   semesters: string[];
@@ -224,8 +224,10 @@ export function AssignDialog({ open, onClose, onAssign, faculty, subjects, semes
       return;
     }
     await onAssign({ facultyId, subjectId, semester, section, academicYear });
+
     setFacultyId(""); setSubjectId(""); setSemester(""); setSection("");
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -556,7 +558,7 @@ export function SubjectAllocationModuleView() {
     });
   }, [allocations, search, semesterFilter, sectionFilter, typeFilter, statusFilter]);
 
-  const handleAssign = async (payload: Parameters<typeof assignFacultyToSubject>[0]) => {
+  const handleAssign = async (payload: any) => {
     setAssigning(true);
     try {
       const result = await assignFacultyToSubject(payload);
