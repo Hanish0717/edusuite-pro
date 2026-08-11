@@ -134,7 +134,6 @@ export interface RoleProfile {
   flags: string[];
   department?: DepartmentCode | undefined;
   externalPersona?: ExternalPersona | undefined;
-  email?: string;
 }
 
 export const RESPONSIBILITY_FLAGS = [
@@ -545,7 +544,7 @@ export function getDefaultRouteForUser(role: LoginRole, flags: string[]): string
   if (flags.includes("isDean")) return "/dean/dashboard";
   if (flags.includes("isExamController")) return "/examination/dashboard";
   if (flags.includes("isPlacementOfficer")) return "/placement/dashboard";
-  if (flags.includes("isLibraryAdmin")) return "/librarian";
+  if (flags.includes("isLibraryAdmin")) return "/library/dashboard";
   if (flags.includes("isTransportOfficer")) return "/transport/dashboard";
   if (flags.includes("isHostelWarden")) return "/hostel/dashboard";
   if (flags.includes("isHRManager")) return "/hr/dashboard";

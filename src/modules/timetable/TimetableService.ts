@@ -56,12 +56,11 @@ export const DAYS: TimetablePeriod["day"][] = [
 export const PERIOD_SLOTS = [
   { periodNumber: 1, startTime: "09:00 AM", endTime: "10:00 AM" },
   { periodNumber: 2, startTime: "10:00 AM", endTime: "11:00 AM" },
-  { periodNumber: 3, startTime: "11:15 AM", endTime: "12:15 PM" },
-  { periodNumber: 4, startTime: "12:15 PM", endTime: "01:15 PM" },
+  { periodNumber: 3, startTime: "11:10 AM", endTime: "12:10 PM" },
+  { periodNumber: 4, startTime: "12:10 PM", endTime: "01:10 PM" },
   { periodNumber: 5, startTime: "02:00 PM", endTime: "03:00 PM" },
   { periodNumber: 6, startTime: "03:00 PM", endTime: "04:00 PM" },
   { periodNumber: 7, startTime: "04:00 PM", endTime: "05:00 PM" },
-  { periodNumber: 8, startTime: "05:00 PM", endTime: "06:00 PM" },
 ];
 
 export const MOCK_SUBJECTS_BY_BRANCH_SEM: Record<string, { code: string; name: string; faculty: string; facultyId: string; room: string; isLab: boolean }[]> = {
@@ -90,54 +89,53 @@ export const MOCK_SUBJECTS_BY_BRANCH_SEM: Record<string, { code: string; name: s
 };
 
 export function generateInitialSchedule(branch: string = "CSE", semester: number = 5, section: string = "Section A"): TimetablePeriod[] {
-  const key = `${branch}-${semester}`;
-  const subjects = MOCK_SUBJECTS_BY_BRANCH_SEM[key] || MOCK_SUBJECTS_BY_BRANCH_SEM["CSE-5"];
   const periods: TimetablePeriod[] = [];
-
   let idCounter = 100;
 
-  DAYS.forEach((day, dayIdx) => {
-    PERIOD_SLOTS.forEach((slot, slotIdx) => {
-      // Create continuous lab block for period 6 & 7 on Tuesday and Thursday
-      if ((day === "Tuesday" || day === "Thursday") && (slot.periodNumber === 6 || slot.periodNumber === 7)) {
-        const labSubject = subjects.find((s) => s.isLab) || subjects[0];
-        periods.push({
-          id: `TT-${idCounter++}`,
-          day,
-          periodNumber: slot.periodNumber,
-          startTime: slot.startTime,
-          endTime: slot.endTime,
-          subjectCode: labSubject.code,
-          subjectName: labSubject.name,
-          facultyId: labSubject.facultyId,
-          facultyName: labSubject.faculty,
-          roomNo: labSubject.room,
-          isLab: true,
-          branch,
-          semester,
-          section,
-        });
-      } else {
-        const subIndex = (dayIdx * 8 + slotIdx) % subjects.filter((s) => !s.isLab).length;
-        const sub = subjects.filter((s) => !s.isLab)[subIndex] || subjects[0];
+  const defaultPatternNormal = [
+    { code: "CS501", name: "Machine Learning & Neural Nets", faculty: "Teja" },
+    { code: "CS502", name: "Compiler Design & Lexical Parsing", faculty: "Varma" },
+    { code: "CS503", name: "Database Systems & SQL Optimization", faculty: "Sharma" },
+    { code: "CS506", name: "Web Technologies & Microservices", faculty: "Swaminathan" },
+    { code: "CS501", name: "Machine Learning & Neural Nets", faculty: "Teja" },
+    { code: "CS502", name: "Compiler Design & Lexical Parsing", faculty: "Varma" },
+    { code: "CS503", name: "Database Systems & SQL Optimization", faculty: "Sharma" },
+  ];
 
-        periods.push({
-          id: `TT-${idCounter++}`,
-          day,
-          periodNumber: slot.periodNumber,
-          startTime: slot.startTime,
-          endTime: slot.endTime,
-          subjectCode: sub.code,
-          subjectName: sub.name,
-          facultyId: sub.facultyId,
-          facultyName: sub.faculty,
-          roomNo: sub.room,
-          isLab: false,
-          branch,
-          semester,
-          section,
-        });
-      }
+  const defaultPatternTueThu = [
+    { code: "CS501", name: "Machine Learning & Neural Nets", faculty: "Teja" },
+    { code: "CS502", name: "Compiler Design & Lexical Parsing", faculty: "Varma" },
+    { code: "CS503", name: "Database Systems & SQL Optimization", faculty: "Sharma" },
+    { code: "CS506", name: "Web Technologies & Microservices", faculty: "Swaminathan" },
+    { code: "CS504L", name: "Machine Learning Laboratory", faculty: "Teja", isLab: true },
+    { code: "CS505", name: "Design & Analysis of Algorithms", faculty: "Rao" },
+    { code: "CS507", name: "Software Engineering & Agile", faculty: "Kumar" },
+  ];
+
+  DAYS.forEach((day) => {
+    const isTueOrThu = day === "Tuesday" || day === "Thursday";
+    const pattern = isTueOrThu ? defaultPatternTueThu : defaultPatternNormal;
+
+    PERIOD_SLOTS.forEach((slot, slotIdx) => {
+      const item = pattern[slotIdx] || pattern[0];
+      periods.push({
+        id: `TT-${idCounter++}`,
+        day,
+        periodNumber: slot.periodNumber,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        subjectCode: item.code,
+        subjectName: item.name,
+        facultyId: `FAC-${100 + slotIdx}`,
+        facultyName: item.faculty,
+        roomNo: item.isLab ? "Lab - AI Center" : "LH-205",
+        isLab: !!item.isLab,
+        branch,
+        semester,
+        section,
+      });
+    });
+  });
     });
   });
 

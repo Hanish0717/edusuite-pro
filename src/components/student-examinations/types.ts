@@ -112,7 +112,7 @@ export interface SemesterResultItem {
     internal: number;
     external: number;
     total: number;
-    grade: string;
+    grade: "O" | "A+" | "A" | "B+" | "B" | "C" | "F";
     credits: number;
     status: "Pass" | "Fail";
   }>;

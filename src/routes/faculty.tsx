@@ -12,7 +12,7 @@ export const Route = createFileRoute("/faculty")({
   component: FacultyPage,
 });
 
-function FacultyPage() {
+export function FacultyPage() {
   const { role } = useRole();
   const isSuperAdmin = role === "super-admin" || role === "super_admin";
 

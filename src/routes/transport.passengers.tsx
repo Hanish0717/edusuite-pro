@@ -1,12 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { TransportModuleView } from "@/modules/transport";
+import { StudentsModuleView } from "@/modules/students";
 
 export const Route = createFileRoute("/transport/passengers")({
-  head: () => ({ meta: [{ title: "Transport Bus Passes & Passengers — EduSuite Pro" }] }),
-  component: () => (
-    <DashboardLayout>
-      <TransportModuleView />
-    </DashboardLayout>
-  ),
+  head: () => ({
+    meta: [{ title: "Transport Passengers & Pass Holders — EduSuite Pro" }],
+  }),
+  component: TransportPassengersPage,
 });
+
+function TransportPassengersPage() {
+  return (
+    <StudentsModuleView
+      title="Transport Passengers & Pass Holders"
+      description="Manage student and staff transport pass allocations, bus stops, and route subscriptions."
+    />
+  );
+}

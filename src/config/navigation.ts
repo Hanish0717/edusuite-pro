@@ -2,7 +2,6 @@ import {
   LayoutDashboard,
   BadgeCheck,
   GraduationCap,
-  School,
   Users,
   UserCog,
   CalendarCheck,
@@ -55,8 +54,6 @@ import { RESEARCH_NAVIGATION } from "@/config/navigation/research";
 import { FINANCE_NAVIGATION } from "@/config/navigation/finance";
 import { EXAMINATION_NAVIGATION } from "@/config/navigation/examination";
 import { PLACEMENT_NAVIGATION } from "@/config/navigation/placement";
-import { LIBRARIAN_NAVIGATION } from "@/config/navigation/librarian";
-import { TRANSPORT_NAVIGATION } from "@/config/navigation/transport";
 
 import type { LoginRole } from "@/config/roles";
 import { hasPermission, type UserPermissionContext } from "@/lib/permissions";
@@ -129,16 +126,45 @@ export const navigation: NavSection[] = [
     label: "Menu",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      {
+        title: "System Administration",
+        url: "/super-admin/settings?tab=rbac",
+        icon: Settings,
+        roles: ["super-admin", "staff"],
+        children: [
+          { title: "Roles & Access Matrix", url: "/super-admin/settings?tab=rbac" },
+          { title: "Licensing & Feature Flags", url: "/super-admin/settings?tab=features" },
+          { title: "Approval Workflows", url: "/super-admin/settings?tab=workflows" },
+          { title: "Institution Settings", url: "/super-admin/settings?tab=institution" },
+          { title: "Security & Session", url: "/super-admin/settings?tab=security" },
+          { title: "Branding & Theme", url: "/super-admin/settings?tab=preferences" },
+          { title: "System Audit Logs", url: "/super-admin/settings?tab=audit" },
+        ],
+      },
       { title: "Approval Workflows", url: "/approval-workflows", icon: GitBranch, badge: "Diagram" },
-      { title: "AI & Analytics", url: "/ai-analytics", icon: BarChart3, roles: ["super-admin", "staff", "student", "parent"] },
+      {
+        title: "AI & Analytics",
+        url: "/ai-analytics/dashboard",
+        icon: BarChart3,
+        roles: ["super-admin", "staff", "student", "parent"],
+        children: [
+          { title: "AI Dashboard", url: "/ai-analytics/dashboard" },
+          { title: "Attendance Forecasts", url: "/ai-analytics/attendance-prediction" },
+          { title: "Student Risk Analysis", url: "/ai-analytics/student-risk" },
+          { title: "AI Campus Chatbot", url: "/ai-analytics/chatbot" },
+          { title: "AI Audit Reports", url: "/ai-analytics/reports" },
+          { title: "AI Trigger Warning Logs", url: "/ai-analytics/notifications" },
+          { title: "Model Insights", url: "/ai-analytics/model-insights" },
+          { title: "Engine Configuration", url: "/ai-analytics/settings" },
+        ],
+      },
       { title: "Emergency Broadcast", url: "/emergency", icon: Siren, roles: ["super-admin", "staff"], badge: "Instant" },
     ],
   },
   {
     label: "Academics",
     items: [
-      { title: "Pre-Admission Portal", url: "/pre-admission", icon: School, moduleId: "pre-admission" },
-      { title: "Admission Office", url: "/admission", icon: GraduationCap, moduleId: "admission" },
+      { title: "Admissions", url: "/admission", icon: GraduationCap, moduleId: "admission" },
       { title: "Academics", url: "/academics", icon: GraduationCap, moduleId: "academics" },
       { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
       { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
@@ -157,14 +183,11 @@ export const navigation: NavSection[] = [
         moduleId: "examination",
         roles: ["super-admin", "staff"],
         children: [
-          { title: "Dashboard", url: "/examinations", moduleId: "examination" },
-          { title: "Exam Schedule", url: "/examinations/schedule", moduleId: "examination" },
-          { title: "Hall Tickets", url: "/examinations/hall-tickets", moduleId: "examination" },
-          { title: "Internal Marks", url: "/examinations/internal-marks", moduleId: "examination" },
-          { title: "Revaluation", url: "/examinations/revaluation", moduleId: "examination" },
-          { title: "Exam Analytics", url: "/examinations/analytics", moduleId: "examination" },
-          { title: "Reports", url: "/examinations/reports", moduleId: "examination" },
-          { title: "Notifications", url: "/examinations/notifications", moduleId: "examination" },
+          { title: "Exam Schedule", url: "/examinations?tab=schedule", moduleId: "examination" },
+          { title: "Hall Tickets", url: "/examinations?tab=hall-tickets", moduleId: "examination" },
+          { title: "Internal Marks", url: "/examinations?tab=marks", moduleId: "examination" },
+          { title: "Results & Grades", url: "/examinations?tab=results", moduleId: "examination" },
+          { title: "Reevaluations", url: "/examinations?tab=revaluations", moduleId: "examination" },
         ],
       },
       { title: "Results", url: "/results", icon: Award, moduleId: "examination" },
@@ -209,10 +232,12 @@ export const navigation: NavSection[] = [
 function resolveUrlForUser(url: string, user: UserPermissionContext, title?: string): string {
   // Preserve standalone module URLs without rewriting
   if (
-    url.startsWith("/librarian") ||
-    url.startsWith("/transport") ||
     url.startsWith("/staff") ||
     url.startsWith("/alumni") ||
+    url.startsWith("/ai-analytics") ||
+    url.startsWith("/library") ||
+    url.startsWith("/hostel") ||
+    url.startsWith("/transport") ||
     [
       "/employee-management",
       "/leave",
@@ -220,7 +245,6 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/inventory",
       "/procurement",
       "/campus-events",
-      "/pre-admission",
       "/admission",
       "/accreditation",
       "/grievance",
@@ -228,6 +252,7 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/approval-workflows",
       "/emergency",
       "/super-admin/emergency",
+      "/super-admin/settings",
     ].includes(url)
   ) {
     return url;
@@ -275,6 +300,13 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     if (flags.includes("isDean")) {
       if (url === "/dashboard") return "/staff";
       if (url === "/settings") return "/faculty/profile";
+      if (url === "/attendance") return "/attendance";
+      if (url === "/timetable") return "/timetable";
+      if (url === "/examinations") return "/examinations";
+      if (url === "/results") return "/results";
+      if (url === "/faculty") return "/faculty";
+      if (url === "/students") return "/students";
+      if (url === "/academics") return "/academics";
       if (url === "/subject-allocation" || title === "Subject Allocation" || title === "Workload") return "/dean/subject-allocation";
       return url;
     }
@@ -291,11 +323,11 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       if (title === "Students") return "/placement/students";
     }
     if (flags.includes("isLibraryAdmin")) {
-      if (url === "/dashboard" || url === "/library") return "/library/dashboard";
-      if (url === "/settings") return "/faculty/profile";
+      if (url === "/dashboard" || url === "/library") return "/librarian";
+      if (url === "/settings") return "/librarian/settings";
       if (title === "Books" || title === "Search Catalogue" || title === "Catalogue")
-        return "/library/books";
-      if (title === "Issues" || title === "Circulation") return "/library/issues";
+        return "/librarian/books";
+      if (title === "Issues" || title === "Circulation") return "/librarian/issue-books";
     }
     if (flags.includes("isTransportOfficer")) {
       if (url === "/dashboard" || url === "/transport") return "/transport/dashboard";
@@ -323,11 +355,20 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     }
 
     if (url === "/dashboard") return "/faculty/dashboard";
-    if (url === "/attendance") return "/faculty/attendance";
+    if (url.startsWith("/attendance")) {
+      const search = url.includes("?") ? url.substring(url.indexOf("?")) : "";
+      return `/faculty/attendance${search}`;
+    }
     if (url === "/lms") return "/faculty/lms";
-    if (url === "/examinations") return "/faculty/examinations";
-    if (url === "/results") return "/faculty/results";
-    if (url === "/settings") return "/faculty/profile";
+    if (url.startsWith("/examinations")) {
+      const search = url.includes("?") ? url.substring(url.indexOf("?")) : "";
+      return `/faculty/examinations${search}`;
+    }
+    if (url.startsWith("/results")) {
+      const search = url.includes("?") ? url.substring(url.indexOf("?")) : "";
+      return `/faculty/results${search}`;
+    }
+    if (url.startsWith("/settings")) return "/faculty/profile";
   }
 
   if (role === "external-user") {
@@ -343,11 +384,11 @@ export const RECRUITER_NAVIGATION: NavSection[] = [
     label: "Recruiter Portal",
     items: [
       { title: "Dashboard", url: "/external-user/dashboard?module=dashboard", icon: LayoutDashboard },
+      { title: "Drive Applications", url: "/external-user/dashboard?module=drive-applications", icon: FileText },
       { title: "Company Profile", url: "/external-user/dashboard?module=company-profile", icon: Building2 },
       { title: "Placement Drives", url: "/external-user/dashboard?module=placement-drives", icon: Briefcase },
       { title: "Assessments", url: "/external-user/dashboard?module=assessments", icon: FileCheck2 },
       { title: "Question Bank", url: "/external-user/dashboard?module=question-bank", icon: Database },
-      { title: "Assessment Requests", url: "/external-user/dashboard?module=assessment-requests", icon: Send },
       { title: "Interview Management", url: "/external-user/dashboard?module=interviews", icon: Video },
       { title: "Offer Management", url: "/external-user/dashboard?module=offers", icon: Award },
       { title: "Reports", url: "/external-user/dashboard?module=reports", icon: BarChart3 },
@@ -517,10 +558,31 @@ export const DEAN_NAVIGATION: NavSection[] = [
 ];
 
 export function navigationForUser(user: UserPermissionContext, currentPath?: string): NavSection[] {
+  const isStaff = user.role === "staff";
+  const isExamAssistant = isStaff && user.flags.includes("isExamAssistant");
+
+  // If user has isExamController (Officer), return the exact sidebar configurations
+  if (isStaff && user.flags.includes("isExamController")) {
+    return [
+      {
+        label: "Exam Officer Portal",
+        items: [
+          { title: "dashboard", url: "/examcell/dashboard", icon: LayoutDashboard },
+          { title: "examcell updates", url: "/examcell/updates", icon: CalendarCheck },
+          { title: "Hall ticket controll", url: "/examcell/hall-tickets", icon: UserCog },
+          { title: "Correction Analysis", url: "/examcell/correction-analysis", icon: FileText },
+          { title: "Results publisher", url: "/examcell/results", icon: Award },
+          { title: "Exam analytics", url: "/examcell/analytics", icon: BarChart3 },
+          { title: "bloomstick analayis", url: "/examcell/bloomstick", icon: Brain },
+          { title: "notification", url: "/examcell/notifications", icon: Bell },
+          { title: "Profile", url: "/faculty/profile", icon: Settings }
+        ]
+      }
+    ];
+  }
+
   // Path-based Dean portfolio navigation matching (guarantees ONLY that dean's sidebar is shown)
   if (currentPath) {
-    if (currentPath.startsWith("/librarian")) return LIBRARIAN_NAVIGATION;
-    if (currentPath.startsWith("/transport")) return TRANSPORT_NAVIGATION;
     if (currentPath.startsWith("/staff/academic-dean")) return ACADEMIC_DEAN_NAVIGATION;
     if (currentPath.startsWith("/staff/student-dean")) return STUDENT_DEAN_NAVIGATION;
     if (currentPath.startsWith("/staff/iqac")) return IQAC_NAVIGATION;
@@ -529,16 +591,6 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
     if (currentPath.startsWith("/staff/finance-dean")) return FINANCE_NAVIGATION;
     if (currentPath.startsWith("/staff/examination-dean")) return EXAMINATION_NAVIGATION;
     if (currentPath.startsWith("/staff/placement-dean")) return PLACEMENT_NAVIGATION;
-  }
-
-  // Librarian Portal Navigation
-  if (user.role === "librarian" || user.flags.includes("isLibraryAdmin")) {
-    return LIBRARIAN_NAVIGATION;
-  }
-
-  // Transport Portal Navigation
-  if (user.role === "transport" || user.flags.includes("isTransportOfficer")) {
-    return TRANSPORT_NAVIGATION;
   }
 
   // Student Portal Navigation
@@ -557,9 +609,8 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
     examination_dean: EXAMINATION_NAVIGATION,
     placement_dean: PLACEMENT_NAVIGATION,
   };
-  const deanKey = (user.externalPersona || user.role) as string;
-  if (deanKey && deanKey in deanNavMap) {
-    return deanNavMap[deanKey] as NavSection[];
+  if (user.role in deanNavMap) {
+    return deanNavMap[user.role] as NavSection[];
   }
   // Legacy generic dean flag fallback (isDean without specific role)
   if (user.role !== "super-admin" && user.flags.includes("isDean")) {
@@ -582,7 +633,7 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
      "isTransportOfficer", "isHostelWarden", "isHRManager", "isFinanceOfficer"].includes(flag)
   );
 
-  if (user.role === "staff" && !isAdminStaff) {
+  if (user.role === "staff" && !isAdminStaff && !isExamAssistant) {
     return [
       {
         label: "Faculty Workspace",
@@ -611,7 +662,7 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
 
   return navigation
     .map((section) => {
-      const items = section.items
+      let items = section.items
         .filter((item) => {
           // 1. Role level filtering (optional explicit block)
           if (item.roles && !item.roles.includes(user.role)) {
@@ -634,10 +685,31 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
         })
         .map((item) => {
           const newUrl = resolveUrlForUser(item.url, user, item.title);
-          const newChildren = item.children?.map((child) => ({
+          let newChildren = item.children?.map((child) => ({
             ...child,
             url: resolveUrlForUser(child.url, user, child.title),
           }));
+
+          // If the user is an Exam Assistant / Faculty, inject the exact assistant modules into the "Examinations" children dropdown!
+          if (item.title === "Examinations" && isStaff && isExamAssistant) {
+            newChildren = [
+              { title: "Dashboard", url: "/examcell/dashboard" },
+              { title: "Course & Exam Enroll", url: "/examcell/course-enroll" },
+              { title: "Schedule Exam", url: "/examcell/schedule" },
+              { title: "Timetable Builder", url: "/examcell/timetable" },
+              { title: "Hall Tickets", url: "/examcell/hall-tickets" },
+              { title: "Correction Requests", url: "/examcell/correction-requests" },
+              { title: "Question Bank", url: "/examcell/questions" },
+              { title: "Results", url: "/examcell/results" },
+              { title: "Exam Analytics", url: "/examcell/analytics" },
+              { title: "Supplementary Students", url: "/examcell/supplementary" },
+              { title: "Notifications", url: "/examcell/notifications" }
+            ].map(c => ({
+              ...c,
+              moduleId: "examination",
+              url: resolveUrlForUser(c.url, user, c.title)
+            }));
+          }
 
           let title = item.title;
           let icon = item.icon;
@@ -654,6 +726,18 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
             children: newChildren,
           };
         });
+
+      // For standard staff, append Evaluations & Marks link inside Academics section
+      if (section.label === "Academics" && isStaff && !isExamAssistant) {
+        items = [
+          ...items,
+          {
+            title: "Evaluations & Marks",
+            url: resolveUrlForUser("/faculty/evaluation-and-marks", user, "Evaluations & Marks"),
+            icon: FileSpreadsheet,
+          }
+        ];
+      }
 
       return {
         ...section,

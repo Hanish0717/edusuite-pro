@@ -9,7 +9,7 @@ export const Route = createFileRoute("/lms")({
   component: LmsPage,
 });
 
-function LmsPage() {
+export function LmsPage() {
   return (
     <DashboardLayout>
       <LMSModuleView />

@@ -137,7 +137,7 @@ export function LMSModuleView() {
     department: "CSE",
     topic: "",
     instructor: "Dr. K. Sai Teja",
-    date: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().split("T")[0] || "",
     time: "04:00 PM - 05:00 PM",
     link: "https://meet.google.com/abc-defg-hij",
   });
@@ -170,7 +170,10 @@ export function LMSModuleView() {
   // Handlers for Add
   const handleAddResourceSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!resForm.title) return toast.error("Enter document title");
+    if (!resForm.title) {
+      toast.error("Enter document title");
+      return;
+    }
     const created = await createLMSResource(resForm);
     setResources((prev) => [created, ...prev]);
     setIsAddResourceOpen(false);
@@ -179,7 +182,10 @@ export function LMSModuleView() {
 
   const handleAddVideoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!vidForm.title) return toast.error("Enter video lecture title");
+    if (!vidForm.title) {
+      toast.error("Enter video lecture title");
+      return;
+    }
     const created = await createLMSVideo(vidForm);
     setVideos((prev) => [created, ...prev]);
     setIsAddVideoOpen(false);
@@ -188,7 +194,10 @@ export function LMSModuleView() {
 
   const handleAddAssignmentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!asnForm.title) return toast.error("Enter assignment title");
+    if (!asnForm.title) {
+      toast.error("Enter assignment title");
+      return;
+    }
     const created = await createLMSAssignment(asnForm);
     setAssignments((prev) => [created, ...prev]);
     setIsAddAssignmentOpen(false);
@@ -197,7 +206,10 @@ export function LMSModuleView() {
 
   const handleAddClassSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clsForm.topic) return toast.error("Enter class stream topic");
+    if (!clsForm.topic) {
+      toast.error("Enter class stream topic");
+      return;
+    }
     const created = await createLMSClass(clsForm);
     setClasses((prev) => [created, ...prev]);
     setIsAddClassOpen(false);

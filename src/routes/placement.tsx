@@ -6,7 +6,7 @@ export const Route = createFileRoute("/placement")({
   component: PlacementLayout,
 });
 
-function PlacementLayout() {
+export function PlacementLayout() {
   return (
     <DashboardLayout>
       <Outlet />

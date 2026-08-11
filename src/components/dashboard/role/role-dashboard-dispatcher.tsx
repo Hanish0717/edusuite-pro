@@ -12,7 +12,7 @@ import { StaffDashboard } from "./staff-dashboard";
 import { StudentDashboard } from "./student-dashboard";
 import { ParentDashboard } from "./parent-dashboard";
 import { ExamCellDashboard } from "./exam-cell-dashboard";
-import { LibrarianDashboard } from "./librarian-dashboard";
+import { LibrarianDashboard } from "@/librarian";
 import { PlacementDashboard } from "./placement-dashboard";
 import { WardenDashboard } from "./warden-dashboard";
 import { TransportDashboard } from "./transport-dashboard";

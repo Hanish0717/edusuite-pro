@@ -9,7 +9,7 @@ export const Route = createFileRoute("/admission")({
   component: AdmissionPage,
 });
 
-function AdmissionPage() {
+export function AdmissionPage() {
   return (
     <DashboardLayout>
       <AdmissionModuleView />

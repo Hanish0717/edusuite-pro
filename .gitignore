@@ -30,8 +30,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Local backup/scratch folders (large files — do not push)
-scratch/
-src/librarian/backups/
-*.zip

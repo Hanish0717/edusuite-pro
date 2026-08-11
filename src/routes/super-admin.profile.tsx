@@ -64,7 +64,7 @@ function SuperAdminProfilePage() {
           <div className="border-t border-border pt-4 text-left space-y-3 text-xs">
             <div className="flex items-center gap-2.5 text-muted-foreground">
               <Mail className="size-4 text-primary shrink-0" />
-              <span className="font-mono truncate">{profile.email || "superadmin@edusuite.edu.in"}</span>
+              <span className="font-mono truncate">{(profile as any).email || "superadmin@edusuite.edu.in"}</span>
             </div>
             <div className="flex items-center gap-2.5 text-muted-foreground">
               <Building className="size-4 text-primary shrink-0" />

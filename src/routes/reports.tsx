@@ -9,7 +9,7 @@ export const Route = createFileRoute("/reports")({
   component: ReportsPage,
 });
 
-function ReportsPage() {
+export function ReportsPage() {
   return (
     <DashboardLayout>
       <ReportsModuleView />

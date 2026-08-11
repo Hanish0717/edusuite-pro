@@ -1,14 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { LibraryModuleView } from "@/modules/library";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/library/books")({
-  head: () => ({
-    meta: [{ title: "Library Catalogue — EduSuite Pro" }],
-  }),
-  component: () => (
-    <DashboardLayout>
-      <LibraryModuleView />
-    </DashboardLayout>
-  ),
+  component: () => <Navigate to="/dashboard/librarian/books" replace />,
 });

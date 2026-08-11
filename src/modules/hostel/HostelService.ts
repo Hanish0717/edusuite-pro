@@ -35,7 +35,6 @@ export interface GatePassRequest {
   status: "Pending" | "Approved" | "Rejected" | "Resolved";
 }
 
-// Default initial datasets as memory fallback and seed values
 export interface HostelBlockInfo {
   id: string;
   name: string;
@@ -729,8 +728,6 @@ export const DEFAULT_POLICY_COMPLIANCE: PolicyComplianceStatus = {
   insuranceStatus: "Active Comprehensive Cover",
   lastAuditDate: "2026-07-28",
 };
-
-// Warden API Implementations
 
 export async function fetchHostelRooms(): Promise<HostelRoom[]> {
   try {

@@ -31,14 +31,6 @@ export interface RoleResolutionContext {
 export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "super_admin",
-    roleName: "Admission Desk",
-    email: "admission@college.com",
-    defaultPassword: "password123",
-    primaryScope: "Admission Office",
-    personaName: "Admission Desk Control",
-  },
-  {
-    canonicalRole: "super_admin",
     roleName: "Super Admin",
     email: "superadmin@college.com",
     defaultPassword: "password123",
@@ -189,7 +181,6 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
 
 export const DESIGNATION_OPTIONS_MAP: Record<CoreRoleKey, DesignationOption[]> = {
   "super-admin": [
-    { id: "admission_desk", label: "Admission Desk" },
     { id: "global_admin", label: "Global System & Platform Owner" },
     { id: "security_admin", label: "Security & Compliance Officer" },
     { id: "audit_admin", label: "Institutional Audit Auditor" },
@@ -213,7 +204,7 @@ export const DESIGNATION_OPTIONS_MAP: Record<CoreRoleKey, DesignationOption[]> =
     { id: "library_admin", label: "Library Admin" },
     { id: "hr_manager", label: "HR Manager" },
     { id: "principal", label: "Principal" },
-    { id: "vice_principal", label: "Vice Principal text" },
+    { id: "vice_principal", label: "Vice Principal" },
     { id: "lab_incharge", label: "Lab Incharge" },
     { id: "naac_coordinator", label: "NAAC / IQAC Coordinator" },
   ],
@@ -249,11 +240,6 @@ export function getScopeOptionsForDesignation(coreRole: CoreRoleKey, designation
   }
 
   if (coreRole === "super-admin") {
-    if (designation === "admission_desk") {
-      return [
-        { value: "Admission Office", label: "Scope: Admission Office & Main Campus" },
-      ];
-    }
     return [
       { value: "All Campuses (Global)", label: "Scope: All Campuses & Departments (Global)" },
       { value: "Main Campus (Hyderabad)", label: "Scope: Main Campus (Hyderabad)" },
@@ -328,16 +314,8 @@ export function getDefaultCredentialsForSelection(
   designation?: string,
 ): { email: string; password: string } {
   let email = "faculty@college.com";
-  let password = "password123";
-
-  if (coreRole === "super-admin") {
-    if (designation === "admission_desk") {
-      email = "admission@college.com";
-      password = "Admission@123";
-    } else {
-      email = "superadmin@college.com";
-    }
-  } else if (coreRole === "student") email = "student@college.com";
+  if (coreRole === "super-admin") email = "superadmin@college.com";
+  else if (coreRole === "student") email = "student@college.com";
   else if (coreRole === "parent") email = "parent@college.com";
   else if (coreRole === "external-user") {
     if (designation === "alumni") email = "alumni@college.com";
@@ -355,23 +333,15 @@ export function getDefaultCredentialsForSelection(
     else if (designation === "finance_officer") email = "accounts@college.com";
     else if (designation === "library_admin") email = "librarian@college.com";
   }
-  return { email, password };
+  return { email, password: "password123" };
 }
 
 export function resolveRoleContextFromSelection(
   coreRole: CoreRoleKey,
   designation: string,
   branch: string,
-): RoleResolutionContext & { targetRoute?: string } {
+): RoleResolutionContext {
   if (coreRole === "super-admin") {
-    if (designation === "admission_desk") {
-      return {
-        role: "super-admin",
-        flags: ["isAdmissionsOfficer", "isSystemAdmin"],
-        toastMessage: "Logged in as Admission Desk — Admission Office Dashboard",
-        targetRoute: "/dashboard/admission",
-      };
-    }
     return {
       role: "super-admin",
       flags: ["isSystemAdmin", "isPrincipal"],
@@ -391,27 +361,19 @@ if (coreRole === "staff") {
   }
 
   let flag = "isHod";
-  let targetRoute = "/dashboard";
-
-  if (designation === "hod") { flag = "isHod"; targetRoute = "/hod/dashboard"; }
-  else if (designation === "dean" || designation === "academic_dean") { flag = "isDean"; targetRoute = "/staff/academic-dean"; }
-  else if (designation === "student_dean") { flag = "isDean"; targetRoute = "/staff/student-dean"; }
-  else if (designation === "iqac_dean") { flag = "isDean"; targetRoute = "/staff/iqac"; }
-  else if (designation === "ima_dean") { flag = "isDean"; targetRoute = "/staff/ima"; }
-  else if (designation === "research_dean") { flag = "isDean"; targetRoute = "/staff/research-development"; }
-  else if (designation === "finance_dean") { flag = "isDean"; targetRoute = "/staff/finance-dean"; }
-  else if (designation === "examination_dean") { flag = "isDean"; targetRoute = "/staff/examination-dean"; }
-  else if (designation === "placement_dean") { flag = "isDean"; targetRoute = "/staff/placement-dean"; }
-  else if (designation === "exam_controller") { flag = "isExamController"; targetRoute = "/examinations"; }
-  else if (designation === "placement_officer") { flag = "isPlacementOfficer"; targetRoute = "/placement/dashboard"; }
-  else if (designation === "transport_officer") { flag = "isTransportOfficer"; targetRoute = "/transport"; }
-  else if (designation === "hostel_warden") { flag = "isHostelWarden"; targetRoute = "/hostel"; }
-  else if (designation === "finance_officer") { flag = "isFinanceOfficer"; targetRoute = "/finance/dashboard"; }
-  else if (designation === "library_admin") { flag = "isLibraryAdmin"; targetRoute = "/librarian"; }
-  else if (designation === "hr_manager") { flag = "isHRManager"; targetRoute = "/hr/dashboard"; }
-  else if (designation === "principal") { flag = "isPrincipal"; targetRoute = "/dashboard"; }
-  else if (designation === "vice_principal") { flag = "isVicePrincipal"; targetRoute = "/dashboard"; }
-  else { flag = "isMentor"; targetRoute = "/faculty/dashboard"; }
+  if (designation === "hod") flag = "isHod";
+  else if (designation === "dean") flag = "isDean";
+  else if (designation.includes("_dean")) flag = "isDean";
+  else if (designation === "exam_controller") flag = "isExamController";
+  else if (designation === "placement_officer") flag = "isPlacementOfficer";
+  else if (designation === "transport_officer") flag = "isTransportOfficer";
+  else if (designation === "hostel_warden") flag = "isHostelWarden";
+  else if (designation === "finance_officer") flag = "isFinanceOfficer";
+  else if (designation === "library_admin") flag = "isLibraryAdmin";
+  else if (designation === "hr_manager") flag = "isHRManager";
+  else if (designation === "principal") flag = "isPrincipal";
+  else if (designation === "vice_principal") flag = "isVicePrincipal";
+  else flag = "isMentor";
 
   // Determine role for dean designations
   let role: LoginRole = "staff";
@@ -423,7 +385,6 @@ if (coreRole === "staff") {
     flags: [flag, "isClassAdvisor", "isMentor"],
     department: deptCode,
     toastMessage: `Logged in as Staff: ${designation.toUpperCase()} — Branch: ${deptCode}`,
-    targetRoute,
   };
 }
 
@@ -490,8 +451,8 @@ export function loginWithCredentials(email: string, password: string): LoginResu
     return { success: false, message: "Invalid email or role credential." };
   }
 
-  if (password !== "password123" && password !== "demo1234" && password !== "Admission@123") {
-    return { success: false, message: "Invalid password. Use 'password123' or 'Admission@123'." };
+  if (password !== "password123" && password !== "demo1234") {
+    return { success: false, message: "Invalid password. Use 'password123'." };
   }
 
   return {

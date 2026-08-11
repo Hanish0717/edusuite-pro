@@ -7,7 +7,7 @@ export const Route = createFileRoute("/results")({
   component: ResultsPage,
 });
 
-function ResultsPage() {
+export function ResultsPage() {
   return (
     <DashboardLayout>
       <ResultsModuleView />

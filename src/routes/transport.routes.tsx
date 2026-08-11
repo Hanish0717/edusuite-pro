@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { TransportModuleView } from "@/modules/transport";
+import { TransportVerificationView } from "@/modules/transport";
 
 export const Route = createFileRoute("/transport/routes")({
-  head: () => ({ meta: [{ title: "Transport Routes — EduSuite Pro" }] }),
-  component: () => (
-    <DashboardLayout>
-      <TransportModuleView />
-    </DashboardLayout>
-  ),
+  head: () => ({
+    meta: [{ title: "Transport Routes & Selection — EduSuite Pro" }],
+  }),
+  component: TransportRoutesPage,
 });
+
+function TransportRoutesPage() {
+  return <TransportVerificationView />;
+}
