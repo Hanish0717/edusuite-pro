@@ -66,7 +66,7 @@ export const Route = createFileRoute("/grievance")({
   component: GrievancePage,
 });
 
-export function GrievancePage() {
+function GrievancePage() {
   const { hasFlag, role } = useRole();
 
   if (role === "student") {

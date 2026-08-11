@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import {
   Bus,
   RefreshCw,
@@ -90,24 +91,93 @@ import {
   type TransportStaffSummary,
 } from "./TransportService";
 
-import { useLocation } from "@tanstack/react-router";
-
 export function TransportModuleView() {
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const tabFromUrl = searchParams.get("tab");
+  const navigate = useNavigate();
 
-  const [routes, setRoutes] = useState<EnhancedBusRoute[]>(INITIAL_ENHANCED_ROUTES);
-  const [passes, setPasses] = useState<EnhancedTransportPass[]>(INITIAL_ENHANCED_PASSES);
-  const [activeTab, setActiveTab] = useState<"routes" | "passes" | "health" | "analytics" | "governance">("routes");
+  const getTabFromPathname = (pathname: string): "routes" | "passes" | "health" | "analytics" | "governance" => {
+    if (pathname.includes("/passengers") || pathname.includes("/fees") || pathname.includes("/passes")) return "passes";
+    if (pathname.includes("/health") || pathname.includes("/compliance")) return "health";
+    if (pathname.includes("/analytics") || pathname.includes("/reports")) return "analytics";
+    if (pathname.includes("/governance") || pathname.includes("/settings") || pathname.includes("/notifications")) return "governance";
+    return "routes";
+  };
+
+  const activeTab = getTabFromPathname(location.pathname);
+
+  const handleTabChange = (tab: "routes" | "passes" | "health" | "analytics" | "governance") => {
+    const routeMap = {
+      routes: "/transport/routes",
+      passes: "/transport/passengers",
+      health: "/transport/health",
+      analytics: "/transport/analytics",
+      governance: "/transport/governance",
+    };
+    navigate({ to: routeMap[tab] });
+  };
+
+  const TRANSPORT_ROUTES_STORAGE_KEY = "EDUSUITE_TRANSPORT_ROUTES_V1";
+  const TRANSPORT_PASSES_STORAGE_KEY = "EDUSUITE_TRANSPORT_PASSES_V1";
+
+  const getSavedRoutes = (): EnhancedBusRoute[] => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem(TRANSPORT_ROUTES_STORAGE_KEY) : null;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return INITIAL_ENHANCED_ROUTES;
+  };
+
+  const getSavedPasses = (): EnhancedTransportPass[] => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem(TRANSPORT_PASSES_STORAGE_KEY) : null;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return INITIAL_ENHANCED_PASSES;
+  };
+
+  const [routes, setRoutes] = useState<EnhancedBusRoute[]>(getSavedRoutes);
+  const [passes, setPasses] = useState<EnhancedTransportPass[]>(getSavedPasses);
 
   useEffect(() => {
-    if (tabFromUrl === "routes") setActiveTab("routes");
-    else if (tabFromUrl === "passes") setActiveTab("passes");
-    else if (tabFromUrl === "health") setActiveTab("health");
-    else if (tabFromUrl === "analytics") setActiveTab("analytics");
-    else if (tabFromUrl === "governance") setActiveTab("governance");
-  }, [tabFromUrl]);
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(TRANSPORT_ROUTES_STORAGE_KEY, JSON.stringify(routes));
+      }
+    } catch (e) {}
+  }, [routes]);
+
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(TRANSPORT_PASSES_STORAGE_KEY, JSON.stringify(passes));
+      }
+    } catch (e) {}
+  }, [passes]);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const rawRoutes = localStorage.getItem(TRANSPORT_ROUTES_STORAGE_KEY);
+      const rawPasses = localStorage.getItem(TRANSPORT_PASSES_STORAGE_KEY);
+      if (rawRoutes) setRoutes(JSON.parse(rawRoutes));
+      else setRoutes(INITIAL_ENHANCED_ROUTES);
+
+      if (rawPasses) setPasses(JSON.parse(rawPasses));
+      else setPasses(INITIAL_ENHANCED_PASSES);
+    } catch (e) {}
+    setLoading(false);
+    toast.success("Transport data restored from saved records");
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const [loading, setLoading] = useState(false);
   const [downloadingReport, setDownloadingReport] = useState(false);
@@ -184,18 +254,6 @@ export function TransportModuleView() {
     };
     setActivities((prev) => [newLog, ...prev]);
   };
-
-  const loadData = async () => {
-    setLoading(true);
-    const [rt, ps] = await Promise.all([fetchBusRoutes(), fetchTransportPasses()]);
-    setRoutes(rt as EnhancedBusRoute[]);
-    setLoading(false);
-    toast.success("Super Admin Transport Governance console refreshed");
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   // Filtered Lists
   const filteredRoutes = routes.filter((r) => {
@@ -373,6 +431,22 @@ export function TransportModuleView() {
           <Button variant="outline" size="sm" onClick={handleDownloadTransportReport} disabled={downloadingReport} className="h-9 gap-2 text-xs font-medium">
             {downloadingReport ? <Loader2 className="size-3.5 animate-spin" /> : <Download className="size-3.5" />} Export Governance Report
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setRoutes([]);
+              setPasses([]);
+              try {
+                localStorage.setItem(TRANSPORT_ROUTES_STORAGE_KEY, JSON.stringify([]));
+                localStorage.setItem(TRANSPORT_PASSES_STORAGE_KEY, JSON.stringify([]));
+              } catch (e) {}
+              toast.success("Demo mock data cleared! Displaying only your created data.");
+            }}
+            className="h-9 text-xs font-medium text-amber-700 border-amber-200 hover:bg-amber-50 cursor-pointer"
+          >
+            Clear Demo Data
+          </Button>
           <Button size="sm" onClick={() => setIsConfigOpen(true)} className="h-9 bg-brand-gradient text-white gap-2 text-xs font-semibold shadow-glow">
             <Sliders className="size-4" /> Policy Configuration
           </Button>
@@ -382,7 +456,7 @@ export function TransportModuleView() {
       {/* EXECUTIVE TABS SWITCHER (5 TABS) */}
       <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
         <button
-          onClick={() => setActiveTab("routes")}
+          onClick={() => handleTabChange("routes")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "routes" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
           }`}
@@ -390,7 +464,7 @@ export function TransportModuleView() {
           1. Fleet Overview & Route Analytics ({routes.length})
         </button>
         <button
-          onClick={() => setActiveTab("passes")}
+          onClick={() => handleTabChange("passes")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "passes" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
           }`}
@@ -398,7 +472,7 @@ export function TransportModuleView() {
           2. Transport Pass Holders Directory ({passes.length})
         </button>
         <button
-          onClick={() => setActiveTab("health")}
+          onClick={() => handleTabChange("health")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "health" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
           }`}
@@ -406,7 +480,7 @@ export function TransportModuleView() {
           3. Fleet Health & Vehicle Compliance
         </button>
         <button
-          onClick={() => setActiveTab("analytics")}
+          onClick={() => handleTabChange("analytics")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "analytics" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
           }`}
@@ -414,7 +488,7 @@ export function TransportModuleView() {
           4. Transport Executive Analytics
         </button>
         <button
-          onClick={() => setActiveTab("governance")}
+          onClick={() => handleTabChange("governance")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 ${
             activeTab === "governance" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"
           }`}
@@ -1789,3 +1863,12 @@ export function TransportModuleView() {
     </div>
   );
 }
+
+// Sub-route view aliases rendering central TransportModuleView
+export const TransportNotificationsView = TransportModuleView;
+export const TransportFeesManagementView = TransportModuleView;
+export const TransportSettingsView = TransportModuleView;
+export const TransportBusesView = TransportModuleView;
+export const TransportPassengersView = TransportModuleView;
+export const TransportRoutesView = TransportModuleView;
+

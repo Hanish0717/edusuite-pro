@@ -9,7 +9,7 @@ export const Route = createFileRoute("/curriculum-management")({
   component: CurriculumManagementPage,
 });
 
-export function CurriculumManagementPage() {
+function CurriculumManagementPage() {
   return (
     <DashboardLayout>
       <CurriculumManagement />

@@ -51,7 +51,7 @@ export const rolePermissions: Partial<Record<LoginRole, PermissionCode[]>> = {
     "VIEW_AI",
     "TRIGGER_AI_ALERTS",
   ],
-  dean: [
+  academic_dean: [
     "VIEW_DASHBOARD",
     "VIEW_ACADEMICS",
     "VIEW_AI",

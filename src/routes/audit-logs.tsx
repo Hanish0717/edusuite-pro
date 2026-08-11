@@ -15,7 +15,7 @@ export const Route = createFileRoute("/audit-logs")({
   component: AuditLogsPage,
 });
 
-export function AuditLogsPage() {
+function AuditLogsPage() {
   return (
     <DashboardLayout>
       <AuditLogsModuleView />

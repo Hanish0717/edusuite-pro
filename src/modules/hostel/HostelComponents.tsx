@@ -27,8 +27,9 @@ import {
   BarChart3,
   Filter,
   FileSpreadsheet,
-  HeartPulse,
-  Sparkles,
+  Utensils,
+  XCircle,
+  FileDown,
   Search,
   Eye,
   Loader2,
@@ -40,6 +41,13 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  getWardenMessSummary,
+  exportMessReportCSV,
+  exportMessReportPDF,
+  getAllStoredConfirmations,
+  MealType,
+} from "@/components/student-hostel/meal-service";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,25 +109,45 @@ import {
   type PolicyComplianceStatus,
 } from "./HostelService";
 
-import { useLocation } from "@tanstack/react-router";
-
 export function HostelModuleView() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const tabFromUrl = searchParams.get("tab");
-
   const [blocks] = useState<HostelBlockInfo[]>(INITIAL_BLOCKS);
   const [rooms, setRooms] = useState<HostelRoom[]>(INITIAL_ROOMS);
   const [residents, setResidents] = useState<EnhancedResidentStudent[]>(ENHANCED_RESIDENTS);
   const [passes, setPasses] = useState<GatePassRequest[]>(INITIAL_PASSES);
-  const [activeTab, setActiveTab] = useState<"blocks" | "residents" | "compliance" | "analytics">("blocks");
+  const [activeTab, setActiveTab] = useState<"blocks" | "residents" | "compliance" | "analytics" | "mess">("blocks");
 
   useEffect(() => {
     if (tabFromUrl === "rooms" || tabFromUrl === "blocks") setActiveTab("blocks");
     else if (tabFromUrl === "residents") setActiveTab("residents");
     else if (tabFromUrl === "compliance" || tabFromUrl === "passes") setActiveTab("compliance");
     else if (tabFromUrl === "analytics") setActiveTab("analytics");
+    else if (tabFromUrl === "mess") setActiveTab("mess");
   }, [tabFromUrl]);
+
+  const todayStr = new Date().toISOString().split("T")[0];
+  const [messSummary, setMessSummary] = useState(() => getWardenMessSummary(todayStr));
+
+  const reloadMessSummary = () => {
+    setMessSummary(getWardenMessSummary(todayStr));
+  };
+
+  useEffect(() => {
+    reloadMessSummary();
+    const handleUpdate = () => reloadMessSummary();
+    if (typeof window !== "undefined") {
+      window.addEventListener("meal-confirmations-updated", handleUpdate);
+      window.addEventListener("storage", handleUpdate);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("meal-confirmations-updated", handleUpdate);
+        window.removeEventListener("storage", handleUpdate);
+      }
+    };
+  }, [todayStr]);
 
   const [loading, setLoading] = useState(false);
 
@@ -177,20 +205,25 @@ export function HostelModuleView() {
     setActivities((prev) => [newLog, ...prev]);
   };
 
-  const loadData = async () => {
-    setLoading(true);
+  const loadData = async (isSilent = false) => {
+    if (!isSilent) setLoading(true);
     const [rm, res, ps] = await Promise.all([
       fetchHostelRooms(),
       fetchHostelResidents(),
       fetchGatePasses(),
     ]);
     setRooms(rm);
-    setLoading(false);
-    toast.success("Hostel Executive Governance console synced");
+    setResidents(res);
+    setPasses(ps);
+    if (!isSilent) setLoading(false);
   };
 
   useEffect(() => {
     loadData();
+    const interval = setInterval(() => {
+      loadData(true);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   // Filtered residents logic
@@ -445,6 +478,9 @@ export function HostelModuleView() {
           }`}
         >
           4. Hostel Analytics & Reports
+        </button>
+        <button onClick={() => setActiveTab("mess")} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${activeTab === "mess" ? "bg-card text-primary shadow-sm" : "text-muted-foreground"}`}>
+          <Utensils className="size-3.5 text-amber-500" /> 5. Mess Preparation Dashboard
         </button>
       </div>
 
@@ -1675,3 +1711,25 @@ export function HostelModuleView() {
     </div>
   );
 }
+
+// Sub-route view aliases rendering the central HostelModuleView
+export const HostelBlocksView = HostelModuleView;
+export const HostelAttendanceView = HostelModuleView;
+export const HostelComplaintsView = HostelModuleView;
+export const HostelDeviceManagementView = HostelModuleView;
+export const HostelFeesView = HostelModuleView;
+export const HostelGuestBillingView = HostelModuleView;
+export const HostelLeavesSuspensionView = HostelModuleView;
+export const HostelLogHistoryView = HostelModuleView;
+export const HostelMaintenanceView = HostelModuleView;
+export const HostelMessFeesView = HostelModuleView;
+export const HostelMessManagementView = HostelModuleView;
+export const HostelMessMenusView = HostelModuleView;
+export const HostelNotificationsView = HostelModuleView;
+export const HostelOutingApprovalsView = HostelModuleView;
+export const HostelOutingLogHistoryView = HostelModuleView;
+export const HostelRoomsView = HostelModuleView;
+export const HostelSettingsView = HostelModuleView;
+export const HostelUserManagementView = HostelModuleView;
+export const HostelVisitorsView = HostelModuleView;
+
