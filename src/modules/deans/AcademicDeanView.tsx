@@ -4,7 +4,7 @@ import { Building2, Users, GraduationCap, BookOpen, Clock, ShieldCheck, CheckCir
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { Panel } from "@/components/dashboard/panel";
 import { Badge } from "@/components/ui/badge";
-import { GroupedBarChart, DonutChart } from "@/components/dashboard/charts";
+import { GroupedBarChart, DonutChart, ChartLegend } from "@/components/dashboard/charts";
 import { DeanHeader } from "./components/DeanHeader";
 
 export function AcademicDeanView() {
@@ -77,17 +77,28 @@ export function AcademicDeanView() {
         </Panel>
 
         <Panel title="Academic Quality & Grade Performance Distribution" description="Overall student academic performance breakdown for current semester.">
-          <DonutChart
-            data={[
-              { category: "Outstanding (CGPA 9.0+)", percentage: 22.4 },
-              { category: "First Class with Distinction (8.0-8.9)", percentage: 38.6 },
-              { category: "First Class (7.0-7.9)", percentage: 25.5 },
-              { category: "Second Class (6.0-6.9)", percentage: 8.5 },
-              { category: "Slow Learners / Remedial (<6.0)", percentage: 5.0 },
-            ] as unknown as Record<string, unknown>[]}
-            categoryKey="category"
-            valueKey="percentage"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+            <DonutChart
+              data={[
+                { name: "Outstanding (CGPA 9.0+)", value: 22.4 },
+                { name: "Distinction (8.0-8.9)", value: 38.6 },
+                { name: "First Class (7.0-7.9)", value: 25.5 },
+                { name: "Second Class (6.0-6.9)", value: 8.5 },
+                { name: "Remedial (<6.0)", value: 5.0 },
+              ]}
+              height={200}
+              centerLabel="8.4 CGPA"
+            />
+            <ChartLegend
+              items={[
+                { name: "Outstanding (CGPA 9.0+)" },
+                { name: "Distinction (8.0-8.9)" },
+                { name: "First Class (7.0-7.9)" },
+                { name: "Second Class (6.0-6.9)" },
+                { name: "Remedial (<6.0)" },
+              ]}
+            />
+          </div>
         </Panel>
       </div>
 

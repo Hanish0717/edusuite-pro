@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   BadgeCheck,
   GraduationCap,
+  School,
   Users,
   UserCog,
   CalendarCheck,
@@ -54,6 +55,8 @@ import { RESEARCH_NAVIGATION } from "@/config/navigation/research";
 import { FINANCE_NAVIGATION } from "@/config/navigation/finance";
 import { EXAMINATION_NAVIGATION } from "@/config/navigation/examination";
 import { PLACEMENT_NAVIGATION } from "@/config/navigation/placement";
+import { LIBRARIAN_NAVIGATION } from "@/config/navigation/librarian";
+import { TRANSPORT_NAVIGATION } from "@/config/navigation/transport";
 
 import type { LoginRole } from "@/config/roles";
 import { hasPermission, type UserPermissionContext } from "@/lib/permissions";
@@ -86,10 +89,10 @@ export const studentNavigation: NavSection[] = [
       { title: "Timetable", url: "/student/timetable", icon: CalendarRange },
       { title: "Attendance", url: "/student/attendance", icon: ClipboardCheck },
       { title: "Feedback", url: "/student/feedback", icon: MessageSquare },
-      { title: "Examinations", url: "/student/examinations", icon: FileText },
+      { title: "Course Registrations", url: "/student/examinations", icon: FileText },
       { title: "Hostel", url: "/student/hostel", icon: BedDouble },
       { title: "Discussion Forum", url: "/student/discussion-forum", icon: MessageCircle },
-      { title: "Finance", url: "/student/finance", icon: CreditCard },
+      { title: "Payments", url: "/student/finance", icon: CreditCard },
       { title: "OPAC", url: "/student/library", icon: Library },
       { title: "Updates", url: "/student/updates", icon: Sparkles },
       { title: "Webinars", url: "/student/webinars", icon: Video },
@@ -134,7 +137,8 @@ export const navigation: NavSection[] = [
   {
     label: "Academics",
     items: [
-      { title: "Admissions", url: "/admission", icon: GraduationCap, moduleId: "admission" },
+      { title: "Pre-Admission Portal", url: "/pre-admission", icon: School, moduleId: "pre-admission" },
+      { title: "Admission Office", url: "/admission", icon: GraduationCap, moduleId: "admission" },
       { title: "Academics", url: "/academics", icon: GraduationCap, moduleId: "academics" },
       { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super-admin", "staff"] },
       { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
@@ -205,6 +209,8 @@ export const navigation: NavSection[] = [
 function resolveUrlForUser(url: string, user: UserPermissionContext, title?: string): string {
   // Preserve standalone module URLs without rewriting
   if (
+    url.startsWith("/librarian") ||
+    url.startsWith("/transport") ||
     url.startsWith("/staff") ||
     url.startsWith("/alumni") ||
     [
@@ -214,6 +220,7 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       "/inventory",
       "/procurement",
       "/campus-events",
+      "/pre-admission",
       "/admission",
       "/accreditation",
       "/grievance",
@@ -268,13 +275,6 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     if (flags.includes("isDean")) {
       if (url === "/dashboard") return "/staff";
       if (url === "/settings") return "/faculty/profile";
-      if (url === "/attendance") return "/attendance";
-      if (url === "/timetable") return "/timetable";
-      if (url === "/examinations") return "/examinations";
-      if (url === "/results") return "/results";
-      if (url === "/faculty") return "/faculty";
-      if (url === "/students") return "/students";
-      if (url === "/academics") return "/academics";
       if (url === "/subject-allocation" || title === "Subject Allocation" || title === "Workload") return "/dean/subject-allocation";
       return url;
     }
@@ -343,11 +343,11 @@ export const RECRUITER_NAVIGATION: NavSection[] = [
     label: "Recruiter Portal",
     items: [
       { title: "Dashboard", url: "/external-user/dashboard?module=dashboard", icon: LayoutDashboard },
-      { title: "Drive Applications", url: "/external-user/dashboard?module=drive-applications", icon: FileText },
       { title: "Company Profile", url: "/external-user/dashboard?module=company-profile", icon: Building2 },
       { title: "Placement Drives", url: "/external-user/dashboard?module=placement-drives", icon: Briefcase },
       { title: "Assessments", url: "/external-user/dashboard?module=assessments", icon: FileCheck2 },
       { title: "Question Bank", url: "/external-user/dashboard?module=question-bank", icon: Database },
+      { title: "Assessment Requests", url: "/external-user/dashboard?module=assessment-requests", icon: Send },
       { title: "Interview Management", url: "/external-user/dashboard?module=interviews", icon: Video },
       { title: "Offer Management", url: "/external-user/dashboard?module=offers", icon: Award },
       { title: "Reports", url: "/external-user/dashboard?module=reports", icon: BarChart3 },
@@ -519,6 +519,8 @@ export const DEAN_NAVIGATION: NavSection[] = [
 export function navigationForUser(user: UserPermissionContext, currentPath?: string): NavSection[] {
   // Path-based Dean portfolio navigation matching (guarantees ONLY that dean's sidebar is shown)
   if (currentPath) {
+    if (currentPath.startsWith("/librarian")) return LIBRARIAN_NAVIGATION;
+    if (currentPath.startsWith("/transport")) return TRANSPORT_NAVIGATION;
     if (currentPath.startsWith("/staff/academic-dean")) return ACADEMIC_DEAN_NAVIGATION;
     if (currentPath.startsWith("/staff/student-dean")) return STUDENT_DEAN_NAVIGATION;
     if (currentPath.startsWith("/staff/iqac")) return IQAC_NAVIGATION;
@@ -527,6 +529,16 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
     if (currentPath.startsWith("/staff/finance-dean")) return FINANCE_NAVIGATION;
     if (currentPath.startsWith("/staff/examination-dean")) return EXAMINATION_NAVIGATION;
     if (currentPath.startsWith("/staff/placement-dean")) return PLACEMENT_NAVIGATION;
+  }
+
+  // Librarian Portal Navigation
+  if (user.role === "librarian" || user.flags.includes("isLibraryAdmin")) {
+    return LIBRARIAN_NAVIGATION;
+  }
+
+  // Transport Portal Navigation
+  if (user.role === "transport" || user.flags.includes("isTransportOfficer")) {
+    return TRANSPORT_NAVIGATION;
   }
 
   // Student Portal Navigation
@@ -545,8 +557,9 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
     examination_dean: EXAMINATION_NAVIGATION,
     placement_dean: PLACEMENT_NAVIGATION,
   };
-  if (user.role in deanNavMap) {
-    return deanNavMap[user.role] as NavSection[];
+  const deanKey = (user.externalPersona || user.role) as string;
+  if (deanKey && deanKey in deanNavMap) {
+    return deanNavMap[deanKey] as NavSection[];
   }
   // Legacy generic dean flag fallback (isDean without specific role)
   if (user.role !== "super-admin" && user.flags.includes("isDean")) {

@@ -9,7 +9,7 @@ export const Route = createFileRoute("/timetable")({
   component: TimetablePage,
 });
 
-export function TimetablePage() {
+function TimetablePage() {
   return (
     <DashboardLayout>
       <TimetableModuleView />

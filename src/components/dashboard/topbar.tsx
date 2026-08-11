@@ -160,7 +160,18 @@ export function Topbar() {
         </div>
 
         <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none py-0.5 max-w-full">
-          <Select value={role} onValueChange={(v) => setRole(v as LoginRole)}>
+          <Select
+            value={role}
+            onValueChange={(v) => {
+              const newRole = v as LoginRole;
+              setRole(newRole);
+              if (newRole === "super-admin") navigate({ to: "/super-admin/dashboard" });
+              else if (newRole === "student") navigate({ to: "/student/dashboard" });
+              else if (newRole === "parent") navigate({ to: "/parent/dashboard" });
+              else if (newRole === "external-user") navigate({ to: "/external-user/dashboard" });
+              else if (newRole === "staff") navigate({ to: "/dashboard" });
+            }}
+          >
             <SelectTrigger className="h-9 w-[160px] font-semibold text-xs border-primary/40 bg-card" aria-label="5 Core Login Roles">
               <SelectValue placeholder="Core Login Role" />
             </SelectTrigger>
@@ -191,7 +202,11 @@ export function Topbar() {
           {role === "external-user" && (
             <Select
               value={externalPersona || "recruiter"}
-              onValueChange={(v) => setExternalPersona((v || undefined) as ExternalPersona)}
+              onValueChange={(v) => {
+                const persona = (v || undefined) as ExternalPersona;
+                setExternalPersona(persona);
+                navigate({ to: "/external-user/dashboard" });
+              }}
             >
               <SelectTrigger className="h-9 w-[160px] text-xs font-medium bg-card" aria-label="External Persona">
                 <SelectValue placeholder="External Persona" />
@@ -226,8 +241,18 @@ export function Topbar() {
                           id={`flag-${f.id}`}
                           checked={active}
                           onCheckedChange={(checked) => {
-                            if (checked) {
+                            const isChecked = !!checked;
+                            if (isChecked) {
                               setFlags([...flags, f.id]);
+                              if (f.id === "isLibraryAdmin") navigate({ to: "/library" });
+                              else if (f.id === "isTransportOfficer") navigate({ to: "/transport" });
+                              else if (f.id === "isHostelWarden") navigate({ to: "/hostel" });
+                              else if (f.id === "isPlacementOfficer") navigate({ to: "/placement/dashboard" });
+                              else if (f.id === "isHod") navigate({ to: "/hod/dashboard" });
+                              else if (f.id === "isDean") navigate({ to: "/staff" });
+                              else if (f.id === "isExamController") navigate({ to: "/examinations" });
+                              else if (f.id === "isFinanceOfficer") navigate({ to: "/finance/dashboard" });
+                              else if (f.id === "isHRManager") navigate({ to: "/hr/dashboard" });
                             } else {
                               setFlags(flags.filter((x) => x !== f.id));
                             }
