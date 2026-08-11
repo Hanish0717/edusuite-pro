@@ -10,16 +10,18 @@ interface KpiCardProps {
   icon: LucideIcon;
   delta?: string;
   trend?: "up" | "down";
-  tone?: "primary" | "success" | "warning" | "info" | "destructive";
+  tone?: "primary" | "success" | "warning" | "info" | "destructive" | "purple";
+  onClick?: () => void;
   className?: string;
 }
 
-const toneMap = {
+const toneMap: Record<string, string> = {
   primary: "bg-primary/10 text-primary",
   success: "bg-success/10 text-success",
   warning: "bg-warning/15 text-warning",
   info: "bg-info/10 text-info",
   destructive: "bg-destructive/10 text-destructive",
+  purple: "bg-purple-500/10 text-purple-600",
 };
 
 export function KpiCard({
@@ -29,10 +31,11 @@ export function KpiCard({
   delta,
   trend = "up",
   tone = "primary",
+  onClick,
   className,
 }: KpiCardProps) {
   return (
-    <Card className={cn("animate-fade-up gap-0 border-border/70 py-0 shadow-card transition-shadow hover:shadow-elevated", className)}>
+    <Card onClick={onClick} className={cn("animate-fade-up gap-0 border-border/70 py-0 shadow-card transition-shadow hover:shadow-elevated", className)}>
       <CardContent className="flex items-start justify-between gap-3 p-5">
         <div className="min-w-0">
           <p className="truncate text-sm text-muted-foreground">{label}</p>

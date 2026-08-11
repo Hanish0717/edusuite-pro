@@ -33,10 +33,10 @@ export interface MockStudentUser {
 
 // 1. MOCK AUTHENTICATION CONTEXT GENERATORS
 export function getCurrentFacultyUser(deptCode: string = "CSE"): MockFacultyUser {
-  const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"];
-  const profile = deptData.profileData;
+  const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"] || Object.values(FACULTY_DASHBOARD_DATA_BY_DEPT)[0];
+  const profile = deptData?.profileData || {} as any;
 
-  const assignedSubjects = profile.academicInfo?.assignedSubjects || deptData.subjectsList.map((s) => s.name);
+  const assignedSubjects = profile.academicInfo?.assignedSubjects || deptData?.subjectsList?.map((s) => s.name) || [];
   const assignedSections = profile.academicInfo?.sections || [`${deptCode}-A`, `${deptCode}-B`];
 
   return {
@@ -48,15 +48,15 @@ export function getCurrentFacultyUser(deptCode: string = "CSE"): MockFacultyUser
     program: "B.Tech",
     assignedSubjects,
     assignedSections,
-    assignedSemesters: [deptData.semester || "5"],
-    academicYear: deptData.academicYear || "2026-27",
+    assignedSemesters: [deptData?.semester || "5"],
+    academicYear: deptData?.academicYear || "2026-27",
     role: "faculty",
   };
 }
 
 export function getCurrentStudentUser(deptCode: string = "CSE", semester: string = "5", section: string = "A"): MockStudentUser {
-  const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"];
-  const enrolledSubjects = deptData.subjectsList.map((s) => s.name);
+  const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"] || Object.values(FACULTY_DASHBOARD_DATA_BY_DEPT)[0];
+  const enrolledSubjects = deptData?.subjectsList?.map((s) => s.name) || [];
 
   return {
     studentId: `STU-2026-${deptCode}-042`,
@@ -67,7 +67,7 @@ export function getCurrentStudentUser(deptCode: string = "CSE", semester: string
     semester: semester || "5",
     section: `${deptCode}-${section}`,
     enrolledSubjects,
-    academicYear: deptData.academicYear || "2026-27",
+    academicYear: deptData?.academicYear || "2026-27",
     role: "student",
   };
 }
@@ -77,8 +77,8 @@ const mockRepositoryStore: Record<string, StudyMaterialItem[]> = {};
 
 function getRawDepartmentMaterials(deptCode: string): StudyMaterialItem[] {
   if (!mockRepositoryStore[deptCode]) {
-    const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"];
-    mockRepositoryStore[deptCode] = [...(deptData.studyMaterialsList || [])];
+    const deptData = FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"] || Object.values(FACULTY_DASHBOARD_DATA_BY_DEPT)[0];
+    mockRepositoryStore[deptCode] = [...(deptData?.studyMaterialsList || [])];
   }
   return mockRepositoryStore[deptCode];
 }

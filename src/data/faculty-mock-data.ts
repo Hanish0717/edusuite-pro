@@ -535,7 +535,11 @@ export interface StudyMaterialItem {
   uploadDate: string;
   lastUpdated: string;
   downloadCount: number;
-  visibilityStatus: "Visible" | "Faculty Only" | "Scheduled";
+  studentViews?: number;
+  uploadedBy?: string;
+  allowDownload?: boolean;
+  allowPreview?: boolean;
+  visibilityStatus: "Visible" | "Faculty Only" | "Scheduled" | "Draft";
   fileType: "PDF" | "PPT" | "Video" | "DOC" | "ZIP";
   fileSize: string;
   unit: string;

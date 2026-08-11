@@ -86,7 +86,7 @@ function SubPageComponent() {
       const matchSearch = Object.values(item).some((val) =>
         String(val).toLowerCase().includes(search.toLowerCase())
       );
-      const matchFilter = filter === "all" || (item.status && String(item.status).toLowerCase().includes(filter.toLowerCase()));
+      const matchFilter = filter === "all" || (item["status"] && String(item["status"]).toLowerCase().includes(filter.toLowerCase()));
       return matchSearch && matchFilter;
     });
   }, [data, search, filter]);
@@ -152,12 +152,13 @@ function SubPageComponent() {
     setData(
       data.map((item) => {
         if (item === row) {
-          const currentStatus = String(item.status || Object.values(item)[Object.values(item).length - 1]);
+          const currentStatus = String(item["status"] || Object.values(item)[Object.values(item).length - 1]);
           const newStatus = currentStatus.toLowerCase().includes("pending") ? "Approved" : "Pending";
           const updated = { ...item };
           const keys = Object.keys(updated);
-          updated[keys[keys.length - 1]] = newStatus;
-          if (updated.status) updated.status = newStatus;
+          const lastKey = keys[keys.length - 1];
+          if (lastKey) updated[lastKey] = newStatus;
+          if (updated["status"]) updated["status"] = newStatus;
           return updated;
         }
         return item;
