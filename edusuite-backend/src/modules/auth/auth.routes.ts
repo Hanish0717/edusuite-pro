@@ -1,0 +1,168 @@
+import { Router, Request, Response, NextFunction } from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { prisma } from "../../db";
+
+const router = Router();
+const JWT_SECRET = process.env.JWT_SECRET || "edusuite_super_secret_key_change_me_in_production";
+
+export interface AuthenticatedRequest extends Request {
+  userId?: string;
+  userRole?: string;
+}
+
+// Authentication Middleware
+export function authenticateToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Access denied. Token missing." });
+  }
+
+  try {
+    const verified = jwt.verify(token, JWT_SECRET) as { id: string; role: string };
+    req.userId = verified.id;
+    req.userRole = verified.role;
+    next();
+  } catch (error) {
+    res.status(403).json({ error: "Invalid token." });
+  }
+}
+
+// Login Controller
+router.post("/login", async (req: Request, res: Response) => {
+  const { rollNumber, email, password } = req.body;
+  const loginIdentifier = rollNumber || email;
+
+  if (!loginIdentifier || !password) {
+    return res.status(400).json({ error: "Please provide both username/email and password." });
+  }
+
+  try {
+    // 1. Search in Student
+    let user: any = await prisma.student.findFirst({
+      where: {
+        OR: [
+          { email: loginIdentifier },
+          { rollNumber: loginIdentifier }
+        ]
+      },
+    });
+    let userRole = "student";
+
+    // 2. Search in Faculty
+    if (!user) {
+      user = await prisma.faculty.findFirst({
+        where: {
+          OR: [
+            { email: loginIdentifier },
+            { rollNumber: loginIdentifier }
+          ]
+        },
+      });
+      if (user) {
+        userRole = user.role; // "hod" or "faculty"
+      }
+    }
+
+    // 3. Search in Admin
+    if (!user) {
+      user = await prisma.admin.findFirst({
+        where: {
+          OR: [
+            { email: loginIdentifier },
+            { rollNumber: loginIdentifier }
+          ]
+        },
+      });
+      if (user) {
+        userRole = user.role; // specific admin role
+      }
+    }
+
+    // 4. Search in Parent
+    if (!user) {
+      user = await prisma.parent.findFirst({
+        where: {
+          OR: [
+            { email: loginIdentifier },
+            { rollNumber: loginIdentifier }
+          ]
+        },
+      });
+      if (user) {
+        userRole = "parent";
+      }
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found with these credentials." });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ error: "Incorrect password." });
+    }
+
+    // Generate JWT Token
+    const token = jwt.sign({ id: user.id, role: userRole }, JWT_SECRET, { expiresIn: "24h" });
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        rollNumber: user.rollNumber,
+        name: user.name,
+        email: user.email,
+        role: userRole,
+        department: user.department || null,
+        semester: user.semester || null,
+        cgpa: user.cgpa || null,
+        creditsEarned: user.creditsEarned || null,
+        avatarUrl: user.avatarUrl || null,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Profile Controller
+router.get("/profile", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const role = req.userRole!;
+    let user: any = null;
+
+    if (role === "student") {
+      user = await prisma.student.findUnique({ where: { id: req.userId } });
+    } else if (role === "parent") {
+      user = await prisma.parent.findUnique({ where: { id: req.userId } });
+    } else if (role === "hod" || role === "faculty") {
+      user = await prisma.faculty.findUnique({ where: { id: req.userId } });
+    } else {
+      user = await prisma.admin.findUnique({ where: { id: req.userId } });
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: "User profile not found." });
+    }
+
+    res.json({
+      id: user.id,
+      rollNumber: user.rollNumber,
+      name: user.name,
+      email: user.email,
+      role: role,
+      department: user.department || null,
+      semester: user.semester || null,
+      cgpa: user.cgpa || null,
+      creditsEarned: user.creditsEarned || null,
+      avatarUrl: user.avatarUrl || null,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+export default router;

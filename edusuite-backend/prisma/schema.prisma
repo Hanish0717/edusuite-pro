@@ -1,0 +1,135 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Student {
+  id                  String               @id @default(uuid())
+  rollNumber          String               @unique
+  name                String
+  email               String               @unique
+  password            String
+  role                String               @default("student")
+  department          String?
+  semester            Int?                 @default(6)
+  section             String?
+  year                Int?
+  studentType         String?              // "Day Scholar" | "Hostel" | "College Bus"
+  parentId            String?
+  parent              Parent?              @relation(fields: [parentId], references: [id])
+  cgpa                Float?               @default(8.85)
+  creditsEarned       Int?                 @default(112)
+  avatarUrl           String?
+  courseRegistrations CourseRegistration[]
+  nptelRecords        NptelRecord[]
+  attendanceRecords   AttendanceRecord[]
+  notifications       Notification[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model Parent {
+  id                  String               @id @default(uuid())
+  rollNumber          String               @unique
+  name                String
+  email               String               @unique
+  password            String
+  role                String               @default("parent")
+  department          String?
+  students            Student[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model Faculty {
+  id                  String               @id @default(uuid())
+  rollNumber          String               @unique
+  name                String
+  email               String               @unique
+  password            String
+  role                String               @default("faculty") // "hod" or "faculty"
+  department          String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model Admin {
+  id                  String               @id @default(uuid())
+  rollNumber          String               @unique
+  name                String
+  email               String               @unique
+  password            String
+  role                String               @default("admin") // "super_admin", "admin", "principal", "vice_principal", "dean", etc.
+  department          String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model Course {
+  id                  String               @id @default(uuid())
+  code                String               @unique
+  name                String
+  faculty             String
+  credits             Float
+  category            String
+  semester            Int
+  courseRegistrations CourseRegistration[]
+  nptelRecords        NptelRecord[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model CourseRegistration {
+  id        String   @id @default(uuid())
+  userId    String
+  user      Student  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  status    String   @default("course_registration")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+}
+
+model NptelRecord {
+  id              String   @id @default(uuid())
+  userId          String
+  user            Student  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId        String
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  certificateName String
+  comments        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, courseId])
+}
+
+model AttendanceRecord {
+  id        String   @id @default(uuid())
+  userId    String
+  user      Student  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      Student  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  category  String   @default("General")
+  priority  String   @default("Normal")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
