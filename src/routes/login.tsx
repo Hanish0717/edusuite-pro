@@ -23,6 +23,7 @@ import {
   getDefaultCredentialsForSelection,
   resolveRoleContextFromSelection,
 } from "@/lib/authService";
+import api from "@/lib/api";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -156,24 +157,50 @@ function LoginPage() {
     setStep3Branch(newBranch);
   };
 
-  const handleDirectLogin = (e: React.FormEvent) => {
+  const handleDirectLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const loadingToast = toast.loading("Authenticating login credentials...");
 
-    // Dynamically resolve role context from mock service
-    const resolved = resolveRoleContextFromSelection(step1CoreRole, step2Designation, step3Branch);
+    try {
+      const response = await api.post("/api/auth/login", {
+        email: email,
+        password: password,
+      });
 
-    setRole(resolved.role);
-    setFlags(resolved.flags);
-    if (resolved.department) setDepartment(resolved.department);
-    if (resolved.externalPersona) setExternalPersona(resolved.externalPersona);
+      if (response.status !== 200 || !response.data) {
+        toast.dismiss(loadingToast);
+        toast.error(response.data?.error || "Login failed. Please verify credentials or ensure the database is running.");
+        return;
+      }
 
-    toast.success(resolved.toastMessage);
+      const { token, user } = response.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("cms_token", token);
 
-    if (step1CoreRole === "staff" && DEAN_ROUTE_MAP[step2Designation]) {
-      navigate({ to: DEAN_ROUTE_MAP[step2Designation] as any });
-    } else {
-      const target = resolved.targetRoute || (step2Designation === "admission_desk" ? "/dashboard/admission" : "/dashboard");
-      navigate({ to: target });
+      // Dynamically resolve role context from mock service to get navigation flags
+      const resolved = resolveRoleContextFromSelection(step1CoreRole, step2Designation, step3Branch);
+
+      setRole(resolved.role);
+      setFlags(resolved.flags);
+      if (user.department) {
+        setDepartment(user.department as any);
+      } else if (resolved.department) {
+        setDepartment(resolved.department);
+      }
+      if (resolved.externalPersona) setExternalPersona(resolved.externalPersona);
+
+      toast.dismiss(loadingToast);
+      toast.success(`Welcome back, ${user.name}!`);
+
+      if (step1CoreRole === "staff" && DEAN_ROUTE_MAP[step2Designation]) {
+        navigate({ to: DEAN_ROUTE_MAP[step2Designation] as any });
+      } else {
+        const target = resolved.targetRoute || (step2Designation === "admission_desk" ? "/dashboard/admission" : "/dashboard");
+        navigate({ to: target });
+      }
+    } catch (err) {
+      toast.dismiss(loadingToast);
+      toast.error("Failed to establish server connection. Is the backend running?");
     }
   };
 

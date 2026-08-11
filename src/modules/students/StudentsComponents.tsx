@@ -57,10 +57,13 @@ import {
 const DEPARTMENTS = [
   "All Departments",
   "CSE",
-  "ECE",
-  "ME",
+  "AI&ML",
   "AI&DS",
-  "Biotech",
+  "IT",
+  "EEE",
+  "ECE",
+  "Civil",
+  "ME",
 ];
 
 const YEARS = [

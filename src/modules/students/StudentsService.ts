@@ -326,12 +326,33 @@ export interface GetStudentsResponse {
 }
 
 export async function getStudents(params: GetStudentsParams): Promise<GetStudentsResponse> {
-  return new Promise((resolve, reject) => {
+  try {
+    const qps = new URLSearchParams();
+    qps.append("department", params.department);
+    if (params.page) qps.append("page", String(params.page));
+    if (params.limit) qps.append("limit", String(params.limit));
+    if (params.search) qps.append("search", params.search);
+    if (params.filters) {
+      if (params.filters.semester) qps.append("semester", params.filters.semester);
+      if (params.filters.section) qps.append("section", params.filters.section);
+      if (params.filters.status) qps.append("status", params.filters.status);
+      if (params.filters.feeStatus) qps.append("feeStatus", params.filters.feeStatus);
+      if (params.filters.academicYear) qps.append("academicYear", params.filters.academicYear);
+    }
+
+    const res = await api.get(`/api/students?${qps.toString()}`);
+    if (res.status === 200 && res.data) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error("Failed to query student database:", err);
+  }
+
+  return new Promise((resolve) => {
     setTimeout(() => {
       const deptCode = (params.department === "Mechanical" || params.department === "ME") ? "ME" : params.department;
       let list: StudentRecord[] = MOCK_DEPARTMENT_STUDENTS[deptCode] || [];
 
-      // Apply Search
       if (params.search) {
         const query = params.search.toLowerCase();
         list = list.filter(
@@ -343,7 +364,6 @@ export async function getStudents(params: GetStudentsParams): Promise<GetStudent
         );
       }
 
-      // Apply Filters
       if (params.filters) {
         const { semester, section, status, feeStatus, academicYear } = params.filters;
         if (semester && semester !== "All Semesters") {
@@ -363,7 +383,6 @@ export async function getStudents(params: GetStudentsParams): Promise<GetStudent
         }
       }
 
-      // Apply Sort
       if (params.sort) {
         const { field, order } = params.sort;
         list = [...list].sort((a, b) => {
@@ -378,7 +397,6 @@ export async function getStudents(params: GetStudentsParams): Promise<GetStudent
         });
       }
 
-      // Pagination
       const page = params.page || 1;
       const limit = params.limit || 10;
       const startIndex = (page - 1) * limit;
@@ -390,7 +408,7 @@ export async function getStudents(params: GetStudentsParams): Promise<GetStudent
         totalPages: Math.ceil(list.length / limit),
         currentPage: page,
       });
-    }, 500); // 500ms simulated API delay
+    }, 100);
   });
 }
 

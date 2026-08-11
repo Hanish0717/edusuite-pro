@@ -9,8 +9,11 @@ export interface ApiResponse<T = any> {
 class ApiClient {
   private baseURL: string;
 
-  constructor(baseURL: string = "/") {
-    this.baseURL = baseURL;
+  constructor() {
+    this.baseURL =
+      typeof window !== "undefined" && window.location.hostname === "localhost"
+        ? "http://localhost:5000/"
+        : "/";
   }
 
   private async request<T = any>(

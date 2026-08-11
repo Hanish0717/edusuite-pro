@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import api from "@/lib/api";
 
 import {
   roleProfiles,
@@ -60,6 +61,37 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   );
   const [featureFlags, setFeatureFlagsState] =
     useState<Record<string, boolean>>(defaultFeatureFlags);
+
+  const [userProfile, setUserProfile] = useState<{
+    name: string;
+    email: string;
+    avatarUrl?: string;
+    department?: string;
+    rollNumber?: string;
+  } | null>(null);
+
+  // Load user details dynamically from backend database
+  useEffect(() => {
+    async function loadDbProfile() {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("token") || window.localStorage.getItem("cms_token") : null;
+      if (token) {
+        try {
+          const res = await api.get("/api/auth/profile");
+          if (res.status === 200 && res.data) {
+            setUserProfile(res.data);
+          } else {
+            setUserProfile(null);
+          }
+        } catch (err) {
+          console.error("Failed to fetch database user profile:", err);
+          setUserProfile(null);
+        }
+      } else {
+        setUserProfile(null);
+      }
+    }
+    loadDbProfile();
+  }, [role]);
 
   // Initialize from storage or defaults
   useEffect(() => {
@@ -158,6 +190,15 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
   const profile = useMemo(() => {
     const baseProfile = roleProfiles[role];
+    const initials = userProfile
+      ? userProfile.name
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2)
+      : baseProfile?.initials || "U";
+
     return {
       ...baseProfile,
       role,
@@ -165,8 +206,9 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       department,
       externalPersona,
       featureFlags,
+      initials,
       // Dynamic adjustments based on active settings
-      personaName:
+      personaName: userProfile ? userProfile.name : (
         role === "external-user" && externalPersona
           ? externalPersona === "recruiter"
             ? "David Miller"
@@ -177,23 +219,31 @@ export function RoleProvider({ children }: { children: ReactNode }) {
                 : externalPersona === "vendor"
                   ? "Robert Chen"
                   : "Prof. Alan Turing"
-          : baseProfile.personaName,
-      personaMeta:
-        role === "external-user" && externalPersona
-          ? externalPersona === "recruiter"
-            ? "Campus Recruiter (Google)"
-            : externalPersona === "applicant"
-              ? "B.Tech Admissions Applicant"
-              : externalPersona === "alumni"
-                ? "Alumni - Batch of 2022"
-                : externalPersona === "vendor"
-                  ? "Cafeteria Services Vendor"
-                  : "Guest Speaker / Professor"
-          : role === "staff" && department
-            ? `Faculty - ${department} Department`
-            : baseProfile.personaMeta,
+          : baseProfile?.personaName || "User"
+      ),
+      personaMeta: userProfile
+        ? (userProfile.rollNumber
+            ? `${role.toUpperCase()} - Roll No. ${userProfile.rollNumber}`
+            : userProfile.department
+            ? `${role.toUpperCase()} - ${userProfile.department} Department`
+            : `${role.toUpperCase()} - Control Console`)
+        : (
+          role === "external-user" && externalPersona
+            ? externalPersona === "recruiter"
+              ? "Campus Recruiter (Google)"
+              : externalPersona === "applicant"
+                ? "B.Tech Admissions Applicant"
+                : externalPersona === "alumni"
+                  ? "Alumni - Batch of 2022"
+                  : externalPersona === "vendor"
+                    ? "Cafeteria Services Vendor"
+                    : "Guest Speaker / Professor"
+            : role === "staff" && department
+              ? `Faculty - ${department} Department`
+              : baseProfile?.personaMeta || "Logged in User"
+        ),
     };
-  }, [role, flags, department, externalPersona, featureFlags]);
+  }, [role, flags, department, externalPersona, featureFlags, userProfile]);
 
   const canAccessModule = (moduleId: string, action: PermissionAction = "read") => {
     return checkModuleAccess({ role, flags, department, externalPersona, featureFlags }, moduleId, action);

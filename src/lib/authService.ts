@@ -32,7 +32,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "super_admin",
     roleName: "Admission Desk",
-    email: "admission@college.com",
+    email: "admission@cms.com",
     defaultPassword: "password123",
     primaryScope: "Admission Office",
     personaName: "Admission Desk Control",
@@ -40,7 +40,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "super_admin",
     roleName: "Super Admin",
-    email: "superadmin@college.com",
+    email: "superadmin@cms.com",
     defaultPassword: "password123",
     primaryScope: "System Control & Governance",
     personaName: "Super Admin",
@@ -48,7 +48,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "admin",
     roleName: "Admin / Operations",
-    email: "admin@college.com",
+    email: "admin@cms.com",
     defaultPassword: "password123",
     primaryScope: "Daily Operations & Workflows",
     personaName: "Rajesh Sharma (Admin)",
@@ -56,7 +56,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "principal",
     roleName: "Principal",
-    email: "principal@college.com",
+    email: "principal@cms.com",
     defaultPassword: "password123",
     primaryScope: "Executive Oversight",
     personaName: "Dr. Meera Rao (Principal)",
@@ -64,7 +64,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "vice_principal",
     roleName: "Vice Principal",
-    email: "vice_principal@college.com",
+    email: "vice_principal@cms.com",
     defaultPassword: "password123",
     primaryScope: "Operations & Student Conduct",
     personaName: "Prof. V. K. Murthy",
@@ -72,7 +72,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "academic_dean",
     roleName: "Academic Dean",
-    email: "dean@college.com",
+    email: "academicdean@cms.com",
     defaultPassword: "password123",
     primaryScope: "Academic Leadership",
     personaName: "Prof. Anand Kumar (Academic Dean)",
@@ -80,7 +80,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "student_dean",
     roleName: "Student Dean",
-    email: "student_dean@college.com",
+    email: "studentdean@cms.com",
     defaultPassword: "password123",
     primaryScope: "Student Welfare & Affairs",
     personaName: "Dr. Sunita Sharma (Student Dean)",
@@ -88,7 +88,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "iqac_dean",
     roleName: "IQAC Dean",
-    email: "iqac_dean@college.com",
+    email: "iqacdean@cms.com",
     defaultPassword: "password123",
     primaryScope: "Quality Assurance & NAAC",
     personaName: "Prof. K. V. Raman (IQAC Dean)",
@@ -96,7 +96,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "ima_dean",
     roleName: "IMA Dean",
-    email: "ima_dean@college.com",
+    email: "imadean@cms.com",
     defaultPassword: "password123",
     primaryScope: "Infrastructure & Management",
     personaName: "Dr. R. K. Varma (IMA Dean)",
@@ -104,7 +104,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "research_dean",
     roleName: "Research & Development Dean",
-    email: "research_dean@college.com",
+    email: "researchdean@cms.com",
     defaultPassword: "password123",
     primaryScope: "R&D, Grants & Innovations",
     personaName: "Dr. A. P. J. Reddy (Research Dean)",
@@ -112,7 +112,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "finance_dean",
     roleName: "Finance Dean",
-    email: "finance_dean@college.com",
+    email: "financedean@cms.com",
     defaultPassword: "password123",
     primaryScope: "Institutional Finance",
     personaName: "Ramesh Agarwal (Finance Dean)",
@@ -120,7 +120,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "examination_dean",
     roleName: "Examination Dean",
-    email: "examination_dean@college.com",
+    email: "examinationdean@cms.com",
     defaultPassword: "password123",
     primaryScope: "Examinations & Evaluations",
     personaName: "Dr. P. V. Ramana (Exam Dean)",
@@ -128,7 +128,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "placement_dean",
     roleName: "Placement Dean",
-    email: "placement_dean@college.com",
+    email: "placementdean@cms.com",
     defaultPassword: "password123",
     primaryScope: "Corporate Relations & Placements",
     personaName: "Vikram Malhotra (Placement Dean)",
@@ -136,7 +136,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "hod",
     roleName: "Head of Department (HOD)",
-    email: "hod@college.com",
+    email: "hod@cms.com",
     defaultPassword: "password123",
     primaryScope: "Department Administration",
     personaName: "Dr. S. K. Gupta (HOD CSE)",
@@ -144,7 +144,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "faculty",
     roleName: "Faculty / Teacher",
-    email: "faculty@college.com",
+    email: "faculty@cms.com",
     defaultPassword: "password123",
     primaryScope: "Teaching & Evaluation",
     personaName: "Dr. Ravi Kumar",
@@ -152,7 +152,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "student",
     roleName: "Student",
-    email: "student@college.com",
+    email: "student@cms.com",
     defaultPassword: "password123",
     primaryScope: "Learning & Academic Self-Service",
     personaName: "K. Sai Teja (22CS101)",
@@ -160,7 +160,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "parent",
     roleName: "Parent / Guardian",
-    email: "parent@college.com",
+    email: "parent@cms.com",
     defaultPassword: "password123",
     primaryScope: "Guardian Monitoring",
     personaName: "S. Anitha (Parent)",
@@ -168,7 +168,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "exam_cell",
     roleName: "Exam Controller",
-    email: "examcell@college.com",
+    email: "examcell@cms.com",
     defaultPassword: "password123",
     primaryScope: "Examination Management",
     personaName: "Dr. P. V. Ramana (Controller)",
@@ -176,7 +176,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "librarian",
     roleName: "Librarian",
-    email: "librarian@college.com",
+    email: "librarian@cms.com",
     defaultPassword: "password123",
     primaryScope: "Library System",
     personaName: "M. N. Swamy (Librarian)",
@@ -184,7 +184,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "placement",
     roleName: "Placement Officer",
-    email: "placement@college.com",
+    email: "placement@cms.com",
     defaultPassword: "password123",
     primaryScope: "Career & Placements",
     personaName: "Vikram Malhotra (TPO)",
@@ -192,7 +192,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "warden",
     roleName: "Hostel Warden",
-    email: "warden@college.com",
+    email: "warden@cms.com",
     defaultPassword: "password123",
     primaryScope: "Hostel Management",
     personaName: "Col. R. S. Rathore (Warden)",
@@ -200,7 +200,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "transport",
     roleName: "Transport Manager",
-    email: "transport@college.com",
+    email: "transport@cms.com",
     defaultPassword: "password123",
     primaryScope: "Fleet & Logistics",
     personaName: "Gurpreet Singh (Transport)",
@@ -208,7 +208,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "accounts",
     roleName: "Accounts & Finance",
-    email: "accounts@college.com",
+    email: "accounts@cms.com",
     defaultPassword: "password123",
     primaryScope: "Financial Operations",
     personaName: "Ramesh Agarwal (Finance)",
@@ -216,7 +216,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "lms",
     roleName: "LMS Manager",
-    email: "lms@college.com",
+    email: "lms@cms.com",
     defaultPassword: "password123",
     primaryScope: "E-Learning Management",
     personaName: "Anita Deshmukh (LMS Admin)",
@@ -224,7 +224,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "alumni_coordinator",
     roleName: "Alumni Coordinator",
-    email: "alumni.coordinator@college.com",
+    email: "alumni.coordinator@cms.com",
     defaultPassword: "password123",
     primaryScope: "Graduate Engagement",
     personaName: "Priya Nair (Alumni Cell)",
@@ -232,7 +232,7 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
   {
     canonicalRole: "alumni",
     roleName: "Alumni",
-    email: "alumni@college.com",
+    email: "alumni@cms.com",
     defaultPassword: "password123",
     primaryScope: "Graduate Network Portal",
     personaName: "Sarah Jenkins (Alumni 2022)",
@@ -372,40 +372,39 @@ export function getDefaultCredentialsForSelection(
   coreRole: CoreRoleKey,
   designation?: string,
 ): { email: string; password: string } {
-  let email = "faculty@college.com";
+  let email = "faculty@cms.com";
   let password = "password123";
 
   if (coreRole === "super-admin") {
     if (designation === "admission_desk") {
-      email = "admission@college.com";
-      password = "Admission@123";
+      email = "admission@cms.com";
     } else {
-      email = "superadmin@college.com";
+      email = "superadmin@cms.com";
     }
-  } else if (coreRole === "student") email = "student@college.com";
-  else if (coreRole === "parent") email = "parent@college.com";
+  } else if (coreRole === "student") email = "student@cms.com";
+  else if (coreRole === "parent") email = "parent@cms.com";
   else if (coreRole === "external-user") {
-    if (designation === "alumni") email = "alumni@college.com";
-    else email = "recruiter@college.com";
+    if (designation === "alumni") email = "alumni@cms.com";
+    else email = "recruiter@cms.com";
   } else if (coreRole === "staff") {
-    if (designation === "admin") email = "admin@college.com";
-    else if (designation === "hod") email = "hod@college.com";
-    else if (designation === "dean" || designation === "academic_dean") email = "dean@college.com";
-    else if (designation === "student_dean") email = "student_dean@college.com";
-    else if (designation === "iqac_dean") email = "iqac_dean@college.com";
-    else if (designation === "ima_dean") email = "ima_dean@college.com";
-    else if (designation === "research_dean") email = "research_dean@college.com";
-    else if (designation === "finance_dean") email = "finance_dean@college.com";
-    else if (designation === "examination_dean") email = "examination_dean@college.com";
-    else if (designation === "placement_dean") email = "placement_dean@college.com";
-    else if (designation === "principal") email = "principal@college.com";
-    else if (designation === "vice_principal") email = "vice_principal@college.com";
-    else if (designation === "exam_controller") email = "examcell@college.com";
-    else if (designation === "placement_officer") email = "placement@college.com";
-    else if (designation === "transport_officer") email = "transport@college.com";
-    else if (designation === "hostel_warden") email = "warden@college.com";
-    else if (designation === "finance_officer") email = "accounts@college.com";
-    else if (designation === "library_admin") email = "librarian@college.com";
+    if (designation === "admin") email = "admin@cms.com";
+    else if (designation === "hod") email = "hod@cms.com";
+    else if (designation === "dean" || designation === "academic_dean") email = "academicdean@cms.com";
+    else if (designation === "student_dean") email = "studentdean@cms.com";
+    else if (designation === "iqac_dean") email = "iqac_dean@cms.com"; // Keep it consistent
+    else if (designation === "ima_dean") email = "imadean@cms.com";
+    else if (designation === "research_dean") email = "researchdean@cms.com";
+    else if (designation === "finance_dean") email = "financedean@cms.com";
+    else if (designation === "examination_dean") email = "examinationdean@cms.com";
+    else if (designation === "placement_dean") email = "placementdean@cms.com";
+    else if (designation === "principal") email = "principal@cms.com";
+    else if (designation === "vice_principal") email = "vice_principal@cms.com";
+    else if (designation === "exam_controller") email = "examcell@cms.com";
+    else if (designation === "placement_officer") email = "placement@cms.com";
+    else if (designation === "transport_officer") email = "transport@cms.com";
+    else if (designation === "hostel_warden") email = "warden@cms.com";
+    else if (designation === "finance_officer") email = "accounts@cms.com";
+    else if (designation === "library_admin") email = "librarian@cms.com";
   }
   return { email, password };
 }

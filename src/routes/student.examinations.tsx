@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState, useEffect } from "react";
 import { getMockStudents } from "@/lib/mock-examcell-state";
+import api from "@/lib/api";
+import { useRole } from "@/context/role-context";
 import {
   ExamSubmodule,
   CourseRegWorkflowStatus,
@@ -66,12 +68,53 @@ function StudentExaminationsPage() {
   const [resultStatus, setResultStatus] = useState<ResultWorkflowStatus>("Not Published");
 
   // Dynamic Datasets
-  const [profile] = useState(MOCK_EXAM_PROFILE);
-  const [upcomingExams] = useState(MOCK_UPCOMING_EXAMS);
+  const [profile, setProfile] = useState(MOCK_EXAM_PROFILE);
+  const [upcomingExams, setUpcomingExams] = useState(MOCK_UPCOMING_EXAMS);
   const [semesterResults] = useState(MOCK_SEMESTER_RESULTS);
   const [availableCourses, setAvailableCourses] = useState(MOCK_AVAILABLE_COURSES);
   const [workflow] = useState(MOCK_REGISTRATION_WORKFLOW);
   const [examRegistrations, setExamRegistrations] = useState(MOCK_EXAM_REGISTRATIONS);
+
+  // Load user profile details dynamically
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const res = await api.get("/api/auth/profile");
+        if (res.status === 200 && res.data) {
+          setProfile({
+            rollNumber: res.data.rollNumber,
+            studentName: res.data.name,
+            email: res.data.email,
+            department: res.data.department || "CSE",
+            semester: res.data.semester || 6,
+            cgpa: res.data.cgpa || 8.85,
+            creditsEarned: res.data.creditsEarned || 112,
+            avatarUrl: res.data.avatarUrl || "",
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load user profile:", err);
+      }
+    }
+    fetchProfile();
+  }, []);
+
+  // Load course catalog dynamically based on selected semester
+  useEffect(() => {
+    async function fetchCatalog() {
+      try {
+        const res = await api.get("/api/courses");
+        if (res.status === 200 && res.data) {
+          // Filter by active semester
+          const filtered = res.data.filter((c: any) => c.semester === selectedSemester);
+          setAvailableCourses(filtered);
+        }
+      } catch (err) {
+        console.error("Failed to load course catalog:", err);
+      }
+    }
+    fetchCatalog();
+  }, [selectedSemester]);
 
   // Synchronize student's database status with active view states
   useEffect(() => {
@@ -240,7 +283,7 @@ function StudentExaminationsPage() {
         <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3">
           <span className="text-xs font-semibold text-slate-500 block">Your Branch / Department</span>
           <div className="text-3xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display">
-            CSE
+            {profile.department}
           </div>
           <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#0b193c]/10 text-[#0b193c] dark:text-blue-400 border border-[#0b193c]/20">
             Department Profile
