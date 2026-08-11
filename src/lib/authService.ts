@@ -70,12 +70,68 @@ export const SYSTEM_TEST_CREDENTIALS: UserCredential[] = [
     personaName: "Prof. V. K. Murthy",
   },
   {
-    canonicalRole: "dean",
+    canonicalRole: "academic_dean",
     roleName: "Academic Dean",
     email: "dean@college.com",
     defaultPassword: "password123",
     primaryScope: "Academic Leadership",
-    personaName: "Prof. Anand Kumar (Dean)",
+    personaName: "Prof. Anand Kumar (Academic Dean)",
+  },
+  {
+    canonicalRole: "student_dean",
+    roleName: "Student Dean",
+    email: "student_dean@college.com",
+    defaultPassword: "password123",
+    primaryScope: "Student Welfare & Affairs",
+    personaName: "Dr. Sunita Sharma (Student Dean)",
+  },
+  {
+    canonicalRole: "iqac_dean",
+    roleName: "IQAC Dean",
+    email: "iqac_dean@college.com",
+    defaultPassword: "password123",
+    primaryScope: "Quality Assurance & NAAC",
+    personaName: "Prof. K. V. Raman (IQAC Dean)",
+  },
+  {
+    canonicalRole: "ima_dean",
+    roleName: "IMA Dean",
+    email: "ima_dean@college.com",
+    defaultPassword: "password123",
+    primaryScope: "Infrastructure & Management",
+    personaName: "Dr. R. K. Varma (IMA Dean)",
+  },
+  {
+    canonicalRole: "research_dean",
+    roleName: "Research & Development Dean",
+    email: "research_dean@college.com",
+    defaultPassword: "password123",
+    primaryScope: "R&D, Grants & Innovations",
+    personaName: "Dr. A. P. J. Reddy (Research Dean)",
+  },
+  {
+    canonicalRole: "finance_dean",
+    roleName: "Finance Dean",
+    email: "finance_dean@college.com",
+    defaultPassword: "password123",
+    primaryScope: "Institutional Finance",
+    personaName: "Ramesh Agarwal (Finance Dean)",
+  },
+  {
+    canonicalRole: "examination_dean",
+    roleName: "Examination Dean",
+    email: "examination_dean@college.com",
+    defaultPassword: "password123",
+    primaryScope: "Examinations & Evaluations",
+    personaName: "Dr. P. V. Ramana (Exam Dean)",
+  },
+  {
+    canonicalRole: "placement_dean",
+    roleName: "Placement Dean",
+    email: "placement_dean@college.com",
+    defaultPassword: "password123",
+    primaryScope: "Corporate Relations & Placements",
+    personaName: "Vikram Malhotra (Placement Dean)",
   },
   {
     canonicalRole: "hod",
@@ -334,7 +390,14 @@ export function getDefaultCredentialsForSelection(
   } else if (coreRole === "staff") {
     if (designation === "admin") email = "admin@college.com";
     else if (designation === "hod") email = "hod@college.com";
-    else if (designation === "dean") email = "dean@college.com";
+    else if (designation === "dean" || designation === "academic_dean") email = "dean@college.com";
+    else if (designation === "student_dean") email = "student_dean@college.com";
+    else if (designation === "iqac_dean") email = "iqac_dean@college.com";
+    else if (designation === "ima_dean") email = "ima_dean@college.com";
+    else if (designation === "research_dean") email = "research_dean@college.com";
+    else if (designation === "finance_dean") email = "finance_dean@college.com";
+    else if (designation === "examination_dean") email = "examination_dean@college.com";
+    else if (designation === "placement_dean") email = "placement_dean@college.com";
     else if (designation === "principal") email = "principal@college.com";
     else if (designation === "vice_principal") email = "vice_principal@college.com";
     else if (designation === "exam_controller") email = "examcell@college.com";

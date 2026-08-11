@@ -14,8 +14,15 @@ export type LoginRole =
   | "principal"
   | "vice_principal"
   | "dean"
+  | "academic_dean"
+  | "student_dean"
+  | "iqac_dean"
+  | "ima_dean"
+  | "research_dean"
+  | "finance_dean"
+  | "examination_dean"
+  | "placement_dean"
   | "hod"
-  | "dean"
   | "faculty"
   | "student"
   | "parent"
@@ -232,6 +239,70 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     personaMeta: "Academic Leadership & Curriculum",
     initials: "DN",
     flags: ["isDean"],
+  },
+  academic_dean: {
+    id: "academic_dean",
+    label: "Academic Dean",
+    personaName: "Prof. Anand Kumar",
+    personaMeta: "Academic Leadership & Curriculum",
+    initials: "AD",
+    flags: ["isDean", "isPrincipal"],
+  },
+  student_dean: {
+    id: "student_dean",
+    label: "Student Dean",
+    personaName: "Dr. Sunita Sharma",
+    personaMeta: "Student Affairs & Campus Life",
+    initials: "SD",
+    flags: ["isDean"],
+  },
+  iqac_dean: {
+    id: "iqac_dean",
+    label: "IQAC Dean",
+    personaName: "Prof. K. V. Raman",
+    personaMeta: "Internal Quality Assurance Cell",
+    initials: "IQ",
+    flags: ["isDean", "isIQACCoordinator"],
+  },
+  ima_dean: {
+    id: "ima_dean",
+    label: "IMA Dean",
+    personaName: "Dr. R. K. Varma",
+    personaMeta: "Infrastructure & Asset Management",
+    initials: "IM",
+    flags: ["isDean"],
+  },
+  research_dean: {
+    id: "research_dean",
+    label: "Research & Development Dean",
+    personaName: "Dr. A. P. J. Reddy",
+    personaMeta: "Research, Innovation & Grants",
+    initials: "RD",
+    flags: ["isDean", "isResearchCoordinator"],
+  },
+  finance_dean: {
+    id: "finance_dean",
+    label: "Finance Dean",
+    personaName: "Ramesh Agarwal",
+    personaMeta: "Institutional Budget & Finance",
+    initials: "FD",
+    flags: ["isDean", "isFinanceOfficer"],
+  },
+  examination_dean: {
+    id: "examination_dean",
+    label: "Examination Dean",
+    personaName: "Dr. P. V. Ramana",
+    personaMeta: "Controller of Examinations",
+    initials: "ED",
+    flags: ["isDean", "isExamController"],
+  },
+  placement_dean: {
+    id: "placement_dean",
+    label: "Placement Dean",
+    personaName: "Vikram Malhotra",
+    personaMeta: "Corporate Relations & Placements",
+    initials: "PD",
+    flags: ["isDean", "isPlacementOfficer"],
   },
   hod: {
     id: "hod",

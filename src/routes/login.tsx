@@ -55,6 +55,15 @@ const institutionLevelRoles = [
   "hr_manager",
   "vice_principal",
   "exam_controller",
+  "academic_dean",
+  "student_dean",
+  "iqac_dean",
+  "ima_dean",
+  "research_dean",
+  "finance_dean",
+  "examination_dean",
+  "placement_dean",
+  "dean",
 ];
 
 const DEAN_ROUTE_MAP: Record<string, string> = {
