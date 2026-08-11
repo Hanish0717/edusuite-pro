@@ -1732,4 +1732,3 @@ export const HostelRoomsView = HostelModuleView;
 export const HostelSettingsView = HostelModuleView;
 export const HostelUserManagementView = HostelModuleView;
 export const HostelVisitorsView = HostelModuleView;
-

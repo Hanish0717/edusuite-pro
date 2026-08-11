@@ -15,6 +15,7 @@ export type LoginRole =
   | "vice_principal"
   | "dean"
   | "hod"
+  | "dean"
   | "faculty"
   | "student"
   | "parent"
