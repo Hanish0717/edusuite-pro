@@ -999,7 +999,42 @@ function computeStats(state: LibraryState): LibraryDashboardStats {
 const LibraryContext = createContext<LibraryContextType>(null as any);
 
 export function LibraryStoreProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(libraryReducer, INITIAL_STATE);
+  const existing = useContext(LibraryContext);
+  if (existing) {
+    return <>{children}</>;
+  }
+  return <LibraryStoreProviderInner>{children}</LibraryStoreProviderInner>;
+}
+
+const LIBRARY_STORAGE_KEY = "EDUSUITE_LIBRARY_STORE_V1";
+
+function loadSavedLibraryState(): LibraryState {
+  try {
+    const raw = typeof window !== "undefined" ? localStorage.getItem(LIBRARY_STORAGE_KEY) : null;
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.books)) {
+        return parsed;
+      }
+    }
+  } catch (e) {}
+  return INITIAL_STATE;
+}
+
+function LibraryStoreProviderInner({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(
+    (s: LibraryState, a: LibraryAction) => {
+      const next = libraryReducer(s, a);
+      try {
+        if (typeof window !== "undefined") {
+          localStorage.setItem(LIBRARY_STORAGE_KEY, JSON.stringify(next));
+        }
+      } catch (e) {}
+      return next;
+    },
+    undefined,
+    loadSavedLibraryState
+  );
 
   const safeDispatch = useCallback((action: LibraryAction) => {
     try {

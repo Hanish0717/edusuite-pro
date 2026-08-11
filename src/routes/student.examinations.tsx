@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import React, { useState, useEffect } from "react";
-import { getMockStudents } from "@/lib/mock-examcell-state";
+import React, { useState } from "react";
 import {
   ExamSubmodule,
   CourseRegWorkflowStatus,
@@ -72,30 +71,6 @@ function StudentExaminationsPage() {
   const [availableCourses, setAvailableCourses] = useState(MOCK_AVAILABLE_COURSES);
   const [workflow] = useState(MOCK_REGISTRATION_WORKFLOW);
   const [examRegistrations, setExamRegistrations] = useState(MOCK_EXAM_REGISTRATIONS);
-
-  // Synchronize student's database status with active view states
-  useEffect(() => {
-    const mockStudents = getMockStudents();
-    // Match either the profile roll number or 22CS101 (the switched student profile)
-    const record = mockStudents.find(s => 
-      s.roll_number === profile.rollNumber || s.roll_number === "22CS101"
-    );
-    if (record) {
-      if (record.hall_ticket_status === 'Generated') {
-        setHallTicketStatus("Generated");
-        setExamRegStatus("Paid & Registered");
-      } else {
-        setHallTicketStatus("Locked");
-        const attendanceOk = (record.attendance_percentage || 0) >= 75;
-        const feesOk = (record.fee_balance || 0) === 0;
-        if (attendanceOk && feesOk && record.is_registered) {
-          setExamRegStatus("Paid & Registered");
-        } else {
-          setExamRegStatus("Locked");
-        }
-      }
-    }
-  }, [profile.rollNumber]);
 
   // Hall Ticket Modal — supports both current & archive hall tickets
   const [hallTicketModalOpen, setHallTicketModalOpen] = useState(false);

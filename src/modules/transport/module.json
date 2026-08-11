@@ -1,0 +1,49 @@
+{
+  "name": "Transport",
+  "version": "2.0.0",
+  "category": "Operational Core",
+  "owner": "Transport Officer Office",
+  "icon": "Bus",
+  "permissions": [
+    "VIEW_TRANSPORT",
+    "MANAGE_ROUTES",
+    "MANAGE_VEHICLES",
+    "MANAGE_DRIVERS",
+    "ISSUE_BUS_PASS",
+    "MANAGE_TRANSPORT_FEES",
+    "EXPORT_TRANSPORT_REPORTS"
+  ],
+  "dependencies": [
+    "Students",
+    "Faculty",
+    "Finance",
+    "Notifications"
+  ],
+  "routes": [
+    "/transport",
+    "/transport/dashboard",
+    "/transport/routes",
+    "/transport/buses",
+    "/transport/passengers",
+    "/transport/fees",
+    "/transport/settings"
+  ],
+  "notifications": [
+    "transport:pass_issued_notify",
+    "transport:maintenance_alert_notify",
+    "transport:route_delay_notify"
+  ],
+  "events": [
+    "transport:route_created",
+    "transport:vehicle_updated",
+    "transport:driver_assigned",
+    "transport:pass_issued"
+  ],
+  "futureApis": [
+    "GET /api/v1/transport/routes",
+    "POST /api/v1/transport/routes",
+    "GET /api/v1/transport/vehicles",
+    "POST /api/v1/transport/passes",
+    "GET /api/v1/transport/live-location"
+  ]
+}

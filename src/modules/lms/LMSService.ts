@@ -291,7 +291,7 @@ export async function createLMSResource(data: Partial<ResourceItem>): Promise<Re
     department: data.department || "CSE",
     size: "4.5 MB",
     uploadedBy: "Super Admin",
-    createdAt: new Date().toISOString().split("T")[0] || "",
+    createdAt: new Date().toISOString().split("T")[0],
   };
 }
 
@@ -308,7 +308,7 @@ export async function createLMSVideo(data: Partial<VideoLecture>): Promise<Video
     duration: data.duration || "40 mins",
     instructor: data.instructor || "Dr. K. Sai Teja",
     videoUrl: data.videoUrl || "https://www.youtube.com/embed/aircAruvnKk",
-    createdAt: new Date().toISOString().split("T")[0] || "",
+    createdAt: new Date().toISOString().split("T")[0],
   };
 }
 
@@ -341,7 +341,7 @@ export async function createLMSClass(data: Partial<ClassItem>): Promise<ClassIte
     department: data.department || "CSE",
     topic: data.topic || "Live Stream Lecture",
     instructor: data.instructor || "Dr. K. Sai Teja",
-    date: data.date || new Date().toISOString().split("T")[0] || "",
+    date: data.date || new Date().toISOString().split("T")[0],
     time: data.time || "04:00 PM - 05:00 PM",
     link: data.link || "https://meet.google.com/abc-defg-hij",
     status: "Upcoming",

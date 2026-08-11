@@ -7,7 +7,6 @@ interface PanelProps {
   title: string;
   description?: string;
   action?: ReactNode;
-  icon?: React.ComponentType<{ className?: string }>;
   children: ReactNode;
   className?: string;
   contentClassName?: string;
@@ -17,7 +16,6 @@ export function Panel({
   title,
   description,
   action,
-  icon: IconComp,
   children,
   className,
   contentClassName,
@@ -30,16 +28,9 @@ export function Panel({
       )}
     >
       <CardHeader className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-        <div className="min-w-0 flex items-start gap-2.5">
-          {IconComp && (
-            <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0 mt-0.5">
-              <IconComp className="size-4" />
-            </div>
-          )}
-          <div>
-            <CardTitle className="truncate text-base">{title}</CardTitle>
-            {description && <CardDescription className="mt-1">{description}</CardDescription>}
-          </div>
+        <div className="min-w-0">
+          <CardTitle className="truncate text-base">{title}</CardTitle>
+          {description && <CardDescription className="mt-1">{description}</CardDescription>}
         </div>
         {action}
       </CardHeader>

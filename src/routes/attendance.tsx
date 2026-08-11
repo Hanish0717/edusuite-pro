@@ -9,7 +9,7 @@ export const Route = createFileRoute("/attendance")({
   component: AttendancePage,
 });
 
-export function AttendancePage() {
+function AttendancePage() {
   return (
     <DashboardLayout>
       <AttendanceModuleView />

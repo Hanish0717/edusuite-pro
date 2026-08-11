@@ -14,8 +14,7 @@ const VALID_TABS: AcademicsSubpart[] = [
 
 export const Route = createFileRoute("/academics")({
   validateSearch: (search: Record<string, unknown>) => {
-    const rawTab = search["tab"];
-    const tabStr = typeof rawTab === "string" ? rawTab : undefined;
+    const tabStr = typeof search?.tab === "string" ? search.tab : undefined;
     const tab = VALID_TABS.includes(tabStr as AcademicsSubpart)
       ? (tabStr as AcademicsSubpart)
       : undefined;
@@ -27,7 +26,7 @@ export const Route = createFileRoute("/academics")({
   component: AcademicsPage,
 });
 
-export function AcademicsPage() {
+function AcademicsPage() {
   const search = Route.useSearch();
   const tab = search?.tab as AcademicsSubpart | undefined;
   return (

@@ -791,7 +791,7 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
                             size="sm"
                             onClick={() => handleOpenView(f)}
                             className="h-7 text-xs font-medium gap-1 text-muted-foreground hover:text-foreground"
-                            title="View Profile"
+                            title="View Dossier"
                           >
                             <Eye className="size-3.5" /> Details
                           </Button>
@@ -1569,7 +1569,7 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <UserCog className="size-5 text-primary" /> Faculty Profile & Details
+              <UserCog className="size-5 text-primary" /> Faculty Dossier & Profile
             </DialogTitle>
           </DialogHeader>
 
@@ -1706,7 +1706,7 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
                   onClick={() => setIsViewOpen(false)}
                   className="w-full text-xs"
                 >
-                  Close Profile
+                  Close Dossier
                 </Button>
               </DialogFooter>
             </div>

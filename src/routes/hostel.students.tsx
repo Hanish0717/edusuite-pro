@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HostelResidentsView } from "@/modules/hostel";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { HostelModuleView } from "@/modules/hostel";
 
 export const Route = createFileRoute("/hostel/students")({
-  head: () => ({
-    meta: [{ title: "Hostel Resident Scholars — EduSuite Pro" }],
-  }),
-  component: HostelStudentsPage,
+  head: () => ({ meta: [{ title: "Hostel Students — EduSuite Pro" }] }),
+  component: () => (
+    <DashboardLayout>
+      <HostelModuleView />
+    </DashboardLayout>
+  ),
 });
-
-function HostelStudentsPage() {
-  return <HostelResidentsView />;
-}

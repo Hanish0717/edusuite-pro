@@ -31,6 +31,8 @@ dist-ssr
 *.sln
 *.sw?
 
-# Temporary scratch and backup folders
+# Temporary scratch and backup folders (large files — do not push)
 scratch/
 src/librarian/backups/
+*.zip
+

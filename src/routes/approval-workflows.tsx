@@ -223,7 +223,7 @@ export function ApprovalWorkflowsPage() {
             workflows={workflows}
             delegations={delegations}
             role={role}
-            flags={Array.isArray(flags) ? flags.reduce((acc, f) => ({ ...acc, [f]: true }), {} as Record<string, boolean>) : (flags || {})}
+            flags={flags}
             onApproveStep={handleApproveStep}
             onRejectStep={handleRejectStep}
             onEmergencyOverride={handleEmergencyOverride}

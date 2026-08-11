@@ -1,0 +1,58 @@
+{
+  "name": "Library",
+  "version": "2.0.0",
+  "category": "Operational Core",
+  "owner": "Chief Librarian Office",
+  "icon": "BookOpen",
+  "permissions": [
+    "VIEW_LIBRARY",
+    "MANAGE_BOOKS",
+    "ISSUE_BOOK",
+    "RETURN_BOOK",
+    "MANAGE_FINES",
+    "MANAGE_MEMBERS",
+    "MANAGE_READING_HALL",
+    "EXPORT_LIBRARY_REPORTS"
+  ],
+  "dependencies": [
+    "Students",
+    "Faculty",
+    "Finance",
+    "Notifications",
+    "AI Analytics"
+  ],
+  "routes": [
+    "/librarian",
+    "/librarian/books",
+    "/librarian/issue-books",
+    "/librarian/return-books",
+    "/librarian/members",
+    "/librarian/fines",
+    "/librarian/reading-hall",
+    "/library/dashboard",
+    "/library/books",
+    "/library/issues"
+  ],
+  "notifications": [
+    "library:book_issued_notify",
+    "library:book_overdue_notify",
+    "library:fine_generated_notify",
+    "library:reservation_available_notify"
+  ],
+  "events": [
+    "library:book_added",
+    "library:book_updated",
+    "library:book_issued",
+    "library:book_returned",
+    "library:fine_generated",
+    "library:reservation_created"
+  ],
+  "futureApis": [
+    "GET /api/v1/library/books",
+    "POST /api/v1/library/books",
+    "POST /api/v1/library/issues",
+    "POST /api/v1/library/returns",
+    "GET /api/v1/library/fines",
+    "GET /api/v1/library/reading-hall/occupancy"
+  ]
+}
