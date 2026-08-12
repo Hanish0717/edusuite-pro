@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { 
@@ -23,10 +23,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { KpiCard } from "@/components/dashboard/kpi-card";
+import api from "@/lib/api";
 import { 
   getMockStudents, 
   saveMockStudents, 
-  MockStudent 
+  MockStudent,
+  getMockCourses,
+  MockCourseOffering
 } from "@/lib/mock-examcell-state";
 
 export const Route = createFileRoute("/faculty/evaluation-and-marks")({
@@ -51,6 +54,7 @@ interface AnswerCopyValuation {
 
 interface TaughtSection {
   id: string;
+  courseId: string;
   name: string;
   dept: string;
   year: number;
@@ -61,63 +65,7 @@ interface TaughtSection {
 }
 
 // SEED DATA
-const INITIAL_ROSTER: AnswerCopyValuation[] = [
-  {
-    id: "r1",
-    studentName: "N/A",
-    studentRoll: "CSE26001",
-    blindCode: "COPY-848113",
-    examName: "End Semester Exam",
-    subjectName: "-- Sem",
-    assignedFaculty: "Assigned Evaluator",
-    status: 'Corrected / Evaluated',
-    score: 63
-  },
-  {
-    id: "r2",
-    studentName: "N/A",
-    studentRoll: "CSE26002",
-    blindCode: "COPY-378474",
-    examName: "End Semester Exam",
-    subjectName: "-- Sem",
-    assignedFaculty: "Assigned Evaluator",
-    status: 'Corrected / Evaluated',
-    score: 62
-  }
-];
-
-const TAUGHT_SECTIONS: TaughtSection[] = [
-  {
-    id: "sec-1",
-    name: "Section A",
-    dept: "CSE",
-    year: 3,
-    semester: 5,
-    subjectCode: "CS302",
-    subjectName: "Computer Networks",
-    strength: 5
-  },
-  {
-    id: "sec-2",
-    name: "Section B",
-    dept: "CSE",
-    year: 3,
-    semester: 5,
-    subjectCode: "CS302",
-    subjectName: "Computer Networks",
-    strength: 5
-  },
-  {
-    id: "sec-3",
-    name: "Section A",
-    dept: "AIML",
-    year: 2,
-    semester: 3,
-    subjectCode: "ML03301",
-    subjectName: "Probability and Statistics",
-    strength: 5
-  }
-];
+const INITIAL_ROSTER: AnswerCopyValuation[] = [];
 
 function FacultyEvaluationAndMarksPage() {
   const [activeTab, setActiveTab] = useState<'evaluations' | 'marks'>('evaluations');
@@ -125,6 +73,9 @@ function FacultyEvaluationAndMarksPage() {
   // DATABASE STATES
   const [roster, setRoster] = useState<AnswerCopyValuation[]>([]);
   const [students, setStudents] = useState<MockStudent[]>([]);
+  const [coursesList, setCoursesList] = useState<MockCourseOffering[]>([]);
+  const [profile, setProfile] = useState<any>(null);
+  const [dbRegistrations, setDbRegistrations] = useState<any[]>([]);
 
   // 1. EVALUATIONS STATES
   const [selectedCopy, setSelectedCopy] = useState<AnswerCopyValuation | null>(null);
@@ -165,32 +116,177 @@ function FacultyEvaluationAndMarksPage() {
   useEffect(() => {
     setStudents(getMockStudents());
     
-    // Load roster
+    async function loadData() {
+      try {
+        const profileRes = await api.get("/api/auth/profile");
+        if (profileRes.data) {
+          setProfile(profileRes.data);
+        }
+      } catch (err) {
+        console.error("Failed to load profile", err);
+      }
+
+      try {
+        const coursesRes = await api.get("/api/exams/courses");
+        if (coursesRes.data) {
+          setCoursesList(coursesRes.data);
+        }
+      } catch (err) {
+        console.error("Failed to load courses from DB", err);
+        setCoursesList(getMockCourses());
+      }
+
+      try {
+        const regsRes = await api.get("/api/exams/registrations");
+        if (regsRes.data) {
+          setDbRegistrations(regsRes.data);
+        }
+      } catch (err) {
+        console.error("Failed to load registrations from DB", err);
+      }
+    }
+    loadData();
+    
+    // Load roster - reset if it was default mock data, otherwise load
     const saved = localStorage.getItem("mock_answer_copy_roster_v3");
     if (saved) {
-      setRoster(JSON.parse(saved));
+      const parsed = JSON.parse(saved);
+      if (parsed.some((p: any) => p.blindCode === "COPY-848113")) {
+        localStorage.setItem("mock_answer_copy_roster_v3", JSON.stringify([]));
+        setRoster([]);
+      } else {
+        setRoster(parsed);
+      }
     } else {
-      localStorage.setItem("mock_answer_copy_roster_v3", JSON.stringify(INITIAL_ROSTER));
-      setRoster(INITIAL_ROSTER);
+      localStorage.setItem("mock_answer_copy_roster_v3", JSON.stringify([]));
+      setRoster([]);
     }
   }, []);
 
+  // Dynamically compute taught sections based on examcell course offerings
+  const dynamicTaughtSections = useMemo<TaughtSection[]>(() => {
+    const sections: TaughtSection[] = [];
+    
+    // Filter for approved/pending courses from the examcell
+    const approvedCourses = coursesList.filter(c => c.status === "Approved" || c.status === "Pending");
+    
+    approvedCourses.forEach(course => {
+      if (Array.isArray(course.sections)) {
+        course.sections.forEach((secObj: any) => {
+          // Only include sections assigned to the logged-in faculty
+          const isMySection = profile && typeof secObj === "object" && secObj !== null && (
+            secObj.mentor_id === profile.id ||
+            secObj.mentor_name === profile.name ||
+            (profile.name && secObj.mentor_name?.toLowerCase().includes(profile.name.toLowerCase()))
+          );
+
+          if (isMySection) {
+            const secName = secObj.section;
+            // Find students in this department, year, semester, section
+            let enrolledCount = 0;
+            if (dbRegistrations.length > 0) {
+              enrolledCount = dbRegistrations.filter(r => 
+                r.courseId === course.id && 
+                (r.user?.section === secName || secName.includes(r.user?.section))
+              ).length;
+            } else {
+              enrolledCount = students.filter(s => 
+                s.department === course.department &&
+                s.year === course.year &&
+                s.semester === course.semester &&
+                (s.section === secName || secName.includes(s.section))
+              ).length;
+            }
+
+            sections.push({
+              id: `${course.id}-${secName}`,
+              courseId: course.id,
+              name: secName.startsWith("Section") ? secName : `Section ${secName}`,
+              dept: course.department,
+              year: course.year,
+              semester: course.semester,
+              subjectCode: course.course_code,
+              subjectName: course.course_name,
+              strength: enrolledCount
+            });
+          }
+        });
+      } else {
+        // Fallback for simple string sections
+        course.sections.forEach(secName => {
+          let enrolledCount = 0;
+          if (dbRegistrations.length > 0) {
+            enrolledCount = dbRegistrations.filter(r => 
+              r.courseId === course.id && 
+              (r.user?.section === secName || secName.includes(r.user?.section))
+            ).length;
+          } else {
+            enrolledCount = students.filter(s => 
+              s.department === course.department &&
+              s.year === course.year &&
+              s.semester === course.semester &&
+              (s.section === secName || secName.includes(s.section))
+            ).length;
+          }
+
+          sections.push({
+            id: `${course.id}-${secName}`,
+            courseId: course.id,
+            name: secName.startsWith("Section") ? secName : `Section ${secName}`,
+            dept: course.department,
+            year: course.year,
+            semester: course.semester,
+            subjectCode: course.course_code,
+            subjectName: course.course_name,
+            strength: enrolledCount
+          });
+        });
+      }
+    });
+    return sections;
+  }, [coursesList, students, dbRegistrations, profile]);
+
   // Filter students when taught section card changes
-  const activeSection = TAUGHT_SECTIONS.find(s => s.id === selectedSecId);
+  const activeSection = useMemo(() => {
+    return dynamicTaughtSections.find(s => s.id === selectedSecId);
+  }, [dynamicTaughtSections, selectedSecId]);
 
   useEffect(() => {
     if (activeSection) {
-      const filtered = students.filter(s => 
-        s.department === activeSection.dept && 
-        s.year === activeSection.year && 
-        s.semester === activeSection.semester
-      );
+      let filtered: any[] = [];
+      if (dbRegistrations.length > 0) {
+        const activeCourseId = activeSection.courseId;
+        const filteredRegs = dbRegistrations.filter(r => 
+          r.courseId === activeCourseId && 
+          (activeSection.name.includes(r.user?.section) || r.user?.section?.includes(activeSection.name.replace("Section ", "")))
+        );
+        filtered = filteredRegs.map(r => ({
+          id: r.user.id,
+          rollNumber: r.user.rollNumber || r.user.id,
+          name: r.user.name,
+          department: r.user.department || activeSection.dept,
+          year: r.user.year || activeSection.year,
+          semester: r.user.semester || activeSection.semester,
+          section: r.user.section || activeSection.name.replace("Section ", ""),
+          is_registered: true,
+          mid1_marks: r.user.mid1_marks || 18,
+          assignment_marks: r.user.assignment_marks || 8,
+          attendance_percentage: r.user.attendance_percentage || 95,
+        }));
+      } else {
+        filtered = students.filter(s => 
+          s.department === activeSection.dept && 
+          s.year === activeSection.year && 
+          s.semester === activeSection.semester &&
+          (activeSection.name.includes(s.section) || s.section.includes(activeSection.name.replace("Section ", "")))
+        );
+      }
       setCohortStudents(filtered);
 
       const newMids: Record<string, string> = {};
       const newAssigns: Record<string, string> = {};
       filtered.forEach(s => {
-        const mark = s.marks?.find(m => m.subjectCode === activeSection.subjectCode);
+        const mark = s.marks?.find((m: any) => m.subjectCode === activeSection.subjectCode);
         newMids[s.rollNumber] = mark && mark.internal !== undefined ? String(Math.round(mark.internal * 0.66)) : "0";
         newAssigns[s.rollNumber] = mark && mark.internal !== undefined ? String(Math.round(mark.internal * 0.34)) : "0";
       });
@@ -199,7 +295,7 @@ function FacultyEvaluationAndMarksPage() {
     } else {
       setCohortStudents([]);
     }
-  }, [selectedSecId, students, activeSection]);
+  }, [selectedSecId, students, activeSection, dbRegistrations]);
 
   // Score validation helpers
   const validateQ = (val: string, max: number) => {
@@ -489,7 +585,7 @@ function FacultyEvaluationAndMarksPage() {
             </label>
             
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {TAUGHT_SECTIONS.map((sec) => {
+              {dynamicTaughtSections.map((sec) => {
                 const isSelected = selectedSecId === sec.id;
                 return (
                   <Card 
