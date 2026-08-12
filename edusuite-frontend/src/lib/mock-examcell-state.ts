@@ -24,6 +24,7 @@ export interface MockExamSchedule {
   endDate: string;
   status: 'Pending Approval' | 'Upcoming' | 'Completed';
   enrollmentDeadline?: string;
+  examFee?: number;
 }
 
 export interface MockStudent {
@@ -56,8 +57,9 @@ const DEFAULT_COURSES: MockCourseOffering[] = [
 ];
 
 const DEFAULT_EXAMS: MockExamSchedule[] = [
-  { id: 'e1', name: 'B.Tech CSE Sem 5 End Exams 2026', type: 'Regular', department: 'CSE', year: 3, semester: 5, startDate: '2026-08-10', endDate: '2026-08-20', status: 'Upcoming', enrollmentDeadline: '2026-08-08' },
-  { id: 'e2', name: 'B.Tech AIML Sem 3 Regular Mid-term', type: 'Mid-term', department: 'AIML', year: 2, semester: 3, startDate: '2026-08-15', endDate: '2026-08-22', status: 'Pending Approval' }
+  { id: 'e1', name: 'B.Tech CSE Sem 5 End Exams 2026', type: 'Regular', department: 'CSE', year: 3, semester: 5, startDate: '2026-08-10', endDate: '2026-08-20', status: 'Upcoming', enrollmentDeadline: '2026-08-08', examFee: 2000 },
+  { id: 'e2', name: 'B.Tech AIML Sem 3 Regular Mid-term', type: 'Mid-term', department: 'AIML', year: 2, semester: 3, startDate: '2026-08-15', endDate: '2026-08-22', status: 'Pending Approval', examFee: 1500 },
+  { id: 'e3', name: 'B.Tech CSE Sem 1 End Exams 2026', type: 'Regular', department: 'CSE', year: 1, semester: 1, startDate: '2026-11-20', endDate: '2026-11-30', status: 'Upcoming', enrollmentDeadline: '2026-11-15', examFee: 1800 }
 ];
 
 const DEFAULT_STUDENTS: MockStudent[] = [

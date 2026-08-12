@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "@/lib/api";
 import {
   FileSpreadsheet,
   Calendar,
@@ -61,8 +62,29 @@ const DEFAULT_NOTIFICATIONS = [
 ];
 
 export function ExamCellDashboard() {
-  const [notifications] = useState(DEFAULT_NOTIFICATIONS);
   const { role, flags, department } = useRole();
+  const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState<any>(null);
+
+  const isOfficer = flags.includes("isExamController") || role === "super-admin";
+  const activeDeptCode = department || "CSE";
+
+  useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const url = isOfficer 
+          ? "/api/exams/dashboard" 
+          : `/api/exams/dashboard?department=${activeDeptCode}`;
+        const res = await api.get(url);
+        setDashboardData(res.data);
+      } catch (err) {
+        console.error("Failed to load dashboard from API", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadDashboard();
+  }, [isOfficer, activeDeptCode]);
 
   const handleResetDemoData = () => {
     localStorage.removeItem("mock_students_db_v3");
@@ -75,18 +97,34 @@ export function ExamCellDashboard() {
       window.location.reload();
     }, 1200);
   };
-  const isOfficer = flags.includes("isExamController") || role === "super-admin";
-  const activeDeptCode = department || "CSE";
 
-  // Filter departments based on user scope
-  const filteredDepts = isOfficer 
-    ? DEPARTMENTS_DATA 
-    : DEPARTMENTS_DATA.filter(d => d.code === activeDeptCode);
+  // Use dynamic or fallback static data
+  const deptsList = dashboardData?.departmentsData || DEPARTMENTS_DATA;
+  const notificationsList = dashboardData?.notifications || DEFAULT_NOTIFICATIONS;
+  const genderPassList = dashboardData?.genderPassData || GENDER_PASS_DATA;
 
-  const displayTotalStudents = isOfficer ? "2,980" : (filteredDepts[0]?.totalStudents.toLocaleString() || "0");
-  const displayTotalFaculty = isOfficer ? "126" : (filteredDepts[0]?.totalFaculty.toString() || "0");
-  const displayAttendanceAvg = isOfficer ? "85.4%" : `${filteredDepts[0]?.attendanceRate || 0}%`;
-  const displayPassRateAvg = isOfficer ? "86.2%" : `${filteredDepts[0]?.passRate || 0}%`;
+  // Filter departments based on user scope (when a department parameter is passed, the backend already resolves only that department's 4 year cards!)
+  const filteredDepts = deptsList;
+
+  const displayTotalStudents = loading 
+    ? "..." 
+    : isOfficer 
+      ? (dashboardData?.totalStudents?.toLocaleString() || "2,980") 
+      : (dashboardData?.totalStudents?.toLocaleString() || "0");
+
+  const displayTotalFaculty = loading 
+    ? "..." 
+    : isOfficer 
+      ? (dashboardData?.totalFaculty?.toString() || "126") 
+      : (dashboardData?.totalFaculty?.toString() || "0");
+
+  const displayAttendanceAvg = loading 
+    ? "..." 
+    : `${dashboardData?.attendanceAvg || 85.4}%`;
+
+  const displayPassRateAvg = loading 
+    ? "..." 
+    : `${dashboardData?.passRateAvg || 86.2}%`;
 
   return (
     <div className="space-y-6">
@@ -163,7 +201,7 @@ export function ExamCellDashboard() {
           <Layers className="size-4 text-indigo-600" /> {isOfficer ? "Departmental Metrics Breakdown" : "My Department Metrics"}
         </h3>
         
-        <div className={`grid gap-4 md:grid-cols-2 ${isOfficer ? "lg:grid-cols-5" : "lg:grid-cols-1 max-w-sm"}`}>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {filteredDepts.map((dept) => (
             <Card key={dept.code} className="p-4 bg-card border border-border/70 hover:border-indigo-200 transition shadow-xs rounded-2xl space-y-3">
               <div className="flex items-center justify-between">
@@ -214,7 +252,7 @@ export function ExamCellDashboard() {
           
           <div className="h-[240px] w-full text-xs font-semibold">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={GENDER_PASS_DATA} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+              <BarChart data={genderPassList} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="year" stroke="#64748b" fontSize={10} tickLine={false} />
                 <YAxis stroke="#64748b" fontSize={10} tickLine={false} domain={[0, 100]} />
@@ -237,7 +275,7 @@ export function ExamCellDashboard() {
           </div>
 
           <div className="space-y-3 max-h-[250px] overflow-y-auto pr-1">
-            {notifications.map((notif) => (
+            {notificationsList.map((notif: any) => (
               <div 
                 key={notif.id} 
                 className="p-3 border border-border/60 bg-slate-50/30 rounded-xl space-y-1 hover:border-slate-300 transition"

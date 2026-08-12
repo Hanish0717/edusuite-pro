@@ -56,6 +56,44 @@ app.use("/api/academics", academicsRoutes);
 app.use("/api/academic", academicsRoutes);
 
 // Boot server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`EduSuite Backend API Server is listening on http://localhost:${PORT}`);
+  
+  // Auto-migrate department and sections for existing courses on boot
+  try {
+    const nullCourses = await prisma.course.findMany({
+      where: {
+        OR: [
+          { department: null },
+          { sections: null }
+        ]
+      }
+    });
+
+    if (nullCourses.length > 0) {
+      console.log(`Migrating department and sections for ${nullCourses.length} courses...`);
+      for (const c of nullCourses) {
+        let dept = "CSE";
+        if (c.code.startsWith("CS")) dept = "CSE";
+        else if (c.code.startsWith("AM")) dept = "AI&ML";
+        else if (c.code.startsWith("AD")) dept = "AI&DS";
+        else if (c.code.startsWith("IT")) dept = "IT";
+        else if (c.code.startsWith("EE")) dept = "EEE";
+        else if (c.code.startsWith("EC")) dept = "ECE";
+        else if (c.code.startsWith("CE")) dept = "CIVIL";
+        else if (c.code.startsWith("ME")) dept = "MECHANICAL";
+
+        await prisma.course.update({
+          where: { id: c.id },
+          data: {
+            department: dept,
+            sections: "A,B"
+          }
+        });
+      }
+      console.log("Database boot migration completed successfully!");
+    }
+  } catch (err) {
+    console.error("Boot migration error:", err);
+  }
 });

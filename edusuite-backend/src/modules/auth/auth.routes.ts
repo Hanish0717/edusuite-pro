@@ -121,6 +121,7 @@ router.post("/login", async (req: Request, res: Response) => {
         cgpa: user.cgpa || null,
         creditsEarned: user.creditsEarned || null,
         avatarUrl: user.avatarUrl || null,
+        section: user.section || null,
       },
     });
   } catch (error: any) {
@@ -159,6 +160,7 @@ router.get("/profile", authenticateToken, async (req: AuthenticatedRequest, res:
       cgpa: user.cgpa || null,
       creditsEarned: user.creditsEarned || null,
       avatarUrl: user.avatarUrl || null,
+      section: user.section || null,
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
