@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState, useEffect } from "react";
-import { getMockStudents } from "@/lib/mock-examcell-state";
+import { getMockStudents, getMockExams } from "@/lib/mock-examcell-state";
 import api from "@/lib/api";
 import { useRole } from "@/context/role-context";
 import {
@@ -62,7 +62,7 @@ function StudentExaminationsPage() {
   const [selectedSemester, setSelectedSemester] = useState<number>(5);
 
   // Linked Workflow State
-  const [courseRegStatus, setCourseRegStatus] = useState<CourseRegWorkflowStatus>("Submitted");
+  const [courseRegStatus, setCourseRegStatus] = useState<CourseRegWorkflowStatus>("Draft");
   const [examRegStatus, setExamRegStatus] = useState<ExamRegWorkflowStatus>("Locked");
   const [hallTicketStatus, setHallTicketStatus] = useState<HallTicketWorkflowStatus>("Locked");
   const [resultStatus, setResultStatus] = useState<ResultWorkflowStatus>("Not Published");
@@ -75,13 +75,20 @@ function StudentExaminationsPage() {
   const [workflow] = useState(MOCK_REGISTRATION_WORKFLOW);
   const [examRegistrations, setExamRegistrations] = useState(MOCK_EXAM_REGISTRATIONS);
 
+  const normalizeDept = (dept: string) => {
+    if (dept === "AIML") return "AI&ML";
+    if (dept === "AIDS") return "AI&DS";
+    if (dept === "MECH") return "MECHANICAL";
+    return dept;
+  };
+
   // Load user profile details dynamically
   useEffect(() => {
     async function fetchProfile() {
       try {
         const res = await api.get("/api/auth/profile");
         if (res.status === 200 && res.data) {
-          setProfile({
+          const profileData = {
             rollNumber: res.data.rollNumber,
             studentName: res.data.name,
             email: res.data.email,
@@ -90,7 +97,22 @@ function StudentExaminationsPage() {
             cgpa: res.data.cgpa || 8.85,
             creditsEarned: res.data.creditsEarned || 112,
             avatarUrl: res.data.avatarUrl || "",
-          });
+            section: res.data.section || "A",
+          };
+          setProfile(profileData);
+
+          // Auto-select correct Year and Semester
+          const sem = profileData.semester;
+          setSelectedSemester(sem);
+          if (sem <= 2) {
+            setSelectedYear("1st Year");
+          } else if (sem <= 4) {
+            setSelectedYear("2nd Year");
+          } else if (sem <= 6) {
+            setSelectedYear("3rd Year");
+          } else {
+            setSelectedYear("4th Year");
+          }
         }
       } catch (err) {
         console.error("Failed to load user profile:", err);
@@ -99,25 +121,68 @@ function StudentExaminationsPage() {
     fetchProfile();
   }, []);
 
-  // Load course catalog dynamically based on selected semester
+  // Load course catalog dynamically based on selected semester and profile department
   useEffect(() => {
     async function fetchCatalog() {
+      if (!profile.department) return;
       try {
-        const res = await api.get("/api/courses");
+        const res = await api.get(`/api/courses?semester=${selectedSemester}`);
         if (res.status === 200 && res.data) {
-          // Filter by active semester
-          const filtered = res.data.filter((c: any) => c.semester === selectedSemester);
-          setAvailableCourses(filtered);
+          const mapped = res.data.map((c: any) => {
+            return {
+              id: c.id,
+              code: c.code,
+              name: c.name,
+              credits: c.credits,
+              type: c.category || "Core",
+              faculty: c.faculty || "Dr. Diya Deshmukh",
+              semester: c.semester,
+              availableSeats: 58,
+              totalSeats: 60,
+              isRegistered: c.isRegistered,
+              status: c.status,
+              description: `Approved course offered for CSE Sem ${selectedSemester}.`,
+              syllabus: ["Foundations & Core Principles", "System Architecture", "Operational Execution"]
+            };
+          });
+          setAvailableCourses(mapped);
+
+          // Dynamically compute workflow states from database courses
+          const registered = mapped.filter((c: any) => c.isRegistered);
+          if (registered.length > 0) {
+            setCourseRegStatus("Completed");
+
+            // Check if any registered course is paid in the database
+            const anyPaid = registered.some((c: any) => c.status === "exam_registered_paid");
+            if (anyPaid) {
+              setExamRegStatus("Paid & Registered");
+              setHallTicketStatus("Generated");
+            } else {
+              setExamRegStatus("Pending Payment");
+              setHallTicketStatus("Locked");
+            }
+          } else {
+            setCourseRegStatus("Draft");
+            setExamRegStatus("Locked");
+            setHallTicketStatus("Locked");
+          }
+        } else {
+          setAvailableCourses([]);
         }
       } catch (err) {
         console.error("Failed to load course catalog:", err);
+        setAvailableCourses([]);
       }
     }
     fetchCatalog();
-  }, [selectedSemester]);
+  }, [profile.department, selectedSemester, profile.rollNumber]);
+
 
   // Synchronize student's database status with active view states
   useEffect(() => {
+    if (profile.rollNumber && profile.rollNumber !== "22CS101" && profile.rollNumber !== "SD-STUD") {
+      return;
+    }
     const mockStudents = getMockStudents();
     // Match either the profile roll number or 22CS101 (the switched student profile)
     const record = mockStudents.find(s => 
@@ -184,6 +249,34 @@ function StudentExaminationsPage() {
   const semesterCourses = availableCourses.filter((c) => c.semester === selectedSemester);
   const registeredCoursesList = semesterCourses.filter((c) => c.isRegistered);
   const registeredCreditsSum = registeredCoursesList.reduce((s, c) => s + c.credits, 0);
+  const totalOfferedCredits = semesterCourses.reduce((s, c) => s + c.credits, 0);
+
+  // Dynamically map paid courses to exam timetable items
+  const dynamicUpcomingExams = semesterCourses
+    .filter((c) => c.isRegistered && c.status === "exam_registered_paid")
+    .map((c, index) => {
+      const dates = ["Nov 24, 2026", "Nov 26, 2026", "Nov 28, 2026", "Nov 30, 2026"];
+      return {
+        id: c.id,
+        subjectCode: c.code,
+        subjectName: c.name,
+        examDate: dates[index % dates.length],
+        timeSlot: "09:30 AM - 12:30 PM",
+        hallNumber: `LH-20${1 + (index % 3)}`,
+        seatNumber: `A-1${index + 2}`,
+      };
+    });
+
+  // Find matching exam schedule to determine flat fee and freeze lock state
+  const mockSchedules = getMockExams();
+  const matchedSchedule = mockSchedules.find(
+    (s) =>
+      s.department === (profile.department || "CSE") &&
+      s.semester === selectedSemester &&
+      s.status === "Upcoming"
+  );
+  const flatFee = matchedSchedule?.examFee || 2000;
+  const isExamFrozen = !matchedSchedule;
 
   // Workflow Triggers
   const handleCompleteCourseRegistration = () => {
@@ -192,19 +285,18 @@ function StudentExaminationsPage() {
     toast.success("Course Registration Completed! Exam Registration is now UNLOCKED.");
   };
 
-  const handleCompleteAllExamRegistration = () => {
-    setCourseRegStatus("Completed");
-    setExamRegStatus("Paid & Registered");
-    setHallTicketStatus("Generated");
-    setExamRegistrations((prev) =>
-      prev.map((reg) => ({
-        ...reg,
-        paymentStatus: "Paid" as const,
-        status: "Approved" as const,
-        receiptNumber: `EXM-REC-${Math.floor(1000 + Math.random() * 9000)}`,
-      }))
-    );
-    toast.success("Exam Registration & Fee Payment Successful! Hall Ticket UNLOCKED & GENERATED.");
+  const handleCompleteAllExamRegistration = async (courseIds: string[]) => {
+    try {
+      const res = await api.post("/api/courses/pay-exams", { courseIds });
+      if (res.status === 200) {
+        setCourseRegStatus("Completed");
+        setExamRegStatus("Paid & Registered");
+        setHallTicketStatus("Generated");
+        toast.success("Exam fee payment successful! Hall Ticket UNLOCKED & GENERATED.");
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to submit exam fee payment.");
+    }
   };
 
   const handleRegisterSingleExam = (examRegId: string) => {
@@ -294,7 +386,7 @@ function StudentExaminationsPage() {
         <div className="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm space-y-3">
           <span className="text-xs font-semibold text-slate-500 block">Total Earned Credits</span>
           <div className="text-3xl font-extrabold text-[#0b193c] dark:text-blue-400 font-display">
-            {profile.creditsEarned} Credits
+            0 Credits
           </div>
           <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#0b193c]/10 text-[#0b193c] dark:text-blue-400 border border-[#0b193c]/20">
             From declared results
@@ -319,7 +411,7 @@ function StudentExaminationsPage() {
             {registeredCreditsSum} Credits
           </div>
           <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#0b193c]/10 text-[#0b193c] dark:text-blue-400 border border-[#0b193c]/20">
-            Max Limit: 24 Credits
+            Max Limit: {totalOfferedCredits} Credits
           </span>
         </div>
 
@@ -333,11 +425,21 @@ function StudentExaminationsPage() {
             const isActive = activeSubmodule === sub.id;
 
             let isLocked = false;
-            if (sub.id === "exam-registration" && courseRegStatus !== "Completed" && selectedSemester === 5) {
-              isLocked = true;
+            if (sub.id === "exam-registration") {
+              const currentSemester = profile.semester || 1;
+              if (selectedSemester === currentSemester) {
+                isLocked = courseRegStatus !== "Completed" || isExamFrozen;
+              } else if (selectedSemester > currentSemester) {
+                isLocked = true;
+              }
             }
-            if (sub.id === "hall-ticket" && examRegStatus !== "Paid & Registered" && selectedSemester === 5) {
-              isLocked = true;
+            if (sub.id === "hall-ticket") {
+              const currentSemester = profile.semester || 1;
+              if (selectedSemester === currentSemester) {
+                isLocked = examRegStatus !== "Paid & Registered";
+              } else if (selectedSemester > currentSemester) {
+                isLocked = true;
+              }
             }
 
             return (
@@ -390,6 +492,8 @@ function StudentExaminationsPage() {
           examRegStatus={examRegStatus}
           selectedYear={selectedYear}
           selectedSemester={selectedSemester}
+          flatFee={flatFee}
+          isFrozen={isExamFrozen}
           onYearChange={handleYearChange}
           onSemesterChange={handleSemesterChange}
           onRegisterExam={handleRegisterSingleExam}
@@ -402,7 +506,7 @@ function StudentExaminationsPage() {
       {activeSubmodule === "hall-ticket" && (
         <HallTicket
           profile={profile}
-          exams={upcomingExams}
+          exams={dynamicUpcomingExams}
           examRegStatus={examRegStatus}
           hallTicketStatus={hallTicketStatus}
           selectedYear={selectedYear}
@@ -440,7 +544,7 @@ function StudentExaminationsPage() {
         open={hallTicketModalOpen}
         onOpenChange={setHallTicketModalOpen}
         profile={profile}
-        exams={upcomingExams}
+        exams={dynamicUpcomingExams}
         hallTicketRecord={selectedHallTicketRecord}
       />
 
@@ -469,9 +573,26 @@ function StudentExaminationsPage() {
         open={registrationModalOpen}
         onOpenChange={setRegistrationModalOpen}
         selectedCourses={registeredCoursesList}
-        onConfirm={() => {
-          setCourseRegStatus("Submitted");
-          toast.success("Course Registration locks submitted to Advisor!");
+        allCourses={availableCourses}
+        onConfirm={async (nptelSubmissions) => {
+          try {
+            const courseIds = registeredCoursesList.map(c => c.id);
+            // 1. Submit checked courses
+            if (courseIds.length > 0) {
+              await api.post("/api/courses/register", { courseIds });
+            }
+
+            // 2. Submit NPTEL certifications for unchecked skipped courses
+            if (nptelSubmissions.length > 0) {
+              await api.post("/api/courses/nptel", { submissions: nptelSubmissions });
+            }
+
+            setCourseRegStatus("Completed");
+            setExamRegStatus("Pending Payment");
+            toast.success("Course registration and NPTEL exemptions submitted successfully!");
+          } catch (err: any) {
+            toast.error(err.response?.data?.error || "Failed to submit course registrations.");
+          }
         }}
       />
 

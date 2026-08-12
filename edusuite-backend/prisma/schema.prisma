@@ -78,6 +78,10 @@ model Course {
   credits             Float
   category            String
   semester            Int
+  department          String?
+  sections            String?
+  isOffered           Boolean              @default(false)
+  status              String               @default("Draft")
   courseRegistrations CourseRegistration[]
   nptelRecords        NptelRecord[]
   subjectAllocations  SubjectAllocation[]

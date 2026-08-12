@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import api from "@/lib/api";
 import { toast } from "sonner";
 import { 
   CheckCircle2, 
@@ -49,9 +50,19 @@ function ExamCellUpdatesPage() {
   const [timetables, setTimetables] = useState<MockExamTimetable[]>([]);
   const [deadlineDates, setDeadlineDates] = useState<Record<string, string>>({});
 
-  // Load from Mock State
+  const loadCourses = async () => {
+    try {
+      const res = await api.get("/api/exams/courses");
+      if (res.data) {
+        setCourses(res.data);
+      }
+    } catch (err) {
+      console.error("Failed to load courses from DB", err);
+    }
+  };
+
   useEffect(() => {
-    setCourses(getMockCourses());
+    loadCourses();
     setExams(getMockExams());
     setTimetables(getMockTimetables());
   }, []);
@@ -77,7 +88,7 @@ function ExamCellUpdatesPage() {
 
   const pendingExams = exams.filter(e => e.status === 'Pending Approval');
 
-  const handleApproveCourseGroup = (group: CourseGroup) => {
+  const handleApproveCourseGroup = async (group: CourseGroup) => {
     if (!isOfficer) {
       toast.error("Access Denied: Only the Exam Officer can approve course offerings.");
       return;
@@ -91,16 +102,39 @@ function ExamCellUpdatesPage() {
       return;
     }
 
-    // Mark all courses in this group as Approved
-    const courseIdsToApprove = group.courses.map(c => c.id);
-    const updatedCourses = courses.map(c => 
-      courseIdsToApprove.includes(c.id) ? { ...c, status: 'Approved' as const } : c
-    );
-    
-    setCourses(updatedCourses);
-    saveMockCourses(updatedCourses);
-    
-    toast.success(`Approved & published B.Tech ${group.department} Sem ${group.semester} courses to students!`);
+    try {
+      const res = await api.post("/api/exams/courses/approve", {
+        department: group.department,
+        semester: Number(group.semester),
+        deadline
+      });
+      if (res.status === 200) {
+        toast.success(`Approved & published B.Tech ${group.department} Sem ${group.semester} courses to students!`);
+        loadCourses();
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to approve course group.");
+    }
+  };
+
+  const handleDeclineCourseGroup = async (group: CourseGroup) => {
+    if (!isOfficer) {
+      toast.error("Access Denied: Only the Exam Officer can decline course offerings.");
+      return;
+    }
+
+    try {
+      const res = await api.post("/api/exams/courses/decline", {
+        department: group.department,
+        semester: Number(group.semester)
+      });
+      if (res.status === 200) {
+        toast.success(`Declined and returned B.Tech ${group.department} Sem ${group.semester} courses to drafting.`);
+        loadCourses();
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || "Failed to decline course group.");
+    }
   };
 
   const handleApproveExam = (examId: string) => {
@@ -235,7 +269,13 @@ function ExamCellUpdatesPage() {
                         />
                       </div>
                       
-                      <div className="pt-4">
+                      <div className="pt-4 flex items-center gap-2">
+                        <Button 
+                          onClick={() => handleDeclineCourseGroup(group)}
+                          className="h-9 bg-white border border-rose-200 hover:bg-rose-50 text-rose-600 text-xs font-extrabold px-4 rounded-xl flex items-center gap-1.5 shadow-xs transition duration-200 cursor-pointer"
+                        >
+                          Decline & Return to Draft
+                        </Button>
                         <Button 
                           onClick={() => handleApproveCourseGroup(group)}
                           className="h-9 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-extrabold px-4 rounded-xl flex items-center gap-1.5 shadow-xs transition duration-200 cursor-pointer"
@@ -266,12 +306,12 @@ function ExamCellUpdatesPage() {
                             <td className="px-4 py-3.5 text-muted-foreground">Normal Subject</td>
                             <td className="px-4 py-3.5 font-black text-slate-900">{c.credits}.0</td>
                             <td className="px-4 py-3.5">
-                              <div className="flex items-center gap-1.5">
-                                {c.sections.map(sec => (
-                                  <span key={sec} className="bg-slate-100/80 border border-slate-200/60 text-slate-700 text-[10px] font-black px-2.5 py-1 rounded-md inline-flex items-center gap-1">
-                                    <User className="size-3 text-slate-400" /> Sec {sec}: Dr. John Smith
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                {Array.isArray(c.sections) ? c.sections.map((s: any) => (
+                                  <span key={s.section} className="bg-slate-100/80 border border-slate-200/60 text-slate-700 text-[10px] font-black px-2.5 py-1 rounded-md inline-flex items-center gap-1">
+                                    <User className="size-3 text-slate-400" /> Sec {s.section}: {s.mentor_name}
                                   </span>
-                                ))}
+                                )) : null}
                               </div>
                             </td>
                           </tr>
