@@ -43,9 +43,9 @@ router.get("/", authenticateToken, async (req: AuthenticatedRequest, res: Respon
       };
     });
 
-    res.json(mappedCourses);
+    return res.json(mappedCourses);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -78,9 +78,9 @@ router.post("/register", authenticateToken, async (req: AuthenticatedRequest, re
     );
 
     await Promise.all(operations);
-    res.json({ message: "Courses registered and moved to exam registration successfully!" });
+    return res.json({ message: "Courses registered and moved to exam registration successfully!" });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -154,9 +154,9 @@ router.post("/nptel", authenticateToken, async (req: AuthenticatedRequest, res: 
     });
 
     await Promise.all(operations);
-    res.json({ message: "NPTEL details and exam registrations successfully submitted!" });
+    return res.json({ message: "NPTEL details and exam registrations successfully submitted!" });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 

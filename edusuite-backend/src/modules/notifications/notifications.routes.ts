@@ -14,9 +14,9 @@ router.get("/", authenticateToken, async (req: AuthenticatedRequest, res: Respon
       orderBy: { createdAt: "desc" },
     });
 
-    res.json(notifications);
+    return res.json(notifications);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -41,9 +41,9 @@ router.put("/:id/read", authenticateToken, async (req: AuthenticatedRequest, res
       data: { read: true },
     });
 
-    res.json({ message: "Notification marked as read.", notification: updated });
+    return res.json({ message: "Notification marked as read.", notification: updated });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 

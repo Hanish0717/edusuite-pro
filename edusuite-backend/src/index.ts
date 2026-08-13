@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { prisma } from "./db";
-import bcrypt from "bcryptjs";
 
 // Load environment configurations
 dotenv.config();
@@ -15,20 +13,23 @@ app.use(cors());
 app.use(express.json());
 
 // API health check
-app.get("/api/health", (req, res) => {
-  res.json({ status: "OK", timestamp: new Date() });
+app.get("/api/health", (_req, res) => {
+  return res.json({ status: "OK", timestamp: new Date() });
 });
 
 import { seedDatabase } from "./seeder";
 
-// Database Seeder Utility Route
-app.post("/api/db/seed", async (req, res) => {
+// Database Seeder Utility Route (Secured for non-production/development use only)
+app.post("/api/db/seed", async (_req, res) => {
+  if (process.env.NODE_ENV === "production") {
+    return res.status(403).json({ error: "Database seeding is disabled in production environments." });
+  }
   try {
     await seedDatabase();
-    res.json({ message: "Database seeded successfully!" });
+    return res.json({ message: "Database seeded successfully!" });
   } catch (error: any) {
     console.error("Seeder error:", error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -42,6 +43,7 @@ import studentRoutes from "./modules/students/students.routes";
 import employeeRoutes from "./modules/employees/employees.routes";
 import superAdminRoutes from "./modules/super-admin/super-admin.routes";
 import academicsRoutes from "./modules/academics/academics.routes";
+import payrollRoutes from "./modules/payroll/payroll.routes";
 
 // Register routes
 app.use("/api/auth", authRoutes);
@@ -51,9 +53,13 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/employee", employeeRoutes);
+app.use("/api/faculty", employeeRoutes);
+app.use("/api/dean/faculty", employeeRoutes);
+app.use("/api/academics/faculty", employeeRoutes);
 app.use("/api/super-admin", superAdminRoutes);
 app.use("/api/academics", academicsRoutes);
 app.use("/api/academic", academicsRoutes);
+app.use("/api/payroll", payrollRoutes);
 
 // Boot server
 app.listen(PORT, () => {

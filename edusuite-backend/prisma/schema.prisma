@@ -14,6 +14,7 @@ model Student {
   email               String               @unique
   password            String
   role                String               @default("student")
+  status              String               @default("Active") // "Active" | "Inactive" | "Suspended"
   department          String?
   semester            Int?                 @default(6)
   section             String?
@@ -23,6 +24,7 @@ model Student {
   parent              Parent?              @relation(fields: [parentId], references: [id])
   cgpa                Float?               @default(8.85)
   creditsEarned       Int?                 @default(112)
+  feeStatus           String?              @default("Paid") // "Paid" | "Pending" | "Partial"
   avatarUrl           String?
   courseRegistrations CourseRegistration[]
   nptelRecords        NptelRecord[]
@@ -39,6 +41,7 @@ model Parent {
   email               String               @unique
   password            String
   role                String               @default("parent")
+  status              String               @default("Active") // "Active" | "Inactive" | "Suspended"
   department          String?
   students            Student[]
   createdAt           DateTime             @default(now())
@@ -52,7 +55,13 @@ model Faculty {
   email               String               @unique
   password            String
   role                String               @default("faculty") // "hod" or "faculty"
+  status              String               @default("Active") // "Active" | "Inactive" | "Suspended"
   department          String?
+  timetables          MasterTimetable[]
+  payrolls            PayrollRecord[]
+  bankDetails         BankDetails[]
+  bankChangeRequests  BankChangeRequest[]
+  reimbursements      Reimbursement[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -64,6 +73,7 @@ model Admin {
   email               String               @unique
   password            String
   role                String               @default("admin") // "super_admin", "admin", "principal", "vice_principal", "dean", etc.
+  status              String               @default("Active") // "Active" | "Inactive" | "Suspended"
   department          String?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
@@ -79,6 +89,7 @@ model Course {
   semester            Int
   courseRegistrations CourseRegistration[]
   nptelRecords        NptelRecord[]
+  timetables          MasterTimetable[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -111,15 +122,23 @@ model NptelRecord {
 }
 
 model AttendanceRecord {
-  id        String   @id @default(uuid())
-  userId    String
-  user      Student  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date      String
-  status    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String           @id @default(uuid())
+  userId       String
+  user         Student          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date         String           // YYYY-MM-DD
+  periodNumber Int?             @default(1)
+  status       String           // "Present" | "Absent" | "Late"
+  timetableId  String?
+  timetable    MasterTimetable? @relation(fields: [timetableId], references: [id], onDelete: SetNull)
+  courseId     String?
+  remarks      String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 
-  @@unique([userId, date])
+  @@unique([userId, date, periodNumber])
+  @@index([userId])
+  @@index([date])
+  @@index([timetableId])
 }
 
 model Notification {
@@ -133,3 +152,218 @@ model Notification {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+model Department {
+  id            String   @id @default(uuid())
+  name          String   @unique
+  code          String   @unique
+  hodName       String?
+  accreditation String?  @default("NBA & NAAC A+")
+  status        String   @default("Active") // "Active" | "Under Review"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  actorId      String?
+  actorName    String
+  actorRole    String
+  action       String
+  module       String
+  targetEntity String?
+  targetId     String?
+  ipAddress    String?  @default("127.0.0.1")
+  status       String   @default("Success") // "Success" | "Failed"
+  createdAt    DateTime @default(now())
+}
+
+model RolePermission {
+  id             String   @id @default(uuid())
+  role           String   @unique
+  label          String
+  isSystemAdmin  Boolean  @default(false)
+  isPrincipal    Boolean  @default(false)
+  isDean         Boolean  @default(false)
+  isHod          Boolean  @default(false)
+  isFaculty      Boolean  @default(false)
+  isFinance      Boolean  @default(false)
+  canManageUsers Boolean  @default(false)
+  canExportData  Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model DelegationRule {
+  id             String   @id @default(uuid())
+  ruleId         String   @unique // e.g. "DEL-101"
+  moduleName     String
+  delegatedRole  String
+  assignedPerson String
+  scope          String
+  status         String   @default("Active Delegation") // "Active Delegation" | "Pending Review"
+  permissions    String   // Stored as JSON or comma-separated list
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model CurriculumScheme {
+  id                String   @id @default(uuid())
+  regulationCode    String   @unique
+  programName       String
+  effectiveBatch    String
+  totalCredits      Float
+  coreTheoryCredits Float
+  labCredits        Float
+  electiveCredits   Float
+  projectCredits    Float
+  status            String   @default("Active")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model MasterTimetable {
+  id           String   @id @default(uuid())
+
+  branch       String   // e.g. "CSE", "ECE", "ME", "EEE", "CIVIL", "IT", "AI&DS", "AI&ML"
+  semester     Int      // e.g. 1, 3, 5, 7
+  section      String   // e.g. "Section A", "Section B"
+
+  day          String   // "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+  periodNumber Int      // 1 to 8
+
+  startTime    String   // e.g. "09:00 AM"
+  endTime      String   // e.g. "10:00 AM"
+
+  courseId     String?
+  course       Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+  facultyId    String?
+  faculty      Faculty? @relation(fields: [facultyId], references: [id], onDelete: SetNull)
+
+  roomNo       String?  // e.g. "Block B - 302"
+  isLab        Boolean  @default(false)
+
+  attendanceRecords AttendanceRecord[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([branch, semester, section, day, periodNumber])
+  @@index([facultyId])
+  @@index([courseId])
+  @@index([day, periodNumber])
+}
+
+model SalaryStructure {
+  id               String   @id @default(uuid())
+  employeeId       String   @unique
+  basicPay         Float    @default(75000)
+  da               Float    @default(7500)
+  hra              Float    @default(22500)
+  medical          Float    @default(2000)
+  academic         Float    @default(3000)
+  research         Float    @default(2000)
+  transport        Float    @default(1500)
+  otherAllowances  Float    @default(1000)
+  pf               Float    @default(4500)
+  profTax          Float    @default(200)
+  incomeTax        Float    @default(4000)
+  esi              Float    @default(500)
+  insurance        Float    @default(1000)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model PayrollRecord {
+  id                     String    @id @default(uuid())
+  employeeId             String
+  facultyId              String?
+  faculty                Faculty?  @relation(fields: [facultyId], references: [id], onDelete: SetNull)
+  employeeName           String
+  employeeRollNumber     String?
+  department             String
+  designation            String
+  employeeType           String    @default("Faculty") // "Faculty" | "Staff"
+  monthYear              String    // e.g. "July 2026"
+  financialYear          String    @default("FY 2026-27") // e.g. "FY 2026-27"
+  basicPay               Float
+  da                     Float     @default(0)
+  hra                    Float     @default(0)
+  allowances             Float     @default(0)
+  deductions             Float     @default(0)
+  grossSalary            Float
+  netSalary              Float
+  status                 String    @default("Paid") // "Paid" | "Processing" | "Pending Approval"
+  paymentDate            String?   // YYYY-MM-DD
+  bankAccount            String?   // Masked bank account e.g. "HDFC-****-8812"
+  paymentReference       String?   // e.g. "TXN-998822"
+  earningsJson           String?   // Full JSON breakdown
+  deductionsJson         String?   // Full JSON breakdown
+  attendanceImpactJson   String?   // Full JSON impact
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@unique([employeeId, monthYear])
+  @@index([employeeId])
+  @@index([facultyId])
+  @@index([monthYear])
+  @@index([department])
+  @@index([status])
+}
+
+model BankDetails {
+  id                   String   @id @default(uuid())
+  employeeId           String   @unique
+  facultyId            String?
+  faculty              Faculty? @relation(fields: [facultyId], references: [id], onDelete: SetNull)
+  bankName             String   @default("HDFC Bank Ltd")
+  accountNumber        String   // Stored in DB, returned masked in APIs
+  ifscCode             String   @default("HDFC0000240")
+  branch               String   @default("Hitech City, Hyderabad")
+  nomineeName          String   @default("Spouse / Dependent")
+  salaryCreditAccount  Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([facultyId])
+}
+
+model BankChangeRequest {
+  id                   String   @id @default(uuid())
+  employeeId           String
+  facultyId            String?
+  faculty              Faculty? @relation(fields: [facultyId], references: [id], onDelete: SetNull)
+  requestedBankName    String
+  requestedAccountNumber String
+  requestedIfscCode    String
+  requestedBranch      String?
+  requestedNomineeName String?
+  status               String   @default("Pending") // "Pending" | "Approved" | "Rejected"
+  rejectionReason      String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([employeeId])
+  @@index([status])
+}
+
+model Reimbursement {
+  id             String    @id @default(uuid())
+  employeeId     String
+  facultyId      String?
+  faculty        Faculty?  @relation(fields: [facultyId], references: [id], onDelete: SetNull)
+  category       String    // "Travel Allowance" | "Research Grant" | "Book Purchase" | "Conference Expenses" | "Lab Expenses"
+  amount         Float
+  status         String    @default("Pending") // "Paid" | "Approved" | "Pending" | "Rejected"
+  claimDate      String    // YYYY-MM-DD
+  approvalDate   String?   // YYYY-MM-DD
+  remarks        String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([employeeId])
+  @@index([status])
+}
+
+

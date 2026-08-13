@@ -55,6 +55,11 @@ export async function seedDatabase() {
   await prisma.notification.deleteMany({});
   
   // Wipe normalized tables
+  await prisma.auditLog.deleteMany({});
+  await prisma.rolePermission.deleteMany({});
+  await prisma.delegationRule.deleteMany({});
+  await prisma.department.deleteMany({});
+
   await prisma.student.deleteMany({});
   await prisma.parent.deleteMany({});
   await prisma.faculty.deleteMany({});
@@ -63,6 +68,99 @@ export async function seedDatabase() {
   await prisma.course.deleteMany({});
 
   const passwordHash = await bcrypt.hash("password123", 10);
+
+  // 0. Seed Departments, Role Permissions, Delegation Rules & Initial Audit Log
+  console.log("Seeding departments, role permissions, and delegation rules...");
+  for (const branch of BRANCHES) {
+    await prisma.department.create({
+      data: {
+        name: branch.fullname,
+        code: branch.name,
+        hodName: `Dr. HOD ${branch.name}`,
+        accreditation: "NBA & NAAC A+",
+        status: "Active",
+      },
+    });
+  }
+
+  const DEFAULT_ROLES = [
+    { role: "super_admin", label: "Super Admin", isSystemAdmin: true, isPrincipal: true, isDean: true, isHod: true, isFaculty: true, isFinance: true, canManageUsers: true, canExportData: true },
+    { role: "admin", label: "Operations Admin", isSystemAdmin: true, isPrincipal: false, isDean: false, isHod: false, isFaculty: true, isFinance: false, canManageUsers: true, canExportData: true },
+    { role: "principal", label: "Principal", isSystemAdmin: false, isPrincipal: true, isDean: true, isHod: true, isFaculty: true, isFinance: true, canManageUsers: false, canExportData: true },
+    { role: "dean", label: "Academic Dean", isSystemAdmin: false, isPrincipal: false, isDean: true, isHod: true, isFaculty: true, isFinance: false, canManageUsers: false, canExportData: true },
+    { role: "hod", label: "HOD", isSystemAdmin: false, isPrincipal: false, isDean: false, isHod: true, isFaculty: true, isFinance: false, canManageUsers: false, canExportData: true },
+    { role: "faculty", label: "Faculty Member", isSystemAdmin: false, isPrincipal: false, isDean: false, isHod: false, isFaculty: true, isFinance: false, canManageUsers: false, canExportData: false },
+    { role: "student", label: "Student", isSystemAdmin: false, isPrincipal: false, isDean: false, isHod: false, isFaculty: false, isFinance: false, canManageUsers: false, canExportData: false },
+    { role: "finance", label: "Finance Officer", isSystemAdmin: false, isPrincipal: false, isDean: false, isHod: false, isFaculty: false, isFinance: true, canManageUsers: false, canExportData: true },
+    { role: "hr", label: "HR Manager", isSystemAdmin: false, isPrincipal: false, isDean: false, isHod: false, isFaculty: false, isFinance: false, canManageUsers: true, canExportData: true },
+  ];
+
+  for (const r of DEFAULT_ROLES) {
+    await prisma.rolePermission.create({ data: r });
+  }
+
+  const DEFAULT_DELEGATIONS = [
+    {
+      ruleId: "DEL-101",
+      moduleName: "Academic Operations & Class Scheduling",
+      delegatedRole: "Dean",
+      assignedPerson: "Dr. S. K. Gupta (Dean Academics)",
+      scope: "Curriculum approval, semester timetable generation, faculty workload balance",
+      status: "Active Delegation",
+      permissions: JSON.stringify(["Generate Timetable", "Approve Curriculum", "Manage Course Catalog"]),
+    },
+    {
+      ruleId: "DEL-102",
+      moduleName: "Departmental Faculty & Student Supervision",
+      delegatedRole: "HOD",
+      assignedPerson: "Dr. Rajesh Sharma (HOD CSE)",
+      scope: "Departmental student roster, proxy faculty allocation, lesson plan review",
+      status: "Active Delegation",
+      permissions: JSON.stringify(["Approve Lesson Plans", "Assign Proxy Faculty", "Track Syllabus Progress"]),
+    },
+    {
+      ruleId: "DEL-103",
+      moduleName: "Institutional Examinations & Grading",
+      delegatedRole: "Exam Controller",
+      assignedPerson: "Dr. Meera Nambiar (Controller of Exams)",
+      scope: "Exam timetable scheduling, hall tickets issuance, internal marks lock",
+      status: "Active Delegation",
+      permissions: JSON.stringify(["Schedule Examinations", "Publish Results", "Lock Grade Sheets"]),
+    },
+    {
+      ruleId: "DEL-104",
+      moduleName: "Financial Operations & Fee Governance",
+      delegatedRole: "Finance Manager",
+      assignedPerson: "Vikram Malhotra (Chief Finance Officer)",
+      scope: "Student fee collection, payroll disbursement, vendor procurement approvals",
+      status: "Active Delegation",
+      permissions: JSON.stringify(["Manage Student Fees", "Process Staff Payroll", "Approve POs"]),
+    },
+    {
+      ruleId: "DEL-105",
+      moduleName: "Talent Management & Faculty Leave Governance",
+      delegatedRole: "HR Manager",
+      assignedPerson: "Priya Sundaram (HR Director)",
+      scope: "Faculty leave approvals, staff recruitment, performance appraisal records",
+      status: "Active Delegation",
+      permissions: JSON.stringify(["Approve Faculty Leaves", "Manage Employee Records", "Process Appraisals"]),
+    },
+  ];
+
+  for (const del of DEFAULT_DELEGATIONS) {
+    await prisma.delegationRule.create({ data: del });
+  }
+
+  await prisma.auditLog.create({
+    data: {
+      actorName: "System Seeder",
+      actorRole: "super_admin",
+      action: "DATABASE_SEEDED",
+      module: "System Infrastructure",
+      status: "Success",
+      ipAddress: "127.0.0.1",
+    },
+  });
 
   // 1. Seed Default Institution Module Logins
   console.log("Seeding default institution logins...");

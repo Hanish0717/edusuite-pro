@@ -36,9 +36,9 @@ router.post("/register", authenticateToken, async (req: AuthenticatedRequest, re
       },
     });
 
-    res.json({ message: "Exam registered successfully!", registration: updated });
+    return res.json({ message: "Exam registered successfully!", registration: updated });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -74,9 +74,9 @@ router.get("/hall-ticket", authenticateToken, async (req: AuthenticatedRequest, 
       status: "Scheduled",
     }));
 
-    res.json(exams);
+    return res.json(exams);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
