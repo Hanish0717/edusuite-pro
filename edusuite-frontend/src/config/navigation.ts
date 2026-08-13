@@ -526,7 +526,7 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
           { title: "Subjects", url: "/faculty/subjects", icon: BookOpen },
           { title: "Lesson Plans", url: "/faculty/lesson-plan", icon: ClipboardList },
           { title: "Attendance", url: "/faculty/attendance", icon: CalendarCheck },
-          { title: "Learning Management", url: "/lms", icon: BookOpen },
+          { title: "Learning Management", url: "/faculty/lms", icon: BookOpen },
           { title: "Examinations", url: "/faculty/examinations", icon: FileSpreadsheet },
           { title: "Research", url: "/faculty/research", icon: TrendingUp },
           { title: "Leave", url: "/faculty/leave", icon: CalendarRange },

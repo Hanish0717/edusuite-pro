@@ -54,6 +54,7 @@ model Faculty {
   role                String               @default("faculty") // "hod" or "faculty"
   department          String?
   subjectAllocations  SubjectAllocation[]
+  lmsResources        LmsResource[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -85,79 +86,76 @@ model Course {
   courseRegistrations CourseRegistration[]
   nptelRecords        NptelRecord[]
   subjectAllocations  SubjectAllocation[]
+  lmsResources        LmsResource[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
 
-model CourseRegistration {
-  id        String   @id @default(uuid())
-  userId    String
-  user      Student  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  status    String   @default("course_registration")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model LmsResource {
+  id          String   @id @default(uuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  title       String
+  unit        String   // e.g. "Unit 1", "Unit 2"
+  fileUrl     String
+  fileType    String   // "pdf", "docx", "pptx", "video", etc.
+  fileSize    String   // e.g. "2.4 MB"
+  facultyId   String
+  faculty     Faculty  @relation(fields: [facultyId], references: [id])
+  uploadedAt  DateTime @default(now())
+}
 
-  @@unique([userId, courseId])
+model SubjectAllocation {
+  id                  String   @id @default(uuid())
+  facultyId           String
+  faculty             Faculty  @relation(fields: [facultyId], references: [id])
+  courseId            String
+  course              Course   @relation(fields: [courseId], references: [id])
+  section             String
+  semester            Int
+  academicYear        String   @default("2024-25")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model CourseRegistration {
+  id           String   @id @default(uuid())
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id])
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id])
+  status       String   @default("APPROVED") // "APPROVED" | "PENDING" | "REJECTED"
+  registeredAt DateTime @default(now())
 }
 
 model NptelRecord {
-  id              String   @id @default(uuid())
-  userId          String
-  user            Student  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId        String
-  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  certificateName String
-  comments        String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@unique([userId, courseId])
+  id            String   @id @default(uuid())
+  studentId     String
+  student       Student  @relation(fields: [studentId], references: [id])
+  courseId      String
+  course        Course   @relation(fields: [courseId], references: [id])
+  score         Float
+  certificateUrl String?
+  createdAt     DateTime @default(now())
 }
 
 model AttendanceRecord {
   id        String   @id @default(uuid())
-  userId    String
-  user      Student  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date      String
-  status    String
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
+  date      DateTime
+  status    String   // "PRESENT" | "ABSENT" | "OD" | "LEAVE"
+  subject   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, date])
 }
 
 model Notification {
   id        String   @id @default(uuid())
-  userId    String
-  user      Student  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
   title     String
   message   String
-  category  String   @default("General")
-  priority  String   @default("Normal")
-  read      Boolean  @default(false)
+  isRead    Boolean  @default(false)
+  type      String   @default("INFO")
   createdAt DateTime @default(now())
-}
-
-model SubjectAllocation {
-  id           String   @id @default(uuid())
-  facultyId    String
-  faculty      Faculty  @relation(fields: [facultyId], references: [id], onDelete: Cascade)
-  courseId     String
-  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  department   String
-  semester     String
-  section      String
-  academicYear String
-  weeklyHours  Int      @default(3)
-  status       String   @default("Active")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@unique([courseId, semester, section, academicYear])
-  @@index([department])
-  @@index([facultyId])
-  @@index([courseId])
-  @@index([academicYear])
 }

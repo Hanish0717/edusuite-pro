@@ -9,5 +9,5 @@ export const Route = createFileRoute("/faculty/lms")({
 });
 
 function FacultyLmsPage() {
-  return <LMSModuleView />;
+  return <LMSModuleView isFaculty={true} />;
 }
