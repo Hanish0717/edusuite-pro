@@ -11,8 +11,10 @@ export const Route = createFileRoute("/dean")({
 function DeanLayout() {
   const { role, flags } = useRole();
   const isSuperAdmin = role === "super-admin" || role === "super_admin";
+  const isDeanRole = role === "dean" || role.endsWith("_dean");
+  const hasDeanAccess = isSuperAdmin || flags.includes("isDean") || isDeanRole;
 
-  if (!isSuperAdmin && (role !== "staff" || !flags.includes("isDean"))) {
+  if (!hasDeanAccess) {
     return (
       <div className="flex h-screen items-center justify-center p-4 bg-background">
         <div className="text-center max-w-md border border-destructive/20 bg-destructive/5 rounded-2xl p-6">
