@@ -260,6 +260,7 @@ import { Route as SuperAdminEmergencyRouteImport } from './routes/super-admin.em
 import { Route as SuperAdminEmergencyAlertsRouteImport } from './routes/super-admin.emergency-alerts'
 import { Route as SuperAdminFacultyRouteImport } from './routes/super-admin.faculty'
 import { Route as SuperAdminFacultyStatusRouteImport } from './routes/super-admin.faculty-status'
+import { Route as SuperAdminLmsRouteImport } from './routes/super-admin.lms'
 import { Route as SuperAdminProfileRouteImport } from './routes/super-admin.profile'
 import { Route as SuperAdminSettingsRouteImport } from './routes/super-admin.settings'
 import { Route as SuperAdminStudentsRouteImport } from './routes/super-admin.students'
@@ -1929,6 +1930,11 @@ const SuperAdminFacultyRoute = SuperAdminFacultyRouteImport.update({
 const SuperAdminFacultyStatusRoute = SuperAdminFacultyStatusRouteImport.update({
   id: '/faculty-status',
   path: '/faculty-status',
+  getParentRoute: () => SuperAdminRoute,
+} as any)
+const SuperAdminLmsRoute = SuperAdminLmsRouteImport.update({
+  id: '/lms',
+  path: '/lms',
   getParentRoute: () => SuperAdminRoute,
 } as any)
 const SuperAdminProfileRoute = SuperAdminProfileRouteImport.update({
@@ -4475,6 +4481,7 @@ export interface FileRoutesByFullPath {
   '/super-admin/emergency-alerts': typeof SuperAdminEmergencyAlertsRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
   '/super-admin/faculty-status': typeof SuperAdminFacultyStatusRoute
+  '/super-admin/lms': typeof SuperAdminLmsRoute
   '/super-admin/profile': typeof SuperAdminProfileRoute
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
@@ -5100,6 +5107,7 @@ export interface FileRoutesByTo {
   '/super-admin/emergency-alerts': typeof SuperAdminEmergencyAlertsRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
   '/super-admin/faculty-status': typeof SuperAdminFacultyStatusRoute
+  '/super-admin/lms': typeof SuperAdminLmsRoute
   '/super-admin/profile': typeof SuperAdminProfileRoute
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
@@ -5755,6 +5763,7 @@ export interface FileRoutesById {
   '/super-admin/emergency-alerts': typeof SuperAdminEmergencyAlertsRoute
   '/super-admin/faculty': typeof SuperAdminFacultyRoute
   '/super-admin/faculty-status': typeof SuperAdminFacultyStatusRoute
+  '/super-admin/lms': typeof SuperAdminLmsRoute
   '/super-admin/profile': typeof SuperAdminProfileRoute
   '/super-admin/settings': typeof SuperAdminSettingsRoute
   '/super-admin/students': typeof SuperAdminStudentsRoute
@@ -6411,6 +6420,7 @@ export interface FileRouteTypes {
     | '/super-admin/emergency-alerts'
     | '/super-admin/faculty'
     | '/super-admin/faculty-status'
+    | '/super-admin/lms'
     | '/super-admin/profile'
     | '/super-admin/settings'
     | '/super-admin/students'
@@ -7036,6 +7046,7 @@ export interface FileRouteTypes {
     | '/super-admin/emergency-alerts'
     | '/super-admin/faculty'
     | '/super-admin/faculty-status'
+    | '/super-admin/lms'
     | '/super-admin/profile'
     | '/super-admin/settings'
     | '/super-admin/students'
@@ -7690,6 +7701,7 @@ export interface FileRouteTypes {
     | '/super-admin/emergency-alerts'
     | '/super-admin/faculty'
     | '/super-admin/faculty-status'
+    | '/super-admin/lms'
     | '/super-admin/profile'
     | '/super-admin/settings'
     | '/super-admin/students'
@@ -9936,6 +9948,13 @@ declare module '@tanstack/react-router' {
       path: '/faculty-status'
       fullPath: '/super-admin/faculty-status'
       preLoaderRoute: typeof SuperAdminFacultyStatusRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
+    '/super-admin/lms': {
+      id: '/super-admin/lms'
+      path: '/lms'
+      fullPath: '/super-admin/lms'
+      preLoaderRoute: typeof SuperAdminLmsRouteImport
       parentRoute: typeof SuperAdminRoute
     }
     '/super-admin/profile': {
@@ -14296,6 +14315,7 @@ interface SuperAdminRouteChildren {
   SuperAdminEmergencyAlertsRoute: typeof SuperAdminEmergencyAlertsRoute
   SuperAdminFacultyRoute: typeof SuperAdminFacultyRoute
   SuperAdminFacultyStatusRoute: typeof SuperAdminFacultyStatusRoute
+  SuperAdminLmsRoute: typeof SuperAdminLmsRoute
   SuperAdminProfileRoute: typeof SuperAdminProfileRoute
   SuperAdminSettingsRoute: typeof SuperAdminSettingsRoute
   SuperAdminStudentsRoute: typeof SuperAdminStudentsRoute
@@ -14314,6 +14334,7 @@ const SuperAdminRouteChildren: SuperAdminRouteChildren = {
   SuperAdminEmergencyAlertsRoute: SuperAdminEmergencyAlertsRoute,
   SuperAdminFacultyRoute: SuperAdminFacultyRoute,
   SuperAdminFacultyStatusRoute: SuperAdminFacultyStatusRoute,
+  SuperAdminLmsRoute: SuperAdminLmsRoute,
   SuperAdminProfileRoute: SuperAdminProfileRoute,
   SuperAdminSettingsRoute: SuperAdminSettingsRoute,
   SuperAdminStudentsRoute: SuperAdminStudentsRoute,
