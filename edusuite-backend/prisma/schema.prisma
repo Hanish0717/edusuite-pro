@@ -62,6 +62,7 @@ model Faculty {
   bankDetails         BankDetails[]
   bankChangeRequests  BankChangeRequest[]
   reimbursements      Reimbursement[]
+  subjectAllocations  SubjectAllocation[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -90,6 +91,7 @@ model Course {
   courseRegistrations CourseRegistration[]
   nptelRecords        NptelRecord[]
   timetables          MasterTimetable[]
+  subjectAllocations  SubjectAllocation[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -366,4 +368,24 @@ model Reimbursement {
   @@index([status])
 }
 
+model SubjectAllocation {
+  id           String   @id @default(uuid())
+  facultyId    String
+  faculty      Faculty  @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  department   String
+  semester     String
+  section      String
+  academicYear String
+  weeklyHours  Int      @default(3)
+  status       String   @default("Active")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
+  @@unique([courseId, semester, section, academicYear])
+  @@index([department])
+  @@index([facultyId])
+  @@index([courseId])
+  @@index([academicYear])
+}

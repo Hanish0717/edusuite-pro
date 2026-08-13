@@ -44,6 +44,7 @@ import employeeRoutes from "./modules/employees/employees.routes";
 import superAdminRoutes from "./modules/super-admin/super-admin.routes";
 import academicsRoutes from "./modules/academics/academics.routes";
 import payrollRoutes from "./modules/payroll/payroll.routes";
+import deanRoutes from "./modules/dean/dean.routes";
 
 // Register routes
 app.use("/api/auth", authRoutes);
@@ -60,6 +61,7 @@ app.use("/api/super-admin", superAdminRoutes);
 app.use("/api/academics", academicsRoutes);
 app.use("/api/academic", academicsRoutes);
 app.use("/api/payroll", payrollRoutes);
+app.use("/api/dean", deanRoutes);
 
 // Boot server
 app.listen(PORT, () => {
