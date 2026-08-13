@@ -122,7 +122,7 @@ export function CourseRegistration({
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">Offered Courses Catalog</h3>
             </div>
             <span className="px-3 py-1 text-xs font-semibold rounded-full bg-[#0b193c]/10 text-[#0b193c] dark:text-blue-400 border border-[#0b193c]/20">
-              CSE - Sem {selectedSemester}
+              {profile.department || "CSE"} - Sem {selectedSemester}
             </span>
           </div>
 

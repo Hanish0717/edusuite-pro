@@ -511,9 +511,17 @@ router.post("/courses/approve", authenticateToken, async (req: AuthenticatedRequ
   const { department, semester, deadline } = req.body;
 
   try {
+    const deptStr = department as string;
+    const deptVariations = [
+      deptStr,
+      deptStr === "AI&ML" ? "AIML" : deptStr === "AIML" ? "AI&ML" : null,
+      deptStr === "AI&DS" ? "AIDS" : deptStr === "AIDS" ? "AI&DS" : null,
+      deptStr === "MECHANICAL" ? "MECH" : deptStr === "MECH" ? "MECHANICAL" : null,
+    ].filter(Boolean) as string[];
+
     await prisma.course.updateMany({
       where: {
-        department: department as string,
+        department: { in: deptVariations },
         semester: Number(semester),
         isOffered: true,
         status: "Pending"
@@ -526,7 +534,7 @@ router.post("/courses/approve", authenticateToken, async (req: AuthenticatedRequ
     // Find all students in this department and semester
     const students = await prisma.student.findMany({
       where: {
-        department: department as string,
+        department: { in: deptVariations },
         semester: Number(semester)
       }
     });
@@ -554,9 +562,17 @@ router.post("/courses/decline", authenticateToken, async (req: AuthenticatedRequ
   const { department, semester } = req.body;
 
   try {
+    const deptStr = department as string;
+    const deptVariations = [
+      deptStr,
+      deptStr === "AI&ML" ? "AIML" : deptStr === "AIML" ? "AI&ML" : null,
+      deptStr === "AI&DS" ? "AIDS" : deptStr === "AIDS" ? "AI&DS" : null,
+      deptStr === "MECHANICAL" ? "MECH" : deptStr === "MECH" ? "MECHANICAL" : null,
+    ].filter(Boolean) as string[];
+
     await prisma.course.updateMany({
       where: {
-        department: department as string,
+        department: { in: deptVariations },
         semester: Number(semester),
         isOffered: true,
         status: "Pending"

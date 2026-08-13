@@ -20,11 +20,20 @@ router.get("/", authenticateToken, async (req: AuthenticatedRequest, res: Respon
       semester = Number(req.query.semester);
     }
 
-    // Fetch all courses offered in this semester for student department
+    // Handle variations in department names (e.g. AI&ML vs AIML)
+    const userDept = user.department || "CSE";
+    const deptVariations = [
+      userDept,
+      userDept === "AI&ML" ? "AIML" : userDept === "AIML" ? "AI&ML" : null,
+      userDept === "AI&DS" ? "AIDS" : userDept === "AIDS" ? "AI&DS" : null,
+      userDept === "MECHANICAL" ? "MECH" : userDept === "MECH" ? "MECHANICAL" : null,
+    ].filter(Boolean) as string[];
+
+    // Fetch all courses offered in this semester for student department variations
     const courses = await prisma.course.findMany({
       where: {
         semester,
-        department: user.department,
+        department: { in: deptVariations },
         isOffered: true,
         status: "Approved"
       },
