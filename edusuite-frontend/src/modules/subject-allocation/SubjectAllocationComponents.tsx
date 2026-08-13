@@ -513,23 +513,23 @@ export function SubjectAllocationModuleView() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const semesters = useMemo(() => getSemestersByDept(selectedDepartment), [selectedDepartment]);
+  const semesters = useMemo(() => getSemestersByDept(subjects), [subjects]);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [allocResult, facResult, subResult] = await Promise.all([
+      const [allocResult, facResult, subResult, wlResult] = await Promise.all([
         getSubjectAllocations({ department: selectedDepartment }),
         getFacultyByDept(selectedDepartment),
         getSubjectsByDept(selectedDepartment),
+        getFacultyWorkload(selectedDepartment),
       ]);
       setAllocations(allocResult);
       setFaculty(facResult);
       setSubjects(subResult);
-      const wl = await getFacultyWorkload(selectedDepartment, allocResult);
-      setWorkloads(wl);
+      setWorkloads(wlResult);
     } catch {
-      toast.error("Failed to load allocation data.");
+      toast.error("Failed to load allocation data from server.");
     } finally {
       setLoading(false);
     }
@@ -559,19 +559,24 @@ export function SubjectAllocationModuleView() {
   const handleAssign = async (payload: Parameters<typeof assignFacultyToSubject>[0]) => {
     setAssigning(true);
     try {
-      const result = await assignFacultyToSubject(payload);
+      const result = await assignFacultyToSubject({
+        ...payload,
+        department: selectedDepartment,
+      });
       if (result.success && result.allocation) {
-        const updated = [...allocations, result.allocation];
-        setAllocations(updated);
-        const wl = await getFacultyWorkload(selectedDepartment, updated);
-        setWorkloads(wl);
         toast.success(`Successfully assigned ${result.allocation.facultyName} to ${result.allocation.subjectCode}.`);
         setShowAssignDialog(false);
+        setSearch("");
+        setSemesterFilter("all");
+        setSectionFilter("all");
+        setTypeFilter("all");
+        setStatusFilter("all");
+        await loadData();
       } else {
         toast.error(result.error ?? "Assignment failed. Please check validation rules.");
       }
     } catch {
-      toast.error("An unexpected error occurred.");
+      toast.error("An unexpected error occurred during assignment.");
     } finally {
       setAssigning(false);
     }
@@ -581,18 +586,25 @@ export function SubjectAllocationModuleView() {
     const alloc = allocations.find((a) => a.id === id);
     if (!alloc) return;
     if (!confirm(`Remove allocation: ${alloc.facultyName} → ${alloc.subjectCode}?`)) return;
-    await deleteAllocation(id);
-    const updated = allocations.filter((a) => a.id !== id);
-    setAllocations(updated);
-    const wl = await getFacultyWorkload(selectedDepartment, updated);
-    setWorkloads(wl);
-    toast.success("Allocation removed successfully.");
+    const ok = await deleteAllocation(id);
+    if (ok) {
+      toast.success("Allocation removed successfully.");
+      await loadData();
+    } else {
+      toast.error("Failed to delete allocation from server.");
+    }
   };
 
   const handleStatusChange = async (id: string, status: SubjectAllocation["status"]) => {
-    await updateAllocationStatus(id, status);
-    setAllocations((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
-    toast.success(`Status updated to "${status}".`);
+    const ok = await updateAllocationStatus(id, status);
+    if (ok) {
+      setAllocations((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
+      toast.success(`Status updated to "${status}".`);
+      const wl = await getFacultyWorkload(selectedDepartment);
+      setWorkloads(wl);
+    } else {
+      toast.error("Failed to update status on server.");
+    }
   };
 
   if (loading) return <SkeletonLoader />;

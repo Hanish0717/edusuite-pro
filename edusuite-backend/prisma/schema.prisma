@@ -53,6 +53,7 @@ model Faculty {
   password            String
   role                String               @default("faculty") // "hod" or "faculty"
   department          String?
+  subjectAllocations  SubjectAllocation[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -79,6 +80,7 @@ model Course {
   semester            Int
   courseRegistrations CourseRegistration[]
   nptelRecords        NptelRecord[]
+  subjectAllocations  SubjectAllocation[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -132,4 +134,26 @@ model Notification {
   priority  String   @default("Normal")
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model SubjectAllocation {
+  id           String   @id @default(uuid())
+  facultyId    String
+  faculty      Faculty  @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  department   String
+  semester     String
+  section      String
+  academicYear String
+  weeklyHours  Int      @default(3)
+  status       String   @default("Active")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([courseId, semester, section, academicYear])
+  @@index([department])
+  @@index([facultyId])
+  @@index([courseId])
+  @@index([academicYear])
 }

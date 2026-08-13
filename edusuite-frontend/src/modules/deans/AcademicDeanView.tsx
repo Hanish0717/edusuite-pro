@@ -31,7 +31,7 @@ export function AcademicDeanView() {
         <Link to="/staff/academic-dean/course-management" className="block cursor-pointer transition-transform hover:scale-[1.02]">
           <KpiCard label="Courses Offered" value="42 Programs" icon={BookOpen} tone="purple" />
         </Link>
-        <Link to="/staff/academic-dean/subject-allocation" className="block cursor-pointer transition-transform hover:scale-[1.02]">
+        <Link to="/dean/subject-allocation" className="block cursor-pointer transition-transform hover:scale-[1.02]">
           <KpiCard label="Subjects Running" value="248 Subjects" icon={Clock} tone="info" />
         </Link>
       </div>
