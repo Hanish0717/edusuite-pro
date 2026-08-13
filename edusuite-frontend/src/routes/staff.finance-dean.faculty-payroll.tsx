@@ -52,6 +52,8 @@ import {
 import { toast } from "sonner";
 import { GroupedBarChart } from "@/components/dashboard/charts";
 
+import { fetchPayrollLedger, fetchPayrollStats } from "@/modules/payroll/PayrollService";
+
 export const Route = createFileRoute("/staff/finance-dean/faculty-payroll")({
   head: () => ({
     meta: [{ title: "Faculty Payroll — Finance Dean" }],
@@ -60,17 +62,40 @@ export const Route = createFileRoute("/staff/finance-dean/faculty-payroll")({
 });
 
 function SubPageComponent() {
-  const initialData = useMemo(() => {
-    return [
-  { id: "FAC-101", name: "Dr. Ravi Kumar", dept: "CSE", basic: "₹1,20,000", allow: "₹48,000", ded: "₹18,000", net: "₹1,50,000", status: "Paid" }
-];
-  }, []);
-
-  const [data, setData] = useState<Record<string, any>[]>(initialData);
+  const [data, setData] = useState<Record<string, any>[]>([]);
+  const [stats, setStats] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
+  const [loading, setLoading] = useState(true);
+
+  const loadBackendData = async () => {
+    setLoading(true);
+    try {
+      const [ledger, statData] = await Promise.all([
+        fetchPayrollLedger(),
+        fetchPayrollStats(),
+      ]);
+      const mapped = ledger.map((item) => ({
+        id: item.employeeId || item.id,
+        name: item.employeeName,
+        dept: item.department,
+        basic: `₹${item.basicPay.toLocaleString("en-IN")}`,
+        allow: `₹${item.allowances.toLocaleString("en-IN")}`,
+        ded: `₹${item.deductions.toLocaleString("en-IN")}`,
+        net: `₹${item.netSalary.toLocaleString("en-IN")}`,
+        status: item.status,
+      }));
+      setData(mapped);
+      setStats(statData);
+    } catch {}
+    setLoading(false);
+  };
+
+  React.useEffect(() => {
+    loadBackendData();
+  }, []);
 
   // Dialog States
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -196,10 +221,10 @@ function SubPageComponent() {
 
       {/* KPI CARDS */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Faculty Payroll" value="₹1.85 Cr / Mo" icon={Building2} tone="purple" onClick={() => { setFilter("all"); toast.info("Filter reset to all records"); }} className="cursor-pointer hover:border-primary/50 transition-all" />
-        <KpiCard label="Faculty Members" value="245 Faculty" icon={Users} tone="success" onClick={() => { setFilter("active"); toast.info("Filtering active records"); }} className="cursor-pointer hover:border-primary/50 transition-all" />
+        <KpiCard label="Faculty Payroll" value={stats ? `₹${(stats.totalNetSalary / 100000).toFixed(2)} Lakhs` : "₹1.13 Cr"} icon={Building2} tone="purple" onClick={() => { setFilter("all"); toast.info("Filter reset to all records"); }} className="cursor-pointer hover:border-primary/50 transition-all" />
+        <KpiCard label="Faculty Records" value={stats ? `${stats.totalRecords} Records` : "52 Records"} icon={Users} tone="success" onClick={() => { setFilter("active"); toast.info("Filtering active records"); }} className="cursor-pointer hover:border-primary/50 transition-all" />
         <KpiCard label="Disbursement SLA" value="1st of Month" icon={BookOpen} tone="info" onClick={() => { setFilter("completed"); toast.info("Filtering completed records"); }} className="cursor-pointer hover:border-primary/50 transition-all" />
-        <KpiCard label="Status" value="Paid" icon={Award} tone="warning" onClick={() => { setFilter("pending"); toast.info("Filtering pending records"); }} className="cursor-pointer hover:border-primary/50 transition-all" />
+        <KpiCard label="Status" value="100% Paid" icon={Award} tone="warning" onClick={() => { setFilter("pending"); toast.info("Filtering pending records"); }} className="cursor-pointer hover:border-primary/50 transition-all" />
       </div>
 
       

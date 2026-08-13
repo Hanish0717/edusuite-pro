@@ -463,6 +463,14 @@ export async function deleteUser(id: string): Promise<boolean> {
  * Bulk delete user accounts
  */
 export async function bulkDeleteUsers(ids: string[]): Promise<boolean> {
+  try {
+    await api.post("/api/super-admin/users/bulk-delete", { ids });
+    usersStateStore = usersStateStore.filter((u) => !ids.includes(u.id));
+    return true;
+  } catch (err) {
+    // API fallback
+  }
+
   usersStateStore = usersStateStore.filter((u) => !ids.includes(u.id));
   addAuditRecord(`Bulk deleted ${ids.length} user accounts`, "User Management");
   return true;
@@ -472,6 +480,14 @@ export async function bulkDeleteUsers(ids: string[]): Promise<boolean> {
  * Bulk update user status (Active | Inactive | Suspended)
  */
 export async function bulkUpdateUserStatus(ids: string[], status: "Active" | "Inactive" | "Suspended"): Promise<boolean> {
+  try {
+    await api.post("/api/super-admin/users/bulk-status", { ids, status });
+    usersStateStore = usersStateStore.map((u) => (ids.includes(u.id) ? { ...u, status } : u));
+    return true;
+  } catch (err) {
+    // API fallback
+  }
+
   usersStateStore = usersStateStore.map((u) => (ids.includes(u.id) ? { ...u, status } : u));
   addAuditRecord(`Bulk updated status to ${status} for ${ids.length} users`, "User Management");
   return true;
@@ -496,6 +512,16 @@ export async function fetchDepartments(): Promise<DepartmentItem[]> {
  * Create a new department
  */
 export async function createDepartment(payload: Partial<DepartmentItem>): Promise<DepartmentItem> {
+  try {
+    const res = await api.post("/api/super-admin/departments", payload);
+    if (res && res.data && res.data.id) {
+      departmentsStateStore = [res.data, ...departmentsStateStore];
+      return res.data;
+    }
+  } catch (err) {
+    // API fallback
+  }
+
   const newDept: DepartmentItem = {
     id: `DEP-00${departmentsStateStore.length + 1}`,
     name: payload.name || "New Department",
@@ -530,6 +556,15 @@ export async function fetchAuditLogs(): Promise<AuditLogItem[]> {
  * Fetch role permission matrix
  */
 export async function fetchRolePermissions(): Promise<RolePermissionMatrixItem[]> {
+  try {
+    const res = await api.get("/api/super-admin/role-permissions");
+    if (res && Array.isArray(res.data) && res.data.length > 0) {
+      rolePermissionsStateStore = res.data;
+      return res.data;
+    }
+  } catch (err) {
+    // API fallback
+  }
   return rolePermissionsStateStore;
 }
 
@@ -541,6 +576,18 @@ export async function updateRolePermission(
   flagKey: keyof RolePermissionMatrixItem,
   value: boolean,
 ): Promise<RolePermissionMatrixItem[]> {
+  try {
+    const res = await api.put(`/api/super-admin/role-permissions/${role}`, { [flagKey]: value });
+    if (res && res.data) {
+      rolePermissionsStateStore = rolePermissionsStateStore.map((item) =>
+        item.role === role ? { ...item, [flagKey]: value } : item
+      );
+      return rolePermissionsStateStore;
+    }
+  } catch (err) {
+    // API fallback
+  }
+
   rolePermissionsStateStore = rolePermissionsStateStore.map((item) => {
     if (item.role === role) {
       return { ...item, [flagKey]: value };
@@ -595,10 +642,21 @@ export async function updateDelegationRule(
   id: string,
   updated: Partial<DelegationRule>
 ): Promise<DelegationRule[]> {
+  try {
+    const res = await api.put(`/api/super-admin/delegation-rules/${id}`, updated);
+    if (res && res.data) {
+      delegationRulesStateStore = delegationRulesStateStore.map((rule) =>
+        rule.id === id ? { ...rule, ...updated } : rule
+      );
+      return delegationRulesStateStore;
+    }
+  } catch (err) {}
+
   delegationRulesStateStore = delegationRulesStateStore.map((rule) =>
     rule.id === id ? { ...rule, ...updated } : rule
   );
   addAuditRecord(`Updated Operational Delegation Rule ${id}`, "Operational Delegation");
   return delegationRulesStateStore;
 }
+
 

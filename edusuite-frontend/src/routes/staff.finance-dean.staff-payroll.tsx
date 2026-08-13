@@ -28,6 +28,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
+import React from "react";
+import { fetchPayrollLedger } from "@/modules/payroll/PayrollService";
+
 export const Route = createFileRoute("/staff/finance-dean/staff-payroll")({
   head: () => ({
     meta: [{ title: "Staff Payroll — Finance Dean" }],
@@ -40,11 +43,25 @@ function SubPageComponent() {
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+  const [rawData, setRawData] = useState<Record<string, any>[]>([]);
 
-  const rawData = useMemo(() => {
-    return [
-  { id: "STF-201", name: "Mr. M. Rajesh", role: "Senior Lab Technician", dept: "CSE", basic: "₹45,000", net: "₹52,000", status: "Paid" }
-];
+  React.useEffect(() => {
+    async function loadData() {
+      try {
+        const ledger = await fetchPayrollLedger();
+        const mapped = ledger.map((item) => ({
+          id: item.employeeId || item.id,
+          name: item.employeeName,
+          role: item.designation,
+          dept: item.department,
+          basic: `₹${item.basicPay.toLocaleString("en-IN")}`,
+          net: `₹${item.netSalary.toLocaleString("en-IN")}`,
+          status: item.status,
+        }));
+        setRawData(mapped);
+      } catch {}
+    }
+    loadData();
   }, []);
 
   const filteredData = useMemo(() => {

@@ -1035,7 +1035,7 @@ export const INITIAL_FACULTY_STATUS: LiveFacultyStatus[] = [
 
 export async function fetchLiveFacultyStatus(period: number = 2): Promise<LiveFacultyStatus[]> {
   try {
-    const res = await api.get(`/api/academics/faculty/live-status?period=${period}`);
+    const res = await api.get(`/api/faculty/live-status?period=${period}`);
     if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
   } catch {}
   return INITIAL_FACULTY_STATUS.map((f) => ({ ...f, period }));
@@ -1151,13 +1151,19 @@ export const INITIAL_CLASS_STUDENTS: ClassStudentAttendance[] = [
 
 export async function fetchClassStudents(
   classId: string = "CSE-3A",
-  subjectId: string = "CS302",
+  _subjectId: string = "CS302",
 ): Promise<ClassStudentAttendance[]> {
   try {
-    const res = await api.get(
-      `/api/academics/attendance/class-students?classId=${classId}&subjectId=${subjectId}`,
-    );
-    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+    const dept = classId.split("-")[0] || "CSE";
+    const res = await api.get(`/api/students?department=${encodeURIComponent(dept)}`);
+    if (res && res.data && Array.isArray(res.data.students) && res.data.students.length > 0) {
+      return res.data.students.slice(0, 30).map((s: any) => ({
+        id: s.id,
+        rollNo: s.rollNumber || s.rollNo || "22CSE001",
+        name: s.name,
+        status: "Present",
+      }));
+    }
   } catch {}
   return INITIAL_CLASS_STUDENTS;
 }

@@ -169,8 +169,8 @@ export async function fetchTimetableGrid(
   section: string = "Section A"
 ): Promise<TimetableGrid> {
   try {
-    const res = await api.get(`/api/academics/timetable?branch=${branch}&semester=${semester}&section=${section}`);
-    if (res && res.data && res.data.schedule) return res.data;
+    const res = await api.get(`/api/academics/timetable?branch=${encodeURIComponent(branch)}&semester=${semester}&section=${encodeURIComponent(section)}`);
+    if (res && res.data && Array.isArray(res.data.schedule)) return res.data;
   } catch {}
 
   return {
@@ -178,7 +178,7 @@ export async function fetchTimetableGrid(
     semester,
     section,
     academicYear: "2026-2027",
-    schedule: generateInitialSchedule(branch, semester, section),
+    schedule: [],
   };
 }
 
@@ -189,17 +189,10 @@ export async function autoGenerateTimetable(
 ): Promise<TimetableGrid> {
   try {
     const res = await api.post("/api/academics/timetable/generate", { branch, semester, section });
-    if (res && res.data && res.data.schedule) return res.data;
+    if (res && res.data && Array.isArray(res.data.schedule)) return res.data;
   } catch {}
 
-  // Generate randomized conflict-free schedule
-  return {
-    branch,
-    semester,
-    section,
-    academicYear: "2026-2027",
-    schedule: generateInitialSchedule(branch, semester, section),
-  };
+  return fetchTimetableGrid(branch, semester, section);
 }
 
 export async function updateTimetablePeriod(

@@ -207,6 +207,7 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     url.startsWith("/transport") ||
     url.startsWith("/staff") ||
     url.startsWith("/alumni") ||
+    url.startsWith("/super-admin") ||
     [
       "/employee-management",
       "/leave",
@@ -409,6 +410,7 @@ export const SUPER_ADMIN_NAVIGATION: NavSection[] = [
       { title: "Hostel & Resident Welfare", url: "/hostel", icon: BedDouble },
       { title: "Transport & Fleet Management", url: "/transport", icon: Bus },
       { title: "Placements & Recruiters", url: "/placements", icon: Briefcase },
+      { title: "Payroll Management", url: "/super-admin/payroll", icon: CreditCard, badge: "ERP" },
       { title: "Financial Ledger & Fees", url: "/finance", icon: Wallet },
       { title: "Inventory & Assets", url: "/inventory", icon: Package },
       { title: "Procurement & Purchases", url: "/procurement", icon: Package },

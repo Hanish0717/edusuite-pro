@@ -321,9 +321,41 @@ export const MOCK_PAYROLL_DATA: Record<string, SalarySlip[]> = {
 
 export const INITIAL_SALARY_SLIPS: SalarySlip[] = MOCK_PAYROLL_DATA["CSE"] || [];
 
-export async function fetchPayrollLedger(department?: string): Promise<SalarySlip[]> {
+export async function fetchPayrollStats(department?: string, financialYear?: string) {
   try {
-    const res = await api.get(`/api/payroll?dept=${department}`);
+    const query = new URLSearchParams();
+    if (department && department !== "All" && department !== "All Departments") query.append("department", department);
+    if (financialYear) query.append("financialYear", financialYear);
+
+    const res = await api.get(`/api/payroll/stats?${query.toString()}`);
+    if (res && res.data && res.data.totalGrossSalary !== undefined) {
+      return res.data;
+    }
+  } catch {}
+
+  return {
+    totalGrossSalary: 12424800,
+    totalNetSalary: 11354180,
+    totalDeductions: 1070620,
+    paidCount: 109,
+    processingCount: 0,
+    pendingCount: 0,
+    totalRecords: 109,
+    pendingReimbursementAmount: 40500,
+    currency: "INR",
+    financialYear: financialYear || "FY 2026-27",
+  };
+}
+
+export async function fetchPayrollLedger(department?: string, status?: string, financialYear?: string, search?: string): Promise<SalarySlip[]> {
+  try {
+    const query = new URLSearchParams();
+    if (department && department !== "All" && department !== "All Departments") query.append("department", department);
+    if (status && status !== "All Status" && status !== "All") query.append("status", status);
+    if (financialYear) query.append("financialYear", financialYear);
+    if (search) query.append("search", search);
+
+    const res = await api.get(`/api/payroll/ledger?${query.toString()}`);
     if (res && Array.isArray(res.data) && res.data.length > 0) {
       return res.data;
     }
@@ -348,7 +380,7 @@ export async function generatePayslip(slipData: Partial<SalarySlip>): Promise<Sa
   const deductions = Number(slipData.deductions) || 10000;
   const net = basic + hra + allowances - deductions;
 
-  const newSlip: SalarySlip = {
+  return {
     id: `PAY-2026-${Math.floor(100 + Math.random() * 900)}`,
     employeeName: slipData.employeeName || "Dr. Ravi Kumar",
     employeeId: slipData.employeeId || "EMP010",
@@ -416,8 +448,6 @@ export async function generatePayslip(slipData: Partial<SalarySlip>): Promise<Sa
       attendanceImpactDesc: "Invigilation duty hours logged.",
     }
   };
-
-  return newSlip;
 }
 
 export async function updateSalaryStatus(
@@ -425,7 +455,7 @@ export async function updateSalaryStatus(
   status: "Paid" | "Processing" | "Pending Approval",
 ): Promise<Partial<SalarySlip>> {
   try {
-    const res = await api.put(`/api/payroll/${id}`, { status });
+    const res = await api.put(`/api/payroll/${id}/status`, { status });
     if (res && res.data) return res.data;
   } catch {}
   return { id, status };
@@ -436,4 +466,12 @@ export async function requestBankChange(bankData: any): Promise<boolean> {
     await api.post("/api/payroll/bank-change-request", bankData);
   } catch {}
   return true;
+}
+
+export async function fetchPayrollReports() {
+  try {
+    const res = await api.get("/api/payroll/reports");
+    if (res && res.data) return res.data;
+  } catch {}
+  return null;
 }

@@ -1,22 +1,13 @@
+import React, { useMemo, useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
 import {
   Search,
-  Filter,
   Download,
   Plus,
   Wallet,
   CreditCard,
   TrendingUp,
   ShieldCheck,
-  DollarSign,
-  Clock,
-  Receipt,
-  UserCheck,
-  CheckCircle2,
-  Users,
-  Building2,
-  Calendar,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -26,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
+import { fetchPayrollStats, fetchPayrollReports } from "@/modules/payroll/PayrollService";
 
 export const Route = createFileRoute("/staff/finance-dean/payroll-reports")({
   head: () => ({
@@ -40,12 +31,28 @@ function SubPageComponent() {
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const s = await fetchPayrollStats();
+        setStats(s);
+      } catch {}
+    }
+    load();
+  }, []);
+
+  const totalPayrollStr = stats
+    ? `₹${(stats.totalNetSalary / 100000).toFixed(2)} Lakhs`
+    : "₹1.13 Cr";
 
   const rawData = useMemo(() => {
     return [
-  { title: "Annual Institutional Faculty & Staff Payroll & Tax Deduction Report", amt: "₹34.2 Cr", comp: "100% Tax Remitted", status: "Verified" }
-];
-  }, []);
+      { title: "July 2026 Institutional Faculty & Staff Payroll Report", amt: totalPayrollStr, comp: "100% Tax Remitted", status: "Verified" },
+      { title: "June 2026 Institutional Faculty & Staff Payroll Report", amt: "₹1.12 Cr", comp: "100% Tax Remitted", status: "Verified" },
+    ];
+  }, [totalPayrollStr]);
 
   const filteredData = useMemo(() => {
     return rawData.filter((item: Record<string, any>) => {
@@ -90,7 +97,7 @@ function SubPageComponent() {
 
       {/* KPI CARDS */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Annual Payroll" value="₹34.2 Cr" icon={Wallet} tone="purple" />
+        <KpiCard label="Monthly Net Payroll" value={totalPayrollStr} icon={Wallet} tone="purple" />
         <KpiCard label="TDS Remitted" value="100%" icon={CreditCard} tone="success" />
         <KpiCard label="PF Remitted" value="100%" icon={TrendingUp} tone="info" />
         <KpiCard label="Status" value="Verified" icon={ShieldCheck} tone="warning" />

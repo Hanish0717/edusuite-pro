@@ -23,10 +23,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getFinanceDeanDashboardData } from "@/lib/deansService";
+import { fetchPayrollStats } from "@/modules/payroll/PayrollService";
 
 export const Route = createFileRoute("/staff/finance-dean/expenses")({
   head: () => ({
-    meta: [{ title: "Institutional Expense Ledger — EduSuite Pro" }],
+    meta: [{ title: "Institutional Expense Ledger — Finance Dean" }],
   }),
   component: SubPageComponent,
 });
@@ -37,6 +38,21 @@ function SubPageComponent() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const s = await fetchPayrollStats();
+        setStats(s);
+      } catch {}
+    }
+    load();
+  }, []);
+
+  const facultyPayrollStr = stats
+    ? `₹${(stats.totalNetSalary / 100000).toFixed(2)} Lakhs`
+    : "₹1.13 Cr";
 
   const rawItems = useMemo(() => {
     return data.expenseLedger.map(e => ({ id: e.id, category: e.category, amount: e.amount, date: e.date, status: e.status }));
@@ -90,8 +106,8 @@ function SubPageComponent() {
 
       {/* DOMAIN SPECIFIC KPI CARDS */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="Monthly Expenses" value="₹3.30 Cr" icon={Building2} tone="info" />
-        <KpiCard label="Faculty Payroll" value="₹2.85 Cr" icon={Users} tone="success" />
+        <KpiCard label="Monthly Expenses" value="₹1.58 Cr" icon={Building2} tone="info" />
+        <KpiCard label="Faculty Payroll" value={facultyPayrollStr} icon={Users} tone="success" />
         <KpiCard label="CapEx Upgrade" value="₹45.0 Lakhs" icon={ShieldCheck} tone="purple" />
         <KpiCard label="Status" value="Paid" icon={CheckCircle2} tone="warning" />
       </div>

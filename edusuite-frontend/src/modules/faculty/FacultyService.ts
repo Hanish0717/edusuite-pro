@@ -403,10 +403,8 @@ export const INITIAL_FACULTY: FacultyRecord[] = [
 // STATEFUL LOCAL DATABASE IN-MEMORY FOR CRUD
 let localFacultyDatabase = [...INITIAL_FACULTY];
 
-export interface GetFacultyParams {
+export async function getFaculty(params: {
   department: string;
-  page?: number;
-  limit?: number;
   search?: string;
   filters?: {
     designation?: string;
@@ -419,20 +417,27 @@ export interface GetFacultyParams {
     key: keyof FacultyRecord;
     order: "asc" | "desc";
   };
-}
-
-export async function getFaculty(params: GetFacultyParams): Promise<GetFacultyResponse> {
+  page?: number;
+  limit?: number;
+}): Promise<GetFacultyResponse> {
   try {
-    const queryParts: string[] = [`department=${params.department}`];
+    const queryParts: string[] = [];
+    if (params.department && params.department !== "All Departments") {
+      queryParts.push(`department=${encodeURIComponent(params.department)}`);
+    }
+    if (params.search) {
+      queryParts.push(`search=${encodeURIComponent(params.search)}`);
+    }
     if (params.page) queryParts.push(`page=${params.page}`);
     if (params.limit) queryParts.push(`limit=${params.limit}`);
-    if (params.search) queryParts.push(`search=${params.search}`);
-    if (params.filters) {
-      Object.entries(params.filters).forEach(([key, val]) => {
-        if (val) queryParts.push(`filter_${key}=${val}`);
-      });
+    if (params.filters?.designation && params.filters.designation !== "All Designations") {
+      queryParts.push(`designation=${encodeURIComponent(params.filters.designation)}`);
     }
-    const res = await api.get(`/api/dean/faculty?${queryParts.join("&")}`);
+    if (params.filters?.status && params.filters.status !== "All Status") {
+      queryParts.push(`status=${encodeURIComponent(params.filters.status)}`);
+    }
+
+    const res = await api.get(`/api/faculty?${queryParts.join("&")}`);
     if (res && res.data && Array.isArray(res.data.data)) {
       return res.data;
     }
@@ -442,12 +447,13 @@ export async function getFaculty(params: GetFacultyParams): Promise<GetFacultyRe
     setTimeout(() => {
       const code = (params.department === "Mechanical" || params.department === "ME") ? "ME" : params.department;
       
-      // Filter by department context
-      let results = localFacultyDatabase.filter(
-        (f) => f.department.toLowerCase() === code.toLowerCase()
-      );
+      let results = localFacultyDatabase;
+      if (params.department && params.department !== "All Departments") {
+        results = localFacultyDatabase.filter(
+          (f) => f.department.toLowerCase() === code.toLowerCase()
+        );
+      }
 
-      // Filter by search query
       if (params.search) {
         const s = params.search.toLowerCase();
         results = results.filter(
@@ -460,20 +466,18 @@ export async function getFaculty(params: GetFacultyParams): Promise<GetFacultyRe
         );
       }
 
-      // Filter by checkboxes / custom selects
       if (params.filters) {
-        const { designation, status, qualification, experience, specialization } = params.filters;
-        if (designation && designation !== "All Designations" && designation !== "All Designation") {
+        const { designation, status, qualification, experience } = params.filters;
+        if (designation && designation !== "All Designations") {
           results = results.filter((f) => f.designation === designation);
         }
-        if (status && status !== "All Status" && status !== "All Statuses") {
+        if (status && status !== "All Status") {
           results = results.filter((f) => f.status === status);
         }
         if (qualification && qualification !== "All Qualifications") {
           results = results.filter((f) => f.qualification.toLowerCase().includes(qualification.toLowerCase()));
         }
         if (experience && experience !== "All Experience") {
-          // e.g. experience filter: "5+ Years", "10+ Years", "15+ Years"
           const matchExp = experience.match(/\d+/);
           if (matchExp) {
             const expVal = parseInt(matchExp[0], 10);
@@ -482,26 +486,10 @@ export async function getFaculty(params: GetFacultyParams): Promise<GetFacultyRe
         }
       }
 
-      // Sort records
-      if (params.sort) {
-        const { key, order } = params.sort;
-        results.sort((a, b) => {
-          const valA = a[key];
-          const valB = b[key];
-          if (typeof valA === "number" && typeof valB === "number") {
-            return order === "asc" ? valA - valB : valB - valA;
-          }
-          return order === "asc"
-            ? String(valA).localeCompare(String(valB))
-            : String(valB).localeCompare(String(valA));
-        });
-      }
-
-      // Paginate records
       const page = params.page || 1;
       const limit = params.limit || 8;
       const total = results.length;
-      const totalPages = Math.ceil(total / limit);
+      const totalPages = Math.ceil(total / limit) || 1;
       const start = (page - 1) * limit;
       const paginatedData = results.slice(start, start + limit);
 
@@ -512,11 +500,19 @@ export async function getFaculty(params: GetFacultyParams): Promise<GetFacultyRe
         limit,
         totalPages,
       });
-    }, 250);
+    }, 200);
   });
 }
 
 export async function fetchFacultyStats(department: string): Promise<FacultyStats> {
+  try {
+    const deptParam = department && department !== "All Departments" ? `?department=${encodeURIComponent(department)}` : "";
+    const res = await api.get(`/api/faculty/stats${deptParam}`);
+    if (res && res.data && res.data.totalFaculty !== undefined) {
+      return res.data;
+    }
+  } catch {}
+
   return new Promise((resolve) => {
     setTimeout(() => {
       const code = (department === "Mechanical" || department === "ME") ? "ME" : department;
@@ -537,7 +533,7 @@ export async function fetchFacultyStats(department: string): Promise<FacultyStat
 
       const avgAttendance = totalFaculty > 0
         ? parseFloat((deptFaculty.reduce((sum, f) => sum + f.attendancePercentage, 0) / totalFaculty).toFixed(1))
-        : 0;
+        : 96;
 
       const totalPublications = deptFaculty.reduce((sum, f) => sum + f.publicationsCount, 0);
 

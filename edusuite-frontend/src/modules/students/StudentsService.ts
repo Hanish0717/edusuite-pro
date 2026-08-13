@@ -328,24 +328,30 @@ export interface GetStudentsResponse {
 export async function getStudents(params: GetStudentsParams): Promise<GetStudentsResponse> {
   try {
     const qps = new URLSearchParams();
-    qps.append("department", params.department);
-    if (params.page) qps.append("page", String(params.page));
-    if (params.limit) qps.append("limit", String(params.limit));
+    if (params.department && params.department !== "All" && params.department !== "All Departments") {
+      qps.append("department", params.department);
+    }
     if (params.search) qps.append("search", params.search);
     if (params.filters) {
-      if (params.filters.semester) qps.append("semester", params.filters.semester);
-      if (params.filters.section) qps.append("section", params.filters.section);
-      if (params.filters.status) qps.append("status", params.filters.status);
-      if (params.filters.feeStatus) qps.append("feeStatus", params.filters.feeStatus);
-      if (params.filters.academicYear) qps.append("academicYear", params.filters.academicYear);
+      if (params.filters.feeStatus && params.filters.feeStatus !== "All Fee Status") {
+        qps.append("feeStatus", params.filters.feeStatus);
+      }
+      if (params.filters.academicYear && params.filters.academicYear !== "All Years") {
+        qps.append("year", params.filters.academicYear);
+      }
+      if (params.filters.semester && params.filters.semester !== "All Semesters") {
+        qps.append("semester", params.filters.semester);
+      }
     }
+    if (params.page) qps.append("page", String(params.page));
+    if (params.limit) qps.append("limit", String(params.limit));
 
     const res = await api.get(`/api/students?${qps.toString()}`);
-    if (res.status === 200 && res.data) {
+    if (res && res.data && Array.isArray(res.data.students)) {
       return res.data;
     }
   } catch (err) {
-    console.error("Failed to query student database:", err);
+    console.error("Failed to fetch students from Express API:", err);
   }
 
   return new Promise((resolve) => {

@@ -258,6 +258,21 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
     loadData();
   }, [selectedDepartment, currentPage, search, selectedDesig, selectedQual, selectedExp, selectedStatus, sortKey, sortOrder]);
 
+  // Fetch Live Faculty Status Matrix for selectedPeriod
+  useEffect(() => {
+    const loadLiveStatus = async () => {
+      try {
+        const statuses = await fetchLiveFacultyStatus(selectedPeriod);
+        if (statuses && statuses.length > 0) {
+          setFacultyStatuses(statuses);
+        }
+      } catch {}
+    };
+    if (activeSubpart === "faculty-status") {
+      loadLiveStatus();
+    }
+  }, [selectedPeriod, activeSubpart]);
+
   // Handlers
   const handleSort = (key: keyof FacultyRecord) => {
     setSortOrder((prev) => (sortKey === key ? (prev === "asc" ? "desc" : "asc") : "asc"));

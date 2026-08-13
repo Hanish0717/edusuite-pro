@@ -57,13 +57,14 @@ import {
 const DEPARTMENTS = [
   "All Departments",
   "CSE",
+  "ECE",
+  "EEE",
+  "ME",
+  "CIVIL",
+  "IT",
   "AI&ML",
   "AI&DS",
-  "IT",
-  "EEE",
-  "ECE",
-  "Civil",
-  "ME",
+  "MBA",
 ];
 
 const YEARS = [
@@ -111,7 +112,7 @@ export function StudentsModuleView() {
     setLoading(true);
     try {
       const response = await getStudents({
-        department: selectedDepartment,
+        department: selectedDept,
         search: search,
         filters: {
           feeStatus: selectedFee,
@@ -128,7 +129,7 @@ export function StudentsModuleView() {
 
   useEffect(() => {
     loadData();
-  }, [selectedDepartment, search, selectedYear, selectedFee]);
+  }, [selectedDept, search, selectedYear, selectedFee]);
 
   useEffect(() => {
     setSelectedDept(selectedDepartment);

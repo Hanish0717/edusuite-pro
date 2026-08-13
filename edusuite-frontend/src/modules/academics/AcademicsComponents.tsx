@@ -69,6 +69,7 @@ import {
 import { Label } from "@/components/ui/label";
 
 import {
+  fetchAcademicCourses,
   fetchAcademicDepartments,
   fetchCurriculumSchemes,
   fetchLiveFacultyStatus,
@@ -109,7 +110,10 @@ const DEPARTMENTS_LIST = [
   "ECE",
   "EEE",
   "ME",
-  "Civil",
+  "CIVIL",
+  "IT",
+  "AI&ML",
+  "AI&DS",
   "MBA",
 ];
 
@@ -267,7 +271,13 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
       c.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.instructor.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDept = selectedDeptFilter === "All Departments" || c.department === selectedDeptFilter;
+    const deptNorm = (c.department || "").trim().toUpperCase();
+    const filterNorm = (selectedDeptFilter || "").trim().toUpperCase();
+    const matchesDept =
+      selectedDeptFilter === "All Departments" ||
+      deptNorm === filterNorm ||
+      (filterNorm === "ME" && (deptNorm === "MECHANICAL" || deptNorm === "ME")) ||
+      (filterNorm === "CIVIL" && (deptNorm === "CIVIL" || deptNorm === "CE"));
     const matchesSem = selectedSemFilter === "All Semesters" || c.semester === selectedSemFilter;
     return matchesSearch && matchesDept && matchesSem;
   });
@@ -507,7 +517,7 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
             activeSubpart === "courses" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          <BookOpen className="size-3.5" /> Courses ({courses.length})
+          <BookOpen className="size-3.5" /> Courses ({filteredCourses.length})
         </button>
 
         <button
@@ -547,6 +557,42 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
       {/* EXISTING SUBPART: COURSES CATALOG VIEW */}
       {activeSubpart === "courses" && (
         <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+          {/* Department Filter & Search Toolbar */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3 pb-3 border-b border-border/60">
+            <div className="flex items-center gap-2.5 w-full md:w-auto flex-1 max-w-md">
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search courses by code, title, or instructor..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 h-9 text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 w-full md:w-auto shrink-0">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground shrink-0">
+                <Filter className="size-3.5 text-primary" /> Department:
+              </div>
+              <Select
+                value={selectedDeptFilter}
+                onValueChange={(val) => setSelectedDeptFilter(val)}
+              >
+                <SelectTrigger className="h-9 text-xs w-[190px]">
+                  <SelectValue placeholder="All Departments" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DEPARTMENTS_LIST.map((dept) => (
+                    <SelectItem key={dept} value={dept}>
+                      {dept}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
@@ -686,6 +732,138 @@ export function AcademicsModuleView({ initialTab }: { initialTab?: AcademicsSubp
               </Button>
               <Button type="submit" className="bg-brand-gradient text-white">
                 Add Department
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add New Course Dialog */}
+      <Dialog open={isAddCourseOpen} onOpenChange={setIsAddCourseOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Academic Course</DialogTitle>
+            <DialogDescription>
+              Add a new course catalog subject connected to InsForge Cloud PostgreSQL.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleAddCourseSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="course-code">Course Code</Label>
+                <Input
+                  id="course-code"
+                  placeholder="e.g. CS405"
+                  value={courseForm.code || ""}
+                  onChange={(e) => setCourseForm({ ...courseForm, code: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="course-credits">Credits</Label>
+                <Input
+                  id="course-credits"
+                  type="number"
+                  placeholder="3"
+                  value={courseForm.credits ?? 3}
+                  onChange={(e) => setCourseForm({ ...courseForm, credits: parseFloat(e.target.value) || 0 })}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="course-name">Course Title</Label>
+              <Input
+                id="course-name"
+                placeholder="e.g. Cloud Computing & Distributed Systems"
+                value={courseForm.name || ""}
+                onChange={(e) => setCourseForm({ ...courseForm, name: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Department</Label>
+                <Select
+                  value={courseForm.department || "CSE"}
+                  onValueChange={(val) => setCourseForm({ ...courseForm, department: val })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Dept" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="CSE">CSE</SelectItem>
+                    <SelectItem value="ECE">ECE</SelectItem>
+                    <SelectItem value="EEE">EEE</SelectItem>
+                    <SelectItem value="ME">ME</SelectItem>
+                    <SelectItem value="CIVIL">CIVIL</SelectItem>
+                    <SelectItem value="IT">IT</SelectItem>
+                    <SelectItem value="AI&ML">AI&ML</SelectItem>
+                    <SelectItem value="AI&DS">AI&DS</SelectItem>
+                    <SelectItem value="MBA">MBA</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Semester</Label>
+                <Select
+                  value={courseForm.semester || "Semester 5"}
+                  onValueChange={(val) => setCourseForm({ ...courseForm, semester: val })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Semester" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                      <SelectItem key={s} value={`Semester ${s}`}>
+                        Semester {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Course Type</Label>
+                <Select
+                  value={courseForm.type || "Core Theory"}
+                  onValueChange={(val: any) => setCourseForm({ ...courseForm, type: val })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Core Theory">Core Theory</SelectItem>
+                    <SelectItem value="Lab Practical">Lab Practical</SelectItem>
+                    <SelectItem value="Professional Elective">Professional Elective</SelectItem>
+                    <SelectItem value="Project Work">Project Work</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="course-instructor">Instructor / Faculty</Label>
+                <Input
+                  id="course-instructor"
+                  placeholder="e.g. Dr. Neha Rathore"
+                  value={courseForm.instructor || ""}
+                  onChange={(e) => setCourseForm({ ...courseForm, instructor: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsAddCourseOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-brand-gradient text-white">
+                Add Course
               </Button>
             </DialogFooter>
           </form>
