@@ -233,9 +233,9 @@ export async function fetchLMSSyllabus(): Promise<SyllabusSubject[]> {
 export async function fetchLMSResources(): Promise<ResourceItem[]> {
   try {
     const res = await api.get("/api/lms/resources");
-    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
+    if (res && Array.isArray(res.data)) return res.data;
   } catch {}
-  return INITIAL_RESOURCES;
+  return [];
 }
 
 export async function fetchLMSVideos(): Promise<VideoLecture[]> {
@@ -346,4 +346,12 @@ export async function createLMSClass(data: Partial<ClassItem>): Promise<ClassIte
     link: data.link || "https://meet.google.com/abc-defg-hij",
     status: "Upcoming",
   };
+}
+
+export async function deleteLMSResource(id: string): Promise<boolean> {
+  try {
+    const res = await api.delete(`/api/lms/resources/${id}`);
+    if (res && res.status === 200) return true;
+  } catch {}
+  return false;
 }

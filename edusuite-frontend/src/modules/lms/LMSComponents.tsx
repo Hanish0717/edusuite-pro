@@ -50,6 +50,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 
+import api from "@/lib/api";
+
 import {
   fetchLMSSyllabus,
   fetchLMSResources,
@@ -62,6 +64,7 @@ import {
   createLMSVideo,
   createLMSAssignment,
   createLMSClass,
+  deleteLMSResource,
   INITIAL_SYLLABUS,
   INITIAL_RESOURCES,
   INITIAL_VIDEOS,
@@ -82,17 +85,23 @@ import type {
 } from "./types";
 
 const SUBPARTS = [
-  { id: "curriculum", label: "1. Curriculum & Syllabus", icon: BookOpen },
-  { id: "notes", label: "2. Study Notes & PDFs", icon: FileText },
-  { id: "videos", label: "3. Video Lectures", icon: Video },
-  { id: "assignments", label: "4. Assignments Hub", icon: FileCheck },
-  { id: "quizzes", label: "5. Quizzes & Tests", icon: HelpCircle },
-  { id: "forum", label: "6. Discussion Forum", icon: MessageSquare },
-  { id: "classes", label: "7. Virtual Classes", icon: VideoIcon },
+  { id: "curriculum", label: "Curriculum & Syllabus", icon: BookOpen },
+  { id: "notes", label: "Study Notes & PDFs", icon: FileText },
+  { id: "videos", label: "Video Lectures", icon: Video },
+  { id: "assignments", label: "Assignments Hub", icon: FileCheck },
+  { id: "quizzes", label: "Quizzes & Tests", icon: HelpCircle },
+  { id: "forum", label: "Discussion Forum", icon: MessageSquare },
+  { id: "classes", label: "Virtual Classes", icon: VideoIcon },
 ] as const;
 
-export function LMSModuleView() {
-  const [activeTab, setActiveTab] = useState<(typeof SUBPARTS)[number]["id"]>("curriculum");
+export function LMSModuleView({ isFaculty = false }: { isFaculty?: boolean } = {}) {
+  const filteredSubparts = SUBPARTS.filter(
+    (sp) => !isFaculty || (sp.id !== "curriculum" && sp.id !== "classes")
+  );
+
+  const [activeTab, setActiveTab] = useState<string>(
+    isFaculty ? "notes" : "curriculum"
+  );
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -112,11 +121,23 @@ export function LMSModuleView() {
   const [isAddClassOpen, setIsAddClassOpen] = useState(false);
 
   // Form States
-  const [resForm, setResForm] = useState<Partial<ResourceItem>>({
+  const [resForm, setResForm] = useState<{ title: string; subjectId: string; subject: string }>({
     title: "",
-    subject: "CS401: Advanced AI",
-    department: "CSE",
+    subjectId: "",
+    subject: ""
   });
+  const [resFile, setResFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  // Profile & Assigned Courses lists
+  const [profile, setProfile] = useState<any>(null);
+  const [coursesList, setCoursesList] = useState<any[]>([]);
+
+  // Delete Resource confirmation states
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [resourceToDelete, setResourceToDelete] = useState<ResourceItem | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   const [vidForm, setVidForm] = useState<Partial<VideoLecture>>({
     title: "",
     subject: "CS401: Advanced AI",
@@ -165,17 +186,155 @@ export function LMSModuleView() {
 
   useEffect(() => {
     loadAllLMS();
+
+    // Fetch profile and course offerings assigned to logged-in faculty/admin
+    async function loadProfileAndCourses() {
+      try {
+        const profileRes = await api.get("/api/auth/profile");
+        if (profileRes.data) {
+          setProfile(profileRes.data);
+          
+          const coursesRes = await api.get("/api/exams/courses");
+          if (coursesRes.data && Array.isArray(coursesRes.data)) {
+            const facultyName = profileRes.data.name;
+            const facultyId = profileRes.data.id;
+            const role = profileRes.data.role;
+
+            const isAdmin = ["admin", "super_admin"].includes(role);
+            if (isAdmin) {
+              setCoursesList(coursesRes.data);
+            } else {
+              // Filter courses matching the logged-in faculty
+              const filtered = coursesRes.data.filter((c: any) => {
+                try {
+                  if (c.faculty && c.faculty.startsWith("[")) {
+                    const sections = JSON.parse(c.faculty);
+                    if (Array.isArray(sections)) {
+                      return sections.some((s: any) => s.mentor_id === facultyId || s.mentor_name === facultyName);
+                    }
+                  }
+                } catch (e) {}
+                return c.faculty && c.faculty.includes(facultyName);
+              });
+              setCoursesList(filtered);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load profile or courses in LMS", err);
+      }
+    }
+    loadProfileAndCourses();
   }, []);
+
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      toast.error("Only PDF files are accepted.");
+      return;
+    }
+
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      toast.error("File size exceeds 10MB limit.");
+      return;
+    }
+
+    setResFile(file);
+  };
+
+  const handleRemoveFile = () => {
+    setResFile(null);
+    const input = document.getElementById("pdf-file-upload-input") as HTMLInputElement;
+    if (input) input.value = "";
+  };
 
   // Handlers for Add
   const handleAddResourceSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!resForm.title) return toast.error("Enter document title");
-    const created = await createLMSResource(resForm);
-    setResources((prev) => [created, ...prev]);
-    setIsAddResourceOpen(false);
-    toast.success(`Study Note "${created.title}" uploaded!`);
+    if (!resFile) return toast.error("Please choose a PDF file to upload");
+
+    setUploading(true);
+    try {
+      const base64Data = await fileToBase64(resFile);
+      const response = await api.post("/api/lms/resources", {
+        title: resForm.title,
+        subjectId: resForm.subjectId || null,
+        resourceType: "STUDY_NOTE",
+        fileName: resFile.name,
+        fileSize: `${(resFile.size / (1024 * 1024)).toFixed(2)} MB`,
+        fileData: base64Data
+      });
+
+      if (response.status === 201) {
+        toast.success("Study note uploaded successfully.");
+        setIsAddResourceOpen(false);
+        setResForm({ title: "", subjectId: "", subject: "" });
+        setResFile(null);
+        // Refresh catalog list and count
+        const freshRes = await fetchLMSResources();
+        setResources(freshRes);
+      } else {
+        toast.error(response.data?.error || "Failed to upload study note.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload study note.");
+    } finally {
+      setUploading(false);
+    }
   };
+
+  // Handlers for Delete
+  const handleOpenDeleteConfirm = (resource: ResourceItem) => {
+    setResourceToDelete(resource);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!resourceToDelete) return;
+    setDeleting(true);
+    try {
+      const success = await deleteLMSResource(resourceToDelete.id);
+      if (success) {
+        toast.success("Study note deleted successfully.");
+        setIsDeleteConfirmOpen(false);
+        setResourceToDelete(null);
+        // Refresh catalog list
+        const freshRes = await fetchLMSResources();
+        setResources(freshRes);
+      } else {
+        toast.error("Failed to delete study note. You may not be authorized.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete study note.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleDownload = (resource: ResourceItem) => {
+    if (resource.url) {
+      const downloadUrl = resource.url.startsWith("http")
+        ? resource.url
+        : `http://localhost:5000${resource.url}`;
+      window.open(downloadUrl, "_blank");
+    } else {
+      toast.error("Download URL not available");
+    }
+  };
+
 
   const handleAddVideoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -309,7 +468,7 @@ export function LMSModuleView() {
       </div>
 
       {/* KPI Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <div className={`grid grid-cols-2 ${isFaculty ? "lg:grid-cols-3" : "lg:grid-cols-4"} gap-3.5`}>
         <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
           <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
             <span>Study Notes & PDFs</span>
@@ -337,26 +496,28 @@ export function LMSModuleView() {
           <p className="text-[0.68rem] text-muted-foreground">Worksheets & Grading</p>
         </div>
 
-        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
-          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
-            <span>Live Virtual Classes</span>
-            <VideoIcon className="size-4 text-purple-500" />
+        {!isFaculty && (
+          <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+            <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+              <span>Live Virtual Classes</span>
+              <VideoIcon className="size-4 text-purple-500" />
+            </div>
+            <p className="text-2xl font-bold font-mono text-purple-600">{classes.length} Classes</p>
+            <p className="text-[0.68rem] text-purple-600 font-medium">Google Meet & Zoom Streams</p>
           </div>
-          <p className="text-2xl font-bold font-mono text-purple-600">{classes.length} Classes</p>
-          <p className="text-[0.68rem] text-purple-600 font-medium">Google Meet & Zoom Streams</p>
-        </div>
+        )}
       </div>
 
       {/* 7 LMS SUBPARTS TAB SWITCHER */}
       <div className="flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
-        <div className="flex items-center gap-1.5 w-full">
-          {SUBPARTS.map((sp) => {
+        <div className="flex items-center gap-4 w-full">
+          {filteredSubparts.map((sp) => {
             const Icon = sp.icon;
             return (
               <button
                 key={sp.id}
                 onClick={() => setActiveTab(sp.id)}
-                className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 ${
+                className={`flex-1 justify-center px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 ${
                   activeTab === sp.id
                     ? "bg-card text-primary shadow-sm border border-border/80"
                     : "text-muted-foreground hover:text-foreground"
@@ -429,9 +590,25 @@ export function LMSModuleView() {
                     <td className="py-3 px-3 font-medium text-foreground">{r.uploadedBy}</td>
                     <td className="py-3 px-3 font-mono text-muted-foreground">{r.createdAt}</td>
                     <td className="py-3 px-3 text-right pr-4">
-                      <Button size="sm" onClick={() => toast.success(`Downloading "${r.title}"...`)} className="h-7 text-xs bg-brand-gradient text-white gap-1">
-                        <Download className="size-3" /> Download
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button 
+                          size="sm" 
+                          onClick={() => handleDownload(r)} 
+                          className="h-7 text-xs bg-brand-gradient text-white gap-1"
+                        >
+                          <Download className="size-3" /> Download
+                        </Button>
+                        {(!profile || ["admin", "super_admin"].includes(profile.role) || r.uploadedBy === profile.name) && (
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            onClick={() => handleOpenDeleteConfirm(r)} 
+                            className="h-7 text-xs text-red-500 hover:text-red-600 hover:bg-red-50 gap-1 border border-red-200/60"
+                          >
+                            <Trash2 className="size-3" /> Delete
+                          </Button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -576,11 +753,126 @@ export function LMSModuleView() {
               <Plus className="size-5 text-primary" /> Upload Study Note / PDF
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleAddResourceSubmit} className="space-y-3 pt-2">
-            <div className="space-y-1"><Label className="text-xs font-semibold">Title *</Label><Input required placeholder="Unit 1 Study Notes PDF" value={resForm.title || ""} onChange={(e) => setResForm({ ...resForm, title: e.target.value })} className="h-9 text-xs" /></div>
-            <div className="space-y-1"><Label className="text-xs font-semibold">Subject</Label><Input placeholder="CS401: Advanced AI" value={resForm.subject || ""} onChange={(e) => setResForm({ ...resForm, subject: e.target.value })} className="h-9 text-xs" /></div>
-            <DialogFooter className="pt-2"><Button type="button" variant="outline" onClick={() => setIsAddResourceOpen(false)} className="text-xs">Cancel</Button><Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold">Upload Document</Button></DialogFooter>
+          <form onSubmit={handleAddResourceSubmit} className="space-y-3.5 pt-2">
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold">Title *</Label>
+              <Input 
+                required 
+                placeholder="Unit 1: Neural Networks & Backpropagation Notes" 
+                value={resForm.title || ""} 
+                onChange={(e) => setResForm({ ...resForm, title: e.target.value })} 
+                className="h-9 text-xs" 
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold">Related Subject</Label>
+              <select
+                value={resForm.subjectId || ""}
+                onChange={(e) => {
+                  const selectedCourse = coursesList.find((c) => c.id === e.target.value);
+                  setResForm({
+                    ...resForm,
+                    subjectId: e.target.value,
+                    subject: selectedCourse ? `${selectedCourse.code}: ${selectedCourse.name}` : ""
+                  });
+                }}
+                className="w-full h-9 text-xs rounded-xl border border-border bg-card px-3 font-semibold text-foreground focus:ring-2 focus:ring-primary/20 outline-hidden"
+              >
+                <option value="">Select a subject...</option>
+                {coursesList.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.code}: {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-xs font-semibold">PDF File *</Label>
+              <div className="flex flex-col gap-2 p-3 rounded-xl border border-dashed border-border bg-muted/30">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  required={!resFile}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="pdf-file-upload-input"
+                />
+                <label
+                  htmlFor="pdf-file-upload-input"
+                  className="flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-card border border-border text-xs font-bold text-primary hover:bg-muted/40 cursor-pointer shadow-2xs transition-colors"
+                >
+                  <FileText className="size-4 text-primary" /> Choose PDF file
+                </label>
+                {resFile && (
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-card border border-border text-xs mt-1 animate-fadeIn">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <FileText className="size-4 text-red-500 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="font-bold text-foreground truncate max-w-[200px]" title={resFile.name}>
+                          📄 {resFile.name}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {(resFile.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleRemoveFile}
+                      className="h-6 text-[10px] text-red-500 hover:text-red-600 hover:bg-red-50"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setIsAddResourceOpen(false)} className="text-xs">
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={uploading}
+                className="bg-brand-gradient text-white text-xs font-semibold"
+              >
+                {uploading ? "Uploading..." : "Upload Document"}
+              </Button>
+            </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* DIALOG: DELETE CONFIRMATION MODAL */}
+      <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-red-600">Delete Study Note?</DialogTitle>
+          </DialogHeader>
+          <div className="py-3 text-xs text-muted-foreground space-y-2">
+            <p>
+              Are you sure you want to delete <strong className="text-foreground">"{resourceToDelete?.title}"</strong>?
+            </p>
+            <p className="text-[10px] text-red-500 font-semibold">This action cannot be undone.</p>
+          </div>
+          <DialogFooter className="pt-2">
+            <Button type="button" variant="outline" onClick={() => setIsDeleteConfirmOpen(false)} className="text-xs">
+              Cancel
+            </Button>
+            <Button 
+              type="button" 
+              onClick={handleConfirmDelete} 
+              disabled={deleting}
+              className="bg-red-600 text-white hover:bg-red-700 text-xs font-semibold"
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

@@ -53,6 +53,7 @@ model Faculty {
   password            String
   role                String               @default("faculty") // "hod" or "faculty"
   department          String?
+  lmsResources        LmsResource[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 }
@@ -83,8 +84,30 @@ model Course {
   status              String               @default("Draft")
   courseRegistrations CourseRegistration[]
   nptelRecords        NptelRecord[]
+  lmsResources        LmsResource[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
+}
+
+model LmsResource {
+  id            String   @id @default(uuid())
+  title         String
+  description   String?
+  resourceType  String   // "STUDY_NOTE" | "VIDEO_LECTURE" | "ASSIGNMENT" | "QUIZ" | "OTHER"
+  facultyId     String
+  faculty       Faculty  @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  subjectId     String?
+  course        Course?  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  departmentId  String?
+  fileUrl       String?
+  fileName      String?
+  fileSize      String?
+  mimeType      String?
+  videoUrl      String?
+  content       String?
+  isPublished   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model CourseRegistration {
