@@ -61,6 +61,7 @@ app.use("/api/super-admin", superAdminRoutes);
 app.use("/api/academics", academicsRoutes);
 app.use("/api/academic", academicsRoutes);
 app.use("/api/lms", lmsRoutes);
+app.use("/api/student/lms", lmsRoutes);
 
 // Boot server
 app.listen(PORT, async () => {

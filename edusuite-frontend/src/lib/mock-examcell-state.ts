@@ -72,52 +72,80 @@ const DEFAULT_STUDENTS: MockStudent[] = [
   { id: 's7', roll_number: 'AIML26003', full_name: 'Boddu Varun', department: 'AIML', year: 2, semester: 3, section: 'A', is_registered: true, mid1_marks: 0, assignment_marks: 0, attendance_percentage: 90, fee_balance: 75000, hall_ticket_status: 'Not Generated' }
 ];
 
+const isBrowser = typeof window !== "undefined" && typeof localStorage !== "undefined";
+
 export const getMockCourses = (): MockCourseOffering[] => {
-  const data = localStorage.getItem('mock_offered_courses_v3');
-  if (!data) {
-    localStorage.setItem('mock_offered_courses_v3', JSON.stringify(DEFAULT_COURSES));
+  if (!isBrowser) return DEFAULT_COURSES;
+  try {
+    const data = localStorage.getItem('mock_offered_courses_v3');
+    if (!data) {
+      localStorage.setItem('mock_offered_courses_v3', JSON.stringify(DEFAULT_COURSES));
+      return DEFAULT_COURSES;
+    }
+    return JSON.parse(data);
+  } catch (e) {
     return DEFAULT_COURSES;
   }
-  return JSON.parse(data);
 };
 
 export const saveMockCourses = (courses: MockCourseOffering[]) => {
-  localStorage.setItem('mock_offered_courses_v3', JSON.stringify(courses));
+  if (!isBrowser) return;
+  try {
+    localStorage.setItem('mock_offered_courses_v3', JSON.stringify(courses));
+  } catch (e) {}
 };
 
 export const getMockExams = (): MockExamSchedule[] => {
-  const data = localStorage.getItem('mock_scheduled_exams_v3');
-  if (!data) {
-    localStorage.setItem('mock_scheduled_exams_v3', JSON.stringify(DEFAULT_EXAMS));
+  if (!isBrowser) return DEFAULT_EXAMS;
+  try {
+    const data = localStorage.getItem('mock_scheduled_exams_v3');
+    if (!data) {
+      localStorage.setItem('mock_scheduled_exams_v3', JSON.stringify(DEFAULT_EXAMS));
+      return DEFAULT_EXAMS;
+    }
+    return JSON.parse(data);
+  } catch (e) {
     return DEFAULT_EXAMS;
   }
-  return JSON.parse(data);
 };
 
 export const saveMockExams = (exams: MockExamSchedule[]) => {
-  localStorage.setItem('mock_scheduled_exams_v3', JSON.stringify(exams));
+  if (!isBrowser) return;
+  try {
+    localStorage.setItem('mock_scheduled_exams_v3', JSON.stringify(exams));
+  } catch (e) {}
 };
 
 export const getMockStudents = (): MockStudent[] => {
-  const data = localStorage.getItem('mock_students_db_v3');
-  if (!data) {
-    localStorage.setItem('mock_students_db_v3', JSON.stringify(DEFAULT_STUDENTS));
+  if (!isBrowser) return DEFAULT_STUDENTS;
+  try {
+    const data = localStorage.getItem('mock_students_db_v3');
+    if (!data) {
+      localStorage.setItem('mock_students_db_v3', JSON.stringify(DEFAULT_STUDENTS));
+      return DEFAULT_STUDENTS;
+    }
+    return JSON.parse(data);
+  } catch (e) {
     return DEFAULT_STUDENTS;
   }
-  return JSON.parse(data);
 };
 
 export const saveMockStudents = (students: MockStudent[]) => {
-  localStorage.setItem('mock_students_db_v3', JSON.stringify(students));
+  if (!isBrowser) return;
+  try {
+    localStorage.setItem('mock_students_db_v3', JSON.stringify(students));
+  } catch (e) {}
 };
 
 export interface MockTimetableSlot {
+  id?: string;
   subjectCode: string;
   subjectName: string;
   examDate: string;
   sessionSlot: string;
   halls: string[];
   duration: string;
+  reportingTime?: string;
 }
 
 export interface MockExamTimetable {
@@ -126,18 +154,35 @@ export interface MockExamTimetable {
   department: string;
   year: number;
   semester: number;
-  status: 'Draft' | 'Submitted' | 'Approved';
+  academicYear?: string;
+  status: 'Draft' | 'Submitted' | 'Pending Approval' | 'Approved' | 'Rejected';
+  rejectionReason?: string;
+  createdBy?: string;
+  submittedAt?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  rejectedBy?: string;
+  rejectedAt?: string;
   slots: MockTimetableSlot[];
 }
 
 export const getMockTimetables = (): MockExamTimetable[] => {
-  const data = localStorage.getItem('mock_timetables_v3');
-  if (!data) {
+  if (!isBrowser) return [];
+  try {
+    const data = localStorage.getItem('mock_timetables_v3');
+    if (!data) {
+      return [];
+    }
+    return JSON.parse(data);
+  } catch (e) {
     return [];
   }
-  return JSON.parse(data);
 };
 
 export const saveMockTimetables = (timetables: MockExamTimetable[]) => {
-  localStorage.setItem('mock_timetables_v3', JSON.stringify(timetables));
+  if (!isBrowser) return;
+  try {
+    localStorage.setItem('mock_timetables_v3', JSON.stringify(timetables));
+  } catch (e) {}
 };
+

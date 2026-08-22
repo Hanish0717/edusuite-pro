@@ -38,8 +38,8 @@ export function LmsDashboardHeader({
   onQuickAction,
 }: LmsDashboardHeaderProps) {
   const tabs: { id: LmsTabType; label: string }[] = [
-    { id: "my-courses", label: "My Courses" },
     { id: "course-materials", label: "Course Materials" },
+    { id: "video-lectures", label: "Video Lectures" },
     { id: "assignments", label: "Assignments" },
     { id: "quizzes", label: "Quizzes" },
   ];

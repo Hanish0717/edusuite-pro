@@ -12,8 +12,8 @@ import {
 } from "./mock-data";
 
 import { LmsDashboardHeader } from "./lms-dashboard";
-import { MyCourses } from "./my-courses";
 import { CourseMaterials } from "./course-materials";
+import { VideoLectures } from "./video-lectures";
 import { Assignments } from "./assignments";
 import { Quizzes } from "./quizzes";
 import { OnlineClasses } from "./online-classes";
@@ -27,9 +27,10 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
+import { fetchLMSVideos } from "@/modules/lms/LMSService";
 
 export function StudentLmsModule() {
-  const [activeTab, setActiveTab] = useState<LmsTabType>("my-courses");
+  const [activeTab, setActiveTab] = useState<LmsTabType>("course-materials");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isEmptyState, setIsEmptyState] = useState(false);
@@ -38,6 +39,7 @@ export function StudentLmsModule() {
   const [profile, setProfile] = useState<any>(null);
   const [dbCourses, setDbCourses] = useState<any[]>([]);
   const [materials, setMaterials] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
 
   const loadStudentLMSData = async () => {
     setIsLoading(true);
@@ -106,6 +108,10 @@ export function StudentLmsModule() {
         }));
         setMaterials(mappedMaterials);
       }
+
+      // 4. Fetch Video Lectures
+      const vids = await fetchLMSVideos();
+      setVideos(vids);
     } catch (err) {
       console.error("Failed to load student LMS details", err);
     } finally {
@@ -195,16 +201,16 @@ export function StudentLmsModule() {
 
           {/* MAIN LMS CONTENT */}
           <div className="space-y-6 w-full">
-            {activeTab === "my-courses" && (
-              <MyCourses courses={dbCourses} searchQuery={searchQuery} onSelectTab={setActiveTab} />
-            )}
-
             {activeTab === "course-materials" && (
               <CourseMaterials materials={materials} searchQuery={searchQuery} />
             )}
 
+            {activeTab === "video-lectures" && (
+              <VideoLectures videos={videos} searchQuery={searchQuery} />
+            )}
+
             {activeTab === "assignments" && (
-              <Assignments assignments={MOCK_ASSIGNMENTS} searchQuery={searchQuery} />
+              <Assignments searchQuery={searchQuery} />
             )}
 
             {activeTab === "quizzes" && (
