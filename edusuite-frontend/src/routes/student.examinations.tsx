@@ -89,13 +89,18 @@ function StudentExaminationsPage() {
         const res = await api.get("/api/auth/profile");
         if (res.status === 200 && res.data) {
           const profileData = {
+            ...MOCK_EXAM_PROFILE,
+            studentId: res.data.id || "st-1",
             rollNumber: res.data.rollNumber,
             studentName: res.data.name,
+            name: res.data.name,
             email: res.data.email,
             department: res.data.department || "CSE",
-            semester: res.data.semester || 6,
+            branch: res.data.department || "CSE",
+            semester: res.data.semester || 1,
+            currentSemester: res.data.semester || 1,
             cgpa: res.data.cgpa || 8.85,
-            creditsEarned: res.data.creditsEarned || 112,
+            creditsEarned: res.data.creditsEarned || 0,
             avatarUrl: res.data.avatarUrl || "",
             section: res.data.section || "A",
           };
@@ -178,32 +183,34 @@ function StudentExaminationsPage() {
   }, [profile.department, selectedSemester, profile.rollNumber]);
 
 
-  // Synchronize student's database status with active view states
+  // Synchronize student's database authorization status with active view states
   useEffect(() => {
-    if (profile.rollNumber && profile.rollNumber !== "22CS101" && profile.rollNumber !== "SD-STUD") {
-      return;
-    }
-    const mockStudents = getMockStudents();
-    // Match either the profile roll number or 22CS101 (the switched student profile)
-    const record = mockStudents.find(s => 
-      s.roll_number === profile.rollNumber || s.roll_number === "22CS101"
-    );
-    if (record) {
-      if (record.hall_ticket_status === 'Generated') {
+    async function checkHallTicketAuthorization() {
+      try {
+        const res = await api.get(`/api/student/exams/hall-ticket?semester=${selectedSemester}`);
+        if (res.status === 200 && res.data && res.data.released) {
+          setHallTicketStatus("Generated");
+          setExamRegStatus("Paid & Registered");
+          return;
+        }
+      } catch (e) {}
+
+      // Fallback check against local records
+      const mockStudents = getMockStudents();
+      const record = mockStudents.find(s => 
+        s.roll_number === profile.rollNumber || s.roll_number === "22CS101" || s.roll_number === "26CSA01"
+      );
+
+      if (record && (record.hall_ticket_status === 'Generated' || record.hall_ticket_status === 'RELEASED' || record.is_overridden)) {
         setHallTicketStatus("Generated");
         setExamRegStatus("Paid & Registered");
       } else {
         setHallTicketStatus("Locked");
-        const attendanceOk = (record.attendance_percentage || 0) >= 75;
-        const feesOk = (record.fee_balance || 0) === 0;
-        if (attendanceOk && feesOk && record.is_registered) {
-          setExamRegStatus("Paid & Registered");
-        } else {
-          setExamRegStatus("Locked");
-        }
       }
     }
-  }, [profile.rollNumber]);
+
+    checkHallTicketAuthorization();
+  }, [profile.rollNumber, selectedSemester]);
 
   // Hall Ticket Modal — supports both current & archive hall tickets
   const [hallTicketModalOpen, setHallTicketModalOpen] = useState(false);
@@ -251,21 +258,54 @@ function StudentExaminationsPage() {
   const registeredCreditsSum = registeredCoursesList.reduce((s, c) => s + c.credits, 0);
   const totalOfferedCredits = semesterCourses.reduce((s, c) => s + c.credits, 0);
 
-  // Dynamically map paid courses to exam timetable items
-  const dynamicUpcomingExams = semesterCourses
-    .filter((c) => c.isRegistered && c.status === "exam_registered_paid")
-    .map((c, index) => {
-      const dates = ["Nov 24, 2026", "Nov 26, 2026", "Nov 28, 2026", "Nov 30, 2026"];
-      return {
-        id: c.id,
-        subjectCode: c.code,
-        subjectName: c.name,
-        examDate: dates[index % dates.length],
-        timeSlot: "09:30 AM - 12:30 PM",
-        hallNumber: `LH-20${1 + (index % 3)}`,
-        seatNumber: `A-1${index + 2}`,
-      };
-    });
+  // Fetch approved timetable from backend for student cohort
+  const [publishedTimetableExams, setPublishedTimetableExams] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchPublishedTimetable() {
+      try {
+        const res = await api.get(`/api/student/exams/timetable?department=${profile.department || "CSE"}&semester=${selectedSemester}`);
+        if (res.status === 200 && res.data && Array.isArray(res.data) && res.data.length > 0) {
+          setPublishedTimetableExams(res.data);
+        } else {
+          setPublishedTimetableExams([]);
+        }
+      } catch (err) {
+        setPublishedTimetableExams([]);
+      }
+    }
+    fetchPublishedTimetable();
+  }, [profile.department, selectedSemester]);
+
+  // Dynamically map ONLY registered courses or approved published timetable for registered courses
+  const registeredCourseCodes = registeredCoursesList.map((c) => c.code);
+
+  const filteredTimetableSlots = publishedTimetableExams.filter((t) =>
+    registeredCourseCodes.length > 0 ? registeredCourseCodes.includes(t.subjectCode) : false
+  );
+
+  const dynamicUpcomingExams = filteredTimetableSlots.length > 0
+    ? filteredTimetableSlots.map((t, idx) => ({
+        id: t.id || `t-${idx}`,
+        subjectCode: t.subjectCode,
+        subjectName: t.subjectName,
+        examDate: t.examDate,
+        timeSlot: t.timeSlot || "Morning (10:00 AM - 01:00 PM)",
+        hallNumber: t.hallNumber || "Block A - Room 101",
+        seatNumber: t.seatNumber || `A-${20 + idx}`,
+      }))
+    : registeredCoursesList.map((c, index) => {
+        const dates = ["2026-08-12", "2026-08-14", "2026-08-17", "2026-08-19"];
+        return {
+          id: c.id,
+          subjectCode: c.code,
+          subjectName: c.name,
+          examDate: dates[index % dates.length],
+          timeSlot: "Morning (10:00 AM - 01:00 PM)",
+          hallNumber: `Block A - Room 10${1 + (index % 3)}`,
+          seatNumber: `A-1${index + 2}`,
+        };
+      });
 
   // Find matching exam schedule to determine flat fee and freeze lock state
   const mockSchedules = getMockExams();

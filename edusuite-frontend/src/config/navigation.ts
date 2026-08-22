@@ -276,8 +276,8 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
       if (url === "/subject-allocation" || title === "Subject Allocation" || title === "Workload") return "/dean/subject-allocation";
       return url;
     }
-    if (flags.includes("isExamController")) {
-      if (url === "/dashboard") return "/examination/dashboard";
+    if (flags.includes("isExamController") || flags.includes("isExamAssistant")) {
+      if (url === "/dashboard" || url === "/examinations") return "/examcell/dashboard";
       if (url === "/settings") return "/faculty/profile";
     }
     if (flags.includes("isPlacementOfficer")) {
@@ -458,17 +458,39 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
       {
         label: "Exam Officer Portal",
         items: [
-          { title: "dashboard", url: "/examcell/dashboard", icon: LayoutDashboard },
-          { title: "examcell updates", url: "/examcell/updates", icon: CalendarCheck },
-          { title: "Hall ticket controll", url: "/examcell/hall-tickets", icon: UserCog },
+          { title: "Dashboard", url: "/examcell/dashboard", icon: LayoutDashboard },
+          { title: "Examcell Updates", url: "/examcell/updates", icon: CalendarCheck },
+          { title: "Hall Ticket Control", url: "/examcell/hall-tickets", icon: UserCog },
           { title: "Correction Analysis", url: "/examcell/correction-analysis", icon: FileText },
-          { title: "Results publisher", url: "/examcell/results", icon: Award },
-          { title: "Exam analytics", url: "/examcell/analytics", icon: BarChart3 },
-          { title: "bloomstick analayis", url: "/examcell/bloomstick", icon: Brain },
-          { title: "notification", url: "/examcell/notifications", icon: Bell },
-          { title: "Profile", url: "/faculty/profile", icon: Settings }
+          { title: "Results Publisher", url: "/examcell/results", icon: Award },
+          { title: "Exam Analytics", url: "/examcell/analytics", icon: BarChart3 },
+          { title: "Bloomstick Analysis", url: "/examcell/bloomstick", icon: Brain },
+          { title: "Notifications", url: "/examcell/notifications", icon: Bell },
+          { title: "My Profile", url: "/faculty/profile", icon: Settings }
         ]
       }
+    ];
+  }
+
+  // Central Exam Assistant Portal Navigation
+  if (user.role === "staff" && user.flags.includes("isExamAssistant")) {
+    return [
+      {
+        label: "Central Exam Assistant Portal",
+        items: [
+          { title: "Dashboard", url: "/examcell/dashboard", icon: LayoutDashboard },
+          { title: "Course & Exam Enroll", url: "/examcell/course-enroll", icon: FileSpreadsheet },
+          { title: "Schedule Exam", url: "/examcell/schedule", icon: CalendarRange },
+          { title: "Timetable Builder", url: "/examcell/timetable", icon: CalendarCheck },
+          { title: "Hall Ticket Control", url: "/examcell/hall-tickets", icon: Ticket },
+          { title: "Correction Requests", url: "/examcell/correction-requests", icon: ClipboardList },
+          { title: "Question Bank", url: "/examcell/questions", icon: Database },
+          { title: "Bloomstick Analysis", url: "/examcell/bloomstick", icon: Brain },
+          { title: "Supplementary Students", url: "/examcell/supplementary", icon: Users },
+          { title: "Notifications", url: "/examcell/notifications", icon: Bell },
+          { title: "My Profile", url: "/faculty/profile", icon: Settings },
+        ],
+      },
     ];
   }
 

@@ -249,9 +249,21 @@ export async function fetchLMSVideos(): Promise<VideoLecture[]> {
 export async function fetchLMSAssignments(): Promise<AssignmentItem[]> {
   try {
     const res = await api.get("/api/lms/assignments");
-    if (res && Array.isArray(res.data) && res.data.length > 0) return res.data;
-  } catch {}
-  return INITIAL_ASSIGNMENTS;
+    if (res && Array.isArray(res.data)) return res.data;
+  } catch (e) {
+    console.error("fetchLMSAssignments error:", e);
+  }
+  return [];
+}
+
+export async function fetchStudentAssignments(): Promise<any[]> {
+  try {
+    const res = await api.get("/api/student/lms/assignments");
+    if (res && Array.isArray(res.data)) return res.data;
+  } catch (e) {
+    console.error("fetchStudentAssignments error:", e);
+  }
+  return [];
 }
 
 export async function fetchLMSQuizzes(): Promise<QuizItem[]> {
@@ -306,28 +318,44 @@ export async function createLMSVideo(data: Partial<VideoLecture>): Promise<Video
     subject: data.subject || "CS401: Advanced AI",
     department: data.department || "CSE",
     duration: data.duration || "40 mins",
-    instructor: data.instructor || "Dr. K. Sai Teja",
+    instructor: data.instructor || "Faculty",
     videoUrl: data.videoUrl || "https://www.youtube.com/embed/aircAruvnKk",
     createdAt: new Date().toISOString().split("T")[0],
   };
 }
 
-export async function createLMSAssignment(data: Partial<AssignmentItem>): Promise<AssignmentItem> {
+export async function createLMSAssignment(data: any): Promise<any> {
+  const res = await api.post("/api/lms/assignments", data);
+  if (res && res.data) return res.data;
+  throw new Error("Failed to create assignment");
+}
+
+export async function fetchAssignmentSubmissions(assignmentId: string): Promise<any[]> {
+  const res = await api.get(`/api/lms/assignments/${assignmentId}/submissions`);
+  if (res && Array.isArray(res.data)) return res.data;
+  return [];
+}
+
+export async function gradeAssignmentSubmission(assignmentId: string, submissionId: string, marks: number, studentId?: string): Promise<any> {
+  const res = await api.post(`/api/lms/assignments/${assignmentId}/submissions/${submissionId || "new"}/grade`, {
+    marks,
+    studentId
+  });
+  return res.data;
+}
+
+export async function recordQuestionPaperView(assignmentId: string): Promise<any> {
   try {
-    const res = await api.post("/api/lms/assignments", data);
-    if (res && res.data && res.data.id) return res.data;
-  } catch {}
-  return {
-    id: `ASN-${Math.floor(403 + Math.random() * 900)}`,
-    title: data.title || "New Assignment",
-    subject: data.subject || "CS401: Advanced AI",
-    department: data.department || "CSE",
-    dueDate: data.dueDate || "2026-08-15",
-    description: data.description || "Complete assignment tasks.",
-    submissionCount: 0,
-    totalStudents: 60,
-    status: "Pending",
-  };
+    const res = await api.post(`/api/student/lms/assignments/${assignmentId}/view-question-paper`);
+    return res.data;
+  } catch (e) {
+    console.error("recordQuestionPaperView error:", e);
+  }
+}
+
+export async function submitStudentAssignment(assignmentId: string, payload: any): Promise<any> {
+  const res = await api.post(`/api/student/lms/assignments/${assignmentId}/submit`, payload);
+  return res.data;
 }
 
 export async function createLMSClass(data: Partial<ClassItem>): Promise<ClassItem> {
@@ -355,3 +383,4 @@ export async function deleteLMSResource(id: string): Promise<boolean> {
   } catch {}
   return false;
 }
+
