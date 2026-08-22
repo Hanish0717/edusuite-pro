@@ -626,6 +626,8 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
               moduleId: "examination",
               url: resolveUrlForUser(c.url, user, c.title)
             }));
+          } else if (item.title === "Examinations" && isStaff && !isExamAssistant && !isExamController) {
+            newChildren = undefined;
           }
 
           let title = item.title;

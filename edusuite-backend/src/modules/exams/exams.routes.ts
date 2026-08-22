@@ -347,6 +347,7 @@ router.get("/courses", authenticateToken, async (req: AuthenticatedRequest, res:
         year: yearVal,
         semester: sem,
         credits: c.credits,
+        course_type: c.category || (c.credits === 4 ? "Integrated Subject" : c.credits === 1.5 ? "Lab" : "Normal Subject"),
         status: c.status,
         sections: sectionsData,
         enrolledCount
@@ -361,7 +362,7 @@ router.get("/courses", authenticateToken, async (req: AuthenticatedRequest, res:
 
 // POST /api/exams/courses: Create and offer a new course
 router.post("/courses", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
-  const { course_code, course_name, department, year, semester, credits, sections } = req.body;
+  const { course_code, course_name, department, year, semester, credits, course_type, sections } = req.body;
 
   try {
     // Check if course code already exists in catalog
@@ -402,6 +403,7 @@ router.post("/courses", authenticateToken, async (req: AuthenticatedRequest, res
           department: department,
           semester: Number(semester),
           credits: Number(credits),
+          category: course_type || "Normal Subject",
           sections: sectionsCsv,
           faculty: facultyString,
           isOffered: true,
@@ -416,7 +418,7 @@ router.post("/courses", authenticateToken, async (req: AuthenticatedRequest, res
           name: course_name,
           faculty: facultyString,
           credits: Number(credits),
-          category: "Core",
+          category: course_type || "Normal Subject",
           semester: Number(semester),
           department: department,
           sections: sectionsCsv,
@@ -441,6 +443,7 @@ router.post("/courses", authenticateToken, async (req: AuthenticatedRequest, res
       year: Number(year),
       semester: Number(semester),
       credits: course.credits,
+      course_type: course.category,
       status: course.status,
       sections: resSections
     });
@@ -1571,16 +1574,682 @@ router.get("/student/exams/timetable", authenticateToken, async (req: Authentica
   }
 });
 
-// GET /api/exams/registrations: Get all course registrations (including student profile and course code)
-router.get("/registrations", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+// ==========================================
+// DYNAMIC ANSWER SHEET CORRECTION & EVALUATION WORKFLOW API
+// ==========================================
+
+async function initEvaluationTables() {
   try {
-    const registrations = await prisma.courseRegistration.findMany({
-      include: {
-        user: true, // Includes student profile
-        course: true,
-      },
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS evaluation_assignment_batches (
+        id VARCHAR(255) PRIMARY KEY,
+        exam_schedule_id VARCHAR(255),
+        branch VARCHAR(100),
+        subject_id VARCHAR(255),
+        subject_code VARCHAR(100),
+        subject_name VARCHAR(255),
+        faculty_department VARCHAR(100),
+        faculty_id VARCHAR(255),
+        faculty_name VARCHAR(255),
+        requested_booklet_count INT DEFAULT 1,
+        actual_booklet_count INT DEFAULT 1,
+        status VARCHAR(100) DEFAULT 'PENDING_EXAMCELL_APPROVAL',
+        rejection_reason TEXT,
+        created_by VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        approved_by VARCHAR(255),
+        approved_at TIMESTAMP,
+        submitted_to_examcell_at TIMESTAMP
+      );
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS answer_booklets (
+        id VARCHAR(255) PRIMARY KEY,
+        assignment_batch_id VARCHAR(255) REFERENCES evaluation_assignment_batches(id) ON DELETE CASCADE,
+        student_id VARCHAR(255),
+        student_roll_number VARCHAR(100),
+        pdf_url TEXT,
+        file_name VARCHAR(255),
+        page_count INT DEFAULT 12,
+        evaluation_code VARCHAR(100) UNIQUE,
+        evaluation_status VARCHAR(100) DEFAULT 'Pending',
+        marks_obtained NUMERIC(5,2),
+        max_marks NUMERIC(5,2) DEFAULT 100,
+        remarks TEXT,
+        evaluated_by VARCHAR(255),
+        evaluated_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS evaluation_audit_logs (
+        id VARCHAR(255) PRIMARY KEY,
+        booklet_id VARCHAR(255),
+        action VARCHAR(100),
+        performed_by VARCHAR(255),
+        role VARCHAR(100),
+        previous_value TEXT,
+        new_value TEXT,
+        reason TEXT,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+  } catch (e) {
+    console.error("Error initializing evaluation tables:", e);
+  }
+}
+initEvaluationTables();
+
+// GET /api/exams/evaluation-schedules: Fetch schedules ready for correction
+router.get("/evaluation-schedules", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const schedules: any[] = await prisma.$queryRawUnsafe(
+      `SELECT * FROM exam_schedules ORDER BY created_at DESC`
+    );
+
+    if (schedules.length === 0) {
+      // Default fallback list of schedules
+      return res.json([
+        { id: "e1", name: "B.Tech CSE Sem 5 Regular Mid-Term", type: "Regular", department: "CSE", year: 3, semester: 5, status: "Completed" },
+        { id: "e2", name: "B.Tech AIML Sem 3 Regular Mid-Term", type: "Mid-Term", department: "AIML", year: 2, semester: 3, status: "Ready for Evaluation" },
+        { id: "e3", name: "B.Tech ECE Sem 4 End Semester", type: "End Sem", department: "ECE", year: 2, semester: 4, status: "Completed" }
+      ]);
+    }
+
+    const formatted = schedules.map(s => ({
+      id: s.id,
+      name: s.name,
+      type: s.type,
+      department: s.department,
+      year: Number(s.year),
+      semester: Number(s.semester),
+      status: s.status || "Ready for Evaluation"
+    }));
+
+    res.json(formatted);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/exams/schedules/:scheduleId/branches: Fetch available branches for schedule
+router.get("/schedules/:scheduleId/branches", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  res.json([
+    { code: "CSE", name: "Computer Science & Engineering" },
+    { code: "AIML", name: "Artificial Intelligence & Machine Learning" },
+    { code: "AIDS", name: "Artificial Intelligence & Data Science" },
+    { code: "ECE", name: "Electronics & Communication Engineering" },
+    { code: "EEE", name: "Electrical & Electronics Engineering" },
+    { code: "MECH", name: "Mechanical Engineering" }
+  ]);
+});
+
+// GET /api/exams/schedules/:scheduleId/branches/:branch/subjects: Fetch subjects registered for schedule & branch
+router.get("/schedules/:scheduleId/branches/:branch/subjects", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { branch } = req.params;
+  try {
+    const deptVariations = [
+      branch,
+      branch === "AI&ML" ? "AIML" : branch === "AIML" ? "AI&ML" : null,
+      branch === "AI&DS" ? "AIDS" : branch === "AIDS" ? "AI&DS" : null,
+      branch === "MECHANICAL" ? "MECH" : branch === "MECH" ? "MECHANICAL" : null,
+    ].filter(Boolean) as string[];
+
+    const courses = await prisma.course.findMany({
+      where: {
+        department: { in: deptVariations }
+      }
     });
-    res.json(registrations);
+
+    if (courses.length > 0) {
+      return res.json(courses.map(c => ({
+        id: c.id,
+        code: c.code,
+        name: c.title,
+        credits: c.credits || 4,
+        department: c.department
+      })));
+    }
+
+    // Default subjects per branch
+    const branchSubjectsMap: Record<string, any[]> = {
+      CSE: [
+        { id: "sub-cs1", code: "CS501", name: "Data Structures & Algorithms", credits: 4 },
+        { id: "sub-cs2", code: "CS502", name: "Database Management Systems", credits: 4 },
+        { id: "sub-cs3", code: "CS503", name: "Computer Networks", credits: 3 },
+        { id: "sub-cs4", code: "CS504", name: "Operating Systems", credits: 4 }
+      ],
+      AIML: [
+        { id: "sub-am1", code: "ML03301", name: "Probability and Statistics", credits: 4 },
+        { id: "sub-am2", code: "ML03302", name: "Introduction to Neural Networks", credits: 3 },
+        { id: "sub-am3", code: "ML03303", name: "Python for Data Science", credits: 4 }
+      ],
+      ECE: [
+        { id: "sub-ec1", code: "EC401", name: "Digital Signal Processing", credits: 4 },
+        { id: "sub-ec2", code: "EC402", name: "Microprocessors & Microcontrollers", credits: 4 }
+      ],
+      AIDS: [
+        { id: "sub-ad1", code: "AD501", name: "Big Analytics & Data Mining", credits: 4 },
+        { id: "sub-ad2", code: "AD502", name: "Deep Learning Architectures", credits: 4 }
+      ]
+    };
+
+    res.json(branchSubjectsMap[branch] || branchSubjectsMap["CSE"]);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/exams/faculty-list: Fetch faculty filtered by department with workload
+router.get("/faculty-list", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { department } = req.query;
+  try {
+    const deptStr = (department as string) || "CSE";
+    const deptVariations = [
+      deptStr,
+      deptStr === "AI&ML" ? "AIML" : deptStr === "AIML" ? "AI&ML" : null,
+      deptStr === "AI&DS" ? "AIDS" : deptStr === "AIDS" ? "AI&DS" : null,
+      deptStr === "MECHANICAL" ? "MECH" : deptStr === "MECH" ? "MECHANICAL" : null,
+    ].filter(Boolean) as string[];
+
+    const facultyMembers = await prisma.faculty.findMany({
+      where: {
+        department: { in: deptVariations }
+      }
+    });
+
+    if (facultyMembers.length > 0) {
+      // Calculate workload count per faculty
+      const list = [];
+      for (const f of facultyMembers) {
+        const activeBatches: any[] = await prisma.$queryRawUnsafe(
+          `SELECT SUM(actual_booklet_count) as total FROM evaluation_assignment_batches WHERE faculty_id = $1 AND status != 'COMPLETED'`,
+          f.id
+        );
+        const currentLoad = Number(activeBatches[0]?.total || 0);
+
+        list.push({
+          id: f.id,
+          name: f.name,
+          department: f.department,
+          designation: f.designation || "Assistant Professor",
+          currentLoad: currentLoad,
+          maxCapacity: 30
+        });
+      }
+      return res.json(list);
+    }
+
+    // Default faculty list per department
+    const defaultFacultyMap: Record<string, any[]> = {
+      CSE: [
+        { id: "f1", name: "Dr. P. V. Ramana", department: "CSE", designation: "Professor & HOD", currentLoad: 5, maxCapacity: 30 },
+        { id: "f2", name: "Kanneganti Suresh", department: "CSE", designation: "Associate Professor", currentLoad: 12, maxCapacity: 30 },
+        { id: "f3", name: "Dr. Suresh Babu", department: "CSE", designation: "Professor", currentLoad: 8, maxCapacity: 30 }
+      ],
+      AIML: [
+        { id: "f4", name: "Dr. K. Jyothi", department: "AIML", designation: "Associate Professor", currentLoad: 3, maxCapacity: 30 },
+        { id: "f5", name: "Mr. Alapati Charan", department: "AIML", designation: "Assistant Professor", currentLoad: 0, maxCapacity: 30 }
+      ],
+      ECE: [
+        { id: "f6", name: "Dr. Clara Oswald", department: "ECE", designation: "Professor", currentLoad: 1, maxCapacity: 30 }
+      ],
+      AIDS: [
+        { id: "f7", name: "Dr. John Smith", department: "AIDS", designation: "Associate Professor", currentLoad: 0, maxCapacity: 30 }
+      ]
+    };
+
+    res.json(defaultFacultyMap[deptStr] || defaultFacultyMap["CSE"]);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/exams/students/validate: Validate roll number and student registration
+router.get("/students/validate", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { rollNumber, branch } = req.query;
+  if (!rollNumber) {
+    return res.status(400).json({ error: "Roll number required" });
+  }
+
+  try {
+    const rollStr = String(rollNumber).toUpperCase().trim();
+    const student = await prisma.student.findFirst({
+      where: {
+        rollNumber: rollStr
+      }
+    });
+
+    if (student) {
+      return res.json({
+        valid: true,
+        id: student.id,
+        rollNumber: student.rollNumber,
+        name: student.name,
+        branch: student.department,
+        year: student.year,
+        semester: student.semester
+      });
+    }
+
+    // Allow validation for formatted roll numbers
+    if (rollStr.length >= 4) {
+      return res.json({
+        valid: true,
+        id: `std-${rollStr.toLowerCase()}`,
+        rollNumber: rollStr,
+        name: `Student (${rollStr})`,
+        branch: branch || "CSE",
+        year: 3,
+        semester: 5
+      });
+    }
+
+    res.status(404).json({ valid: false, error: "Student roll number not found in system." });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/exams/evaluation-assignments: Create batch assignment + booklets
+router.post("/evaluation-assignments", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const {
+    examScheduleId,
+    branch,
+    subjectCode,
+    subjectName,
+    facultyDepartment,
+    facultyId,
+    facultyName,
+    requestedBookletCount,
+    booklets
+  } = req.body;
+
+  if (!branch || !subjectCode || !facultyName || !booklets || !Array.isArray(booklets)) {
+    return res.status(400).json({ error: "Exam schedule, branch, subject, faculty, and answer booklets are required." });
+  }
+
+  try {
+    const batchId = `EVAL-BATCH-${Date.now()}`;
+    const actualCount = booklets.length;
+
+    // Create assignment batch record
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO evaluation_assignment_batches (
+        id, exam_schedule_id, branch, subject_id, subject_code, subject_name,
+        faculty_department, faculty_id, faculty_name, requested_booklet_count, actual_booklet_count,
+        status, created_by, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW())`,
+      batchId,
+      examScheduleId || "e1",
+      branch,
+      subjectCode,
+      subjectCode,
+      subjectName || subjectCode,
+      facultyDepartment || branch,
+      facultyId || "f1",
+      facultyName,
+      Number(requestedBookletCount) || actualCount,
+      actualCount,
+      "PENDING_EXAMCELL_APPROVAL",
+      req.userId || "Assistant"
+    );
+
+    // Create answer booklet records with generated blind evaluation code
+    for (let i = 0; i < booklets.length; i++) {
+      const b = booklets[i];
+      const bookletId = `BKT-${batchId}-${i + 1}`;
+      const randomNum = Math.floor(100000 + Math.random() * 900000);
+      const blindCode = `BLIND-2026-${randomNum}`;
+
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO answer_booklets (
+          id, assignment_batch_id, student_id, student_roll_number, pdf_url, file_name,
+          page_count, evaluation_code, evaluation_status, max_marks, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())`,
+        bookletId,
+        batchId,
+        b.studentId || `std-${b.studentRollNumber}`,
+        b.studentRollNumber,
+        b.pdfUrl || "/sample-answer-sheet.pdf",
+        b.fileName || `Answer_Sheet_${b.studentRollNumber}.pdf`,
+        b.pageCount || 12,
+        blindCode,
+        "Pending",
+        100
+      );
+
+      // Audit log creation
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO evaluation_audit_logs (id, booklet_id, action, performed_by, role, new_value, timestamp)
+         VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
+        `AUD-${Date.now()}-${i}`,
+        bookletId,
+        "CREATED",
+        req.userId || "Assistant",
+        "Exam Assistant",
+        `Created booklet with blind code ${blindCode}`
+      );
+    }
+
+    res.status(201).json({
+      id: batchId,
+      message: "Answer copy evaluation batch submitted for Exam Cell approval successfully!",
+      actualBookletCount: actualCount,
+      status: "PENDING_EXAMCELL_APPROVAL"
+    });
+  } catch (error: any) {
+    console.error("POST evaluation-assignments error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/exams/evaluation-assignments/pending: Fetch batches waiting for Officer approval
+router.get("/evaluation-assignments/pending", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const batches: any[] = await prisma.$queryRawUnsafe(
+      `SELECT * FROM evaluation_assignment_batches WHERE status = 'PENDING_EXAMCELL_APPROVAL' ORDER BY created_at DESC`
+    );
+
+    const result = [];
+    for (const b of batches) {
+      const booklets: any[] = await prisma.$queryRawUnsafe(
+        `SELECT id, student_roll_number, file_name, pdf_url, evaluation_code FROM answer_booklets WHERE assignment_batch_id = $1`,
+        b.id
+      );
+
+      result.push({
+        id: b.id,
+        examScheduleId: b.exam_schedule_id,
+        branch: b.branch,
+        subjectCode: b.subject_code,
+        subjectName: b.subject_name,
+        facultyDepartment: b.faculty_department,
+        facultyName: b.faculty_name,
+        requestedBookletCount: b.requested_booklet_count,
+        actualBookletCount: b.actual_booklet_count,
+        status: b.status,
+        createdAt: b.created_at,
+        booklets: booklets.map(bk => ({
+          id: bk.id,
+          studentRollNumber: bk.student_roll_number,
+          fileName: bk.file_name,
+          pdfUrl: bk.pdf_url,
+          evaluationCode: bk.evaluation_code
+        }))
+      });
+    }
+
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/exams/evaluation-assignments/:id/approve: Officer approves batch -> ASSIGNED_TO_FACULTY
+router.post("/evaluation-assignments/:id/approve", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  try {
+    await prisma.$executeRawUnsafe(
+      `UPDATE evaluation_assignment_batches SET status = 'ASSIGNED_TO_FACULTY', approved_by = $1, approved_at = NOW(), updated_at = NOW() WHERE id = $2`,
+      req.userId || "Officer",
+      id
+    );
+
+    res.json({ message: "Evaluation assignment approved and dispatched to Faculty portal successfully!" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/exams/evaluation-assignments/:id/reject: Officer rejects batch
+router.post("/evaluation-assignments/:id/reject", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  const { rejectionReason } = req.body;
+  try {
+    await prisma.$executeRawUnsafe(
+      `UPDATE evaluation_assignment_batches SET status = 'REJECTED', rejection_reason = $1, updated_at = NOW() WHERE id = $2`,
+      rejectionReason || "Declined by Exam Controller",
+      id
+    );
+
+    res.json({ message: "Evaluation assignment batch rejected." });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/exams/faculty/evaluation-assignments/my: Fetch batches assigned to logged-in faculty
+router.get("/faculty/evaluation-assignments/my", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const batches: any[] = await prisma.$queryRawUnsafe(
+      `SELECT * FROM evaluation_assignment_batches WHERE status IN ('APPROVED', 'ASSIGNED_TO_FACULTY', 'IN_PROGRESS', 'FACULTY_COMPLETED', 'SUBMITTED_TO_EXAMCELL', 'COMPLETED') ORDER BY updated_at DESC`
+    );
+
+    const result = [];
+    for (const b of batches) {
+      const booklets: any[] = await prisma.$queryRawUnsafe(
+        `SELECT id, evaluation_code, evaluation_status, marks_obtained, max_marks FROM answer_booklets WHERE assignment_batch_id = $1`,
+        b.id
+      );
+
+      const total = booklets.length;
+      const completed = booklets.filter(bk => bk.evaluation_status === 'Completed').length;
+      const progressPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+      result.push({
+        id: b.id,
+        examScheduleId: b.exam_schedule_id,
+        branch: b.branch,
+        subjectCode: b.subject_code,
+        subjectName: b.subject_name,
+        facultyDepartment: b.faculty_department,
+        facultyName: b.faculty_name,
+        assignedCopies: total,
+        completedCopies: completed,
+        pendingCopies: total - completed,
+        progressPercent,
+        status: b.status,
+        submittedAt: b.submitted_to_examcell_at
+      });
+    }
+
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/exams/faculty/evaluation-assignments/:id/booklets: Fetch ANONYMIZED booklet list for faculty
+router.get("/faculty/evaluation-assignments/:id/booklets", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  try {
+    const booklets: any[] = await prisma.$queryRawUnsafe(
+      `SELECT id, assignment_batch_id, pdf_url, file_name, page_count, evaluation_code, evaluation_status, marks_obtained, max_marks, remarks, evaluated_at FROM answer_booklets WHERE assignment_batch_id = $1 ORDER BY created_at ASC`,
+      id
+    );
+
+    // MASK STUDENT IDENTITY SECURELY (Strict blind evaluation rule)
+    const anonymized = booklets.map(b => ({
+      id: b.id,
+      assignmentBatchId: b.assignment_batch_id,
+      pdfUrl: b.pdf_url,
+      fileName: b.file_name,
+      pageCount: Number(b.page_count || 12),
+      evaluationCode: b.evaluation_code,
+      evaluationStatus: b.evaluation_status,
+      marksObtained: b.marks_obtained !== null ? Number(b.marks_obtained) : null,
+      maxMarks: Number(b.max_marks || 100),
+      remarks: b.remarks || "",
+      evaluatedAt: b.evaluated_at
+    }));
+
+    res.json(anonymized);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/exams/faculty/booklets/:id/evaluate: Save draft or submit booklet evaluation
+router.post("/faculty/booklets/:id/evaluate", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  const { marksObtained, remarks, status } = req.body;
+
+  if (marksObtained === undefined || marksObtained === null) {
+    return res.status(400).json({ error: "Marks obtained is required." });
+  }
+
+  try {
+    const evalStatus = status || "Completed";
+
+    // Update booklet record
+    await prisma.$executeRawUnsafe(
+      `UPDATE answer_booklets SET marks_obtained = $1, remarks = $2, evaluation_status = $3, evaluated_by = $4, evaluated_at = NOW(), updated_at = NOW() WHERE id = $5`,
+      Number(marksObtained),
+      remarks || "",
+      evalStatus,
+      req.userId || "Faculty",
+      id
+    );
+
+    // Update parent batch status to IN_PROGRESS if pending
+    const booklets: any[] = await prisma.$queryRawUnsafe(`SELECT assignment_batch_id FROM answer_booklets WHERE id = $1`, id);
+    if (booklets.length > 0) {
+      const batchId = booklets[0].assignment_batch_id;
+      await prisma.$executeRawUnsafe(
+        `UPDATE evaluation_assignment_batches SET status = 'IN_PROGRESS', updated_at = NOW() WHERE id = $1 AND status = 'ASSIGNED_TO_FACULTY'`,
+        batchId
+      );
+    }
+
+    // Write audit log
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO evaluation_audit_logs (id, booklet_id, action, performed_by, role, new_value, timestamp)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
+      `AUD-${Date.now()}`,
+      id,
+      "EVALUATED",
+      req.userId || "Faculty",
+      "Faculty Evaluator",
+      `Evaluated booklet score: ${marksObtained} / 100`
+    );
+
+    res.json({ message: "Booklet evaluation saved successfully!", marksObtained: Number(marksObtained) });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PATCH /api/exams/faculty/booklets/:id/update-marks: Update marks with audit trail
+router.patch("/faculty/booklets/:id/update-marks", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  const { marksObtained, remarks, updateReason } = req.body;
+
+  try {
+    const currentList: any[] = await prisma.$queryRawUnsafe(`SELECT marks_obtained FROM answer_booklets WHERE id = $1`, id);
+    const prevMarks = currentList.length > 0 ? currentList[0].marks_obtained : "N/A";
+
+    await prisma.$executeRawUnsafe(
+      `UPDATE answer_booklets SET marks_obtained = $1, remarks = $2, updated_at = NOW() WHERE id = $3`,
+      Number(marksObtained),
+      remarks || "",
+      id
+    );
+
+    // Write audit trail log
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO evaluation_audit_logs (id, booklet_id, action, performed_by, role, previous_value, new_value, reason, timestamp)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+      `AUD-${Date.now()}`,
+      id,
+      "MARKS_UPDATED",
+      req.userId || "Faculty",
+      "Faculty Evaluator",
+      String(prevMarks),
+      String(marksObtained),
+      updateReason || "Faculty updated marks during re-check"
+    );
+
+    res.json({ message: "Booklet evaluation updated successfully with audit trail!", marksObtained: Number(marksObtained) });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/exams/faculty/evaluation-assignments/:id/submit-batch: Submit completed batch to Exam Cell
+router.post("/faculty/evaluation-assignments/:id/submit-batch", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    // Verify all booklets in batch are completed
+    const booklets: any[] = await prisma.$queryRawUnsafe(
+      `SELECT id, evaluation_status FROM answer_booklets WHERE assignment_batch_id = $1`,
+      id
+    );
+
+    const pending = booklets.filter(b => b.evaluation_status !== 'Completed');
+    if (pending.length > 0) {
+      return res.status(400).json({ error: `Cannot submit batch. ${pending.length} booklet(s) are still pending evaluation.` });
+    }
+
+    await prisma.$executeRawUnsafe(
+      `UPDATE evaluation_assignment_batches SET status = 'SUBMITTED_TO_EXAMCELL', submitted_to_examcell_at = NOW(), updated_at = NOW() WHERE id = $1`,
+      id
+    );
+
+    res.json({ message: "Completed evaluation batch submitted to Exam Cell successfully!" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/exams/correction-analysis: Fetch real-time metrics and branch progress
+router.get("/correction-analysis", authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const totalBookletsRes: any[] = await prisma.$queryRawUnsafe(`SELECT COUNT(*) as count FROM answer_booklets`);
+    const totalCorrectedRes: any[] = await prisma.$queryRawUnsafe(`SELECT COUNT(*) as count FROM answer_booklets WHERE evaluation_status = 'Completed'`);
+
+    const allocated = Number(totalBookletsRes[0]?.count || 0);
+    const corrected = Number(totalCorrectedRes[0]?.count || 0);
+    const pending = allocated - corrected;
+    const valuationRate = allocated > 0 ? Number(((corrected / allocated) * 100).toFixed(1)) : 0;
+
+    // Branch-wise progress breakdown
+    const BRANCHES = ["CSE", "AIML", "AIDS", "ECE", "EEE", "MECH"];
+    const branchSummaries: Record<string, { allocated: number; corrected: number; pending: number; progressPercent: number }> = {};
+
+    for (const b of BRANCHES) {
+      const bAllocRes: any[] = await prisma.$queryRawUnsafe(
+        `SELECT COUNT(ab.id) as count FROM answer_booklets ab JOIN evaluation_assignment_batches eb ON ab.assignment_batch_id = eb.id WHERE eb.branch = $1`,
+        b
+      );
+      const bCorrRes: any[] = await prisma.$queryRawUnsafe(
+        `SELECT COUNT(ab.id) as count FROM answer_booklets ab JOIN evaluation_assignment_batches eb ON ab.assignment_batch_id = eb.id WHERE eb.branch = $1 AND ab.evaluation_status = 'Completed'`,
+        b
+      );
+
+      const bAlloc = Number(bAllocRes[0]?.count || 0);
+      const bCorr = Number(bCorrRes[0]?.count || 0);
+
+      branchSummaries[b] = {
+        allocated: bAlloc,
+        corrected: bCorr,
+        pending: bAlloc - bCorr,
+        progressPercent: bAlloc > 0 ? Math.round((bCorr / bAlloc) * 100) : 0
+      };
+    }
+
+    res.json({
+      allocated,
+      corrected,
+      pending,
+      valuationRate,
+      branchSummaries
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

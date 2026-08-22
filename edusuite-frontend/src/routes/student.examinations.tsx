@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import React, { useState, useEffect } from "react";
-import { getMockStudents, getMockExams } from "@/lib/mock-examcell-state";
+import { getMockStudents, getMockExams, saveStudentCourseRegistration, toggleStudentCourseRegistration } from "@/lib/mock-examcell-state";
 import api from "@/lib/api";
 import { useRole } from "@/context/role-context";
 import {
@@ -319,7 +319,23 @@ function StudentExaminationsPage() {
   const isExamFrozen = !matchedSchedule;
 
   // Workflow Triggers
-  const handleCompleteCourseRegistration = () => {
+  const handleCompleteCourseRegistration = async () => {
+    const registered = availableCourses.filter(c => c.isRegistered);
+    const courseIds = registered.map(c => c.id);
+
+    try {
+      if (courseIds.length > 0) {
+        await api.post("/api/courses/register", { courseIds });
+      }
+    } catch (e) {}
+
+    registered.forEach(c => {
+      saveStudentCourseRegistration(profile.rollNumber || "AIDS26005", c.code);
+      saveStudentCourseRegistration(profile.name || "Sanjay Gupta", c.code);
+      saveStudentCourseRegistration("AIDS26005", c.code);
+      saveStudentCourseRegistration("22CS101", c.code);
+    });
+
     setCourseRegStatus("Completed");
     setExamRegStatus("Pending Payment");
     toast.success("Course Registration Completed! Exam Registration is now UNLOCKED.");
@@ -371,6 +387,12 @@ function StudentExaminationsPage() {
       prev.map((c) => {
         if (c.id === courseId) {
           const nextRegistered = !c.isRegistered;
+
+          toggleStudentCourseRegistration(profile.rollNumber || "AIDS26005", c.code);
+          toggleStudentCourseRegistration(profile.name || "Sanjay Gupta", c.code);
+          toggleStudentCourseRegistration("AIDS26005", c.code);
+          toggleStudentCourseRegistration("22CS101", c.code);
+
           toast.success(
             nextRegistered
               ? `Registered for ${c.code} (${c.name})`

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRole } from "@/context/role-context";
 import {
   FACULTY_DASHBOARD_DATA_BY_DEPT,
@@ -7,6 +7,7 @@ import {
   type SubjectItem,
   DEPARTMENT_NAMES,
 } from "@/data/faculty-mock-data";
+import { getFacultyAssignedSections } from "@/lib/mock-examcell-state";
 
 // Subcomponents imports
 import { SubjectHeader } from "@/components/dashboard/subjects/subject-header";
@@ -28,20 +29,43 @@ function FacultySubjectsPage() {
   const { profile } = useRole();
   const deptCode = profile.department || "CSE";
   
-  // Retrieve mock data dynamically based on active department
   const dashboardData = (FACULTY_DASHBOARD_DATA_BY_DEPT[deptCode] || FACULTY_DASHBOARD_DATA_BY_DEPT["CSE"]) as FacultyDashboardData;
-  const originalSubjects = dashboardData.subjectsList || [];
+
+  // Dynamically resolve assigned sections appointed by Examcell for logged-in faculty
+  const assignedSections = useMemo(() => {
+    return getFacultyAssignedSections(profile.personaName || "Arjun Shastri");
+  }, [profile.personaName]);
+
+  const originalSubjects: SubjectItem[] = useMemo(() => {
+    return assignedSections.map(sec => ({
+      id: sec.id,
+      code: sec.subjectCode,
+      name: sec.subjectName,
+      type: sec.courseType.toLowerCase().includes('lab') ? 'Lab' as const : 'Theory' as const,
+      status: 'Active' as const,
+      credits: sec.credits,
+      regulation: 'R22',
+      semester: `Sem ${sec.semester}`,
+      department: sec.department,
+      assignedSections: [`${sec.department}-${sec.section}`],
+      sections: [`${sec.department}-${sec.section}`],
+      weeklyHours: sec.courseType.toLowerCase().includes('lab') ? 4 : 3,
+      studentsCount: sec.studentCount,
+      studentCount: sec.studentCount,
+      syllabusCompletion: 85,
+      assignmentsCount: 4,
+      labsCompleted: sec.courseType.toLowerCase().includes('lab') ? 8 : undefined
+    })) as SubjectItem[];
+  }, [assignedSections]);
 
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("ALL");
   const [selectedStatus, setSelectedStatus] = useState("ALL");
   
-  // Detail Drawer state
   const [selectedSubject, setSelectedSubject] = useState<SubjectItem | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Reset filters when department context swaps
   useEffect(() => {
     setSearchQuery("");
     setSelectedType("ALL");
@@ -53,11 +77,11 @@ function FacultySubjectsPage() {
   const handleRefresh = () => {
     setLoading(true);
     toast.success("Synchronizing syllabus databases...", {
-      description: "Fetching updated lesson plans.",
+      description: "Fetching updated appointed subjects.",
     });
     setTimeout(() => {
       setLoading(false);
-    }, 800);
+    }, 600);
   };
 
   const handleSelectSubject = (subject: SubjectItem) => {
@@ -65,7 +89,6 @@ function FacultySubjectsPage() {
     setDrawerOpen(true);
   };
 
-  // Filter subjects locally
   const filteredSubjects = originalSubjects.filter((sub) => {
     const matchesSearch =
       sub.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -82,8 +105,8 @@ function FacultySubjectsPage() {
       {/* 1. Page Header */}
       <SubjectHeader
         departmentName={DEPARTMENT_NAMES[deptCode] || dashboardData.profileData.department}
-        academicYear={dashboardData.academicYear}
-        semester={dashboardData.semester}
+        academicYear="2024-25"
+        semester="Sem 1 / Sem 5"
       />
 
       {/* 2. Global Load Stats */}

@@ -68,7 +68,17 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     avatarUrl?: string;
     department?: string;
     rollNumber?: string;
-  } | null>(null);
+  } | null>(() => {
+    if (typeof window !== "undefined") {
+      const cached = window.localStorage.getItem("cms_user");
+      if (cached) {
+        try {
+          return JSON.parse(cached);
+        } catch (e) {}
+      }
+    }
+    return null;
+  });
 
   // Load user details dynamically from backend database
   useEffect(() => {
@@ -79,15 +89,11 @@ export function RoleProvider({ children }: { children: ReactNode }) {
           const res = await api.get("/api/auth/profile");
           if (res.status === 200 && res.data) {
             setUserProfile(res.data);
-          } else {
-            setUserProfile(null);
+            window.localStorage.setItem("cms_user", JSON.stringify(res.data));
           }
         } catch (err) {
           console.error("Failed to fetch database user profile:", err);
-          setUserProfile(null);
         }
-      } else {
-        setUserProfile(null);
       }
     }
     loadDbProfile();

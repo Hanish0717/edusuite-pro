@@ -216,6 +216,7 @@ function CourseEnrollPage() {
         year: Number(selectedYear),
         semester: Number(selectedSem),
         credits: Number(credits),
+        course_type: courseType,
         sections: sectionsInput
       });
 

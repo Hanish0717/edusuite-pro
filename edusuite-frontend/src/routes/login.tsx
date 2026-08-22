@@ -176,6 +176,7 @@ function LoginPage() {
       const { token, user } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("cms_token", token);
+      localStorage.setItem("cms_user", JSON.stringify(user));
 
       // Dynamically resolve role context from mock service to get navigation flags
       const resolved = resolveRoleContextFromSelection(step1CoreRole, step2Designation, step3Branch);
