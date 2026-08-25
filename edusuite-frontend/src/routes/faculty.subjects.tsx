@@ -33,29 +33,38 @@ function FacultySubjectsPage() {
 
   // Dynamically resolve assigned sections appointed by Examcell for logged-in faculty
   const assignedSections = useMemo(() => {
-    return getFacultyAssignedSections(profile.personaName || "Arjun Shastri");
-  }, [profile.personaName]);
+    return getFacultyAssignedSections(profile.name || profile.personaName || "Amit Rathore");
+  }, [profile.name, profile.personaName]);
 
   const originalSubjects: SubjectItem[] = useMemo(() => {
-    return assignedSections.map(sec => ({
-      id: sec.id,
-      code: sec.subjectCode,
-      name: sec.subjectName,
-      type: sec.courseType.toLowerCase().includes('lab') ? 'Lab' as const : 'Theory' as const,
-      status: 'Active' as const,
-      credits: sec.credits,
-      regulation: 'R22',
-      semester: `Sem ${sec.semester}`,
-      department: sec.department,
-      assignedSections: [`${sec.department}-${sec.section}`],
-      sections: [`${sec.department}-${sec.section}`],
-      weeklyHours: sec.courseType.toLowerCase().includes('lab') ? 4 : 3,
-      studentsCount: sec.studentCount,
-      studentCount: sec.studentCount,
-      syllabusCompletion: 85,
-      assignmentsCount: 4,
-      labsCompleted: sec.courseType.toLowerCase().includes('lab') ? 8 : undefined
-    })) as SubjectItem[];
+    return assignedSections.map(sec => {
+      const typeLower = (sec.courseType || "").toLowerCase();
+      const isIntegrated = typeLower.includes("integrated") || sec.credits >= 4;
+      const isLab = typeLower.includes("lab");
+
+      const typeLabel = isLab ? "Lab" : isIntegrated ? "Integrated" : "Theory";
+      const weeklyHours = isIntegrated ? 5 : isLab ? 4 : 3;
+
+      return {
+        id: sec.id,
+        code: sec.subjectCode,
+        name: sec.subjectName,
+        type: typeLabel as any,
+        status: 'Active' as const,
+        credits: sec.credits,
+        regulation: 'R22',
+        semester: `Sem ${sec.semester}`,
+        department: sec.department,
+        assignedSections: [`${sec.department}-${sec.section}`],
+        sections: [`${sec.department}-${sec.section}`],
+        weeklyHours: weeklyHours,
+        studentsCount: sec.studentCount,
+        studentCount: sec.studentCount,
+        syllabusCompletion: 85,
+        assignmentsCount: 4,
+        labsCompleted: isLab ? 8 : undefined
+      };
+    }) as SubjectItem[];
   }, [assignedSections]);
 
   const [loading, setLoading] = useState(false);
@@ -112,16 +121,7 @@ function FacultySubjectsPage() {
       {/* 2. Global Load Stats */}
       <StatisticsCards subjects={originalSubjects} />
 
-      {/* 3. Search and filter tools */}
-      <SearchFilterBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        selectedType={selectedType}
-        onTypeChange={setSelectedType}
-        selectedStatus={selectedStatus}
-        onStatusChange={setSelectedStatus}
-        onRefresh={handleRefresh}
-      />
+
 
       {/* 4. Grid view vs Skeletons */}
       {loading ? (

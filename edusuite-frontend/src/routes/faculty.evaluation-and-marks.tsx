@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { KpiCard } from "@/components/dashboard/kpi-card";
+import { useRole } from "@/context/role-context";
 import api from "@/lib/api";
 import {
   Dialog,
@@ -143,6 +144,7 @@ const DEFAULT_FACULTY_SUBJECTS: FacultyAssignedSubject[] = [
 ];
 
 function FacultyEvaluationAndMarksPage() {
+  const { profile } = useRole();
   const [activeMainTab, setActiveMainTab] = useState<'evaluations' | 'mid_marks'>('evaluations');
 
   // TAB 1: Answer Booklet Evaluation State
@@ -173,7 +175,7 @@ function FacultyEvaluationAndMarksPage() {
       setSelectedBatchId(batches[0].id);
     }
 
-    const assigned = getFacultyAssignedSections();
+    const assigned = getFacultyAssignedSections(profile.name || profile.personaName || "Amit Rathore");
     setFacultySubjects(assigned as any);
   };
 

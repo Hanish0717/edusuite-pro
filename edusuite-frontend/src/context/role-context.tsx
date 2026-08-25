@@ -207,6 +207,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
 
     return {
       ...baseProfile,
+      rollNumber: userProfile?.rollNumber || (role === "student" ? "22CS101" : "FAC-EC-6"),
       role,
       flags,
       department,

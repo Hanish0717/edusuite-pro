@@ -12,6 +12,8 @@ export interface MockCourseOffering {
   course_type?: string;
   status: 'Pending' | 'Approved' | 'Rejected';
   sections: any[];
+  enrolledCount?: number;
+  registrationsCount?: number;
 }
 
 export interface MockExamSchedule {
@@ -93,60 +95,96 @@ export interface FacultyAssignedSubjectItem {
 
 const DEFAULT_COURSES: MockCourseOffering[] = [
   {
-    id: '1',
+    id: 'ece-1',
+    course_code: '26ECE301',
+    course_name: 'Basic of Programming',
+    department: 'ECE',
+    year: 1,
+    semester: 1,
+    credits: 3.0,
+    course_type: 'Normal Subject',
+    status: 'Approved',
+    enrolledCount: 1,
+    sections: [
+      { section: 'A', dept: 'ECE', mentor_id: 'f_amit', mentor_name: 'Amit Rathore' },
+      { section: 'B', dept: 'ECE', mentor_id: 'f_pooja', mentor_name: 'Pooja Chawla' }
+    ]
+  },
+  {
+    id: 'ece-2',
+    course_code: '26ECE302',
+    course_name: 'Digital Signal Processing',
+    department: 'ECE',
+    year: 1,
+    semester: 1,
+    credits: 4.0,
+    course_type: 'Integrated Subject',
+    status: 'Approved',
+    enrolledCount: 1,
+    sections: [
+      { section: 'A', dept: 'ECE', mentor_id: 'f_pooja', mentor_name: 'Pooja Chawla' },
+      { section: 'B', dept: 'ECE', mentor_id: 'f_amit', mentor_name: 'Amit Rathore' }
+    ]
+  },
+  {
+    id: 'aids-1',
     course_code: '26DS301',
     course_name: 'Java Programming',
     department: 'AIDS',
     year: 1,
     semester: 1,
-    credits: 4,
+    credits: 4.0,
     course_type: 'Integrated Subject',
     status: 'Approved',
+    enrolledCount: 1,
     sections: [
       { section: 'A', dept: 'AIDS', mentor_id: 'f1', mentor_name: 'Arjun Shastri' },
       { section: 'B', dept: 'AIDS', mentor_id: 'f2', mentor_name: 'Karan Mishra' }
     ]
   },
   {
-    id: '2',
+    id: 'aids-2',
     course_code: '23DS302',
     course_name: 'C Programming',
     department: 'AIDS',
     year: 1,
     semester: 1,
-    credits: 3,
+    credits: 3.0,
     course_type: 'Normal Subject',
     status: 'Approved',
+    enrolledCount: 1,
     sections: [
       { section: 'A', dept: 'AIDS', mentor_id: 'f2', mentor_name: 'Karan Mishra' },
       { section: 'B', dept: 'AIDS', mentor_id: 'f1', mentor_name: 'Arjun Shastri' }
     ]
   },
   {
-    id: '3',
+    id: 'cse-1',
     course_code: 'CS501',
     course_name: 'Data Structures & Algorithms',
     department: 'CSE',
     year: 3,
     semester: 5,
-    credits: 4,
+    credits: 4.0,
     course_type: 'Integrated Subject',
     status: 'Approved',
+    enrolledCount: 1,
     sections: [
       { section: 'A', dept: 'CSE', mentor_id: 'f1', mentor_name: 'Arjun Shastri' },
       { section: 'B', dept: 'CSE', mentor_id: 'f3', mentor_name: 'Dr. Suresh Babu' }
     ]
   },
   {
-    id: '4',
+    id: 'cse-2',
     course_code: 'CS502',
     course_name: 'Database Management Systems',
     department: 'CSE',
     year: 3,
     semester: 5,
-    credits: 3,
+    credits: 3.0,
     course_type: 'Normal Subject',
     status: 'Approved',
+    enrolledCount: 1,
     sections: [
       { section: 'A', dept: 'CSE', mentor_id: 'f3', mentor_name: 'Dr. Suresh Babu' },
       { section: 'B', dept: 'CSE', mentor_id: 'f1', mentor_name: 'Arjun Shastri' }
@@ -176,20 +214,19 @@ const DEFAULT_TIMETABLES: MockExamTimetable[] = [
 ];
 
 const DEFAULT_STUDENTS: MockStudent[] = [
-  { id: 's1', roll_number: '22CS101', full_name: 'K. Sai Teja', department: 'CSE', year: 3, semester: 5, section: 'A', is_registered: true, mid1_marks: 18, assignment_marks: 8, attendance_percentage: 95, fee_balance: 0, hall_ticket_status: 'Not Generated' },
-  { id: 's2', roll_number: '22CS114', full_name: 'A. Meghana', department: 'CSE', year: 3, semester: 5, section: 'A', is_registered: true, mid1_marks: 19, assignment_marks: 9, attendance_percentage: 92, fee_balance: 0, hall_ticket_status: 'Not Generated' },
-  { id: 's3', roll_number: '22EC067', full_name: 'R. Karthik', department: 'ECE', year: 3, semester: 5, section: 'A', is_registered: true, mid1_marks: 14, assignment_marks: 7, attendance_percentage: 71, fee_balance: 75000, hall_ticket_status: 'Not Generated' },
-  { id: 's4', roll_number: '22CS102', full_name: 'J. Rahul', department: 'CSE', year: 3, semester: 5, section: 'B', is_registered: false, mid1_marks: 0, assignment_marks: 0, attendance_percentage: 80, fee_balance: 15000, hall_ticket_status: 'Not Generated' },
-  { id: 's5', roll_number: 'AIML26001', full_name: 'Alapati Charan', department: 'AIML', year: 2, semester: 3, section: 'B', is_registered: true, mid1_marks: 0, assignment_marks: 0, attendance_percentage: 100, fee_balance: 75000, hall_ticket_status: 'Not Generated' },
-  { id: 's6', roll_number: 'AIML26002', full_name: 'Meka Krishna', department: 'AIML', year: 2, semester: 3, section: 'B', is_registered: true, mid1_marks: 0, assignment_marks: 0, attendance_percentage: 100, fee_balance: 75000, hall_ticket_status: 'Not Generated' },
-  { id: 's7', roll_number: 'AIML26003', full_name: 'Boddu Varun', department: 'AIML', year: 2, semester: 3, section: 'A', is_registered: true, mid1_marks: 0, assignment_marks: 0, attendance_percentage: 90, fee_balance: 75000, hall_ticket_status: 'Not Generated' }
+  { id: 's1', roll_number: '26ECA01', full_name: 'Aditi Das', department: 'ECE', year: 1, semester: 1, section: 'A', is_registered: true, mid1_marks: 18, assignment_marks: 8, attendance_percentage: 88, fee_balance: 0, hall_ticket_status: 'Not Generated' },
+  { id: 's2', roll_number: '26ECA02', full_name: 'Dev Mehta', department: 'ECE', year: 1, semester: 1, section: 'A', is_registered: false, mid1_marks: 0, assignment_marks: 0, attendance_percentage: 0, fee_balance: 0, hall_ticket_status: 'Not Generated' },
+  { id: 's3', roll_number: '26ECA03', full_name: 'Ishaan Bose', department: 'ECE', year: 1, semester: 1, section: 'A', is_registered: false, mid1_marks: 0, assignment_marks: 0, attendance_percentage: 0, fee_balance: 0, hall_ticket_status: 'Not Generated' },
+  { id: 's4', roll_number: '26ECA04', full_name: 'Kabir Pillai', department: 'ECE', year: 1, semester: 1, section: 'A', is_registered: false, mid1_marks: 0, assignment_marks: 0, attendance_percentage: 0, fee_balance: 0, hall_ticket_status: 'Not Generated' },
+  { id: 's5', roll_number: '26ECA05', full_name: 'Meera Kulkarni', department: 'ECE', year: 1, semester: 1, section: 'A', is_registered: false, mid1_marks: 0, assignment_marks: 0, attendance_percentage: 0, fee_balance: 0, hall_ticket_status: 'Not Generated' },
+  { id: 's6', roll_number: '26ECA06', full_name: 'Riya Shastri', department: 'ECE', year: 1, semester: 1, section: 'A', is_registered: false, mid1_marks: 0, assignment_marks: 0, attendance_percentage: 0, fee_balance: 0, hall_ticket_status: 'Not Generated' }
 ];
 
-// ONLY Sanjay Gupta has started / completed course registration
 const DEFAULT_STUDENT_COURSE_REGISTRATIONS: Record<string, string[]> = {
-  "22CS101": ["26DS301", "23DS302", "CS501", "CS502"],
-  "AIDS26005": ["26DS301", "23DS302", "CS501", "CS502"],
-  "Sanjay Gupta": ["26DS301", "23DS302", "CS501", "CS502"]
+  "26ECA01": ["26ECE301", "26ECE302"],
+  "Aditi Das": ["26ECE301", "26ECE302"],
+  "26ADA01": ["26DS301", "23DS302"],
+  "24CSA01": ["CS501", "CS502"]
 };
 
 const isBrowser = typeof window !== "undefined" && typeof localStorage !== "undefined";
@@ -202,7 +239,14 @@ export const getMockCourses = (): MockCourseOffering[] => {
       localStorage.setItem('mock_offered_courses_v3', JSON.stringify(DEFAULT_COURSES));
       return DEFAULT_COURSES;
     }
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    const combined = [...parsed];
+    DEFAULT_COURSES.forEach(dc => {
+      if (!combined.some(c => c.course_code === dc.course_code)) {
+        combined.push(dc);
+      }
+    });
+    return combined;
   } catch (e) {
     return DEFAULT_COURSES;
   }
@@ -327,21 +371,49 @@ export const toggleStudentCourseRegistration = (identifier: string, courseCode: 
   }
 };
 
-const STUDENT_NAMES_24 = [
-  "Alapati Charan", "Meka Krishna", "Boddu Varun", "K. Sai Teja",
-  "Sanjay Gupta", "A. Meghana", "R. Karthik", "J. Rahul",
-  "P. Ananya", "M. Vikram", "V. Swetha", "G. Harish",
-  "K. Pooja", "T. Dinesh", "S. Kavya", "N. Pradeep",
-  "D. Ramya", "B. Akhil", "C. Deepthi", "Y. Tarun",
-  "L. Bhavana", "M. Naresh", "K. Bhavya", "Ch. Pawan"
-];
+// Database-Seeded Student Roster per Section (EXACT 6 students per section matching PostgreSQL DB seeder)
+const DB_SECTION_STUDENTS: Record<string, { roll: string; name: string }[]> = {
+  "A": [
+    { roll: "01", name: "Aditi Das" },
+    { roll: "02", name: "Dev Mehta" },
+    { roll: "03", name: "Ishaan Bose" },
+    { roll: "04", name: "Kabir Pillai" },
+    { roll: "05", name: "Meera Kulkarni" },
+    { roll: "06", name: "Riya Shastri" }
+  ],
+  "B": [
+    { roll: "01", name: "Shreya Trivedi" },
+    { roll: "02", name: "Tanish Dubey" },
+    { roll: "03", name: "Varun Saxena" },
+    { roll: "04", name: "Yash Bannerjee" },
+    { roll: "05", name: "Aarav Sharma" },
+    { roll: "06", name: "Vihaan Gupta" }
+  ]
+};
 
-const generate24StudentsForSection = (dept: string, secLabel: string, courseCode: string) => {
+const getDeptCode = (dept: string) => {
+  const clean = (dept || "").toUpperCase();
+  if (clean.includes("EC")) return "EC";
+  if (clean.includes("AD") || clean.includes("DS")) return "AD";
+  if (clean.includes("AM") || clean.includes("ML")) return "AM";
+  if (clean.includes("CS")) return "CS";
+  if (clean.includes("IT")) return "IT";
+  if (clean.includes("EE")) return "EE";
+  if (clean.includes("ME")) return "ME";
+  if (clean.includes("CE")) return "CE";
+  return "EC";
+};
+
+const generateStudentsForSection = (dept: string, secLabel: string, courseCode: string, year = 1) => {
   const studentRegsMap = getStudentCourseRegistrations();
+  const branchCode = getDeptCode(dept);
+  const yearSuffix = (27 - year).toString(); // 26 for 1st Year, 24 for 3rd Year
+  const secKey = (secLabel || "A").toUpperCase() === "B" ? "B" : "A";
+  const studentTemplates = DB_SECTION_STUDENTS[secKey];
 
-  return Array.from({ length: 24 }).map((_, i) => {
-    const rollNum = `${dept}260${(i + 1).toString().padStart(2, "0")}`;
-    const studentName = STUDENT_NAMES_24[i] || `Student ${i + 1}`;
+  return studentTemplates.map((st) => {
+    const rollNum = `${yearSuffix}${branchCode}${secKey}${st.roll}`;
+    const studentName = st.name;
 
     const rollRegs = studentRegsMap[rollNum] || [];
     const nameRegs = studentRegsMap[studentName] || [];
@@ -352,10 +424,10 @@ const generate24StudentsForSection = (dept: string, secLabel: string, courseCode
     return {
       roll_number: rollNum,
       name: studentName,
-      attendance: isRegistered ? 86 : 0,
-      mid1: isRegistered ? 19 : 0,
-      mid2: isRegistered ? 19 : 0,
-      assignment: isRegistered ? 7 : 0,
+      attendance: isRegistered ? 88 : 0,
+      mid1: isRegistered ? 18 : 0,
+      mid2: isRegistered ? 17 : 0,
+      assignment: isRegistered ? 8 : 0,
       status: "Draft" as const,
       is_registered: isRegistered
     };
@@ -367,40 +439,45 @@ export const getFacultyAssignedSections = (facultyName?: string): FacultyAssigne
   const courses = getMockCourses();
   let activeName = (facultyName || "").trim();
 
-  if (!activeName && typeof window !== "undefined") {
+  if (typeof window !== "undefined") {
     try {
       const storedUser = localStorage.getItem("cms_user");
       if (storedUser) {
         const u = JSON.parse(storedUser);
-        if (u && u.name) activeName = u.name;
+        if (u && u.name && (!activeName || activeName === "Arjun Shastri")) {
+          activeName = u.name;
+        }
       }
     } catch (e) {}
   }
-  if (!activeName) activeName = "Karan Mishra";
+  if (!activeName) activeName = "Pooja Chawla";
 
   const assigned: FacultyAssignedSubjectItem[] = [];
 
   courses.forEach(c => {
+    // Only pick up courses approved by Exam Cell
+    if (c.status !== "Approved") return;
+
     if (Array.isArray(c.sections)) {
       c.sections.forEach((sec: any) => {
         let mentorName = "";
         let secLabel = "A";
 
         if (typeof sec === "object" && sec !== null) {
-          mentorName = sec.mentor_name || "";
+          mentorName = sec.mentor_name || sec.mentorName || "";
           secLabel = sec.section || "A";
         } else if (typeof sec === "string") {
           secLabel = sec;
-          mentorName = "Arjun Shastri";
+          mentorName = "Pooja Chawla";
         }
 
-        const isMatch = mentorName.toLowerCase().includes(activeName.toLowerCase()) || 
-                        activeName.toLowerCase().includes(mentorName.toLowerCase()) ||
-                        !mentorName;
+        const isMatch = !mentorName || 
+                        mentorName.toLowerCase().includes(activeName.toLowerCase()) || 
+                        activeName.toLowerCase().includes(mentorName.toLowerCase());
 
         if (isMatch) {
-          const studentRoster = generate24StudentsForSection(c.department, secLabel, c.course_code);
-          const enrolledCount = studentRoster.filter(s => s.is_registered).length;
+          const studentRoster = generateStudentsForSection(c.department, secLabel, c.course_code, c.year || 1);
+          const enrolledCount = studentRoster.filter(s => s.is_registered).length || 1;
 
           assigned.push({
             id: `${c.id}-${secLabel}`,
@@ -413,7 +490,7 @@ export const getFacultyAssignedSections = (facultyName?: string): FacultyAssigne
             studentCount: enrolledCount,
             courseType: c.course_type || "Normal Subject",
             credits: c.credits || 3,
-            status: c.status === 'Approved' ? 'In Progress' : 'Draft',
+            status: 'In Progress',
             students: studentRoster
           });
         }

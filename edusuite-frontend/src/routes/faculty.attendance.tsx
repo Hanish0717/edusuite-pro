@@ -42,8 +42,8 @@ function FacultyAttendancePage() {
 
   // Dynamically resolve assigned sections appointed by Examcell for logged-in faculty
   const assignedSections = useMemo(() => {
-    return getFacultyAssignedSections(profile.personaName || "Arjun Shastri");
-  }, [profile.personaName]);
+    return getFacultyAssignedSections(profile.name || profile.personaName || "Amit Rathore");
+  }, [profile.name, profile.personaName]);
 
   const dynamicTimetable: TimetableSlot[] = useMemo(() => {
     return assignedSections.map((sec, idx) => ({
