@@ -1,7 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { DeanSubPage } from '@/modules/deans/components/DeanSubPage';
+import { createFileRoute } from "@tanstack/react-router";
+import { FeeManagementCockpit } from "@/components/admin-finance/FeeManagementCockpit";
 
-export const Route = createFileRoute('/staff/finance-dean/fees')({
-  head: () => ({ meta: [{ title: 'Fee Collection — Finance Dean — EduSuite Pro' }] }),
-  component: () => <DeanSubPage title="Fee Collection" dean="Finance Dean" description="Tuition, hostel & transport fee collection ledger" />,
+export const Route = createFileRoute("/staff/finance-dean/fees")({
+  head: () => ({ meta: [{ title: "Fee Management Cockpit — Finance Dean — EduSuite Pro" }] }),
+  component: () => <FeeManagementCockpit />,
 });
+
