@@ -20,13 +20,28 @@ export function PaymentModal({ open, onOpenChange, summary, onSuccess }: Payment
   const [selectedMode, setSelectedMode] = useState<"upi" | "card" | "netbanking" | "wallet">("upi");
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const maxAllowed = summary.pendingAmount;
+  const isCustomExceeded = paymentType === "partial" && customAmount > maxAllowed;
+  const isCustomInvalid = paymentType === "partial" && (customAmount <= 0 || isNaN(customAmount));
+  const isAmountValid = paymentType === "full" || (!isCustomExceeded && !isCustomInvalid);
+
   const convenienceFee = selectedMode === "card" ? 150 : 0;
-  const payAmount = paymentType === "full" ? summary.pendingAmount : customAmount;
+  const payAmount = paymentType === "full" ? maxAllowed : Math.max(0, customAmount || 0);
   const totalPayable = payAmount + convenienceFee;
 
+  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawVal = e.target.value;
+    if (rawVal === "") {
+      setCustomAmount(0);
+      return;
+    }
+    const num = Number(rawVal);
+    setCustomAmount(num);
+  };
+
   const handlePayNow = () => {
-    if (totalPayable <= 0) {
-      toast.error("Please enter a valid payment amount");
+    if (!isAmountValid || payAmount <= 0) {
+      toast.error(isCustomExceeded ? `Amount cannot exceed pending due of ₹${maxAllowed.toLocaleString()}` : "Please enter a valid payment amount");
       return;
     }
     setIsProcessing(true);
@@ -65,7 +80,7 @@ export function PaymentModal({ open, onOpenChange, summary, onSuccess }: Payment
                 type="button"
                 onClick={() => {
                   setPaymentType("full");
-                  setCustomAmount(summary.pendingAmount);
+                  setCustomAmount(maxAllowed);
                 }}
                 className={`p-2.5 rounded-xl border text-center font-semibold transition-all ${
                   paymentType === "full"
@@ -73,11 +88,14 @@ export function PaymentModal({ open, onOpenChange, summary, onSuccess }: Payment
                     : "border-slate-200 dark:border-slate-800 text-slate-600 hover:bg-slate-50"
                 }`}
               >
-                Full Due (₹{summary.pendingAmount.toLocaleString()})
+                Full Due (₹{maxAllowed.toLocaleString()})
               </button>
               <button
                 type="button"
-                onClick={() => setPaymentType("partial")}
+                onClick={() => {
+                  setPaymentType("partial");
+                  if (customAmount > maxAllowed) setCustomAmount(maxAllowed);
+                }}
                 className={`p-2.5 rounded-xl border text-center font-semibold transition-all ${
                   paymentType === "partial"
                     ? "border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 text-blue-600"
@@ -89,16 +107,62 @@ export function PaymentModal({ open, onOpenChange, summary, onSuccess }: Payment
             </div>
           </div>
 
-          {/* CUSTOM AMOUNT INPUT */}
+          {/* CUSTOM AMOUNT INPUT WITH VALIDATION */}
           {paymentType === "partial" && (
-            <div className="space-y-1">
-              <label className="text-slate-500 font-semibold">Enter Amount to Pay (₹)</label>
+            <div className="space-y-1.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
+              <div className="flex justify-between items-center">
+                <label className="text-slate-700 dark:text-slate-300 font-semibold">Enter Amount to Pay (₹)</label>
+                <span className="text-[11px] text-slate-500 font-mono">Max: ₹{maxAllowed.toLocaleString()}</span>
+              </div>
+              
               <Input
                 type="number"
-                value={customAmount}
-                onChange={(e) => setCustomAmount(Number(e.target.value))}
-                className="h-9 rounded-xl font-mono text-sm"
+                min={1}
+                max={maxAllowed}
+                value={customAmount || ""}
+                onChange={handleCustomAmountChange}
+                placeholder={`Enter amount (1 - ${maxAllowed})`}
+                className={`h-9 rounded-xl font-mono text-sm bg-white dark:bg-slate-900 ${
+                  isCustomExceeded || isCustomInvalid ? "border-rose-500 focus-visible:ring-rose-500" : ""
+                }`}
               />
+
+              {/* QUICK SELECT BUTTONS */}
+              <div className="flex gap-1.5 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setCustomAmount(Math.round(maxAllowed * 0.25))}
+                  className="px-2 py-0.5 rounded-lg border border-slate-200 text-[10px] font-mono hover:bg-slate-100"
+                >
+                  25% (₹{Math.round(maxAllowed * 0.25).toLocaleString()})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCustomAmount(Math.round(maxAllowed * 0.5))}
+                  className="px-2 py-0.5 rounded-lg border border-slate-200 text-[10px] font-mono hover:bg-slate-100"
+                >
+                  50% (₹{Math.round(maxAllowed * 0.5).toLocaleString()})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCustomAmount(maxAllowed)}
+                  className="px-2 py-0.5 rounded-lg border border-slate-200 text-[10px] font-mono hover:bg-slate-100 font-bold text-blue-600"
+                >
+                  Max Due (₹{maxAllowed.toLocaleString()})
+                </button>
+              </div>
+
+              {/* ERROR MESSAGES */}
+              {isCustomExceeded && (
+                <p className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1 pt-1">
+                  ⚠️ Amount cannot exceed total pending due of ₹{maxAllowed.toLocaleString()}
+                </p>
+              )}
+              {isCustomInvalid && (
+                <p className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1 pt-1">
+                  ⚠️ Please enter a valid payment amount greater than ₹0
+                </p>
+              )}
             </div>
           )}
 
@@ -172,7 +236,9 @@ export function PaymentModal({ open, onOpenChange, summary, onSuccess }: Payment
             </div>
             <div className="flex justify-between text-xs font-bold text-slate-900 dark:text-white pt-1.5 border-t border-slate-200 dark:border-slate-700">
               <span>Total Amount Payable:</span>
-              <span className="font-mono text-blue-600 text-sm">₹{totalPayable.toLocaleString()}</span>
+              <span className={`font-mono text-sm ${!isAmountValid ? "text-rose-600" : "text-blue-600"}`}>
+                ₹{totalPayable.toLocaleString()}
+              </span>
             </div>
           </div>
 
@@ -185,10 +251,18 @@ export function PaymentModal({ open, onOpenChange, summary, onSuccess }: Payment
           <Button
             type="button"
             onClick={handlePayNow}
-            disabled={isProcessing}
-            className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5"
+            disabled={isProcessing || !isAmountValid}
+            className={`rounded-xl text-xs gap-1.5 transition-all ${
+              !isAmountValid
+                ? "bg-slate-300 dark:bg-slate-800 text-slate-500 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
           >
-            {isProcessing ? "Connecting to Gateway..." : `Pay ₹${totalPayable.toLocaleString()}`}
+            {isProcessing
+              ? "Connecting to Gateway..."
+              : !isAmountValid
+              ? "Invalid Amount"
+              : `Pay ₹${totalPayable.toLocaleString()}`}
           </Button>
         </DialogFooter>
       </DialogContent>
