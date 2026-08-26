@@ -11,6 +11,7 @@ import {
   Eye, 
   CheckCircle2, 
   AlertCircle,
+  ExternalLink,
   BookOpen
 } from "lucide-react";
 import { toast } from "sonner";
@@ -191,9 +192,9 @@ export function TodaySchedule({ slots, onSelectSlot }: TodayScheduleProps) {
                     navigate({ to: "/student/lms" as any });
                   }}
                   size="sm"
-                  className="h-8 text-[11px] px-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold flex items-center justify-center w-full min-w-0 overflow-hidden cursor-pointer"
+                  className="h-8 text-[11px] px-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold gap-1.5 w-full min-w-0 overflow-hidden cursor-pointer"
                 >
-                  <span className="truncate">LMS</span>
+                  <span className="truncate">LMS</span> <ExternalLink className="h-3.5 w-3.5 shrink-0" />
                 </Button>
               </div>
             </div>

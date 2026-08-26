@@ -57,8 +57,8 @@ type ResultCategory = "regular" | "supplementary" | "improvement" | "revaluation
 
 export function Results({
   profile,
-  semesterResults = [],
-  resultStatus = "Not Published",
+  semesterResults,
+  resultStatus,
   selectedYear,
   selectedSemester,
   onYearChange,
@@ -71,24 +71,23 @@ export function Results({
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState<ResultCategory>("regular");
 
-  const safeResults = semesterResults || [];
   const isPublished = resultStatus === "Published" || selectedSemester < 5;
-  const currentResult = safeResults.find((s) => s.semester === selectedSemester);
+  const currentResult = semesterResults.find((s) => s.semester === selectedSemester);
 
-  const latestResult = [...safeResults].sort((a, b) => b.semester - a.semester)[0];
+  const latestResult = [...semesterResults].sort((a, b) => b.semester - a.semester)[0];
   const cgpaLatest = latestResult?.cgpa ?? profile.cgpa;
   const sgpaLatest = latestResult?.sgpa ?? profile.sgpa;
-  const completedSemesters = safeResults.length;
-  const totalCreditsEarned = safeResults.reduce((s, r) => s + (r?.creditsEarned || 0), 0);
+  const completedSemesters = semesterResults.length;
+  const totalCreditsEarned = semesterResults.reduce((s, r) => s + r.creditsEarned, 0);
   const backlogs = profile.activeBacklogs;
 
-  const cgpaTrend = safeResults.map((s) => ({
+  const cgpaTrend = semesterResults.map((s) => ({
     sem: `Sem ${s.semester}`,
     sgpa: s.sgpa,
     cgpa: s.cgpa,
   }));
 
-  const filteredResults = safeResults.filter(
+  const filteredResults = semesterResults.filter(
     (sem) =>
       `Semester ${sem.semester}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sem.academicYear.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -8,7 +8,15 @@ export * from "./hooks/useStudents";
 export * from "./hooks/useStudentPermissions";
 export * from "./pages/Dashboard";
 export { Students as StudentsPage } from "./pages/Students";
-
 export * from "./pages/StudentProfile";
-
 export * from "./components/layout/StudentsModuleView";
+export {
+  MOCK_DEPARTMENT_STUDENTS,
+  INITIAL_STUDENTS,
+  getStudents,
+  fetchStudentRecords,
+  createStudentRecord,
+  updateStudentRecord,
+  deleteStudentRecord,
+} from "./StudentsService";
+

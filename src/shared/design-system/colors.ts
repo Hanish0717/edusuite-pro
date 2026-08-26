@@ -1,27 +1,27 @@
 export const colors = {
   primary: {
-    DEFAULT: "#2563EB",
-    hover: "#1D4ED8",
-    light: "#DBEAFE",
+    DEFAULT: "#1d4ed8", // Royal Blue
+    hover: "#1e40af",
+    light: "#dbeafe",
     foreground: "#ffffff",
   },
   secondary: {
-    DEFAULT: "#3B82F6",
-    hover: "#2563EB",
-    light: "#EFF6FF",
+    DEFAULT: "#3b82f6", // Electric Blue
+    hover: "#2563eb",
+    light: "#eff6ff",
     foreground: "#ffffff",
   },
   accent: {
     emerald: "#10b981", // Success green
     amber: "#f59e0b", // Warning yellow
-    rose: "#ef4444", // Danger red
-    indigo: "#2563EB", // Info blue
+    rose: "#f43f5e", // Error red
+    indigo: "#6366f1", // Info indigo
   },
   neutral: {
-    background: "#eff6ff", // Background Blue
+    background: "#ffffff",
     foreground: "#0f172a",
     muted: "#64748b",
-    border: "#bfdbfe", // Border
+    border: "#e2e8f0",
   },
 };
 export default colors;

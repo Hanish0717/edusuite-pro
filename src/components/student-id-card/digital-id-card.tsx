@@ -101,7 +101,7 @@ export function DigitalIdCard({ cardData }: DigitalIdCardProps) {
                   {cardData.name}
                 </h4>
                 <div className="text-blue-400 font-mono font-bold text-xs">
-                  Adm No: {cardData.rollNumber}
+                  Roll No: {cardData.rollNumber}
                 </div>
                 <div className="text-slate-300 text-[11px] font-medium">
                   {cardData.department}
@@ -121,8 +121,8 @@ export function DigitalIdCard({ cardData }: DigitalIdCardProps) {
             {/* KEY DATES & REGISTRATION */}
             <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
               <div>
-                <span className="text-slate-500 block text-[9px] uppercase font-mono">Adm. Number</span>
-                <strong className="text-slate-200 font-mono text-[10px]">{cardData.admissionNumber || cardData.registrationNumber}</strong>
+                <span className="text-slate-500 block text-[9px] uppercase font-mono">Reg. Number</span>
+                <strong className="text-slate-200 font-mono text-[10px]">{cardData.registrationNumber}</strong>
               </div>
               <div>
                 <span className="text-slate-500 block text-[9px] uppercase font-mono">Date of Birth</span>

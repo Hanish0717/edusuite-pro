@@ -137,7 +137,7 @@ export function LMSModuleView() {
     department: "CSE",
     topic: "",
     instructor: "Dr. K. Sai Teja",
-    date: new Date().toISOString().split("T")[0] || "",
+    date: new Date().toISOString().split("T")[0],
     time: "04:00 PM - 05:00 PM",
     link: "https://meet.google.com/abc-defg-hij",
   });

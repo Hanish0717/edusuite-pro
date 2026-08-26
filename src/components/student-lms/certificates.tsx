@@ -31,7 +31,7 @@ export function Certificates({ certificates, searchQuery }: CertificatesProps) {
 =====================================================
 CERTIFICATE OF ACCOMPLISHMENT
 =====================================================
-Awarded to: Sai Teja (Adm No: 22CS101)
+Awarded to: Sai Teja (Roll No: 22CS101)
 Credential: ${cert.title}
 Certificate Type: ${cert.type}
 Issuing Authority: ${cert.issuer}
@@ -111,7 +111,7 @@ Verified Digital Credential — EduSuite ERP`;
                   {cert.type}
                 </Badge>
 
-                <ShieldCheck className="h-4 w-4 text-emerald-600" title="Verified Digital Credential" />
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
               </div>
 
               <h3 className="text-sm font-extrabold text-slate-900 dark:text-white group-hover:text-amber-600 transition-colors leading-snug">

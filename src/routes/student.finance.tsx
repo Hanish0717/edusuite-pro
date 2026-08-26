@@ -49,7 +49,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/student/finance")({
   head: () => ({
-    meta: [{ title: "Finance — EduSuite Pro ERP" }],
+    meta: [{ title: "Fee & Payments — EduSuite Pro ERP" }],
   }),
   component: StudentFinancePage,
 });
@@ -142,7 +142,7 @@ function StudentFinancePage() {
           Student
         </Link>
         <ChevronRight className="h-3.5 w-3.5 text-slate-300 dark:text-slate-700" />
-        <span className="font-bold text-slate-900 dark:text-white">Finance</span>
+        <span className="font-bold text-slate-900 dark:text-white">Fee & Payments</span>
       </nav>
 
       {/* 2. SUBMODULE SWITCHER TOOLBAR */}
@@ -242,7 +242,6 @@ function StudentFinancePage() {
           {activeSubmodule === "receipts" && (
             <Receipts
               receipts={receipts}
-              summary={summary}
               onOpenReceiptModal={(rec) => {
                 setSelectedReceipt(rec);
                 setReceiptModalOpen(true);
@@ -257,7 +256,7 @@ function StudentFinancePage() {
             />
           )}
 
-          {activeSubmodule === "nodue" && <NoDue clearances={clearances} summary={summary} />}
+          {activeSubmodule === "nodue" && <NoDue clearances={clearances} />}
         </>
       )}
 

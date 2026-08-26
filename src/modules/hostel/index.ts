@@ -1,4 +1,51 @@
-export * from "./HostelService";
+// =============================================================================
+// HOSTEL MODULE V2 MAIN ENTRY POINT EXPORTS
+// =============================================================================
+
+export * from "./types";
+export * from "./constants";
+export * from "./validators/HostelValidator";
+export * from "./events/HostelEvents";
+export * from "./repositories/HostelRepository";
+export * from "./repositories/RepositoryFactory";
+export {
+  fetchHostelRooms,
+  fetchHostelResidents,
+  fetchGatePasses,
+  INITIAL_BLOCKS,
+  INITIAL_ROOMS,
+  ENHANCED_RESIDENTS,
+  INITIAL_PASSES,
+  INITIAL_GATE_PASS_DETAILS,
+  INITIAL_COMPLAINT_DETAILS,
+  DEFAULT_SECURITY_METRICS,
+  DEFAULT_COMPLAINT_COMPLIANCE,
+  DEFAULT_ANALYTICS,
+  DEFAULT_HOSTEL_CONFIG,
+  DEFAULT_HOSTEL_HEALTH,
+  DEFAULT_MAINTENANCE_SUMMARY,
+  INITIAL_ALERTS,
+  INITIAL_ACTIVITIES,
+  DEFAULT_STAFF_SUMMARY,
+  DEFAULT_POLICY_COMPLIANCE,
+  type EnhancedResidentStudent,
+  type GatePassDetailItem,
+  type HostelComplaintDetailItem,
+  type GatePassSecurityMetrics,
+  type ComplaintComplianceSummary,
+  type ExecutiveHostelAnalyticsData,
+  type HostelConfig,
+  type HostelHealthStatus,
+  type MaintenanceSummary,
+  type HostelAlert,
+  type HostelActivityLog,
+  type HostelStaffSummary,
+  type PolicyComplianceStatus,
+} from "./HostelService";
+export * from "./hooks/useHostel";
+export * from "./hooks/useHostelPermissions";
+
+// Legacy component exports maintained for backwards compatibility
 export * from "./HostelComponents";
 
 export {

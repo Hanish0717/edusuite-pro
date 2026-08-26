@@ -72,6 +72,10 @@ export interface FacultyFullDaySchedule {
   designation: string;
   email: string;
   periods: FacultyPeriodSlot[];
+  facultyName?: string;
+  empId?: string;
+  freePeriodsCount?: number;
+  teachingPeriodsCount?: number;
 }
 
 export interface ClassStudentAttendance {
@@ -96,6 +100,11 @@ export interface SyllabusUnit {
   unitTitle: string;
   completionPct: number; // 0 to 100
   status: "Completed" | "In Progress" | "Remaining";
+  completed?: boolean;
+  unitNo?: number;
+  title?: string;
+  topicsCovered?: string;
+  estimatedHours?: number;
 }
 
 export interface SyllabusProgress {
@@ -126,6 +135,9 @@ export interface AllClassesAttendanceItem {
   classTeacher: string;
   status: "Normal" | "Defaulter Warning";
 }
+
+export type AllClassesAttendance = AllClassesAttendanceItem;
+export type ClassStudent = ClassStudentAttendance;
 
 // 1. EXTENDED DEPARTMENT MOCK DATA ROSTER
 export const ALL_MOCK_COURSES: AcademicCourse[] = [

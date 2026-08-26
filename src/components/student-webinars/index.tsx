@@ -64,44 +64,17 @@ export function StudentWebinarsModule() {
           } else {
             toast.info(`Registration canceled for "${w.title}".`);
           }
-          const updated = {
+          return {
             ...w,
             isRegistered: nextState,
             registeredCount: nextState ? w.registeredCount + 1 : w.registeredCount - 1,
             seatsLeft: nextState ? w.seatsLeft - 1 : w.seatsLeft + 1,
           };
-          if (selectedWebinar?.id === webinarId) {
-            setSelectedWebinar(updated);
-          }
-          return updated;
         }
         return w;
       })
     );
   };
-
-  // Bookmark toggle handler
-  const handleToggleWebinarBookmark = (webinarId: string) => {
-    setWebinarsList((prev) =>
-      prev.map((w) => {
-        if (w.id === webinarId) {
-          const nextState = !w.isBookmarked;
-          toast.success(nextState ? `Saved "${w.title}" to bookmarks!` : `Removed "${w.title}" from bookmarks.`);
-          const updated = { ...w, isBookmarked: nextState };
-          if (selectedWebinar?.id === webinarId) {
-            setSelectedWebinar(updated);
-          }
-          return updated;
-        }
-        return w;
-      })
-    );
-  };
-
-  // Featured webinar memoized from state
-  const featuredWebinar = useMemo(() => {
-    return webinarsList.find((w) => w.isFeatured || w.id === "web-live-1") || MOCK_FEATURED_WEBINAR;
-  }, [webinarsList]);
 
   // Filter Webinars
   const filteredWebinars = useMemo(() => {
@@ -114,16 +87,12 @@ export function StudentWebinarsModule() {
         webinar.category.toLowerCase().includes(query);
 
       const matchesCategory =
-        selectedCategory === "All" ||
-        webinar.category.toLowerCase() === selectedCategory.toLowerCase() ||
-        webinar.title.toLowerCase().includes(selectedCategory.toLowerCase());
+        selectedCategory === "All" || webinar.category === selectedCategory;
 
       let matchesTab = true;
-      if (selectedCategory === "All") {
-        if (activeTab === "live") matchesTab = webinar.status === "live";
-        if (activeTab === "registered") matchesTab = webinar.isRegistered;
-        if (activeTab === "completed") matchesTab = webinar.status === "completed";
-      }
+      if (activeTab === "live") matchesTab = webinar.status === "live";
+      if (activeTab === "registered") matchesTab = webinar.isRegistered;
+      if (activeTab === "completed") matchesTab = webinar.status === "completed";
 
       return matchesSearch && matchesCategory && matchesTab;
     });
@@ -147,7 +116,10 @@ export function StudentWebinarsModule() {
         onSearchChange={setSearchQuery}
       />
 
-      {/* 2. TOP NAVIGATION TABS */}
+      {/* 2. STATISTICS CARDS */}
+      <WebinarStatsCards onTabClick={(tab) => setActiveTab(tab)} />
+
+      {/* 3. TOP NAVIGATION TABS */}
       <WebinarTabsNav activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* 4. MAIN LAYOUT (LEFT CONTENT AREA vs RIGHT SIDEBAR) */}
@@ -175,20 +147,18 @@ export function StudentWebinarsModule() {
           }}
         />
       ) : (
-        <div className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+          {/* LEFT 3 COLS: WEBINAR CONTENT */}
+          <div className="lg:col-span-3 space-y-8">
             {/* UPCOMING WEBINARS SECTION */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-extrabold text-slate-900 dark:text-white capitalize">
-                  {activeTab} Webinars
+                <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
+                  Upcoming Webinars
                 </h2>
                 <button
-                  onClick={() => {
-                    setActiveTab("upcoming");
-                    setSelectedCategory("All");
-                    setSearchQuery("");
-                  }}
-                  className="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1 cursor-pointer"
+                  onClick={() => setActiveTab("upcoming")}
+                  className="text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1"
                 >
                   View All <ArrowRight className="size-3" />
                 </button>
@@ -198,7 +168,6 @@ export function StudentWebinarsModule() {
                 <WebinarEmptyState
                   type={activeTab === "registered" ? "no-registrations" : "no-webinars"}
                   onResetFilter={() => {
-                    setActiveTab("upcoming");
                     setSelectedCategory("All");
                     setSearchQuery("");
                   }}
@@ -210,7 +179,6 @@ export function StudentWebinarsModule() {
                       key={webinar.id}
                       webinar={webinar}
                       onRegisterToggle={handleRegisterToggle}
-                      onToggleBookmark={handleToggleWebinarBookmark}
                       onSelectWebinar={handleSelectWebinar}
                     />
                   ))}
@@ -218,12 +186,21 @@ export function StudentWebinarsModule() {
               )}
             </div>
 
-            {/* FEATURED WEBINAR BANNER */}
-            <WebinarHero
-              webinar={featuredWebinar}
-              onRegisterToggle={handleRegisterToggle}
-              onSelectWebinar={handleSelectWebinar}
-            />
+            {/* BOTTOM ROW: FEATURED WEBINAR BANNER (LEFT) & TOP CATEGORIES (RIGHT) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Featured Webinar Banner */}
+              <WebinarHero
+                webinar={MOCK_FEATURED_WEBINAR}
+                onRegisterToggle={handleRegisterToggle}
+                onSelectWebinar={handleSelectWebinar}
+              />
+
+              {/* Top Categories Card */}
+              <CategoryChips
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+              />
+            </div>
 
             {/* RECENT RECORDINGS ROW */}
             <div className="space-y-4 pt-2">
@@ -274,6 +251,12 @@ export function StudentWebinarsModule() {
                 }}
               />
             </div>
+          </div>
+
+          {/* RIGHT 1 COL: SIDEBAR (WEBINAR HIGHLIGHTS & UPCOMING SCHEDULE) */}
+          <div className="lg:col-span-1">
+            <WebinarHighlights onTabNavigate={(tab) => setActiveTab(tab)} />
+          </div>
         </div>
       )}
 

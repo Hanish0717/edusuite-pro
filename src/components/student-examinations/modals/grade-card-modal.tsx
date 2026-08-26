@@ -127,7 +127,7 @@ Controller of Examinations Signature — EduSuite Academic Board`;
             </Button>
 
             <span className="font-bold text-slate-800 dark:text-slate-200 font-mono text-[11px]">
-              Semester {result.semester} of {allResults.length || 6}
+              Semester {actualResult.semester} of {allResults.length || 6}
             </span>
 
             <Button
@@ -157,11 +157,11 @@ Controller of Examinations Signature — EduSuite Academic Board`;
             </div>
             <div>
               <span className="text-slate-400 block text-[10px]">Exam Session</span>
-              <strong className="text-slate-800 dark:text-slate-200">{result.monthYear}</strong>
+              <strong className="text-slate-800 dark:text-slate-200">{actualResult.monthYear}</strong>
             </div>
             <div>
               <span className="text-slate-400 block text-[10px]">Cumulative CGPA</span>
-              <strong className="text-emerald-600 font-mono font-bold text-xs">{result.cgpa.toFixed(2)}</strong>
+              <strong className="text-emerald-600 font-mono font-bold text-xs">{actualResult.cgpa.toFixed(2)}</strong>
             </div>
           </div>
 
@@ -181,7 +181,7 @@ Controller of Examinations Signature — EduSuite Academic Board`;
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {result.subjects.map((sub) => (
+                {actualResult.subjects.map((sub) => (
                   <tr key={sub.code} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
                     <td className="p-2.5 font-mono font-bold text-blue-600">{sub.code}</td>
                     <td className="p-2.5 font-semibold text-slate-900 dark:text-white">{sub.name}</td>
@@ -203,10 +203,10 @@ Controller of Examinations Signature — EduSuite Academic Board`;
           <div className="flex flex-col sm:flex-row items-center justify-between p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 gap-3 text-xs">
             <div className="space-y-1">
               <span className="text-slate-500 text-[11px]">
-                Total Credits Earned: <strong className="text-slate-900 dark:text-white font-mono">{result.creditsEarned} Cr</strong> &middot; Overall Result: <strong className="text-emerald-600">PASSED FIRST CLASS WITH DISTINCTION</strong>
+                Total Credits Earned: <strong className="text-slate-900 dark:text-white font-mono">{actualResult.creditsEarned} Cr</strong> &middot; Overall Result: <strong className="text-emerald-600">PASSED FIRST CLASS WITH DISTINCTION</strong>
               </span>
               <p className="text-[10px] text-slate-400 font-mono">
-                Memo Ref: {result.memoNumber || `MEMO-2026-SEM${result.semester}-0542`}
+                Memo Ref: {actualResult.memoNumber || `MEMO-2026-SEM${actualResult.semester}-0542`}
               </p>
             </div>
 

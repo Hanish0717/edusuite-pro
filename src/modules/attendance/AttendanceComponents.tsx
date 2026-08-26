@@ -1,13 +1,15 @@
-import React, { useState, useMemo } from "react";
-import { toast } from "sonner";
+import React, { useEffect, useState } from "react";
 import {
   CalendarCheck,
+  Plus,
   Search,
   RefreshCw,
   Download,
   Filter,
   Eye,
-  CheckCircle,
+  Edit,
+  Trash2,
+  CheckCircle2,
   AlertTriangle,
   Clock,
   Building2,
@@ -17,23 +19,15 @@ import {
   Award,
   ShieldCheck,
   Sparkles,
-  ArrowRight,
-  TrendingUp,
-  FileText,
-  User,
   Check,
-  X as CloseIcon,
-  ChevronRight,
-  BarChart3,
-  Mail,
-  Send,
-  AlertCircle
+  BarChart2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -49,162 +43,301 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { KpiCard } from "@/components/dashboard/kpi-card";
-import { Panel } from "@/components/dashboard/panel";
-import { DonutChart, GroupedBarChart } from "@/components/dashboard/charts";
+import { Label } from "@/components/ui/label";
 
 import {
-  MOCK_STUDENT_ATTENDANCE,
-  MOCK_FACULTY_SUBMISSIONS,
-  MOCK_DEPARTMENT_ATTENDANCE,
-  MOCK_CORRECTION_REQUESTS,
-  MOCK_LEAVE_REQUESTS,
-  MOCK_ALERTS,
-  type StudentAttendance,
-  type FacultySubmission,
-  type DepartmentAttendance,
-  type CorrectionRequest,
-  type LeaveRequest
-} from "@/data/attendance-management-mock";
+  fetchAttendanceRecords,
+  createAttendanceRecord,
+  updateAttendanceRecord,
+  deleteAttendanceRecord,
+  INITIAL_ATTENDANCE,
+  type AttendanceRecord,
+} from "./AttendanceService";
 
-export function AttendanceModuleView({ initialTab = "overview" }: { initialTab?: string } = {}) {
+import {
+  fetchAllClassesAttendance,
+  fetchClassStudents,
+  submitAttendanceMark,
+  type AllClassesAttendance,
+  type ClassStudent,
+} from "@/modules/academics/AcademicsService";
 
-  // Simulated Loading/Error States
+const DEPARTMENTS = [
+  "All Departments",
+  "CSE",
+  "ECE",
+  "ME",
+  "AI&DS",
+  "Biotech",
+];
+
+const SECTIONS = [
+  "All Sections",
+  "CSE-A",
+  "ECE-B",
+  "ME-A",
+  "AIDS-A",
+  "BIO-A",
+];
+
+const RANGES = ["All Ranges", "Above 90%", "75% - 90%", "Below 75% Shortage"] as const;
+
+export type AttendanceSubpart =
+  | "all-classes-attendance"
+  | "attendance-mark"
+  | "records";
+
+export function AttendanceModuleView({ initialTab = "all-classes-attendance" }: { initialTab?: AttendanceSubpart }) {
+  const [activeSubpart, setActiveSubpart] = useState<AttendanceSubpart>(initialTab);
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>(INITIAL_ATTENDANCE);
+  const [search, setSearch] = useState("");
+  const [selectedDept, setSelectedDept] = useState("All Departments");
+  const [selectedSec, setSelectedSec] = useState("All Sections");
+  const [selectedRange, setSelectedRange] = useState<string>("All Ranges");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // States for data sources
-  const [studentsAttendance, setStudentsAttendance] = useState<StudentAttendance[]>(MOCK_STUDENT_ATTENDANCE);
-  const [facultiesSubmission, setFacultiesSubmission] = useState<FacultySubmission[]>(MOCK_FACULTY_SUBMISSIONS);
-  const [departmentsAttendance, setDepartmentsAttendance] = useState<DepartmentAttendance[]>(MOCK_DEPARTMENT_ATTENDANCE);
-  const [correctionsList, setCorrectionsList] = useState<CorrectionRequest[]>(MOCK_CORRECTION_REQUESTS);
-  const [leavesList, setLeavesList] = useState<LeaveRequest[]>(MOCK_LEAVE_REQUESTS);
+  // Subpart 1: All Classes Attendance Dashboard State
+  const [allClassesAttendance, setAllClassesAttendance] = useState<AllClassesAttendance[]>([]);
+  const [attendanceViewMode, setAttendanceViewMode] = useState<"daily" | "weekly" | "monthly">("daily");
 
-  // Selection states
-  const [activeTab, setActiveTab] = useState<"overview" | "defaulters" | "departments" | "faculty" | "corrections" | "leaves" | "reports">("overview");
-  const [selectedStudent, setSelectedStudent] = useState<StudentAttendance | null>(null);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  // Subpart 2: Faculty Attendance Portal State
+  const [studentRoster, setStudentRoster] = useState<ClassStudent[]>([]);
+  const [selectedClass, setSelectedClass] = useState("CSE-5A");
+  const [submittingAttendance, setSubmittingAttendance] = useState(false);
 
-  // Filter values
-  const [searchQuery, setSearchQuery] = useState("");
-  const [deptFilter, setDeptFilter] = useState("all");
-  const [rangeFilter, setRangeFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("pct");
+  // Dialog States
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [selectedAtt, setSelectedAtt] = useState<AttendanceRecord | null>(null);
 
-  const handleResetFilters = () => {
-    setSearchQuery("");
-    setDeptFilter("all");
-    setRangeFilter("all");
-    setStatusFilter("all");
-    setSortBy("pct");
-    toast.success("Filters reset successfully");
-  };
+  // Form State
+  const [formData, setFormData] = useState<Partial<AttendanceRecord>>({
+    date: new Date().toISOString().split("T")[0],
+    courseCode: "CS401",
+    courseTitle: "Advanced Artificial Intelligence & Deep Learning",
+    department: "CSE",
+    section: "CSE-A",
+    instructor: "Dr. K. Sai Teja",
+    totalStudents: 60,
+    presentCount: 56,
+    status: "Submitted",
+  });
 
-  const triggerReload = () => {
+  const loadData = async () => {
     setLoading(true);
-    setTimeout(() => setLoading(false), 600);
+    const [data, allClasses, students] = await Promise.all([
+      fetchAttendanceRecords(),
+      fetchAllClassesAttendance(),
+      fetchClassStudents("CSE-5A"),
+    ]);
+    setAttendance(data);
+    setAllClassesAttendance(allClasses);
+    setStudentRoster(students);
+    setLoading(false);
   };
 
-  // Correction approval / reject
-  const handleApproveCorrection = (id: string, name: string) => {
-    setCorrectionsList((prev) => prev.filter((r) => r.requestId !== id));
-    toast.success(`Approved attendance correction request for ${name}!`);
-  };
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  const handleRejectCorrection = (id: string, name: string) => {
-    setCorrectionsList((prev) => prev.filter((r) => r.requestId !== id));
-    toast.warning(`Rejected attendance correction request for ${name}.`);
-  };
-
-  // Leave approval / reject
-  const handleApproveLeave = (id: string, name: string) => {
-    setLeavesList((prev) => prev.filter((l) => l.requestId !== id));
-    toast.success(`Approved leave/OD credentials for ${name}!`);
-  };
-
-  const handleRejectLeave = (id: string, name: string) => {
-    setLeavesList((prev) => prev.filter((l) => l.requestId !== id));
-    toast.warning(`Rejected leave/OD credentials for ${name}.`);
-  };
-
-  // Filter student roster
-  const filteredStudents = useMemo(() => {
-    return studentsAttendance
-      .filter((s) => {
-        const matchesSearch =
-          s.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          s.studentId.toLowerCase().includes(searchQuery.toLowerCase());
-
-        const matchesDept = deptFilter === "all" || s.department === deptFilter;
-        const matchesStatus = statusFilter === "all" || s.status === statusFilter;
-
-        let matchesRange = true;
-        if (rangeFilter === "above-90") matchesRange = s.attendancePercentage >= 90;
-        else if (rangeFilter === "75-90") matchesRange = s.attendancePercentage >= 75 && s.attendancePercentage < 90;
-        else if (rangeFilter === "below-75") matchesRange = s.attendancePercentage < 75;
-
-        return matchesSearch && matchesDept && matchesStatus && matchesRange;
-      })
-      .sort((a, b) => {
-        if (sortBy === "pct") return b.attendancePercentage - a.attendancePercentage;
-        if (sortBy === "name") return a.studentName.localeCompare(b.studentName);
-        return 0;
-      });
-  }, [studentsAttendance, searchQuery, deptFilter, rangeFilter, statusFilter, sortBy]);
-
-  // Compute metrics summary
-  const metrics = useMemo(() => {
-    const studentCount = studentsAttendance.length;
-    const avgStudentAtt = studentCount > 0
-      ? Number((studentsAttendance.reduce((sum, s) => sum + s.attendancePercentage, 0) / studentCount).toFixed(1))
-      : 84.5;
-    
-    const activeFacultySubmissions = facultiesSubmission.filter((f) => f.status === "Submitted All").length;
-    const submissionRate = facultiesSubmission.length > 0
-      ? Number((facultiesSubmission.reduce((sum, f) => sum + f.submissionRate, 0) / facultiesSubmission.length).toFixed(1))
-      : 92.3;
-
-    const defaultersCount = studentsAttendance.filter((s) => s.attendancePercentage < 75).length;
-    const pendingCorrections = correctionsList.length;
-    const pendingLeaves = leavesList.length;
-
-    return { avgStudentAtt, submissionRate, defaultersCount, pendingCorrections, pendingLeaves };
-  }, [studentsAttendance, facultiesSubmission, correctionsList, leavesList]);
-
-  // Charts data
-  const deptAverageChart = useMemo(() => {
-    return departmentsAttendance.map((d) => ({
-      name: d.departmentId,
-      Attendance: d.averageAttendance
-    }));
-  }, [departmentsAttendance]);
-
-  const studentAttDistribution = [
-    { name: "Above 90% (Excellent)", value: 3 },
-    { name: "75% - 90% (Good)", value: 1 },
-    { name: "Below 75% (Shortage)", value: 2 }
-  ];
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="h-16 w-1/3 bg-muted/40 animate-pulse rounded-md" />
-        <div className="grid gap-4 grid-cols-2 md:grid-cols-8">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="h-24 bg-muted/40 animate-pulse rounded-xl" />
-          ))}
-        </div>
-        <div className="h-96 bg-muted/40 animate-pulse rounded-xl border border-border" />
-      </div>
+  const handleToggleAttendance = (studentId: string, status: "Present" | "Absent" | "Late") => {
+    setStudentRoster((prev) =>
+      prev.map((s) => (s.id === studentId ? { ...s, status } : s))
     );
-  }
+  };
+
+  const handleMarkAllPresent = () => {
+    setStudentRoster((prev) => prev.map((s) => ({ ...s, status: "Present" })));
+    toast.success("Marked all students in class as Present!");
+  };
+
+  const handleSubmitAttendanceMark = async () => {
+    setSubmittingAttendance(true);
+    const presentCount = studentRoster.filter((s) => s.status === "Present").length;
+    await submitAttendanceMark({
+      classId: "CSE-5A",
+      subjectId: "CS302",
+      date: new Date().toISOString().split("T")[0],
+      period: 2,
+      records: studentRoster.map((s) => ({ studentId: s.id, status: s.status })),
+    });
+    setSubmittingAttendance(false);
+    toast.success(`Period 2 Attendance Submitted for CSE-5A! ${presentCount}/${studentRoster.length} Present.`);
+  };
+
+  const filteredAllClassesAttendance = allClassesAttendance.filter((c) => {
+    const matchesSearch =
+      c.className.toLowerCase().includes(search.toLowerCase()) ||
+      c.department.toLowerCase().includes(search.toLowerCase()) ||
+      c.classTeacher.toLowerCase().includes(search.toLowerCase());
+    const matchesDept = selectedDept === "All Departments" || c.department === selectedDept;
+    return matchesSearch && matchesDept;
+  });
+
+  // Filtered Roster
+  const filtered = attendance.filter((a) => {
+    const matchesSearch =
+      a.courseCode.toLowerCase().includes(search.toLowerCase()) ||
+      a.courseTitle.toLowerCase().includes(search.toLowerCase()) ||
+      a.department.toLowerCase().includes(search.toLowerCase()) ||
+      a.section.toLowerCase().includes(search.toLowerCase()) ||
+      a.instructor.toLowerCase().includes(search.toLowerCase());
+
+    const matchesDept = selectedDept === "All Departments" || a.department === selectedDept;
+    const matchesSec = selectedSec === "All Sections" || a.section === selectedSec;
+
+    let matchesRange = true;
+    if (selectedRange === "Above 90%") matchesRange = a.percentage >= 90;
+    else if (selectedRange === "75% - 90%") matchesRange = a.percentage >= 75 && a.percentage < 90;
+    else if (selectedRange === "Below 75% Shortage") matchesRange = a.percentage < 75;
+
+    return matchesSearch && matchesDept && matchesSec && matchesRange;
+  });
+
+  // KPI Metrics
+  const avgAttendance =
+    attendance.length > 0
+      ? (attendance.reduce((sum, a) => sum + a.percentage, 0) / attendance.length).toFixed(1)
+      : "88.4";
+
+  const totalPresentToday = attendance.reduce((sum, a) => sum + a.presentCount, 0);
+  const totalAbsentToday = attendance.reduce((sum, a) => sum + a.absentCount, 0);
+  const shortageCount = attendance.filter((a) => a.percentage < 75).length;
+
+  // Handlers
+  const handleOpenAdd = () => {
+    setFormData({
+      date: new Date().toISOString().split("T")[0],
+      courseCode: "CS405",
+      courseTitle: "Cloud Computing & Microservices",
+      department: "CSE",
+      section: "CSE-B",
+      instructor: "Dr. S. K. Gupta",
+      totalStudents: 60,
+      presentCount: 55,
+      status: "Submitted",
+    });
+    setIsAddOpen(true);
+  };
+
+  const handleOpenEdit = (a: AttendanceRecord) => {
+    setSelectedAtt(a);
+    setFormData({ ...a });
+    setIsEditOpen(true);
+  };
+
+  const handleOpenView = (a: AttendanceRecord) => {
+    setSelectedAtt(a);
+    setIsViewOpen(true);
+  };
+
+  const handleAddSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.courseCode || !formData.section) {
+      toast.error("Please enter course code and section.");
+      return;
+    }
+
+    const created = await createAttendanceRecord(formData);
+    setAttendance((prev) => [created, ...prev]);
+    setIsAddOpen(false);
+    toast.success(`Attendance submitted for ${created.section} (${created.courseCode}): ${created.presentCount}/${created.totalStudents} Present!`);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAtt) return;
+
+    const total = Number(formData.totalStudents) || selectedAtt.totalStudents;
+    const present = Number(formData.presentCount) || selectedAtt.presentCount;
+    const absent = total - present;
+    const pct = Number(((present / total) * 100).toFixed(1));
+
+    const updated = {
+      ...formData,
+      totalStudents: total,
+      presentCount: present,
+      absentCount: absent,
+      percentage: pct,
+    };
+
+    await updateAttendanceRecord(selectedAtt.id, updated);
+    setAttendance((prev) =>
+      prev.map((a) => (a.id === selectedAtt.id ? ({ ...a, ...updated } as AttendanceRecord) : a)),
+    );
+    setIsEditOpen(false);
+    toast.success(`Attendance log updated for ${selectedAtt.section}!`);
+  };
+
+  const handleGrantCondonation = async (a: AttendanceRecord) => {
+    await updateAttendanceRecord(a.id, { status: "Condoned" });
+    setAttendance((prev) =>
+      prev.map((item) => (item.id === a.id ? { ...item, status: "Condoned" } : item)),
+    );
+    toast.info(`Medical Condonation granted for attendance record ${a.section} (${a.courseCode}).`);
+  };
+
+  const handleDelete = async (id: string, code: string, sec: string) => {
+    if (confirm(`Are you sure you want to delete attendance record for ${sec} (${code})?`)) {
+      await deleteAttendanceRecord(id);
+      setAttendance((prev) => prev.filter((a) => a.id !== id));
+      toast.success(`Attendance record ${id} deleted.`);
+    }
+  };
+
+  const handleExportCSV = () => {
+    const headers = [
+      "Attendance ID",
+      "Date",
+      "Course Code",
+      "Course Title",
+      "Department",
+      "Section",
+      "Lead Instructor",
+      "Total Students",
+      "Present Count",
+      "Absent Count",
+      "Attendance %",
+      "Status",
+    ];
+
+    const rows = filtered.map((a) => [
+      a.id,
+      a.date,
+      a.courseCode,
+      `"${a.courseTitle}"`,
+      a.department,
+      a.section,
+      `"${a.instructor}"`,
+      a.totalStudents,
+      a.presentCount,
+      a.absentCount,
+      `${a.percentage}%`,
+      a.status,
+    ]);
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute(
+      "download",
+      `Attendance_Ledger_Report_${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success(`Exported ${filtered.length} attendance logs to CSV!`);
+  };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto p-4 md:p-6 text-xs leading-normal">
-      
-      {/* 1. PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-5 border-border">
+    <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0">
             <CalendarCheck className="size-6" />
@@ -212,225 +345,298 @@ export function AttendanceModuleView({ initialTab = "overview" }: { initialTab?:
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold font-display tracking-tight text-foreground">
-                Attendance Monitoring
+                Attendance & Biometric Tracking Module
               </h1>
               <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30">
-                Academic Management Portal
+                Institutional Attendance Core
               </Badge>
             </div>
             <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-              Monitor student attendance across departments, identify defaulters, review correction logs, and approve OD leave clearances.
+              Daily class attendance marking, biometric sync, shortage alerts (&lt;75%), and HOD condonation approvals.
             </p>
           </div>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Action Buttons - Top Right Corner */}
+        <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
           <Button
             variant="outline"
             size="sm"
-            onClick={triggerReload}
-            className="h-9 gap-1.5 font-semibold text-xs animate-none"
+            onClick={loadData}
+            disabled={loading}
+            className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent"
           >
-            <RefreshCw className="size-3.5" /> Refresh Data
+            <RefreshCw className={`size-3.5 ${loading ? "animate-spin" : ""}`} />
+            Refresh
           </Button>
+
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              toast.success("Attendance analytics sync initiated across all biometric terminals.");
-            }}
-            className="h-9 gap-1.5 font-semibold text-xs border-primary/30 text-primary hover:bg-primary/5"
+            onClick={handleExportCSV}
+            className="h-9 gap-2 text-xs font-medium border-border hover:bg-accent"
           >
-            <Sparkles className="size-3.5" /> Attendance Analytics
+            <Download className="size-3.5" /> Export Attendance Log
           </Button>
+
           <Button
-            onClick={() => {
-              toast.success("Consolidated institutional attendance CSV report downloaded!");
-            }}
-            className="h-9 bg-brand-gradient text-white gap-1.5 font-semibold text-xs shadow-glow hover:opacity-95 cursor-pointer"
+            size="sm"
+            onClick={handleOpenAdd}
+            className="h-9 bg-brand-gradient text-white gap-2 font-semibold text-xs shadow-glow hover:opacity-95"
           >
-            <Download className="size-3.5" /> Export Attendance
+            <Plus className="size-4" /> Mark Class Attendance
           </Button>
         </div>
       </div>
 
-      {/* 2. SUMMARY DASHBOARD KPI CARDS */}
-      <div className="grid gap-3.5 grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 2xl:grid-cols-8">
-        <KpiCard label="Overall Attendance" value={`${metrics.avgStudentAtt}%`} icon={CalendarCheck} tone="primary" className="h-full min-w-0" />
-        <KpiCard label="Faculty Submissions" value={`${metrics.submissionRate}%`} icon={UserCheck} tone="success" className="h-full min-w-0" />
-        <KpiCard label="Today's Attendance" value="84.2%" icon={ShieldCheck} tone="info" className="h-full min-w-0" />
-        <KpiCard label="Students Below 75%" value={String(metrics.defaultersCount)} icon={UserX} tone="destructive" className="h-full min-w-0" />
-        <KpiCard label="Depts Below Target" value="1 Dept" icon={Building2} tone="warning" className="h-full min-w-0" />
-        <KpiCard label="Leave OD Pending" value={String(metrics.pendingLeaves)} icon={Clock} tone="info" className="h-full min-w-0" />
-        <KpiCard label="Corrections Pending" value={String(metrics.pendingCorrections)} icon={AlertTriangle} tone="warning" className="h-full min-w-0" />
-        <KpiCard label="Reports Generated" value="12 Reports" icon={FileText} tone="success" className="h-full min-w-0" />
-      </div>
+      {/* KPI Metrics */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Institutional Average</span>
+            <CalendarCheck className="size-4 text-primary" />
+          </div>
+          <p className="text-2xl font-bold font-mono text-primary">{avgAttendance}% Avg</p>
+          <p className="text-[0.68rem] text-muted-foreground">Overall Campus Rate</p>
+        </div>
 
-      {/* 3. MULTIPLE VIEW TABS */}
-      <div className="flex justify-between items-center border-b pb-1 flex-wrap gap-3">
-        <div className="flex rounded-xl bg-muted/40 p-1 border font-semibold overflow-x-auto max-w-full no-scrollbar">
-          <button
-            onClick={() => setActiveTab("overview")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === "overview" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <CalendarCheck className="size-3.5" /> Attendance Overview
-          </button>
-          <button
-            onClick={() => setActiveTab("defaulters")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === "defaulters" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <UserX className="size-3.5" /> Low Attendance Monitor
-          </button>
-          <button
-            onClick={() => setActiveTab("departments")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === "departments" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Building2 className="size-3.5" /> Department Stats
-          </button>
-          <button
-            onClick={() => setActiveTab("faculty")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === "faculty" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <UserCheck className="size-3.5" /> Faculty Submission rate
-          </button>
-          <button
-            onClick={() => setActiveTab("corrections")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === "corrections" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <AlertTriangle className="size-3.5" /> Corrections ledger ({correctionsList.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("leaves")}
-            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === "leaves" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Clock className="size-3.5" /> Leave & OD requests ({leavesList.length})
-          </button>
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Present Today</span>
+            <UserCheck className="size-4 text-emerald-500" />
+          </div>
+          <p className="text-2xl font-bold font-mono text-emerald-600">{totalPresentToday} Present</p>
+          <p className="text-[0.68rem] text-emerald-600 font-medium">Biometric & RFID verified</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Absent / On Leave</span>
+            <UserX className="size-4 text-blue-500" />
+          </div>
+          <p className="text-2xl font-bold font-mono text-blue-600">{totalAbsentToday} Absent</p>
+          <p className="text-[0.68rem] text-muted-foreground">Recorded in today's sessions</p>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-sm space-y-1">
+          <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground uppercase">
+            <span>Shortage Alerts (&lt;75%)</span>
+            <AlertTriangle className="size-4 text-amber-500" />
+          </div>
+          <p className="text-2xl font-bold font-mono text-amber-600">{shortageCount} Classes Alert</p>
+          <p className="text-[0.68rem] text-muted-foreground">Requires HOD condonation</p>
         </div>
       </div>
 
-      {/* 4. TAB PANELS */}
+      {/* THREE SUBPARTS NAVIGATION TAB BAR */}
+      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-muted/60 border border-border/80 overflow-x-auto">
+        <button
+          onClick={() => setActiveSubpart("all-classes-attendance")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "all-classes-attendance" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <UserCheck className="size-3.5" /> 🏛️ All Classes Attendance Dashboard
+        </button>
 
-      {/* TAB 1: Attendance Roster Overview */}
-      {activeTab === "overview" && (
-        <div className="space-y-4 border rounded-2xl bg-card p-5 shadow-sm">
-          <div className="flex justify-between items-center border-b pb-3 mb-2 flex-wrap gap-2">
-            <h3 className="text-base font-bold font-display text-foreground flex items-center gap-2">
-              <CalendarCheck className="size-5 text-primary" /> Roster Student Attendance Directory
-            </h3>
-            
-            {/* Roster Search Filters */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                <Input
-                  placeholder="Search student..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 h-8 text-xs w-[140px]"
-                />
+        <button
+          onClick={() => setActiveSubpart("attendance-mark")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "attendance-mark" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <CheckCircle2 className="size-3.5" /> 📝 Faculty Attendance Portal
+        </button>
+
+        <button
+          onClick={() => setActiveSubpart("records")}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+            activeSubpart === "records" ? "bg-card text-primary shadow-sm border border-border/80" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <CalendarCheck className="size-3.5" /> 📊 Class Attendance Records Ledger
+        </button>
+      </div>
+
+      {/* SUBPART 1: ALL CLASSES ATTENDANCE DASHBOARD */}
+      {activeSubpart === "all-classes-attendance" && (
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-card border border-border/80 shadow-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-muted-foreground uppercase shrink-0">Timeframe:</span>
+              <div className="inline-flex p-1 rounded-xl bg-muted/60 border border-border/60">
+                <button
+                  onClick={() => setAttendanceViewMode("daily")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "daily" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  📅 Daily View
+                </button>
+                <button
+                  onClick={() => setAttendanceViewMode("weekly")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "weekly" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  📆 Weekly View
+                </button>
+                <button
+                  onClick={() => setAttendanceViewMode("monthly")}
+                  className={`px-3.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    attendanceViewMode === "monthly" ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  🗓️ Monthly View
+                </button>
               </div>
+            </div>
 
-              <Select value={deptFilter} onValueChange={setDeptFilter}>
-                <SelectTrigger className="h-8 text-xs w-[110px]">
-                  <SelectValue placeholder="Department" />
-                </SelectTrigger>
+            <div className="flex items-center gap-2">
+              <Select value={selectedDept} onValueChange={setSelectedDept}>
+                <SelectTrigger className="h-9 text-xs w-[160px] rounded-xl"><SelectValue placeholder="Department" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Depts</SelectItem>
-                  <SelectItem value="CSE">CSE</SelectItem>
-                  <SelectItem value="ECE">ECE</SelectItem>
-                  <SelectItem value="ME">ME</SelectItem>
+                  {DEPARTMENTS.map((d) => (<SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>))}
                 </SelectContent>
               </Select>
+              <div className="relative flex-1 min-w-[150px]">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                <Input placeholder="Search class or teacher..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-9 text-xs rounded-xl" />
+              </div>
+            </div>
+          </div>
 
-              <Select value={rangeFilter} onValueChange={setRangeFilter}>
-                <SelectTrigger className="h-8 text-xs w-[110px]">
-                  <SelectValue placeholder="Range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Ranges</SelectItem>
-                  <SelectItem value="above-90">Above 90%</SelectItem>
-                  <SelectItem value="75-90">75% - 90%</SelectItem>
-                  <SelectItem value="below-75">Below 75%</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                  <tr>
+                    <th className="py-3 px-3">Class / Section</th>
+                    <th className="py-3 px-3">Department</th>
+                    <th className="py-3 px-3">Total Enrolled</th>
+                    <th className="py-3 px-3">Present</th>
+                    <th className="py-3 px-3">Absent</th>
+                    <th className="py-3 px-3">Late</th>
+                    <th className="py-3 px-3">Attendance % ({attendanceViewMode.toUpperCase()})</th>
+                    <th className="py-3 px-3">Class Teacher</th>
+                    <th className="py-3 px-3">Governance Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/60">
+                  {filteredAllClassesAttendance.map((c) => {
+                    const pct = attendanceViewMode === "daily" ? c.dailyPct : attendanceViewMode === "weekly" ? c.weeklyPct : c.monthlyPct;
+                    const isDefaulter = pct < 75;
+                    return (
+                      <tr key={c.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="py-3 px-3 font-mono font-bold text-foreground">{c.className}</td>
+                        <td className="py-3 px-3 font-semibold">{c.department}</td>
+                        <td className="py-3 px-3 font-mono">{c.totalStudents} Students</td>
+                        <td className="py-3 px-3 font-mono text-emerald-600 font-bold">{c.presentCount}</td>
+                        <td className="py-3 px-3 font-mono text-rose-600 font-bold">{c.absentCount}</td>
+                        <td className="py-3 px-3 font-mono text-amber-600 font-bold">{c.lateCount}</td>
+                        <td className="py-3 px-3 min-w-[130px]">
+                          <div className="flex items-center gap-2">
+                            <Progress value={pct} className="h-2 flex-1" />
+                            <span className={`font-mono text-xs font-bold ${isDefaulter ? "text-rose-600" : "text-emerald-600"}`}>
+                              {pct}%
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-muted-foreground">{c.classTeacher}</td>
+                        <td className="py-3 px-3">
+                          {isDefaulter ? (
+                            <Badge className="bg-rose-500/10 text-rose-600 border-rose-500/30">
+                              ⚠️ &lt;75% Defaulter Alert
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-emerald-500/10 text-emerald-600">
+                              ✅ Satisfactory ({pct}%)
+                            </Badge>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
 
-              <Button variant="ghost" onClick={handleResetFilters} className="h-8 px-2 font-semibold">
-                Reset
+      {/* SUBPART 2: FACULTY ATTENDANCE MARKING PORTAL */}
+      {activeSubpart === "attendance-mark" && (
+        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-5 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+            <div className="space-y-1">
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                <UserCheck className="size-4 text-primary" /> Period Attendance Marking Access
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Class: <strong className="text-foreground">{selectedClass}</strong> • Data Structures & Algorithms • Date: {new Date().toLocaleDateString()} (Period 2)
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={handleMarkAllPresent} className="h-9 gap-1.5 text-xs font-semibold border-emerald-500/40 text-emerald-600 hover:bg-emerald-50">
+                <CheckCircle2 className="size-3.5 text-emerald-500" /> Mark All Present
+              </Button>
+              <Button size="sm" onClick={handleSubmitAttendanceMark} disabled={submittingAttendance} className="h-9 bg-brand-gradient text-white gap-1.5 text-xs font-semibold shadow-glow">
+                {submittingAttendance ? <RefreshCw className="size-3.5 animate-spin" /> : <Check className="size-3.5" />} Submit Attendance
               </Button>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-[11px] font-medium text-foreground min-w-[850px]">
+          <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-muted/30 border border-border/60">
+            <div className="flex items-center gap-4 font-semibold">
+              <span className="text-emerald-600">Present: {studentRoster.filter((s) => s.status === "Present").length}</span>
+              <span className="text-rose-600">Absent: {studentRoster.filter((s) => s.status === "Absent").length}</span>
+              <span className="text-amber-600">Late: {studentRoster.filter((s) => s.status === "Late").length}</span>
+            </div>
+            <span className="font-mono text-muted-foreground">Total Enrolled: {studentRoster.length} Students</span>
+          </div>
 
-              <thead>
-                <tr className="text-muted-foreground font-semibold border-b">
-                  <th className="py-2">Student ID</th>
-                  <th className="py-2">Student Name</th>
-                  <th className="py-2">Department</th>
-                  <th className="py-2">Semester</th>
-                  <th className="py-2">Attendance %</th>
-                  <th className="py-2">Classes Conducted</th>
-                  <th className="py-2">Classes Attended</th>
-                  <th className="py-2">Classes Missed</th>
-                  <th className="py-2">Risk Status</th>
-                  <th className="py-2 text-right">Actions</th>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                <tr>
+                  <th className="py-3 px-3">Roll Number</th>
+                  <th className="py-3 px-3">Student Name</th>
+                  <th className="py-3 px-3 text-center">Attendance Status Toggle</th>
                 </tr>
               </thead>
-              <tbody>
-                {filteredStudents.map((stud) => (
-                  <tr key={stud.studentId} className="border-b border-border/40 hover:bg-muted/5 transition-colors">
-                    <td className="py-3 font-mono font-bold">{stud.studentId}</td>
-                    <td className="py-3 font-bold text-foreground">{stud.studentName}</td>
-                    <td className="py-3 font-semibold">{stud.department} &middot; {stud.section}</td>
-                    <td className="py-3">{stud.semester}</td>
-                    <td className="py-3 font-mono font-bold text-primary text-xs">
-                      {stud.attendancePercentage}%
-                    </td>
-                    <td className="py-3 font-mono">{stud.conducted}</td>
-                    <td className="py-3 font-mono text-emerald-600 font-bold">{stud.attended}</td>
-                    <td className="py-3 font-mono text-destructive">{stud.missed}</td>
-                    <td className="py-3">
-                      <Badge
-                        variant="outline"
-                        className={`text-[9px] uppercase ${
-                          stud.status === "Excellent"
-                            ? "text-emerald-600 border-emerald-200 bg-emerald-50"
-                            : stud.status === "Warning"
-                            ? "text-amber-500 border-amber-200 bg-amber-50"
-                            : stud.status === "Critical"
-                            ? "text-destructive border-destructive/20 bg-destructive/5"
-                            : "text-primary border-primary/20 bg-primary/5"
-                        }`}
-                      >
-                        {stud.status}
-                      </Badge>
-                    </td>
-                    <td className="py-3 text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedStudent(stud);
-                          setIsDetailsOpen(true);
-                        }}
-                        className="h-8 text-primary hover:bg-primary/5 cursor-pointer font-semibold"
-                      >
-                        <Eye className="size-3.5 mr-1" /> View Details
-                      </Button>
+              <tbody className="divide-y divide-border/60">
+                {studentRoster.map((s) => (
+                  <tr key={s.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="py-3 px-3 font-mono font-bold text-foreground">{s.rollNo}</td>
+                    <td className="py-3 px-3 font-semibold text-foreground">{s.name}</td>
+                    <td className="py-3 px-3 text-center">
+                      <div className="inline-flex items-center gap-1.5 p-1 rounded-xl bg-muted/60 border border-border/60">
+                        <button
+                          onClick={() => handleToggleAttendance(s.id, "Present")}
+                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                            s.status === "Present" ? "bg-emerald-600 text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          P (Present)
+                        </button>
+                        <button
+                          onClick={() => handleToggleAttendance(s.id, "Absent")}
+                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                            s.status === "Absent" ? "bg-rose-600 text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          A (Absent)
+                        </button>
+                        <button
+                          onClick={() => handleToggleAttendance(s.id, "Late")}
+                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                            s.status === "Late" ? "bg-amber-500 text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          L (Late)
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -440,387 +646,443 @@ export function AttendanceModuleView({ initialTab = "overview" }: { initialTab?:
         </div>
       )}
 
-      {/* TAB 2: Low Attendance Monitor */}
-      {activeTab === "defaulters" && (
-        <div className="space-y-4 border rounded-2xl bg-card p-5 shadow-sm">
-          <h3 className="text-base font-bold font-display text-foreground border-b pb-2 flex items-center gap-2">
-            <UserX className="size-5 text-primary" /> Students Below 75% Attendance Threshold
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {studentsAttendance
-              .filter((s) => s.attendancePercentage < 75)
-              .map((stud) => (
-                <div key={stud.studentId} className="p-4 border rounded-xl space-y-2.5 bg-destructive/5 border-destructive/20 flex flex-col justify-between">
-                  <div>
-                    <div className="flex justify-between items-start gap-1">
-                      <span className="font-mono font-bold text-[10px] text-destructive">{stud.studentId}</span>
-                      <Badge variant="outline" className="text-[9px] uppercase text-destructive border-destructive/20">
-                        {stud.riskLevel}
-                      </Badge>
-                    </div>
-                    <p className="font-bold text-foreground text-xs mt-1.5">{stud.studentName}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">{stud.department} &middot; {stud.semester}</p>
-                    
-                    <div className="grid grid-cols-2 gap-2 border rounded-lg p-2.5 bg-card mt-3">
-                      <div>
-                        <span className="text-[9px] text-muted-foreground">Attendance</span>
-                        <p className="font-bold font-mono text-destructive">{stud.attendancePercentage}%</p>
-                      </div>
-                      <div>
-                        <span className="text-[9px] text-muted-foreground">Classes Needed</span>
-                        <p className="font-bold font-mono text-primary">+{stud.shortage} sessions</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-border/40 flex justify-between items-center">
-                    <span className="text-[9px] text-muted-foreground italic">Shortage warning active</span>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {
-                        toast.success(`Official shortage alert warning sent to ${stud.studentName}!`);
-                      }}
-                      className="h-7 text-[10px] font-semibold text-primary hover:bg-primary/5 cursor-pointer"
-                    >
-                      <Mail className="size-3 mr-1" /> Alert Parent
-                    </Button>
-                  </div>
-                </div>
-              ))}
+      {/* SUBPART 3: CLASS ATTENDANCE RECORDS LEDGER */}
+      {activeSubpart === "records" && (
+        <div className="space-y-4">
+          {/* Control Bar & Filters */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-card border border-border/80 shadow-sm">
+        <div className="flex flex-1 flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              placeholder="Search course code, title, section, instructor..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 h-9 text-xs"
+            />
           </div>
+
+          {/* Department Filter */}
+          <Select value={selectedDept} onValueChange={setSelectedDept}>
+            <SelectTrigger className="h-9 w-full sm:w-[150px] text-xs">
+              <Building2 className="size-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder="Department" />
+            </SelectTrigger>
+            <SelectContent>
+              {DEPARTMENTS.map((d) => (
+                <SelectItem key={d} value={d} className="text-xs">
+                  {d}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Section Filter */}
+          <Select value={selectedSec} onValueChange={setSelectedSec}>
+            <SelectTrigger className="h-9 w-full sm:w-[140px] text-xs">
+              <BookOpen className="size-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder="Section" />
+            </SelectTrigger>
+            <SelectContent>
+              {SECTIONS.map((s) => (
+                <SelectItem key={s} value={s} className="text-xs">
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Range Filter */}
+          <Select value={selectedRange} onValueChange={setSelectedRange}>
+            <SelectTrigger className="h-9 w-full sm:w-[160px] text-xs">
+              <Filter className="size-3.5 mr-1.5 text-muted-foreground" />
+              <SelectValue placeholder="Attendance Range" />
+            </SelectTrigger>
+            <SelectContent>
+              {RANGES.map((r) => (
+                <SelectItem key={r} value={r} className="text-xs">
+                  {r}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      )}
+      </div>
 
-      {/* TAB 3: Department Stats */}
-      {activeTab === "departments" && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Department Attendance Cards */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="border rounded-2xl bg-card p-5 shadow-sm space-y-4">
-              <h3 className="text-base font-bold font-display text-foreground border-b pb-2 flex items-center gap-2">
-                <Building2 className="size-5 text-primary" /> Department Attendance Trends Comparison
-              </h3>
+      {/* Attendance Roster Table */}
+      <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-sm">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+            <CalendarCheck className="size-4 text-primary" /> Daily Attendance Ledger
+            <Badge variant="secondary" className="font-mono text-xs">
+              {filtered.length} Sessions Logged
+            </Badge>
+          </h3>
+        </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {departmentsAttendance.map((d) => (
-                  <div key={d.departmentId} className="p-4 border rounded-xl space-y-3 bg-muted/10 hover:bg-muted/15 transition-colors">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-xs text-foreground">School of {d.departmentId}</span>
-                      <Badge variant="outline" className="font-mono text-[9px] text-primary border-primary/20">
-                        {d.studentsCount} Students
+        {loading ? (
+          <div className="p-8 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
+            <RefreshCw className="size-5 animate-spin text-primary" />
+            Loading attendance records...
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="p-8 text-center border border-dashed border-border rounded-xl space-y-2">
+            <CalendarCheck className="size-7 text-muted-foreground mx-auto" />
+            <p className="text-xs text-muted-foreground font-medium">No attendance logs found.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-muted/40 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[0.68rem]">
+                <tr>
+                  <th className="py-3 px-3">Date & ID</th>
+                  <th className="py-3 px-3">Course & Section</th>
+                  <th className="py-3 px-3">Lead Instructor</th>
+                  <th className="py-3 px-3">Present / Enrolled</th>
+                  <th className="py-3 px-3">Attendance %</th>
+                  <th className="py-3 px-3">Status</th>
+                  <th className="py-3 px-3 text-right pr-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/60">
+                {filtered.map((a) => (
+                  <tr key={a.id} className="hover:bg-muted/20 transition-colors">
+                    <td className="py-3 px-3">
+                      <div className="font-mono font-bold text-foreground">{a.date}</div>
+                      <div className="text-[0.68rem] text-muted-foreground font-mono">{a.id}</div>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="font-semibold text-foreground">{a.courseCode}: {a.courseTitle}</div>
+                      <div className="text-[0.68rem] text-muted-foreground">
+                        <span className="font-bold text-foreground">{a.department}</span> &middot; {a.section}
+                      </div>
+                    </td>
+                    <td className="py-3 px-3 font-medium text-foreground">{a.instructor}</td>
+                    <td className="py-3 px-3 font-mono font-bold">
+                      <span className="text-emerald-600">{a.presentCount}</span> / {a.totalStudents}
+                      <span className="text-[0.68rem] text-muted-foreground font-sans ml-1">({a.absentCount} Absent)</span>
+                    </td>
+                    <td className="py-3 px-3 font-mono font-bold text-sm">
+                      <span className={a.percentage < 75 ? "text-amber-600 font-bold" : "text-emerald-600"}>
+                        {a.percentage}%
+                      </span>
+                    </td>
+                    <td className="py-3 px-3">
+                      <Badge
+                        className={
+                          a.status === "Submitted"
+                            ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 text-[0.68rem]"
+                            : a.status === "Condoned"
+                            ? "bg-blue-500/10 text-blue-600 border-blue-500/20 text-[0.68rem]"
+                            : "bg-amber-500/10 text-amber-600 border-amber-500/20 text-[0.68rem]"
+                        }
+                      >
+                        {a.status}
                       </Badge>
-                    </div>
+                    </td>
+                    <td className="py-3 px-3 text-right pr-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOpenView(a)}
+                          className="h-7 text-xs font-medium gap-1 text-muted-foreground hover:text-foreground"
+                          title="View Details"
+                        >
+                          <Eye className="size-3.5" /> Details
+                        </Button>
 
-                    <div className="flex justify-between items-end border-b pb-2.5">
-                      <div>
-                        <span className="text-[9px] text-muted-foreground">Average Attendance</span>
-                        <p className="text-xl font-bold font-mono text-primary mt-0.5">{d.averageAttendance}%</p>
-                      </div>
-                      <div className="flex items-center gap-1 font-semibold text-[10px] text-emerald-600">
-                        <TrendingUp className="size-3.5" /> {d.trend.toUpperCase()}
-                      </div>
-                    </div>
+                        {a.percentage < 75 && a.status !== "Condoned" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleGrantCondonation(a)}
+                            className="h-7 text-xs font-semibold text-blue-600 border-blue-200 hover:bg-blue-50 gap-1"
+                          >
+                            <ShieldCheck className="size-3" /> Condone
+                          </Button>
+                        )}
 
-                    <div className="space-y-1 text-[10px]">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Best Section:</span>
-                        <span className="font-bold text-foreground">{d.bestSection}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleOpenEdit(a)}
+                          className="size-7 text-muted-foreground hover:text-primary"
+                          title="Edit Record"
+                        >
+                          <Edit className="size-3.5" />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(a.id, a.courseCode, a.section)}
+                          className="size-7 text-muted-foreground hover:text-red-600"
+                          title="Delete Log"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
                       </div>
-                      <div className="flex justify-between mt-0.5">
-                        <span className="text-muted-foreground">Lowest Section:</span>
-                        <span className="font-bold text-destructive">{d.lowestSection}</span>
-                      </div>
-                    </div>
-                  </div>
+                    </td>
+                  </tr>
                 ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+
+      {/* DIALOG 1: MARK CLASS ATTENDANCE MODAL */}
+      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Plus className="size-5 text-primary" /> Submit Class Attendance Log
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Record date, department, section strength, and present student counts for the session.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleAddSubmit} className="space-y-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Date *</Label>
+                <Input
+                  type="date"
+                  required
+                  value={formData.date || ""}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="h-9 text-xs font-mono"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Course Code *</Label>
+                <Input
+                  required
+                  placeholder="e.g. CS405"
+                  value={formData.courseCode || ""}
+                  onChange={(e) => setFormData({ ...formData, courseCode: e.target.value })}
+                  className="h-9 text-xs font-mono uppercase"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Course Title</Label>
+                <Input
+                  placeholder="e.g. Cloud Computing & Microservices"
+                  value={formData.courseTitle || ""}
+                  onChange={(e) => setFormData({ ...formData, courseTitle: e.target.value })}
+                  className="h-9 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Department</Label>
+                <Select
+                  value={formData.department}
+                  onValueChange={(val) => setFormData({ ...formData, department: val })}
+                >
+                  <SelectTrigger className="h-9 text-xs">
+                    <SelectValue placeholder="Department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEPARTMENTS.filter((d) => d !== "All Departments").map((d) => (
+                      <SelectItem key={d} value={d} className="text-xs">
+                        {d}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Section / Batch *</Label>
+                <Input
+                  required
+                  placeholder="e.g. CSE-B"
+                  value={formData.section || ""}
+                  onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                  className="h-9 text-xs font-mono"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Lead Instructor</Label>
+                <Input
+                  placeholder="e.g. Dr. S. K. Gupta"
+                  value={formData.instructor || ""}
+                  onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
+                  className="h-9 text-xs"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Total Students</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  required
+                  value={formData.totalStudents ?? 60}
+                  onChange={(e) =>
+                    setFormData({ ...formData, totalStudents: Number(e.target.value) })
+                  }
+                  className="h-9 text-xs font-mono"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold">Present Count</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  required
+                  value={formData.presentCount ?? 55}
+                  onChange={(e) =>
+                    setFormData({ ...formData, presentCount: Number(e.target.value) })
+                  }
+                  className="h-9 text-xs font-mono"
+                />
               </div>
             </div>
-          </div>
 
-          {/* Department Analytics charts */}
-          <div className="lg:col-span-1 border rounded-2xl bg-card p-5 shadow-sm space-y-3">
-            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center justify-between border-b pb-2">
-              <span>Attendance Distribution</span>
-              <span className="text-[10px] text-success font-mono">Brackets status</span>
-            </h4>
-            <DonutChart data={studentAttDistribution} centerLabel="Brackets" height={160} />
-          </div>
-        </div>
-      )}
+            <DialogFooter className="pt-3 border-t border-border">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsAddOpen(false)}
+                className="text-xs"
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold">
+                Submit Attendance Log
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
-      {/* TAB 4: Faculty Submission log */}
-      {activeTab === "faculty" && (
-        <div className="space-y-4 border rounded-2xl bg-card p-5 shadow-sm">
-          <h3 className="text-base font-bold font-display text-foreground border-b pb-2 flex items-center gap-2">
-            <UserCheck className="size-5 text-primary" /> Faculty Submission Logs & Completion Checklist
-          </h3>
+      {/* DIALOG 2: EDIT ATTENDANCE MODAL */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Edit className="size-5 text-primary" /> Update Class Attendance ({selectedAtt?.section})
+            </DialogTitle>
+          </DialogHeader>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-[11px] font-medium text-foreground">
-              <thead>
-                <tr className="text-muted-foreground font-semibold border-b">
-                  <th className="py-2">Faculty Member</th>
-                  <th className="py-2">Department</th>
-                  <th className="py-2">Assigned Classes</th>
-                  <th className="py-2">Completed Classes</th>
-                  <th className="py-2">Pending Overdue</th>
-                  <th className="py-2">Submission Rate</th>
-                  <th className="py-2 text-right font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {facultiesSubmission.map((fac) => (
-                  <tr key={fac.facultyId} className="border-b border-border/40 hover:bg-muted/5 transition-colors">
-                    <td className="py-3 font-bold text-foreground">{fac.facultyName}</td>
-                    <td className="py-3">{fac.department}</td>
-                    <td className="py-3 font-mono">{fac.assignedClasses}</td>
-                    <td className="py-3 font-mono text-emerald-600 font-bold">{fac.completedClasses}</td>
-                    <td className="py-3 font-mono text-destructive font-bold">{fac.pendingSubmissions}</td>
-                    <td className="py-3 font-mono font-bold text-primary">{fac.submissionRate}%</td>
-                    <td className="py-3 text-right">
-                      {fac.pendingSubmissions > 0 ? (
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            toast.success(`Action reminder alert sent to ${fac.facultyName}!`);
-                          }}
-                          className="h-8 bg-brand-gradient text-white font-semibold cursor-pointer text-[10px]"
-                        >
-                          <Send className="size-3 mr-1" /> Send Reminder
-                        </Button>
-                      ) : (
-                        <Badge variant="outline" className="text-[9px] uppercase text-emerald-600 border-emerald-200 bg-emerald-50">
-                          Completed
-                        </Badge>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+          <form onSubmit={handleEditSubmit} className="space-y-3 pt-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Total Students</Label>
+              <Input
+                type="number"
+                value={formData.totalStudents ?? selectedAtt?.totalStudents ?? 60}
+                onChange={(e) =>
+                  setFormData({ ...formData, totalStudents: Number(e.target.value) })
+                }
+                className="h-9 text-xs font-mono"
+              />
+            </div>
 
-      {/* TAB 5: Corrections Ledger */}
-      {activeTab === "corrections" && (
-        <div className="space-y-4 border rounded-2xl bg-card p-5 shadow-sm">
-          <h3 className="text-base font-bold font-display text-foreground border-b pb-2 flex items-center gap-2">
-            <AlertTriangle className="size-5 text-primary" /> Student Biometric Correction Requests
-          </h3>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Present Count</Label>
+              <Input
+                type="number"
+                value={formData.presentCount ?? selectedAtt?.presentCount ?? 54}
+                onChange={(e) =>
+                  setFormData({ ...formData, presentCount: Number(e.target.value) })
+                }
+                className="h-9 text-xs font-mono"
+              />
+            </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-[11px] font-medium text-foreground">
-              <thead>
-                <tr className="text-muted-foreground font-semibold border-b">
-                  <th className="py-2">Request ID</th>
-                  <th className="py-2">Student Name</th>
-                  <th className="py-2">Instructor / Course</th>
-                  <th className="py-2">Correction Reason</th>
-                  <th className="py-2">Requested Date</th>
-                  <th className="py-2">Status</th>
-                  <th className="py-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {correctionsList.map((req) => (
-                  <tr key={req.requestId} className="border-b border-border/40 hover:bg-muted/5 transition-colors">
-                    <td className="py-3 font-mono font-bold">{req.requestId}</td>
-                    <td className="py-3 font-bold text-foreground">
-                      <p>{req.studentName}</p>
-                      <span className="font-mono text-[9px] text-muted-foreground">{req.studentId}</span>
-                    </td>
-                    <td className="py-3 font-semibold">
-                      <p>{req.facultyName}</p>
-                      <span className="font-mono text-[9px] text-muted-foreground">{req.subjectCode} - {req.subjectName}</span>
-                    </td>
-                    <td className="py-3 text-muted-foreground max-w-xs truncate">{req.reason}</td>
-                    <td className="py-3 font-mono">{req.requestedDate}</td>
-                    <td className="py-3">
-                      <Badge variant="outline" className="text-[9px] uppercase">
-                        {req.status}
-                      </Badge>
-                    </td>
-                    <td className="py-3 text-right">
-                      <div className="flex gap-1.5 justify-end">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleApproveCorrection(req.requestId, req.studentName)}
-                          className="h-8 text-[10px] font-semibold border-emerald-200 text-emerald-600 hover:bg-emerald-50 cursor-pointer"
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleRejectCorrection(req.requestId, req.studentName)}
-                          className="h-8 text-[10px] font-semibold text-destructive hover:bg-destructive/10 cursor-pointer"
-                        >
-                          Reject
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+            <DialogFooter className="pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditOpen(false)}
+                className="text-xs"
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-brand-gradient text-white text-xs font-semibold">
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
-      {/* TAB 6: Leave / OD Requests */}
-      {activeTab === "leaves" && (
-        <div className="space-y-4 border rounded-2xl bg-card p-5 shadow-sm">
-          <h3 className="text-base font-bold font-display text-foreground border-b pb-2 flex items-center gap-2">
-            <Clock className="size-5 text-primary" /> Leave & On-Duty (OD) Clearances
-          </h3>
+      {/* DIALOG 3: VIEW ATTENDANCE DOSSIER MODAL */}
+      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <CalendarCheck className="size-5 text-primary" /> Attendance Session Dossier
+            </DialogTitle>
+          </DialogHeader>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-[11px] font-medium text-foreground">
-              <thead>
-                <tr className="text-muted-foreground font-semibold border-b">
-                  <th className="py-2">Request ID</th>
-                  <th className="py-2">Student Name</th>
-                  <th className="py-2">Type</th>
-                  <th className="py-2">Reason</th>
-                  <th className="py-2">Requested Date</th>
-                  <th className="py-2">Status</th>
-                  <th className="py-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leavesList.map((req) => (
-                  <tr key={req.requestId} className="border-b border-border/40 hover:bg-muted/5 transition-colors">
-                    <td className="py-3 font-mono font-bold">{req.requestId}</td>
-                    <td className="py-3 font-bold text-foreground">
-                      <p>{req.studentName}</p>
-                      <span className="font-mono text-[9px] text-muted-foreground">{req.studentId}</span>
-                    </td>
-                    <td className="py-3">
-                      <Badge variant="outline" className="text-[9px] font-semibold font-mono">
-                        {req.type}
-                      </Badge>
-                    </td>
-                    <td className="py-3 text-muted-foreground max-w-xs truncate">{req.reason}</td>
-                    <td className="py-3 font-mono">{req.requestedDate}</td>
-                    <td className="py-3">
-                      <Badge variant="outline" className="text-[9px] uppercase">
-                        {req.status}
-                      </Badge>
-                    </td>
-                    <td className="py-3 text-right">
-                      <div className="flex gap-1.5 justify-end">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleApproveLeave(req.requestId, req.studentName)}
-                          className="h-8 text-[10px] font-semibold border-emerald-200 text-emerald-600 hover:bg-emerald-50 cursor-pointer"
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleRejectLeave(req.requestId, req.studentName)}
-                          className="h-8 text-[10px] font-semibold text-destructive hover:bg-destructive/10 cursor-pointer"
-                        >
-                          Reject
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* 5. DETAIL STUDENT WORKSPACE DIALOG */}
-      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent className="max-w-md text-xs leading-normal">
-          {selectedStudent && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-primary/10 text-primary border-primary/25 font-mono">
-                    {selectedStudent.studentId}
+          {selectedAtt && (
+            <div className="space-y-4 pt-1">
+              <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-2">
+                <div className="flex items-center justify-between">
+                  <Badge variant="secondary" className="font-mono text-xs">
+                    {selectedAtt.section} &middot; {selectedAtt.date}
                   </Badge>
-                  <span className="text-[10px] text-muted-foreground font-mono">
-                    {selectedStudent.department} &middot; {selectedStudent.section}
+                  <Badge
+                    className={
+                      selectedAtt.status === "Submitted"
+                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                        : "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                    }
+                  >
+                    {selectedAtt.status}
+                  </Badge>
+                </div>
+                <h2 className="text-base font-bold text-foreground">
+                  {selectedAtt.courseCode}: {selectedAtt.courseTitle}
+                </h2>
+                <p className="text-xs text-primary font-medium">Instructor: {selectedAtt.instructor}</p>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between p-2.5 rounded-lg bg-card border border-border/60 font-mono">
+                  <span className="text-muted-foreground font-sans">Session Attendance Rate:</span>
+                  <span className={`font-bold text-base ${selectedAtt.percentage < 75 ? "text-amber-600" : "text-emerald-600"}`}>
+                    {selectedAtt.percentage}%
                   </span>
                 </div>
-                <DialogTitle className="text-base font-bold font-display mt-1">
-                  {selectedStudent.studentName}
-                </DialogTitle>
-                <DialogDescription>
-                  Detailed attendance metrics, course completed ratios, and recent absence logs.
-                </DialogDescription>
-              </DialogHeader>
 
-              <div className="space-y-4 pt-2.5">
-                <div className="grid grid-cols-2 gap-3.5 border rounded-xl p-3 bg-muted/20">
-                  <div>
-                    <span className="text-muted-foreground text-[10px]">Syllabus Semester</span>
-                    <p className="font-bold mt-0.5">{selectedStudent.semester}</p>
+                <div className="grid grid-cols-2 gap-2 text-center font-mono">
+                  <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                    <span className="text-[0.68rem] text-emerald-700 font-sans block">Present Students</span>
+                    <span className="font-bold text-base text-emerald-700">{selectedAtt.presentCount}</span>
                   </div>
-                  <div>
-                    <span className="text-muted-foreground text-[10px]">Attendance %</span>
-                    <p className="font-bold mt-0.5 font-mono text-primary text-sm">{selectedStudent.attendancePercentage}%</p>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-[10px]">Classes Conducted</span>
-                    <p className="font-bold mt-0.5">{selectedStudent.conducted} classes</p>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-[10px]">Risk Warning Limit</span>
-                    <Badge variant="outline" className="text-[9px] uppercase tracking-wide mt-1">
-                      {selectedStudent.riskLevel}
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Subject Wise Cards mock placeholder */}
-                <div className="space-y-2">
-                  <h4 className="text-[11px] font-bold text-foreground">Course-wise Breakdown Summary</h4>
-                  <div className="space-y-2 max-h-[140px] overflow-y-auto pr-1">
-                    <div className="p-2.5 border rounded-lg flex justify-between items-center bg-card">
-                      <div>
-                        <p className="font-bold text-[10px]">CS501 Computer Networks</p>
-                        <span className="text-[9px] text-muted-foreground">Dr. K. Sai Teja</span>
-                      </div>
-                      <span className="font-mono font-bold text-primary">85.5%</span>
-                    </div>
-                    <div className="p-2.5 border rounded-lg flex justify-between items-center bg-card">
-                      <div>
-                        <p className="font-bold text-[10px]">CS502 Web Technologies</p>
-                        <span className="text-[9px] text-muted-foreground">Dr. S. K. Gupta</span>
-                      </div>
-                      <span className="font-mono font-bold text-destructive">72.0%</span>
-                    </div>
+                  <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/20">
+                    <span className="text-[0.68rem] text-red-700 font-sans block">Absent Students</span>
+                    <span className="font-bold text-base text-red-700">{selectedAtt.absentCount}</span>
                   </div>
                 </div>
               </div>
 
               <DialogFooter className="pt-2">
-                <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>Close details</Button>
                 <Button
-                  onClick={() => {
-                    toast.success(`Shortage warning letter generated for ${selectedStudent.studentName}!`);
-                  }}
-                  className="bg-brand-gradient text-white font-semibold"
+                  variant="outline"
+                  onClick={() => setIsViewOpen(false)}
+                  className="w-full text-xs"
                 >
-                  Generate Letter
+                  Close Dossier
                 </Button>
               </DialogFooter>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }

@@ -133,11 +133,13 @@ export interface Member {
   suspendedTill?: string | undefined;
 }
 
+export type LibraryMember = Member;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // ISSUE RECORD
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type IssueStatus = "Active" | "Returned" | "Overdue" | "Lost" | "Renewed";
+export type IssueStatus = "Active" | "Returned" | "Overdue" | "Lost" | "Renewed" | "Issued";
 
 export interface IssueRecord {
   id: string;
@@ -162,6 +164,19 @@ export interface IssueRecord {
   returnCondition?: "Good" | "Damaged" | "Lost" | undefined;
   receiptNo?: string | undefined;
   maxRenewals?: number | undefined;
+
+  // Compatibility fields
+  issueNumber?: string;
+  bookAccessionNo?: string;
+  copyBarcode?: string;
+  memberNumber?: string;
+  department?: string;
+  email?: string;
+  phone?: string;
+  issueDate?: string;
+  returnDate?: string;
+  fineAmount?: number;
+  finePaid?: boolean;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -169,7 +184,7 @@ export interface IssueRecord {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type FineType = "Overdue" | "Lost" | "Damaged" | "DuplicateCard" | "Other";
-export type FineStatus = "Pending" | "Paid" | "Waived" | "Partial";
+export type FineStatus = "Pending" | "Paid" | "Waived" | "Partial" | "Partially Paid";
 
 export interface FineRecord {
   id: string;
@@ -193,6 +208,12 @@ export interface FineRecord {
   waiverReason?: string | undefined;
   waivedAt?: string | undefined;
   notes?: string | undefined;
+
+  // Compatibility fields
+  amountPaid?: number;
+  balance?: number;
+  totalFine?: number;
+  paymentMode?: string;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

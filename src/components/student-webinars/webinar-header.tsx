@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Video } from "lucide-react";
+import { Search, SlidersHorizontal, Download, Video, Home, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -14,6 +14,14 @@ export function WebinarHeader({
 }: WebinarHeaderProps) {
   return (
     <div className="space-y-4 mb-6">
+      {/* Top Breadcrumb Row */}
+      <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+        <Home className="size-3.5" />
+        <span>Home</span>
+        <ChevronRight className="size-3 text-slate-400" />
+        <span className="font-bold text-slate-900 dark:text-slate-100">Webinars</span>
+      </div>
+
       {/* Main Title Card Box */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
         {/* Left Title & Icon */}

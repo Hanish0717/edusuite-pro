@@ -36,17 +36,17 @@ export function RevaluationModal({
   const actualOnOpenChange = onOpenChange || ((o: boolean) => { if (!o && onClose) onClose(); });
   const safeSemesterResults = semesterResults || [];
   const [selectedSem, setSelectedSem] = useState<number>(defaultSemester);
-  const currentResult = safeSemesterResults.find((r) => r?.semester === selectedSem) || safeSemesterResults[0];
+  const currentResult = semesterResults.find((r) => r.semester === selectedSem) || semesterResults[0];
 
   const [selectedSubjectCode, setSelectedSubjectCode] = useState<string>(
-    currentResult?.subjects?.[0]?.code || ""
+    currentResult?.subjects[0]?.code || ""
   );
   const [revalType, setRevalType] = useState<"Paper Revaluation" | "Recounting" | "Script Copy">("Paper Revaluation");
   const [reason, setReason] = useState("Internal valuation discrepancy in section B theory answer evaluation.");
   const [comments, setComments] = useState("Requesting paper recounting and answer script digital copy.");
 
   const availableSubjects = currentResult?.subjects || [];
-  const selectedSubject = availableSubjects.find((s) => s?.code === selectedSubjectCode) || availableSubjects[0];
+  const selectedSubject = availableSubjects.find((s) => s.code === selectedSubjectCode) || availableSubjects[0];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +93,7 @@ export function RevaluationModal({
               onChange={(e) => {
                 const sem = Number(e.target.value);
                 setSelectedSem(sem);
-                const res = safeSemesterResults.find((r) => r?.semester === sem);
+                const res = semesterResults.find((r) => r.semester === sem);
                 if (res && res.subjects.length > 0) {
                   setSelectedSubjectCode(res.subjects[0].code);
                 }
@@ -179,7 +179,7 @@ export function RevaluationModal({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => actualOnOpenChange(false)}
               className="rounded-xl text-xs cursor-pointer"
             >
               Cancel

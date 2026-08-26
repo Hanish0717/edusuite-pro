@@ -71,13 +71,9 @@ export function LessonPlanCard({ plan, onClick }: LessonPlanCardProps) {
 
         <div className="pt-3 border-t border-border/40 flex justify-between items-center text-[0.65rem] text-muted-foreground font-medium">
           <span className="flex items-center gap-0.5"><Clock className="size-3 text-primary/60" /> {plan.weeklyHours} Hrs/Wk</span>
-          <span className="flex items-center gap-0.5"><Layers className="size-3 text-primary/60" /> Sec: {plan.assignedSections.join(", ")}</span>
-          <span className="text-[0.6rem] font-bold text-primary hover:underline bg-primary/10 px-2 py-0.5 rounded-lg">
-            Session Planner &rarr;
-          </span>
+          <span className="flex items-center gap-0.5"><Layers className="size-3 text-primary/60" /> Sections: {plan.assignedSections.join(", ")}</span>
         </div>
       </CardContent>
     </Card>
   );
 }
-

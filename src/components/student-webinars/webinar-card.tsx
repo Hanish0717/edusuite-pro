@@ -7,10 +7,9 @@ interface WebinarCardProps {
   webinar: Webinar;
   onRegisterToggle: (webinarId: string) => void;
   onSelectWebinar: (webinar: Webinar) => void;
-  onToggleBookmark?: (webinarId: string) => void;
 }
 
-export function WebinarCard({ webinar, onRegisterToggle, onSelectWebinar, onToggleBookmark }: WebinarCardProps) {
+export function WebinarCard({ webinar, onRegisterToggle, onSelectWebinar }: WebinarCardProps) {
   return (
     <div className="flex flex-col rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xs hover:shadow-md transition-all duration-200 overflow-hidden">
       {/* Top Banner Image with Floating Badges */}
@@ -103,8 +102,8 @@ export function WebinarCard({ webinar, onRegisterToggle, onSelectWebinar, onTogg
           </Button>
 
           <button
-            onClick={() => onToggleBookmark ? onToggleBookmark(webinar.id) : onRegisterToggle(webinar.id)}
-            className="size-9 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+            onClick={() => onRegisterToggle(webinar.id)}
+            className="size-9 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shrink-0"
             title="Bookmark"
           >
             {webinar.isBookmarked ? (

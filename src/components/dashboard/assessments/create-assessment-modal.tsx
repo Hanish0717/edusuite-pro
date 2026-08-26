@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronRight, ChevronLeft, CheckCircle2, X } from "lucide-react";
-import type { AssessmentItem, AssessmentType } from "./types";
+import type { AssessmentType } from "./types";
 
 const TYPES: AssessmentType[] = [
   "Internal 1", "Internal 2", "Quiz", "Assignment",
@@ -30,67 +30,29 @@ interface CreateAssessmentModalProps {
   onClose: () => void;
   subjects: string[];
   sections: string[];
-  assessmentToEdit?: AssessmentItem | null;
-  onSave?: (assessmentData: Form, isEdit: boolean, publish: boolean) => void;
 }
 
-export function CreateAssessmentModal({
-  open,
-  onClose,
-  subjects,
-  sections,
-  assessmentToEdit,
-  onSave,
-}: CreateAssessmentModalProps) {
+export function CreateAssessmentModal({ open, onClose, subjects, sections }: CreateAssessmentModalProps) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<Form>({ ...EMPTY });
   const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    if (assessmentToEdit && open) {
-      setForm({
-        name: assessmentToEdit.name,
-        type: assessmentToEdit.type,
-        subject: assessmentToEdit.subject,
-        section: assessmentToEdit.section,
-        maxMarks: String(assessmentToEdit.maxMarks),
-        date: assessmentToEdit.date,
-        duration: assessmentToEdit.duration || "2 Hours",
-        weightage: assessmentToEdit.weightage || "25%",
-        instructions: assessmentToEdit.instructions || "",
-        submissionMethod: assessmentToEdit.submissionMethod || "Written Booklet",
-        remarks: "",
-      });
-    } else if (open) {
-      setForm({ ...EMPTY });
-    }
-  }, [assessmentToEdit, open]);
 
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const handleSave = (publish: boolean) => {
     setSaved(true);
-    if (onSave) {
-      onSave(form, !!assessmentToEdit, publish);
-    }
-    setTimeout(() => {
-      setSaved(false);
-      setStep(0);
-      setForm({ ...EMPTY });
-      onClose();
-    }, 1000);
+    setTimeout(() => { setSaved(false); setStep(0); setForm({ ...EMPTY }); onClose(); }, 1200);
   };
 
   const progress = ((step + 1) / STEPS.length) * 100;
-  const titleText = assessmentToEdit ? "Edit Assessment" : "Create Assessment";
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) { setStep(0); setForm({ ...EMPTY }); onClose(); } }}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 gap-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/50">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-lg font-bold">{titleText}</DialogTitle>
+            <DialogTitle className="text-lg font-bold">Create Assessment</DialogTitle>
             <button onClick={onClose} className="rounded-lg p-1.5 hover:bg-muted/50 transition-colors">
               <X className="size-4 text-muted-foreground" />
             </button>
@@ -122,9 +84,7 @@ export function CreateAssessmentModal({
           {saved ? (
             <div className="flex flex-col items-center justify-center h-48 gap-3">
               <CheckCircle2 className="size-12 text-emerald-500" />
-              <p className="text-lg font-bold text-emerald-600">
-                {assessmentToEdit ? "Assessment Updated!" : "Assessment Saved!"}
-              </p>
+              <p className="text-lg font-bold text-emerald-600">Assessment Saved!</p>
             </div>
           ) : (
             <>

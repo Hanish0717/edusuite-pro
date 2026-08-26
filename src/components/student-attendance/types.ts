@@ -9,7 +9,6 @@ export const YEAR_TO_SEMESTERS_MAP: Record<AcademicYearOption, number[]> = {
 
 export type AttendanceTab =
   | "summary"
-  | "calendar"
   | "subject-attendance"
   | "history"
   | "leave-management";
@@ -31,13 +30,6 @@ export interface StudentAttendanceProfile {
   leaveClasses: number;
   condonationStatus: "Eligible" | "Condonation Required" | "Ineligible";
   currentStreak: number; // in days
-  // Derived day counts (computed from class records)
-  presentDays: number;
-  absentDays: number;
-  leaveDays: number;
-  onDutyDays: number;
-  totalWorkingDays: number;
-  currentStreakDays: number;
   classesRequiredFor75: number;
   classesRequiredFor85: number;
   lowAttendanceCount: number;

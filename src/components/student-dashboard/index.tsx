@@ -36,6 +36,7 @@ import { TransportWidget } from "./transport-widget";
 import { PlacementWidget } from "./placement-widget";
 import { AnnouncementWidget } from "./announcement-widget";
 import { ActivityWidget } from "./activity-widget";
+import { CalendarWidget } from "./calendar-widget";
 import { AiWidget } from "./ai-widget";
 import { QuickActions } from "./quick-actions";
 import { Shortcuts } from "./shortcuts";
@@ -269,11 +270,14 @@ export function StudentDashboardPage() {
 
             </div>
 
-            {/* RIGHT 1 COLUMN: SIDE PANELS (AI ASSISTANT, RECENT ACTIVITY) */}
+            {/* RIGHT 1 COLUMN: SIDE PANELS (AI ASSISTANT, RECENT ACTIVITY, CALENDAR) */}
             <div className="space-y-6">
               
               {/* SECTION 16: AI STUDENT ASSISTANT */}
               <AiWidget />
+
+              {/* SECTION 18: MINI CALENDAR */}
+              <CalendarWidget />
 
               {/* SECTION 15: RECENT SYSTEM ACTIVITY */}
               <ActivityWidget activities={MOCK_RECENT_ACTIVITIES} />

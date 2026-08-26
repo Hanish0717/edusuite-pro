@@ -729,6 +729,8 @@ export const DEFAULT_POLICY_COMPLIANCE: PolicyComplianceStatus = {
   lastAuditDate: "2026-07-28",
 };
 
+// Warden API Implementations
+
 export async function fetchHostelRooms(): Promise<HostelRoom[]> {
   try {
     const res = await api.get("/api/hostel/rooms");

@@ -106,6 +106,6 @@ export interface HostelNotice {
   title: string;
   category: "Mess" | "Maintenance" | "Inspection" | "Events" | "General";
   date: string;
-  priority: "Normal" | "High" | "Urgent";
+  priority: "Normal" | "High" | "Urgent" | "Low";
   description: string;
 }

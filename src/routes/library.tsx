@@ -1,7 +1,6 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-
-import { LibraryStoreProvider } from "@/modules/library/LibraryStore";
+import { LibraryModuleView } from "@/modules/library";
 
 export const Route = createFileRoute("/library")({
   head: () => ({ meta: [{ title: "Library Management — EduSuite Pro" }] }),
@@ -10,10 +9,8 @@ export const Route = createFileRoute("/library")({
 
 function LibraryPage() {
   return (
-    <LibraryStoreProvider>
-      <DashboardLayout>
-        <Outlet />
-      </DashboardLayout>
-    </LibraryStoreProvider>
+    <DashboardLayout>
+      <LibraryModuleView />
+    </DashboardLayout>
   );
 }

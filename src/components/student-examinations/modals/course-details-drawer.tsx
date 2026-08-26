@@ -82,8 +82,8 @@ export function CourseDetailsDrawer({ open, isOpen, onOpenChange, onClose, cours
           {course.isRegistered ? (
             <Button
               onClick={() => {
-                onDrop(course);
-                onOpenChange(false);
+                if (onDrop) onDrop(course);
+                actualOnOpenChange(false);
               }}
               variant="outline"
               className="w-full rounded-xl text-xs border-rose-300 text-rose-600 hover:bg-rose-50"
@@ -93,8 +93,8 @@ export function CourseDetailsDrawer({ open, isOpen, onOpenChange, onClose, cours
           ) : (
             <Button
               onClick={() => {
-                onRegister(course);
-                onOpenChange(false);
+                if (onRegister) onRegister(course);
+                actualOnOpenChange(false);
               }}
               disabled={course.status === "Full"}
               className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs"

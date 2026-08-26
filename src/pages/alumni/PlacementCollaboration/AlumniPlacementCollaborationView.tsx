@@ -36,12 +36,14 @@ import { Input } from "@/components/ui/input";
 interface AlumniPlacementCollaborationViewProps {
   drivesList: PlacementDriveRequest[];
   jobListings: AlumniJobItem[];
+  onUpdateDrives?: React.Dispatch<React.SetStateAction<PlacementDriveRequest[]>> | undefined;
   onOpenMessagingCenter?: (() => void) | undefined;
 }
 
 export const AlumniPlacementCollaborationView: React.FC<AlumniPlacementCollaborationViewProps> = ({
   drivesList,
   jobListings,
+  onUpdateDrives,
   onOpenMessagingCenter,
 }) => {
   const [drives, setDrives] = useState<PlacementDriveRequest[]>(drivesList);

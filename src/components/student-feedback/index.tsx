@@ -342,7 +342,7 @@ export function StudentFeedbackModule() {
               label="Open Grievances"
               value={String(mockFeedbackKPIs.openGrievances)}
               icon={ShieldAlert}
-              tone="danger"
+              tone="destructive"
             />
             <KpiCard
               label="Service Requests"

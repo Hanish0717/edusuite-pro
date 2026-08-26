@@ -70,7 +70,7 @@ function StudentResultsPage() {
           <div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight">Academic Results & Grade Card</h1>
             <p className="text-xs text-slate-500 font-medium mt-0.5">
-              Adm No: 22CS101 • B.Tech Computer Science & Engineering
+              Roll No: 22CS101 • B.Tech Computer Science & Engineering
             </p>
           </div>
         </div>

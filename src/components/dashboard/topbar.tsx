@@ -150,19 +150,30 @@ export function Topbar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[#E2E8F0] bg-white dark:bg-slate-950/95 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
       <div className="flex items-center justify-between gap-3 px-4 py-2.5 min-w-0">
         <div className="flex min-w-0 items-center gap-2 shrink-0">
-          <SidebarTrigger className="shrink-0 text-[#2563EB]" />
+          <SidebarTrigger className="shrink-0" />
           <div className="relative hidden xl:block min-w-0">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#2563EB]" />
-            <Input placeholder="Search students, staff..." className="h-8 w-44 lg:w-56 text-xs pl-8 border-[#BFDBFE] focus-visible:ring-1 focus-visible:ring-[#2563EB]" />
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Search students, staff..." className="h-8 w-44 lg:w-56 text-xs pl-8" />
           </div>
         </div>
 
         <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none py-0.5 max-w-full">
-          <Select value={role} onValueChange={(v) => setRole(v as LoginRole)}>
-            <SelectTrigger className="h-9 w-[170px] font-semibold text-xs border-primary/40 bg-card" aria-label="Core Login Role">
+          <Select
+            value={role}
+            onValueChange={(v) => {
+              const newRole = v as LoginRole;
+              setRole(newRole);
+              if (newRole === "super-admin") navigate({ to: "/super-admin/dashboard" });
+              else if (newRole === "student") navigate({ to: "/student/dashboard" });
+              else if (newRole === "parent") navigate({ to: "/parent/dashboard" });
+              else if (newRole === "external-user") navigate({ to: "/external-user/dashboard" });
+              else if (newRole === "staff") navigate({ to: "/dashboard" });
+            }}
+          >
+            <SelectTrigger className="h-9 w-[160px] font-semibold text-xs border-primary/40 bg-card" aria-label="5 Core Login Roles">
               <SelectValue placeholder="Core Login Role" />
             </SelectTrigger>
             <SelectContent>
@@ -192,7 +203,11 @@ export function Topbar() {
           {role === "external-user" && (
             <Select
               value={externalPersona || "recruiter"}
-              onValueChange={(v) => setExternalPersona((v || undefined) as ExternalPersona)}
+              onValueChange={(v) => {
+                const persona = (v || undefined) as ExternalPersona;
+                setExternalPersona(persona);
+                navigate({ to: "/external-user/dashboard" });
+              }}
             >
               <SelectTrigger className="h-9 w-[160px] text-xs font-medium bg-card" aria-label="External Persona">
                 <SelectValue placeholder="External Persona" />
@@ -227,8 +242,18 @@ export function Topbar() {
                           id={`flag-${f.id}`}
                           checked={active}
                           onCheckedChange={(checked) => {
-                            if (checked) {
+                            const isChecked = !!checked;
+                            if (isChecked) {
                               setFlags([...flags, f.id]);
+                              if (f.id === "isLibraryAdmin") navigate({ to: "/library" });
+                              else if (f.id === "isTransportOfficer") navigate({ to: "/transport" });
+                              else if (f.id === "isHostelWarden") navigate({ to: "/hostel" });
+                              else if (f.id === "isPlacementOfficer") navigate({ to: "/placement/dashboard" });
+                              else if (f.id === "isHod") navigate({ to: "/hod/dashboard" });
+                              else if (f.id === "isDean") navigate({ to: "/staff" });
+                              else if (f.id === "isExamController") navigate({ to: "/examinations" });
+                              else if (f.id === "isFinanceOfficer") navigate({ to: "/finance/dashboard" });
+                              else if (f.id === "isHRManager") navigate({ to: "/hr/dashboard" });
                             } else {
                               setFlags(flags.filter((x) => x !== f.id));
                             }
@@ -254,13 +279,13 @@ export function Topbar() {
             aria-label="Toggle theme"
             onClick={() => setDark((d) => !d)}
           >
-            {dark ? <Sun className="size-4 text-[#2563EB]" /> : <Moon className="size-4 text-[#2563EB]" />}
+            {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </Button>
 
           <Sheet open={isNotifOpen} onOpenChange={setIsNotifOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
-                <Bell className="size-4 text-[#2563EB]" />
+                <Bell className="size-4 text-slate-700 dark:text-slate-200" />
                 {unread > 0 && (
                   <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-red-600 text-[0.6rem] font-bold text-white shadow-xs animate-pulse">
                     {unread}
@@ -383,7 +408,7 @@ export function Topbar() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/settings?tab=account-profile">Settings</Link>
+                <Link to="/settings">Settings</Link>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
@@ -399,7 +424,7 @@ export function Topbar() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#E2E8F0] px-4 py-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/60 px-4 py-2">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -414,9 +439,7 @@ export function Topbar() {
                   {c.last ? (
                     <BreadcrumbPage>{c.label}</BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink asChild>
-                      <Link to={c.href}>{c.label}</Link>
-                    </BreadcrumbLink>
+                    <BreadcrumbLink href={c.href}>{c.label}</BreadcrumbLink>
                   )}
                 </BreadcrumbItem>
               </span>

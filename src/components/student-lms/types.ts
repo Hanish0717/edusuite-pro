@@ -28,6 +28,9 @@ export interface MaterialItem {
   id: string;
   title: string;
   courseCode: string;
+  courseName?: string;
+  description?: string;
+  type?: string;
   category:
     | "Lecture Notes"
     | "PPTs"

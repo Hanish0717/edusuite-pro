@@ -20,8 +20,7 @@ export function RegistrationModal({ open, isOpen, onOpenChange, onClose, selecte
   const actualOpen = open ?? isOpen ?? false;
   const actualOnOpenChange = onOpenChange || ((o: boolean) => { if (!o && onClose) onClose(); });
 
-  const safeCourses = selectedCourses || [];
-  const totalCredits = safeCourses.reduce((sum, c) => sum + (c?.credits || 0), 0);
+  const totalCredits = selectedCourses.reduce((sum, c) => sum + c.credits, 0);
 
   const handleConfirmRegistration = () => {
     setIsSubmitting(true);
@@ -89,7 +88,7 @@ export function RegistrationModal({ open, isOpen, onOpenChange, onClose, selecte
         </div>
 
         <DialogFooter className="pt-2 gap-2">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="rounded-xl text-xs">
+          <Button type="button" variant="outline" onClick={() => actualOnOpenChange(false)} className="rounded-xl text-xs">
             Back to Edit
           </Button>
           <Button type="button" onClick={handleConfirmRegistration} disabled={isSubmitting} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5">

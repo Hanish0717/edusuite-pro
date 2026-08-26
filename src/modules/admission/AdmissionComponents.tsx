@@ -450,7 +450,7 @@ export function AdmissionModuleView() {
                           size="sm"
                           onClick={() => handleOpenView(app)}
                           className="h-7 text-xs font-medium gap-1 text-muted-foreground hover:text-foreground"
-                          title="View Details"
+                          title="View Dossier"
                         >
                           <Eye className="size-3.5" /> Details
                         </Button>
@@ -640,7 +640,7 @@ export function AdmissionModuleView() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2">
-              <GraduationCap className="size-5 text-primary" /> Applicant Profile & Audit
+              <GraduationCap className="size-5 text-primary" /> Applicant Dossier & Audit
             </DialogTitle>
           </DialogHeader>
 

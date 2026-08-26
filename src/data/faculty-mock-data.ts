@@ -535,21 +535,20 @@ export interface StudyMaterialItem {
   uploadDate: string;
   lastUpdated: string;
   downloadCount: number;
-  studentViews: number;
-  uploadedBy: string;
-  visibilityStatus: "Visible" | "Faculty Only" | "Scheduled" | "Draft" | "Hidden";
+  studentViews?: number;
+  uploadedBy?: string;
+  allowDownload?: boolean;
+  allowPreview?: boolean;
+  visibilityStatus: "Visible" | "Faculty Only" | "Scheduled";
   fileType: "PDF" | "PPT" | "Video" | "DOC" | "ZIP";
   fileSize: string;
   unit: string;
   topic: string;
   keywords: string[];
-  category: "Lecture Notes" | "PPT" | "Lab Manual" | "Question Bank" | "Previous Papers" | "Video Lecture" | "Reference Book" | "NPTEL" | "Research Paper" | "Assignment Resources" | "Assignment";
-  allowDownload?: boolean;
-  allowPreview?: boolean;
+  category: "Lecture Notes" | "PPT" | "Lab Manual" | "Question Bank" | "Previous Papers" | "Video Lecture" | "Reference Book" | "NPTEL" | "Research Paper" | "Assignment Resources";
   versions: VersionItem[];
   timeline: TimelineEvent[];
 }
-
 
 export interface FacultyDashboardData {
   facultyName: string;
@@ -1335,204 +1334,66 @@ const generateAssignmentsData = (branchCode: string): AssignmentItem[] => {
   ];
 };
 
+// HELPER TO GENERATE STUDY MATERIALS MOCK DATA DYNAMICALLY FOR A DEPT
 const generateStudyMaterialsData = (branchCode: string): StudyMaterialItem[] => {
-  const isCSE = branchCode === "CSE";
-  const isECE = branchCode === "ECE";
-  const isEEE = branchCode === "EEE";
-  const isME = branchCode === "ME";
-  const isCivil = branchCode === "CIVIL" || branchCode === "Civil";
-  const isMBA = branchCode === "MBA";
-
-  const subject1 = isCSE ? "Operating Systems" : isECE ? "Digital Electronics" : isEEE ? "Power Systems" : isME ? "Thermodynamics" : isCivil ? "Surveying" : isMBA ? "Organizational Behavior" : "Linear Algebra";
-  const subject2 = isCSE ? "Database Management Systems" : isECE ? "Signals & Systems" : isEEE ? "Electrical Machines" : isME ? "CAD/CAM" : isCivil ? "Reinforced Concrete (RCC)" : isMBA ? "Marketing Management" : "Differential Calculus";
-  const subject3 = isCSE ? "Computer Networks" : isECE ? "Microcontrollers" : isEEE ? "Control Systems" : isME ? "Fluid Mechanics" : isCivil ? "Structural Analysis" : isMBA ? "Financial Accounting" : "Probability & Statistics";
-
   return [
     {
       id: `mat-${branchCode}-301`,
-      title: `${subject1} Lecture Notes & Process Management Slides`,
-      description: "Comprehensive lecture slides covering CPU scheduling algorithms, Peterson's solution, and Semaphore invariants.",
-      subject: subject1,
-      code: `${branchCode}301`,
+      title: "Syllabus lecture notes on CPU scheduling",
+      description: "Complete slide outline referencing Round Robin, FCFS and SJF scheduling behaviors.",
+      subject: branchCode === "MBA" ? "Organizational Behavior" : "Operating Systems",
+      code: branchCode === "MBA" ? "MB101" : "CS301",
       section: `${branchCode}-A`,
       semester: "5",
       academicYear: "2026-27",
       uploadDate: "2026-07-10",
       lastUpdated: "2026-07-28",
-      downloadCount: 184,
-      studentViews: 412,
-      uploadedBy: `Prof. ${branchCode} Faculty Lead`,
+      downloadCount: 142,
       visibilityStatus: "Visible",
       fileType: "PDF",
-      fileSize: "3.2 MB",
+      fileSize: "2.4 MB",
       unit: "Unit I",
-      topic: "Introduction & Architecture",
-      keywords: [subject1, "Unit 1", "Lecture Notes"],
+      topic: "CPU Scheduling Algorithms",
+      keywords: ["Scheduling", "FCFS", "Round Robin"],
       category: "Lecture Notes",
-      allowDownload: true,
-      allowPreview: true,
       versions: [
-        { versionNum: "v1.1", updatedBy: "System sync", updatedDate: "2026-07-28", changeSummary: "Fixed diagram annotations" },
-        { versionNum: "v1.0", updatedBy: "System sync", updatedDate: "2026-07-10", changeSummary: "Initial publication release" },
+        { versionNum: "v1.1", updatedBy: "System sync", updatedDate: "2026-07-28", changeSummary: "Fixed formatting of Gantt charts" },
+        { versionNum: "v1.0", updatedBy: "System sync", updatedDate: "2026-07-10", changeSummary: "Initial draft release" },
       ],
       timeline: [
         { event: "Material Draft Created", date: "2026-07-10", status: "Completed" },
+        { event: "File Approved by HOD", date: "2026-07-12", status: "Completed" },
         { event: "File Made Visible to Students", date: "2026-07-15", status: "Completed" },
       ],
     },
     {
       id: `mat-${branchCode}-302`,
-      title: `${subject1} Unit 2 Presentation Slides (PPT)`,
-      description: "Interactive presentation deck covering state diagrams, context switching overheads, and thread pools.",
-      subject: subject1,
-      code: `${branchCode}301`,
-      section: `${branchCode}-A`,
+      title: "Relational Algebra & Normalization Rules cheatsheet",
+      description: "PDF outline sheet covering join operations, projection, selection and Normal Form layouts.",
+      subject: branchCode === "MBA" ? "Marketing Management" : "Database Management Systems",
+      code: branchCode === "MBA" ? "MB102" : "CS302",
+      section: `${branchCode}-B`,
       semester: "5",
       academicYear: "2026-27",
       uploadDate: "2026-07-18",
       lastUpdated: "2026-07-18",
-      downloadCount: 142,
-      studentViews: 310,
-      uploadedBy: `Dr. A. Sharma (${branchCode} Dept)`,
+      downloadCount: 98,
       visibilityStatus: "Visible",
       fileType: "PPT",
-      fileSize: "5.8 MB",
+      fileSize: "4.8 MB",
       unit: "Unit II",
-      topic: "Process Management & CPU Scheduling",
-      keywords: ["PPT", "Unit 2", subject1],
+      topic: "Relational Algebra",
+      keywords: ["Relational Algebra", "Normalization", "Database"],
       category: "PPT",
-      allowDownload: true,
-      allowPreview: true,
       versions: [
-        { versionNum: "v1.0", updatedBy: "Dr. A. Sharma", updatedDate: "2026-07-18", changeSummary: "Initial PPT upload" },
+        { versionNum: "v1.0", updatedBy: "System sync", updatedDate: "2026-07-18", changeSummary: "Initial slides copy" },
       ],
       timeline: [
         { event: "Material Uploaded", date: "2026-07-18", status: "Completed" },
       ],
     },
-    {
-      id: `mat-${branchCode}-303`,
-      title: `${subject2} Official Lab Manual & Experiments Manual`,
-      description: "Step-by-step laboratory experiments manual with code templates, safety rules, and observation tables.",
-      subject: subject2,
-      code: `${branchCode}302`,
-      section: `${branchCode}-B`,
-      semester: "5",
-      academicYear: "2026-27",
-      uploadDate: "2026-07-22",
-      lastUpdated: "2026-07-25",
-      downloadCount: 96,
-      studentViews: 220,
-      uploadedBy: `Prof. M. Verma (${branchCode} Dept)`,
-      visibilityStatus: "Visible",
-      fileType: "PDF",
-      fileSize: "8.4 MB",
-      unit: "Unit I",
-      topic: "Practical Lab Setup & Fundamentals",
-      keywords: ["Lab Manual", "Experiments", subject2],
-      category: "Lab Manual",
-      allowDownload: true,
-      allowPreview: true,
-      versions: [
-        { versionNum: "v1.0", updatedBy: "Prof. M. Verma", updatedDate: "2026-07-22", changeSummary: "Published Lab Manual v1" },
-      ],
-      timeline: [
-        { event: "Lab Manual Published", date: "2026-07-22", status: "Completed" },
-      ],
-    },
-    {
-      id: `mat-${branchCode}-304`,
-      title: `${subject1} Last 5 Years Mid-Sem & End-Sem Previous Question Papers`,
-      description: "Compiled solved question bank papers from 2021 to 2025 with answer keys and Bloom taxonomy markers.",
-      subject: subject1,
-      code: `${branchCode}301`,
-      section: `${branchCode}-A`,
-      semester: "5",
-      academicYear: "2026-27",
-      uploadDate: "2026-07-26",
-      lastUpdated: "2026-07-26",
-      downloadCount: 230,
-      studentViews: 580,
-      uploadedBy: `Dr. K. Patel (${branchCode} Dept)`,
-      visibilityStatus: "Visible",
-      fileType: "PDF",
-      fileSize: "6.1 MB",
-      unit: "Unit I-III",
-      topic: "Question Bank & Previous Year Solutions",
-      keywords: ["Previous Papers", "Question Bank", subject1],
-      category: "Previous Papers",
-      allowDownload: true,
-      allowPreview: true,
-      versions: [
-        { versionNum: "v1.0", updatedBy: "Dr. K. Patel", updatedDate: "2026-07-26", changeSummary: "Compiled past 5 years papers" },
-      ],
-      timeline: [
-        { event: "Question Papers Published", date: "2026-07-26", status: "Completed" },
-      ],
-    },
-    {
-      id: `mat-${branchCode}-305`,
-      title: `${subject3} NPTEL & Video Demonstration Lectures`,
-      description: "Direct HD video lecture recordings and NPTEL curated playlists for advanced concept visualization.",
-      subject: subject3,
-      code: `${branchCode}303`,
-      section: `${branchCode}-A`,
-      semester: "5",
-      academicYear: "2026-27",
-      uploadDate: "2026-07-29",
-      lastUpdated: "2026-07-29",
-      downloadCount: 75,
-      studentViews: 390,
-      uploadedBy: `Prof. S. Rao (${branchCode} Dept)`,
-      visibilityStatus: "Visible",
-      fileType: "Video",
-      fileSize: "Streaming Link",
-      unit: "Unit III",
-      topic: "Advanced Architecture & Systems",
-      keywords: ["Video Lecture", "NPTEL", subject3],
-      category: "Video Lecture",
-      allowDownload: false,
-      allowPreview: true,
-      versions: [
-        { versionNum: "v1.0", updatedBy: "Prof. S. Rao", updatedDate: "2026-07-29", changeSummary: "Added video links playlist" },
-      ],
-      timeline: [
-        { event: "Video Playlist Published", date: "2026-07-29", status: "Completed" },
-      ],
-    },
-    {
-      id: `mat-${branchCode}-306`,
-      title: `${subject2} Unit 3 Draft Lecture Notes (Pending Release)`,
-      description: "Upcoming lecture draft notes covering virtual memory, paging tables and working set models.",
-      subject: subject2,
-      code: `${branchCode}302`,
-      section: `${branchCode}-B`,
-      semester: "5",
-      academicYear: "2026-27",
-      uploadDate: "2026-08-01",
-      lastUpdated: "2026-08-01",
-      downloadCount: 0,
-      studentViews: 0,
-      uploadedBy: `Dr. A. Sharma (${branchCode} Dept)`,
-      visibilityStatus: "Draft",
-      fileType: "PDF",
-      fileSize: "1.9 MB",
-      unit: "Unit III",
-      topic: "Memory Management & Paging",
-      keywords: ["Draft", "Unit 3", subject2],
-      category: "Lecture Notes",
-      allowDownload: false,
-      allowPreview: true,
-      versions: [
-        { versionNum: "v0.9", updatedBy: "Dr. A. Sharma", updatedDate: "2026-08-01", changeSummary: "Draft prepared for review" },
-      ],
-      timeline: [
-        { event: "Draft Created", date: "2026-08-01", status: "Upcoming" },
-      ],
-    },
   ];
 };
-
 
 // HELPER TO GENERATE ASSESSMENT MODULE DATA DYNAMICALLY FOR A BRANCH
 const generateAssessmentModuleData = (branchCode: string, subjects: SubjectItem[]): AssessmentModuleData => {

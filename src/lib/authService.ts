@@ -205,8 +205,6 @@ export const DESIGNATION_OPTIONS_MAP: Record<CoreRoleKey, DesignationOption[]> =
     { id: "examination_dean", label: "Examination Dean" },
     { id: "placement_dean", label: "Placement Dean" },
     { id: "faculty", label: "Faculty / Teacher (Default)" },
-    // ── Academic Management: institution-level, no branch/dept required ──
-    { id: "academic_management", label: "Academic Management" },
     { id: "exam_controller", label: "Exam Controller" },
     { id: "placement_officer", label: "Placement Officer" },
     { id: "transport_officer", label: "Transport Officer" },
@@ -356,8 +354,6 @@ export function getDefaultCredentialsForSelection(
     else if (designation === "hostel_warden") email = "warden@college.com";
     else if (designation === "finance_officer") email = "accounts@college.com";
     else if (designation === "library_admin") email = "librarian@college.com";
-    // Academic Management: institution-level, future backend integration point
-    else if (designation === "academic_management") email = "academic.mgmt@college.com";
   }
   return { email, password };
 }
@@ -404,18 +400,27 @@ export function resolveRoleContextFromSelection(
     }
 
     let flag = "isHod";
-    if (designation === "hod") flag = "isHod";
-    else if (designation === "dean" || designation.includes("_dean")) flag = "isDean";
-    else if (designation === "exam_controller") flag = "isExamController";
-    else if (designation === "placement_officer") flag = "isPlacementOfficer";
-    else if (designation === "transport_officer") flag = "isTransportOfficer";
-    else if (designation === "hostel_warden") flag = "isHostelWarden";
-    else if (designation === "finance_officer") flag = "isFinanceOfficer";
-    else if (designation === "library_admin") flag = "isLibraryAdmin";
-    else if (designation === "hr_manager") flag = "isHRManager";
-    else if (designation === "principal") flag = "isPrincipal";
-    else if (designation === "vice_principal") flag = "isVicePrincipal";
-    else flag = "isMentor";
+    let targetRoute = "/dashboard";
+
+    if (designation === "hod") { flag = "isHod"; targetRoute = "/hod/dashboard"; }
+    else if (designation === "dean" || designation === "academic_dean") { flag = "isDean"; targetRoute = "/staff/academic-dean"; }
+    else if (designation === "student_dean") { flag = "isDean"; targetRoute = "/staff/student-dean"; }
+    else if (designation === "iqac_dean") { flag = "isDean"; targetRoute = "/staff/iqac"; }
+    else if (designation === "ima_dean") { flag = "isDean"; targetRoute = "/staff/ima"; }
+    else if (designation === "research_dean") { flag = "isDean"; targetRoute = "/staff/research-development"; }
+    else if (designation === "finance_dean") { flag = "isDean"; targetRoute = "/staff/finance-dean"; }
+    else if (designation === "examination_dean") { flag = "isDean"; targetRoute = "/staff/examination-dean"; }
+    else if (designation === "placement_dean") { flag = "isDean"; targetRoute = "/staff/placement-dean"; }
+    else if (designation === "exam_controller") { flag = "isExamController"; targetRoute = "/examinations"; }
+    else if (designation === "placement_officer") { flag = "isPlacementOfficer"; targetRoute = "/placement/dashboard"; }
+    else if (designation === "transport_officer") { flag = "isTransportOfficer"; targetRoute = "/transport"; }
+    else if (designation === "hostel_warden") { flag = "isHostelWarden"; targetRoute = "/hostel"; }
+    else if (designation === "finance_officer") { flag = "isFinanceOfficer"; targetRoute = "/finance/dashboard"; }
+    else if (designation === "library_admin") { flag = "isLibraryAdmin"; targetRoute = "/librarian"; }
+    else if (designation === "hr_manager") { flag = "isHRManager"; targetRoute = "/hr/dashboard"; }
+    else if (designation === "principal") { flag = "isPrincipal"; targetRoute = "/dashboard"; }
+    else if (designation === "vice_principal") { flag = "isVicePrincipal"; targetRoute = "/dashboard"; }
+    else { flag = "isMentor"; targetRoute = "/faculty/dashboard"; }
 
     // Determine role for dean designations
     let role: LoginRole = "staff";
@@ -427,6 +432,7 @@ export function resolveRoleContextFromSelection(
       flags: [flag, "isClassAdvisor", "isMentor"],
       department: deptCode,
       toastMessage: `Logged in as Staff: ${designation.toUpperCase()} — Branch: ${deptCode}`,
+      targetRoute,
     };
   }
 

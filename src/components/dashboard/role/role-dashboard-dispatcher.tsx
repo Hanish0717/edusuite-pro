@@ -12,7 +12,7 @@ import { StaffDashboard } from "./staff-dashboard";
 import { StudentDashboard } from "./student-dashboard";
 import { ParentDashboard } from "./parent-dashboard";
 import { ExamCellDashboard } from "./exam-cell-dashboard";
-import { LibrarianDashboard } from "@/librarian";
+import { LibrarianDashboard } from "./librarian-dashboard";
 import { PlacementDashboard } from "./placement-dashboard";
 import { WardenDashboard } from "./warden-dashboard";
 import { TransportDashboard } from "./transport-dashboard";
@@ -20,7 +20,6 @@ import { AccountsDashboard } from "./accounts-dashboard";
 import { LmsDashboard } from "./lms-dashboard";
 import { AlumniCoordinatorDashboard } from "./alumni-coordinator-dashboard";
 import { AlumniDashboard } from "./alumni-dashboard";
-import { AcademicManagementDashboard } from "./academic-management-dashboard";
 
 import {
   AcademicDeanDashboard,
@@ -61,7 +60,6 @@ const DASHBOARD_MAP: Record<string, React.ComponentType> = {
   lms: LmsDashboard,
   alumni_coordinator: AlumniCoordinatorDashboard,
   alumni: AlumniDashboard,
-  academic_management: AcademicManagementDashboard,
 };
 
 export function RoleDashboardDispatcher() {

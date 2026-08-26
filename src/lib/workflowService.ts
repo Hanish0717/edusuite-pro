@@ -1,4 +1,4 @@
-import type {
+import {
   WorkflowItem,
   WorkflowStep,
   DelegationRecord,
@@ -21,7 +21,6 @@ export type {
   RiskLevel,
   WorkflowDomainCategory,
 };
-
 
 export const MOCK_DELEGATIONS: DelegationRecord[] = [
   {
@@ -49,7 +48,6 @@ export const MOCK_DELEGATIONS: DelegationRecord[] = [
     createdDate: "2026-07-25 10:30 AM",
   },
 ];
-
 export const MOCK_TEMPLATES: WorkflowTemplate[] = [
   {
     id: "TMPL-ATT-01",
@@ -628,7 +626,6 @@ export function processStandardStep(
   actorRole: string = "Approver",
   notes?: string
 ): WorkflowItem[] {
-
   const updated = workflows.map((wf) => {
     if (wf.id !== id) return wf;
 

@@ -167,7 +167,7 @@ export const mockComplaints: ComplaintRecord[] = [
     id: "cmp-002",
     ticketNo: "HST-CMP-312",
     category: "Water",
-    priority: "Normal",
+    priority: "Low",
     description: "Washroom tap dripping slowly on 3rd Floor East Wing.",
     status: "Resolved",
     assignedStaff: "Plumber Ramesh",
@@ -273,7 +273,7 @@ export const mockHostelNotices: HostelNotice[] = [
     title: "Independence Day Special Feast Menu Announced",
     category: "Mess",
     date: "Yesterday",
-    priority: "Normal",
+    priority: "Low",
     description: "Special lunch and dinner feast will be served in Central Mess on 15th August. Mess passes not required for resident inmates.",
   },
   {
@@ -289,7 +289,7 @@ export const mockHostelNotices: HostelNotice[] = [
     title: "Inter-Block Carrom & Table Tennis League",
     category: "Events",
     date: "4 days ago",
-    priority: "Normal",
+    priority: "Low",
     description: "Registrations open for Inter-Block Indoor Championship at Block A Sports Lounge. Cash prizes and trophies for winners.",
   },
 ];

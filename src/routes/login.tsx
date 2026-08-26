@@ -58,7 +58,6 @@ const institutionLevelRoles = [
   "hr_manager",
   "vice_principal",
   "exam_controller",
-  // Academic Management: no department/branch scope needed — institution-wide role
   "academic_management",
   "Academic Management",
   "Academic Dean",

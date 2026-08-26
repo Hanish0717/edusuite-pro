@@ -1,294 +1,294 @@
 import React, { useState, useMemo } from "react";
 import { BookItem, CatalogFilterState } from "./types";
-import {
-  Search,
-  SlidersHorizontal,
-  RefreshCw,
-  BookOpen,
-  CheckCircle2,
-  XCircle,
-  Building2,
-  Tag,
-  Hash,
+import { 
+  Search, 
+  Filter, 
+  MapPin, 
+  BookOpen, 
+  BookmarkCheck, 
+  CheckCircle2, 
+  X, 
+  RotateCcw, 
+  Layers, 
+  Calendar 
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface CatalogTabProps {
   books: BookItem[];
+  onOpenBookDetails: (book: BookItem) => void;
+  onOpenReserveModal: (book: BookItem) => void;
 }
 
-export function CatalogTab({ books }: CatalogTabProps) {
+export function CatalogTab({ books, onOpenBookDetails, onOpenReserveModal }: CatalogTabProps) {
   const [filters, setFilters] = useState<CatalogFilterState>({
     searchQuery: "",
     department: "All",
-    subject: "All",
+    semester: "All",
     availability: "All",
-    bookType: "All",
     category: "All",
+    language: "All",
+    publicationYear: "All",
   });
 
-  // Filter computation - search across name, author, isbn, call number, subject, department, category
+  const [visibleCount, setVisibleCount] = useState(24);
+
   const filteredBooks = useMemo(() => {
-    return books.filter((book) => {
-      if (filters.searchQuery.trim()) {
-        const query = filters.searchQuery.toLowerCase();
-        const matchTitle = book.title.toLowerCase().includes(query);
-        const matchAuthor = book.author.toLowerCase().includes(query);
-        const matchIsbn = book.isbn.toLowerCase().includes(query);
-        const matchCallNo = (book.callNumber || "").toLowerCase().includes(query);
-        const matchId = book.id.toLowerCase().includes(query);
-        const matchSubject = book.subject.toLowerCase().includes(query);
-        const matchDepartment = book.department.toLowerCase().includes(query);
-        const matchCategory = book.category.toLowerCase().includes(query);
-
-        if (
-          !matchTitle &&
-          !matchAuthor &&
-          !matchIsbn &&
-          !matchCallNo &&
-          !matchId &&
-          !matchSubject &&
-          !matchDepartment &&
-          !matchCategory
-        ) {
-          return false;
-        }
+    return books.filter((b) => {
+      // Search
+      const query = filters.searchQuery.toLowerCase().trim();
+      if (query) {
+        const matchesSearch =
+          b.title.toLowerCase().includes(query) ||
+          b.author.toLowerCase().includes(query) ||
+          b.isbn.toLowerCase().includes(query) ||
+          b.publisher.toLowerCase().includes(query) ||
+          b.category.toLowerCase().includes(query) ||
+          b.rackNumber.toLowerCase().includes(query);
+        if (!matchesSearch) return false;
       }
 
-      // Department Filter
-      if (filters.department !== "All" && book.department !== filters.department) {
-        return false;
-      }
+      // Department / Category
+      if (filters.department !== "All" && b.department !== filters.department) return false;
+      if (filters.category !== "All" && b.category !== filters.category) return false;
 
-      // Availability Filter
-      if (filters.availability !== "All") {
-        const isAvail = book.status === "Available" && book.availableCopies > 0;
-        if (filters.availability === "Available" && !isAvail) return false;
-        if (filters.availability === "Not Available" && isAvail) return false;
-      }
+      // Availability
+      if (filters.availability !== "All" && b.status !== filters.availability) return false;
 
-      // Book Type Filter
-      if (filters.bookType !== "All" && book.bookType !== filters.bookType) {
-        return false;
-      }
+      // Language
+      if (filters.language !== "All" && !b.language.includes(filters.language)) return false;
 
       return true;
     });
   }, [books, filters]);
 
-  const departments = Array.from(new Set(books.map((b) => b.department)));
-
-  const handleResetFilters = () => {
+  const resetFilters = () => {
     setFilters({
       searchQuery: "",
       department: "All",
-      subject: "All",
+      semester: "All",
       availability: "All",
-      bookType: "All",
       category: "All",
+      language: "All",
+      publicationYear: "All",
     });
   };
 
   return (
     <div className="space-y-6">
-      {/* SEARCH AND FILTERS BAR */}
-      <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
-        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+      {/* SEARCH BAR & FILTER ROW */}
+      <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               value={filters.searchQuery}
               onChange={(e) => setFilters((prev) => ({ ...prev, searchQuery: e.target.value }))}
-              placeholder="Search by Book Name, Author, ISBN, Call Number, or Accession No..."
-              className="pl-10 h-10 rounded-xl border-slate-200 dark:border-slate-800 text-xs shadow-2xs"
+              placeholder="Search by Book Name, ISBN, Author, Publisher, Category or Rack Number..."
+              className="pl-10 h-11 rounded-xl border-slate-200 dark:border-slate-800 text-xs focus-visible:ring-purple-500 font-medium"
             />
             {filters.searchQuery && (
               <button
                 onClick={() => setFilters((prev) => ({ ...prev, searchQuery: "" }))}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               >
-                Clear
+                <X className="h-4 w-4" />
               </button>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              onClick={handleResetFilters}
-              variant="outline"
-              size="sm"
-              className="rounded-xl text-xs h-10 gap-1.5 border-slate-200 text-slate-600 dark:text-slate-300"
-            >
-              <RefreshCw className="h-3.5 w-3.5" /> Reset Filters
-            </Button>
-          </div>
+          <Button
+            onClick={resetFilters}
+            variant="outline"
+            className="rounded-xl h-11 text-xs font-semibold gap-1.5 shrink-0"
+          >
+            <RotateCcw className="h-4 w-4 text-slate-500" /> Reset Filters
+          </Button>
         </div>
 
-        {/* FILTERS & STATUS SELECTORS */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-bold text-slate-500 text-[11px] uppercase tracking-wider flex items-center gap-1">
-              <SlidersHorizontal className="h-3.5 w-3.5" /> Filters:
-            </span>
-
-            {/* Book Type */}
-            <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-              {["All", "Hard Copy", "E-Book"].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setFilters((prev) => ({ ...prev, bookType: type }))}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
-                    filters.bookType === type
-                      ? "bg-white dark:bg-slate-900 text-purple-600 shadow-2xs"
-                      : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-                  }`}
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
-
-            {/* Availability */}
-            <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-              {["All", "Available", "Not Available"].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setFilters((prev) => ({ ...prev, availability: status }))}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
-                    filters.availability === status
-                      ? "bg-white dark:bg-slate-900 text-purple-600 shadow-2xs"
-                      : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-                  }`}
-                >
-                  {status}
-                </button>
-              ))}
-            </div>
-
-            {/* Department Selector */}
+        {/* FILTERS SELECTORS */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 pt-1">
+          {/* Department Filter */}
+          <div>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+              Department
+            </label>
             <select
               value={filters.department}
               onChange={(e) => setFilters((prev) => ({ ...prev, department: e.target.value }))}
-              className="h-8 px-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-300"
+              className="w-full h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs px-2.5 font-medium text-slate-800 dark:text-slate-200"
             >
               <option value="All">All Departments</option>
-              {departments.map((dept) => (
-                <option key={dept} value={dept}>
-                  {dept}
-                </option>
-              ))}
+              <option value="Computer Science">Computer Science</option>
+              <option value="Electronics & Comm">Electronics & Comm</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="Artificial Intelligence">AI & Data Science</option>
+              <option value="Management">Management</option>
             </select>
           </div>
 
-          <span className="font-mono text-xs font-bold text-slate-500">
-            Showing <strong className="text-purple-600">{filteredBooks.length}</strong> of {books.length} Titles
-          </span>
+          {/* Availability Filter */}
+          <div>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+              Availability
+            </label>
+            <select
+              value={filters.availability}
+              onChange={(e) => setFilters((prev) => ({ ...prev, availability: e.target.value }))}
+              className="w-full h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs px-2.5 font-medium text-slate-800 dark:text-slate-200"
+            >
+              <option value="All">All Statuses</option>
+              <option value="Available">Available Now</option>
+              <option value="Issued">Currently Issued</option>
+              <option value="Reserved">Reserved</option>
+              <option value="Reference Only">Reference Only</option>
+            </select>
+          </div>
+
+          {/* Category Filter */}
+          <div>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+              Category
+            </label>
+            <select
+              value={filters.category}
+              onChange={(e) => setFilters((prev) => ({ ...prev, category: e.target.value }))}
+              className="w-full h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs px-2.5 font-medium text-slate-800 dark:text-slate-200"
+            >
+              <option value="All">All Categories</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Artificial Intelligence">Artificial Intelligence</option>
+              <option value="Data Science">Data Science</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Physics">Physics</option>
+            </select>
+          </div>
+
+          {/* Language Filter */}
+          <div>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+              Language
+            </label>
+            <select
+              value={filters.language}
+              onChange={(e) => setFilters((prev) => ({ ...prev, language: e.target.value }))}
+              className="w-full h-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-xs px-2.5 font-medium text-slate-800 dark:text-slate-200"
+            >
+              <option value="All">All Languages</option>
+              <option value="English">English</option>
+              <option value="German">German / English</option>
+            </select>
+          </div>
+
+          {/* Results Counter */}
+          <div className="flex flex-col justify-end">
+            <span className="text-[11px] font-mono text-purple-600 font-bold bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/40 p-2 rounded-xl text-center">
+              Showing {filteredBooks.length} / 500 Books
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* BOOKS CATALOG GRID - PURE AVAILABILITY LOOKUP */}
-      {filteredBooks.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filteredBooks.map((book) => {
-            const isAvailable = book.status === "Available" && book.availableCopies > 0;
+      {/* CATALOG GRID CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {filteredBooks.slice(0, visibleCount).map((book) => (
+          <div
+            key={book.id}
+            className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs hover:shadow-lg transition-all flex flex-col justify-between space-y-3 group relative overflow-hidden"
+          >
+            <div className="space-y-3">
+              <div className="relative">
+                <img
+                  src={book.coverImage}
+                  alt={book.title}
+                  className="w-full h-44 object-cover rounded-xl shadow-xs border border-slate-200 dark:border-slate-700 group-hover:scale-102 transition-transform duration-300"
+                />
+                <Badge
+                  className={`absolute top-2 right-2 text-[9px] font-mono shadow-md ${
+                    book.status === "Available"
+                      ? "bg-emerald-500 text-white"
+                      : book.status === "Reserved"
+                      ? "bg-amber-500 text-white"
+                      : "bg-rose-500 text-white"
+                  }`}
+                >
+                  {book.status}
+                </Badge>
+              </div>
 
-            return (
-              <div
-                key={book.id}
-                className="p-4.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xs flex flex-col justify-between space-y-4"
-              >
-                <div className="space-y-3">
-                  {/* Top Cover & Essential Metadata */}
-                  <div className="flex gap-3.5">
-                    <div className="relative w-24 h-32 rounded-xl overflow-hidden shadow-sm bg-slate-100 shrink-0">
-                      <img
-                        src={book.coverImage}
-                        alt={book.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <Badge
-                        className={`absolute top-1 left-1 text-[9px] font-bold px-1.5 py-0.5 rounded-md ${
-                          book.bookType === "E-Book"
-                            ? "bg-indigo-600 text-white"
-                            : "bg-amber-600 text-white"
-                        }`}
-                      >
-                        {book.bookType}
-                      </Badge>
-                    </div>
+              <div>
+                <Badge variant="outline" className="text-[9px] font-mono text-purple-600 border-purple-200 mb-1">
+                  {book.category}
+                </Badge>
+                <h4 className="font-black text-xs text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-purple-600 transition-colors">
+                  {book.title}
+                </h4>
+                <p className="text-[11px] text-slate-500 truncate mt-0.5">{book.author}</p>
+              </div>
 
-                    <div className="flex-1 space-y-1 min-w-0">
-                      {/* Availability Badge */}
-                      {isAvailable ? (
-                        <Badge className="bg-emerald-500/10 text-emerald-700 border border-emerald-300 dark:text-emerald-400 text-[10px] font-bold gap-1 px-2 py-0.5">
-                          <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" /> Available in Library
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-rose-500/10 text-rose-700 border border-rose-300 dark:text-rose-400 text-[10px] font-bold gap-1 px-2 py-0.5">
-                          <XCircle className="h-3 w-3 text-rose-600 shrink-0" /> Book is currently unavailable.
-                        </Badge>
-                      )}
-
-                      <h3 className="font-black text-sm text-slate-900 dark:text-white line-clamp-2 mt-1">
-                        {book.title}
-                      </h3>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 font-medium truncate">
-                        Author: <strong className="text-slate-900 dark:text-white">{book.author}</strong>
-                      </p>
-                      <p className="text-[11px] text-slate-400 font-mono">ISBN: {book.isbn}</p>
-                    </div>
-                  </div>
-
-                  {/* READ ONLY METADATA & LOCATION BOX */}
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2 text-[11px] font-mono">
-                    <div>
-                      <span className="text-slate-400 text-[9px] block uppercase font-sans">Copies Available</span>
-                      <strong className={`text-xs ${isAvailable ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600"}`}>
-                        {book.availableCopies} / {book.totalCopies}
-                      </strong>
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 text-[9px] block uppercase font-sans">Rack & Shelf</span>
-                      <strong className="text-purple-600 dark:text-purple-400 text-xs truncate block">
-                        {book.rackNumber} • {book.shelfNumber}
-                      </strong>
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 text-[9px] block uppercase font-sans">Library Section</span>
-                      <strong className="text-slate-700 dark:text-slate-300 text-xs truncate block">
-                        {book.category} ({book.department})
-                      </strong>
-                    </div>
-
-                    <div>
-                      <span className="text-slate-400 text-[9px] block uppercase font-sans">Call Number</span>
-                      <strong className="text-indigo-600 dark:text-indigo-400 text-xs truncate block">
-                        {book.callNumber || "005.43 SIL/O"}
-                      </strong>
-                    </div>
-                  </div>
+              <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 space-y-1 text-[10px] font-mono">
+                <div className="flex justify-between text-slate-500">
+                  <span>Rack Location:</span>
+                  <strong className="text-purple-600 flex items-center gap-0.5">
+                    <MapPin className="h-2.5 w-2.5" /> {book.rackNumber}
+                  </strong>
+                </div>
+                <div className="flex justify-between text-slate-500">
+                  <span>ISBN:</span>
+                  <strong className="text-slate-800 dark:text-slate-200 truncate max-w-[110px]">{book.isbn}</strong>
+                </div>
+                <div className="flex justify-between text-slate-500">
+                  <span>Copies Available:</span>
+                  <strong className="text-emerald-600">{book.availableCopies} / {book.totalCopies}</strong>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="p-12 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-3">
-          <BookOpen className="h-10 w-10 text-slate-400 mx-auto" />
-          <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300">Book is currently unavailable.</h4>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto font-medium">
-            No library resources matched your search query or criteria. Please refine your query or contact the circulation counter.
-          </p>
+            </div>
+
+            <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <Button
+                onClick={() => onOpenBookDetails(book)}
+                size="sm"
+                variant="outline"
+                className="flex-1 rounded-xl text-[11px] font-semibold h-8"
+              >
+                View Details
+              </Button>
+              {book.availableCopies > 0 ? (
+                <Button
+                  onClick={() => {
+                    toast.success(`Checkout code generated for "${book.title}". Visit Counter 2.`);
+                  }}
+                  size="sm"
+                  className="rounded-xl text-[11px] font-semibold h-8 bg-emerald-600 hover:bg-emerald-700 text-white gap-1"
+                >
+                  <CheckCircle2 className="h-3 w-3" /> Borrow
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => onOpenReserveModal(book)}
+                  size="sm"
+                  className="rounded-xl text-[11px] font-semibold h-8 bg-purple-600 hover:bg-purple-700 text-white gap-1"
+                >
+                  <BookmarkCheck className="h-3 w-3" /> Reserve
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {visibleCount < filteredBooks.length && (
+        <div className="text-center pt-4">
           <Button
-            onClick={handleResetFilters}
-            variant="outline"
-            className="rounded-xl text-xs font-bold"
+            onClick={() => setVisibleCount((prev) => prev + 24)}
+            className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs px-6 h-10 shadow-md"
           >
-            Reset Search & Filters
+            Load More Books ({filteredBooks.length - visibleCount} remaining)
           </Button>
         </div>
       )}

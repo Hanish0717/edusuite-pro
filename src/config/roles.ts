@@ -29,9 +29,10 @@ export type LoginRole =
   | "alumni_coordinator"
   | "alumni"
   | "staff"
+  | "super-admin"
   | "external-user"
   | "academic_management"
-  // Specific dean roles
+  | "dean"
   | "academic_dean"
   | "student_dean"
   | "iqac_dean"
@@ -305,6 +306,14 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     initials: "PD",
     flags: ["isDean"],
   },
+  academic_management: {
+    id: "academic_management",
+    label: "Academic Management",
+    personaName: "Academic Directorate",
+    personaMeta: "Curriculum & Academic Ops",
+    initials: "AM",
+    flags: ["isDean", "isVicePrincipal"],
+  },
   hod: {
     id: "hod",
     label: "Head of Department (HOD)",
@@ -327,7 +336,7 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     id: "student",
     label: "Student",
     personaName: "K. Sai Teja",
-    personaMeta: "B.Tech CSE - Adm No. 22CS101",
+    personaMeta: "B.Tech CSE - Roll No. 22CS101",
     initials: "ST",
     flags: [],
     department: "CSE",
@@ -336,7 +345,7 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     id: "parent",
     label: "Parent / Guardian",
     personaName: "S. Anitha",
-    personaMeta: "Parent of Sai Teja (Adm No: 22CS101)",
+    personaMeta: "Parent of Sai Teja (22CS101)",
     initials: "PT",
     flags: [],
   },
@@ -437,14 +446,6 @@ export const roleProfiles: Record<LoginRole, RoleProfile> = {
     initials: "DM",
     flags: [],
     externalPersona: "recruiter",
-  },
-  academic_management: {
-    id: "academic_management",
-    label: "Academic Manager",
-    personaName: "Dr. S. R. Krishnan",
-    personaMeta: "Academic Management & Operations",
-    initials: "AM",
-    flags: ["isAcademicManagement"],
   },
 };
 
@@ -674,7 +675,7 @@ export function getDefaultRouteForUser(role: LoginRole, flags: string[]): string
   if (flags.includes("isDean")) return "/dean/dashboard";
   if (flags.includes("isExamController")) return "/examination/dashboard";
   if (flags.includes("isPlacementOfficer")) return "/placement/dashboard";
-  if (flags.includes("isLibraryAdmin")) return "/library/dashboard";
+  if (flags.includes("isLibraryAdmin")) return "/librarian";
   if (flags.includes("isTransportOfficer")) return "/transport/dashboard";
   if (flags.includes("isHostelWarden")) return "/hostel/dashboard";
   if (flags.includes("isHRManager")) return "/hr/dashboard";

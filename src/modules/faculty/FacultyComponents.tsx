@@ -414,7 +414,13 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
 
   const handleSubmitAttendance = async () => {
     setSubmittingAttendance(true);
-    const res = await (submitAttendanceMark as any)("CSE-3A", 2, studentRoster);
+    const res = await submitAttendanceMark({
+      classId: "CSE-3A",
+      subjectId: "CS302",
+      date: new Date().toISOString().split("T")[0],
+      period: 2,
+      records: studentRoster.map((s) => ({ studentId: s.id, status: s.status })),
+    });
     setSubmittingAttendance(false);
     if (res.success) {
       toast.success(res.message);
@@ -422,20 +428,28 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
   };
 
   const handleToggleSyllabusUnit = async (courseId: string, unitId: string) => {
+    let nextStatus: "Completed" | "Remaining" = "Completed";
+    let nextPct = 100;
     setSyllabusList((prev) =>
       prev.map((item) => {
         if (item.id === courseId) {
-          const updatedUnits = item.units.map((u: any) =>
-            u.id === unitId ? { ...u, completed: !u.completed } : u
-          );
-          const completedCount = updatedUnits.filter((u: any) => u.completed).length;
+          const updatedUnits = item.units.map((u) => {
+            if (u.id === unitId) {
+              const isCompleted = u.completed || u.status === "Completed";
+              nextStatus = isCompleted ? "Remaining" : "Completed";
+              nextPct = isCompleted ? 0 : 100;
+              return { ...u, completed: !isCompleted, status: nextStatus, completionPct: nextPct };
+            }
+            return u;
+          });
+          const completedCount = updatedUnits.filter((u) => u.completed || u.status === "Completed").length;
           const overallProgressPct = Math.round((completedCount / updatedUnits.length) * 100);
           return { ...item, units: updatedUnits, overallProgressPct };
         }
         return item;
       })
     );
-    await (updateSyllabusUnitStatus as any)(courseId, unitId, true);
+    await updateSyllabusUnitStatus(courseId, unitId, nextStatus, nextPct);
     toast.success("Syllabus unit status updated");
   };
 
@@ -1030,13 +1044,13 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase">
                     <span>Syllabus Unit Completion Ledger</span>
-                    <span>{syl.units.filter((u: any) => u.completed).length} / {syl.units.length} Units Done</span>
+                    <span>{syl.units.filter((u) => u.completed).length} / {syl.units.length} Units Done</span>
                   </div>
                   <Progress value={syl.overallProgressPct} className="h-2.5 rounded-full" />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-3">
-                  {syl.units.map((unit: any) => (
+                  {syl.units.map((unit) => (
                     <div
                       key={unit.id}
                       onClick={() => {
@@ -1089,10 +1103,10 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
                 </div>
                 <div>
                   <DialogTitle className="text-lg font-bold text-foreground">
-                    {(selectedFacultySchedule as any)?.facultyName || "Faculty Timetable"}
+                    {selectedFacultySchedule?.facultyName || "Faculty Timetable"}
                   </DialogTitle>
                   <DialogDescription className="text-xs text-muted-foreground font-mono mt-0.5">
-                    {(selectedFacultySchedule as any)?.department} Department &middot; Employee ID: {(selectedFacultySchedule as any)?.empId}
+                    {selectedFacultySchedule?.department} Department &middot; Employee ID: {selectedFacultySchedule?.empId}
                   </DialogDescription>
                 </div>
               </div>
@@ -1100,10 +1114,10 @@ export function FacultyModuleView({ initialTab = "faculty-status" }: { initialTa
               {selectedFacultySchedule && (
                 <div className="flex items-center gap-2">
                   <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 font-mono font-bold text-xs px-2.5 py-1">
-                    🟢 {(selectedFacultySchedule as any).freePeriodsCount} Free Slots
+                    🟢 {selectedFacultySchedule.freePeriodsCount} Free Slots
                   </Badge>
                   <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 font-mono font-bold text-xs px-2.5 py-1">
-                    🔵 {(selectedFacultySchedule as any).teachingPeriodsCount} Teaching
+                    🔵 {selectedFacultySchedule.teachingPeriodsCount} Teaching
                   </Badge>
                 </div>
               )}
