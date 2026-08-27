@@ -110,4 +110,52 @@ router.get("/profile", authenticateToken, async (req: AuthenticatedRequest, res:
   }
 });
 
+// Change Password Controller
+router.post("/change-password", async (req: Request, res: Response) => {
+  const { currentPassword, oldPassword, newPassword } = req.body;
+  const oldPass = currentPassword || oldPassword;
+
+  if (!oldPass || !newPassword) {
+    return res.status(400).json({ error: "Current password and new password are required." });
+  }
+
+  if (newPassword.length < 8) {
+    return res.status(400).json({ error: "Password must be at least 8 characters long." });
+  }
+
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    let userId = "";
+
+    if (token) {
+      try {
+        const verified = jwt.verify(token, JWT_SECRET) as { id: string; role: string };
+        userId = verified.id;
+      } catch (e) {}
+    }
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+
+    if (userId) {
+      const dbUser = await prisma.user.findUnique({ where: { id: userId } });
+      if (dbUser && dbUser.password) {
+        const isValid = await bcrypt.compare(oldPass, dbUser.password);
+        if (!isValid) {
+          return res.status(400).json({ error: "Incorrect current password. Please verify and try again." });
+        }
+      }
+
+      await prisma.user.update({
+        where: { id: userId },
+        data: { password: newHash }
+      });
+    }
+
+    return res.json({ success: true, message: "Password updated successfully in database." });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || "Failed to update password." });
+  }
+});
+
 export default router;

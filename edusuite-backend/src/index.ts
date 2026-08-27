@@ -12,7 +12,12 @@ const PORT = process.env.PORT || 5000;
 
 // Enable CORS and JSON body parser
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+// Serve static uploads folder
+import path from "path";
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // API health check
 app.get("/api/health", (req, res) => {
@@ -43,8 +48,8 @@ import studentPortalRoutes from "./modules/students/student-portal.routes";
 import employeeRoutes from "./modules/employees/employees.routes";
 import superAdminRoutes from "./modules/super-admin/super-admin.routes";
 import academicsRoutes from "./modules/academics/academics.routes";
-import deanRoutes from "./modules/dean/dean.routes";
 import hostelRoutes from "./modules/hostel/hostel.routes";
+import lmsRoutes from "./modules/lms/lms.routes";
 
 // Register routes
 app.use("/api/auth", authRoutes);
@@ -60,9 +65,49 @@ app.use("/api/academics", academicsRoutes);
 app.use("/api/academic", academicsRoutes);
 app.use("/api/dean", deanRoutes);
 app.use("/api/hostel", hostelRoutes);
+app.use("/api/lms", lmsRoutes);
+app.use("/api/student/lms", lmsRoutes);
 
 // Boot server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`EduSuite Backend API Server is listening on http://localhost:${PORT}`);
+  
+  // Auto-migrate department and sections for existing courses on boot
+  try {
+    const nullCourses = await prisma.course.findMany({
+      where: {
+        OR: [
+          { department: null },
+          { sections: null }
+        ]
+      }
+    });
+
+    if (nullCourses.length > 0) {
+      console.log(`Migrating department and sections for ${nullCourses.length} courses...`);
+      for (const c of nullCourses) {
+        let dept = "CSE";
+        if (c.code.startsWith("CS")) dept = "CSE";
+        else if (c.code.startsWith("AM")) dept = "AI&ML";
+        else if (c.code.startsWith("AD")) dept = "AI&DS";
+        else if (c.code.startsWith("IT")) dept = "IT";
+        else if (c.code.startsWith("EE")) dept = "EEE";
+        else if (c.code.startsWith("EC")) dept = "ECE";
+        else if (c.code.startsWith("CE")) dept = "CIVIL";
+        else if (c.code.startsWith("ME")) dept = "MECHANICAL";
+
+        await prisma.course.update({
+          where: { id: c.id },
+          data: {
+            department: c.department || dept,
+            sections: c.sections || "A,B,C,D"
+          }
+        });
+      }
+      console.log("Course migration complete.");
+    }
+  } catch (err) {
+    console.error("Migration error on boot:", err);
+  }
 });
 
