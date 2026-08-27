@@ -31,7 +31,6 @@ router.get("/", authenticateToken, async (req: AuthenticatedRequest, res: Respon
 
       await prisma.attendanceRecord.createMany({
         data: mockLogs,
-        skipDuplicates: true,
       });
 
       records = await prisma.attendanceRecord.findMany({
