@@ -46,28 +46,28 @@ export function HODExtraWorkConsole() {
   };
 
   return (
-    <div className="space-y-6 text-slate-900 dark:text-white">
+    <div className="space-y-6 text-slate-900 dark:text-slate-100">
       {/* HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800 pb-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-purple-600 dark:text-purple-400 uppercase">
-            <Building2 className="size-4" />
+          <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+            <Building2 className="size-4 text-primary" />
             <span>Department Governance • {deptCode}</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mt-1">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground mt-1">
             Department Extra Work Management
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
             Audit extra contribution claims, assign department duties, and publish volunteer roles for {deptSummary.departmentName}
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs px-4 py-2 gap-2 rounded-xl shadow-xs">
+          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs px-4 py-2 gap-2 rounded-xl shadow-2xs">
             <PlusCircle className="size-4" />
             <span>Assign Department Work</span>
           </Button>
-          <Button variant="outline" className="border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-xs font-semibold rounded-xl gap-2">
+          <Button variant="outline" className="text-xs font-semibold rounded-xl gap-2 border-border shadow-2xs">
             <Briefcase className="size-4" />
             <span>Publish Dept Opportunity</span>
           </Button>
@@ -76,61 +76,61 @@ export function HODExtraWorkConsole() {
 
       {/* DEPARTMENT KPIS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border border-purple-500/20 bg-purple-500/5 text-slate-900 dark:text-white rounded-2xl shadow-xs">
+        <Card className="border border-border bg-card text-card-foreground rounded-2xl shadow-2xs">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-purple-600 dark:text-purple-400">Department WWP This Month</p>
-              <h3 className="text-3xl font-extrabold font-mono mt-1 text-purple-700 dark:text-purple-300">
-                {deptSummary.totalDepartmentWWP} <span className="text-xs font-normal">WWP</span>
+              <p className="text-xs font-semibold text-muted-foreground">Department WWP This Month</p>
+              <h3 className="text-3xl font-extrabold font-mono mt-1 text-foreground">
+                {deptSummary.totalDepartmentWWP} <span className="text-xs font-normal text-muted-foreground">WWP</span>
               </h3>
-              <p className="text-[11px] text-slate-500 mt-1">Verified CSE Contribution</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Verified CSE Contribution</p>
             </div>
-            <div className="p-3 bg-purple-600 text-white rounded-2xl shadow-xs">
+            <div className="p-3 bg-primary/10 text-primary rounded-2xl">
               <Award className="size-6" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border border-amber-500/20 bg-amber-500/5 text-slate-900 dark:text-white rounded-2xl shadow-xs">
+        <Card className="border border-border bg-card text-card-foreground rounded-2xl shadow-2xs">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">Pending Verification</p>
-              <h3 className="text-3xl font-extrabold font-mono mt-1 text-amber-700 dark:text-amber-300">
-                {deptSummary.pendingCount} <span className="text-xs font-normal">Claims</span>
+              <p className="text-xs font-semibold text-muted-foreground">Pending Verification</p>
+              <h3 className="text-3xl font-extrabold font-mono mt-1 text-amber-600 dark:text-amber-400">
+                {deptSummary.pendingCount} <span className="text-xs font-normal text-muted-foreground">Claims</span>
               </h3>
-              <p className="text-[11px] text-slate-500 mt-1">Requires HOD Sign-off</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Requires HOD Sign-off</p>
             </div>
-            <div className="p-3 bg-amber-500 text-white rounded-2xl shadow-xs">
+            <div className="p-3 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-2xl">
               <Clock className="size-6" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border border-emerald-500/20 bg-emerald-500/5 text-slate-900 dark:text-white rounded-2xl shadow-xs">
+        <Card className="border border-border bg-card text-card-foreground rounded-2xl shadow-2xs">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Active Extra Work</p>
-              <h3 className="text-3xl font-extrabold font-mono mt-1 text-emerald-700 dark:text-emerald-300">
-                {deptSummary.activeExtraWorkCount} <span className="text-xs font-normal">Tasks</span>
+              <p className="text-xs font-semibold text-muted-foreground">Active Extra Work</p>
+              <h3 className="text-3xl font-extrabold font-mono mt-1 text-emerald-600 dark:text-emerald-400">
+                {deptSummary.activeExtraWorkCount} <span className="text-xs font-normal text-muted-foreground">Tasks</span>
               </h3>
-              <p className="text-[11px] text-slate-500 mt-1">Ongoing Dept Activities</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Ongoing Dept Activities</p>
             </div>
-            <div className="p-3 bg-emerald-600 text-white rounded-2xl shadow-xs">
+            <div className="p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl">
               <Layers className="size-6" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border border-blue-500/20 bg-blue-500/5 text-slate-900 dark:text-white rounded-2xl shadow-xs">
+        <Card className="border border-border bg-card text-card-foreground rounded-2xl shadow-2xs">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-blue-600 dark:text-blue-400">Open Opportunities</p>
-              <h3 className="text-3xl font-extrabold font-mono mt-1 text-blue-700 dark:text-blue-300">
-                {deptSummary.openOpportunitiesCount} <span className="text-xs font-normal">Roles</span>
+              <p className="text-xs font-semibold text-muted-foreground">Open Opportunities</p>
+              <h3 className="text-3xl font-extrabold font-mono mt-1 text-foreground">
+                {deptSummary.openOpportunitiesCount} <span className="text-xs font-normal text-muted-foreground">Roles</span>
               </h3>
-              <p className="text-[11px] text-slate-500 mt-1">Available for Faculty</p>
+              <p className="text-[11px] text-muted-foreground mt-1">Available for Faculty</p>
             </div>
-            <div className="p-3 bg-blue-600 text-white rounded-2xl shadow-xs">
+            <div className="p-3 bg-primary/10 text-primary rounded-2xl">
               <Briefcase className="size-6" />
             </div>
           </CardContent>
@@ -138,12 +138,12 @@ export function HODExtraWorkConsole() {
       </div>
 
       {/* DEPARTMENT VERIFICATION QUEUE */}
-      <Card className="border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
+      <Card className="border border-border bg-card text-card-foreground rounded-2xl shadow-2xs">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">Department Verification Queue</CardTitle>
-              <CardDescription className="text-xs text-slate-500 dark:text-slate-400">
+              <CardTitle className="text-lg font-bold text-foreground">Department Verification Queue</CardTitle>
+              <CardDescription className="text-xs text-muted-foreground">
                 {queue.length} claims submitted by {deptCode} department faculty awaiting review
               </CardDescription>
             </div>
@@ -154,17 +154,17 @@ export function HODExtraWorkConsole() {
         </CardHeader>
         <CardContent className="space-y-3">
           {queue.map((item) => (
-            <div key={item.id} className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div key={item.id} className="p-4 bg-muted/40 rounded-2xl border border-border flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 text-[10px] font-semibold">
-                    {item.category.replace("_", " ")}
+                  <Badge variant="secondary" className="text-[10px] font-semibold">
+                    {item.category.replace(/_/g, " ")}
                   </Badge>
-                  <span className="text-xs font-bold text-slate-900 dark:text-white">{item.facultyName}</span>
+                  <span className="text-xs font-bold text-foreground">{item.facultyName}</span>
                 </div>
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">{item.title}</h4>
-                <p className="text-xs text-slate-500">
-                  Role: <strong>{item.role || "Contributor"}</strong> • Submitted: {new Date(item.submittedAt || item.createdAt).toLocaleDateString()}
+                <h4 className="text-sm font-bold text-foreground">{item.title}</h4>
+                <p className="text-xs text-muted-foreground">
+                  Role: <strong className="text-foreground">{item.role || "Contributor"}</strong> • Submitted: {new Date(item.submittedAt || item.createdAt).toLocaleDateString()}
                 </p>
               </div>
 
@@ -184,14 +184,14 @@ export function HODExtraWorkConsole() {
       </Card>
 
       {/* FACULTY CONTRIBUTION TABLE */}
-      <Card className="border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
+      <Card className="border border-border bg-card text-card-foreground rounded-2xl shadow-2xs">
         <CardHeader>
-          <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">Department Faculty Contribution Summary</CardTitle>
+          <CardTitle className="text-lg font-bold text-foreground">Department Faculty Contribution Summary</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
-              <thead className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 uppercase font-bold text-[10px]">
+              <thead className="bg-muted/50 text-muted-foreground uppercase font-bold text-[10px] border-b border-border">
                 <tr>
                   <th className="p-3">Faculty Member</th>
                   <th className="p-3">Verified WWP</th>
@@ -199,11 +199,11 @@ export function HODExtraWorkConsole() {
                   <th className="p-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-900 dark:text-white">
+              <tbody className="divide-y divide-border text-foreground">
                 {deptSummary.facultyList.map((f, i) => (
-                  <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                    <td className="p-3 font-semibold">{f.facultyName}</td>
-                    <td className="p-3 font-mono font-bold text-purple-600 dark:text-purple-400">+{f.verifiedWWP} WWP</td>
+                  <tr key={i} className="hover:bg-muted/30 transition-colors">
+                    <td className="p-3 font-semibold text-foreground">{f.facultyName}</td>
+                    <td className="p-3 font-mono font-bold text-primary">+{f.verifiedWWP} WWP</td>
                     <td className="p-3 font-mono font-semibold text-amber-600 dark:text-amber-400">{f.pendingCount}</td>
                     <td className="p-3">
                       <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[10px]">
