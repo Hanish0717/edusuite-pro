@@ -75,6 +75,7 @@ export const ACADEMIC_DEAN_NAVIGATION: NavSection[] = [
     items: [
       { title: "Teaching Load", url: "/staff/academic-dean/teaching-load", icon: Briefcase },
       { title: "Subject Allocation", url: "/staff/academic-dean/subject-allocation", icon: Layers },
+      { title: "Faculty Extra Work Approvals", url: "/staff/faculty-work-wallet", icon: Award },
       { title: "Department Workload", url: "/staff/academic-dean/dept-workload", icon: BarChart2 },
       { title: "Faculty Performance", url: "/staff/academic-dean/faculty-performance", icon: TrendingUp },
     ],

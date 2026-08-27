@@ -43,8 +43,8 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-[#172242] bg-[#0A1128] text-white">
       <SidebarHeader className="gap-3 px-3 pt-4 pb-2 bg-[#0A1128]">
-        <Link to="/dashboard" className="flex min-w-0 items-center">
-          <Logo showName={!collapsed} tone="mono" nameClassName="text-white font-extrabold text-base" />
+        <Link to="/dashboard" className="flex min-w-0 items-center px-1">
+          <Logo showName={!collapsed} tone="mono" size={collapsed ? "md" : "lg"} />
         </Link>
         {!collapsed && (
           <div className="relative mt-1">
@@ -73,13 +73,12 @@ export function AppSidebar() {
                   const currentCleanPath = (pathname || "").split("?")[0] || "";
                   const hasQueryParam = item.url.includes("?");
                   const itemCleanPath = (item.url || "").split("?")[0] || "";
-                  const itemSlug = itemCleanPath.replace(/^\//, "").split("/")[0] || "";
                   let isItemActive = false;
 
                   const isChildActive =
                     item.children?.some((child) => {
                       const childPath = (child.url || "").split("?")[0] || "";
-                      return currentCleanPath === childPath || (childPath !== "/" && currentCleanPath.startsWith(childPath));
+                      return currentCleanPath === childPath || (childPath !== "/" && currentCleanPath.startsWith(childPath + "/"));
                     }) ?? false;
 
                   if (hasQueryParam) {
@@ -91,8 +90,7 @@ export function AppSidebar() {
                   } else {
                     isItemActive =
                       currentCleanPath === itemCleanPath ||
-                      (itemCleanPath !== "/" && currentCleanPath.startsWith(itemCleanPath)) ||
-                      (itemSlug !== "" && currentCleanPath.includes(`/${itemSlug}`)) ||
+                      (itemCleanPath !== "/" && currentCleanPath.startsWith(itemCleanPath + "/")) ||
                       isChildActive;
                   }
 
@@ -126,7 +124,7 @@ export function AppSidebar() {
                                   ? href.includes(child.url) ||
                                     (href.includes("/alumni") && !href.includes("?tab=") && child.url.includes("tab=dashboard")) ||
                                     (href.includes("/examinations") && child.url.includes("tab=schedule"))
-                                  : currentCleanPath === childCleanPath || (childCleanPath !== "/" && currentCleanPath.startsWith(childCleanPath));
+                                  : currentCleanPath === childCleanPath || (childCleanPath !== "/" && currentCleanPath.startsWith(childCleanPath + "/"));
                                 return (
                                   <SidebarMenuSubItem key={child.title}>
                                     <SidebarMenuSubButton

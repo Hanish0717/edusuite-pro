@@ -40,7 +40,7 @@ export function SiteFooter() {
     <footer className="bg-brand-deep text-brand-deep-foreground">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:px-6 lg:grid-cols-[1.4fr_repeat(3,1fr)_1.4fr]">
         <div className="min-w-0">
-          <Logo tone="mono" showName nameClassName="text-brand-deep-foreground" />
+          <Logo tone="mono" showName size="lg" nameClassName="text-brand-deep-foreground" />
           <p className="mt-4 max-w-xs text-sm text-brand-deep-foreground/70">{brand.description}</p>
         </div>
 

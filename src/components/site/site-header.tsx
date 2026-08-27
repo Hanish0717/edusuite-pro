@@ -19,7 +19,7 @@ export function SiteHeader() {
       <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-3 md:px-6">
         <div className="flex min-w-0 items-center gap-8">
           <Link to="/" className="min-w-0">
-            <Logo showName />
+            <Logo showName size="lg" />
           </Link>
           <nav className="hidden items-center gap-6 lg:flex">
             {links.map((link) => (

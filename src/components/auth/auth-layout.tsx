@@ -16,40 +16,52 @@ export function AuthLayout({
   footer?: ReactNode;
 }) {
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <aside className="relative hidden overflow-hidden bg-brand-deep px-12 py-14 text-brand-deep-foreground lg:flex lg:flex-col lg:justify-between">
-        <Link to="/">
-          <Logo tone="mono" showName nameClassName="text-brand-deep-foreground" />
-        </Link>
-        <div>
-          <h2 className="max-w-md font-display text-4xl font-extrabold leading-tight">
+    <div className="grid min-h-screen lg:grid-cols-2 bg-background">
+      <aside className="relative hidden overflow-hidden bg-brand-deep px-12 py-14 text-white lg:flex lg:flex-col lg:justify-between">
+        <div className="relative z-10">
+          <Link to="/" className="group inline-flex items-center">
+            <Logo
+              tone="color"
+              showName
+              size="2xl"
+              animated
+              className="transition-transform duration-300 group-hover:scale-105"
+            />
+          </Link>
+        </div>
+
+        <div className="relative z-10 my-auto py-8">
+          <h2 className="max-w-md font-display text-4xl md:text-5xl font-extrabold leading-tight tracking-tight text-white">
             {brand.tagline}
           </h2>
-          <p className="mt-5 max-w-md text-sm text-brand-deep-foreground/70">{brand.description}</p>
-          <ul className="mt-8 space-y-3 text-sm text-brand-deep-foreground/80">
+          <p className="mt-6 max-w-md text-base md:text-lg leading-relaxed text-white/90 font-normal">
+            {brand.description}
+          </p>
+          <ul className="mt-8 space-y-4 text-sm md:text-base text-white font-medium">
             {["Role based dashboards", "Department level scopes", "AI campus assistant"].map(
               (item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-primary" />
-                  {item}
+                <li key={item} className="flex items-center gap-3">
+                  <span className="flex size-2.5 rounded-full bg-white animate-pulse" />
+                  <span className="text-white">{item}</span>
                 </li>
               ),
             )}
           </ul>
         </div>
-        <p className="text-xs text-brand-deep-foreground/50">
+
+        <p className="relative z-10 text-xs text-white/70 font-medium">
           &copy; {new Date().getFullYear()} {brand.name}
         </p>
       </aside>
 
-      <main className="flex items-center justify-center px-4 py-14 md:px-8">
+      <main className="flex items-center justify-center px-4 py-12 md:px-8">
         <div className="w-full max-w-md">
-          <div className="lg:hidden">
-            <Link to="/">
-              <Logo showName />
+          <div className="lg:hidden mb-8 flex justify-center">
+            <Link to="/" className="group inline-flex">
+              <Logo tone="color" showName size="xl" animated />
             </Link>
           </div>
-          <h1 className="mt-8 font-display text-2xl font-extrabold tracking-tight lg:mt-0">
+          <h1 className="font-display text-2xl font-extrabold tracking-tight md:text-3xl text-foreground">
             {title}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>

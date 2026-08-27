@@ -273,6 +273,47 @@
   }
 }
 
+@keyframes logo-float {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.015);
+  }
+}
+
+@keyframes logo-glow-pulse {
+  0%, 100% {
+    opacity: 0.55;
+    filter: drop-shadow(0 0 16px rgba(59, 130, 246, 0.45)) drop-shadow(0 0 35px rgba(99, 102, 241, 0.3));
+  }
+  50% {
+    opacity: 0.95;
+    filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.85)) drop-shadow(0 0 55px rgba(147, 51, 234, 0.6));
+  }
+}
+
+@keyframes logo-shimmer-pass {
+  0% {
+    transform: translateX(-150%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(250%) rotate(25deg);
+  }
+}
+
+@utility animate-logo-float {
+  animation: logo-float 4.5s ease-in-out infinite;
+}
+
+@utility animate-logo-glow {
+  animation: logo-glow-pulse 3.2s ease-in-out infinite;
+}
+
+@utility animate-logo-shimmer {
+  animation: logo-shimmer-pass 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 /* Hide default browser scrollbars on sidebar & overflow containers */
 .no-scrollbar::-webkit-scrollbar,
 [data-sidebar="content"]::-webkit-scrollbar,
@@ -288,3 +329,61 @@ aside {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+
+/* Tier Badge Custom Micro-Animations */
+@keyframes badge-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(1.5deg);
+  }
+}
+
+@keyframes badge-pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes badge-shimmer {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  50%, 100% {
+    transform: translateX(200%) skewX(-20deg);
+  }
+}
+
+@keyframes badge-sparkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25) rotate(180deg);
+  }
+}
+
+@utility animate-badge-float {
+  animation: badge-float 3.5s ease-in-out infinite;
+}
+
+@utility animate-badge-glow {
+  animation: badge-pulse-glow 2.8s ease-in-out infinite;
+}
+
+@utility animate-badge-shimmer {
+  animation: badge-shimmer 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@utility animate-badge-sparkle {
+  animation: badge-sparkle 2.2s ease-in-out infinite;
+}
+

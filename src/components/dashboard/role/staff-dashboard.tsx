@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import {
   BookOpen,
   CalendarCheck,
@@ -15,6 +16,8 @@ import {
   Activity,
   Bell,
   Clock,
+  Star,
+  UserCheck,
 } from "lucide-react";
 
 import { ChartLegend, DonutChart, GroupedBarChart } from "@/components/dashboard/charts";
@@ -88,12 +91,26 @@ export function StaffDashboard() {
             <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-primary flex items-center gap-2">
               <UserCog className="size-4" /> HOD Dashboard Overlay - {deptCode} Department
             </h3>
-            <Badge variant="secondary">HOD Privileges</Badge>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/staff/faculty-work-wallet"
+                className="text-xs font-bold text-purple-600 dark:text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 px-3 py-1 rounded-lg border border-purple-500/20 flex items-center gap-1.5 transition-all"
+              >
+                <UserCheck className="size-3.5" />
+                Work Verification Console
+              </Link>
+              <Badge variant="secondary">HOD Privileges</Badge>
+            </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <KpiCard label="Dept. Students" value="512" icon={Users} tone="info" />
             <KpiCard label="Dept. Faculty" value="28" icon={UserCog} />
-            <KpiCard label="Pending Approvals" value="7" icon={CheckCircle2} tone="warning" />
+            <Link to="/staff/faculty-work-wallet" className="block transition-transform hover:-translate-y-0.5">
+              <KpiCard label="Work Wallet Claims" value="4 Pending" icon={UserCheck} tone="warning" />
+            </Link>
+            <Link to="/faculty/work-wallet" className="block transition-transform hover:-translate-y-0.5">
+              <KpiCard label="My Work Wallet" value="+140 WWP" icon={Star} tone="success" />
+            </Link>
           </div>
         </div>
       )}

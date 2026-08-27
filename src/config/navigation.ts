@@ -44,6 +44,7 @@ import {
   CreditCard,
   MessageCircle,
   LogOut,
+  Star,
   type LucideIcon,
 } from "lucide-react";
 
@@ -57,6 +58,10 @@ import { EXAMINATION_NAVIGATION } from "@/config/navigation/examination";
 import { PLACEMENT_NAVIGATION } from "@/config/navigation/placement";
 import { LIBRARIAN_NAVIGATION } from "@/config/navigation/librarian";
 import { TRANSPORT_NAVIGATION } from "@/config/navigation/transport";
+import { HOSTEL_NAVIGATION } from "@/config/navigation/hostel";
+import { HR_NAVIGATION } from "@/config/navigation/hr";
+import { HOD_NAVIGATION } from "@/config/navigation/hod";
+import { AI_ANALYTICS_NAVIGATION } from "@/config/navigation/ai-analytics";
 
 import type { LoginRole } from "@/config/roles";
 import { hasPermission, type UserPermissionContext } from "@/lib/permissions";
@@ -142,6 +147,8 @@ export const navigation: NavSection[] = [
       { title: "Academics", url: "/academics", icon: GraduationCap, moduleId: "academics" },
       { title: "Students", url: "/students", icon: Users, moduleId: "student-info", roles: ["super_admin", "staff"] },
       { title: "Faculty", url: "/faculty", icon: UserCog, moduleId: "hrms" },
+      { title: "Extra Work Wallet", url: "/faculty/work-wallet", icon: Star, badge: "WWP" },
+      { title: "Work Verification", url: "/staff/faculty-work-wallet", icon: UserCheck, badge: "Audit" },
       { title: "Attendance", url: "/attendance", icon: CalendarCheck, moduleId: "attendance" },
       { title: "Timetable", url: "/timetable", icon: CalendarRange, moduleId: "academics" },
       { title: "LMS", url: "/lms", icon: BookOpen, moduleId: "lms" },
@@ -212,7 +219,10 @@ function resolveUrlForUser(url: string, user: UserPermissionContext, title?: str
     url.startsWith("/librarian") ||
     url.startsWith("/transport") ||
     url.startsWith("/staff") ||
+    url.startsWith("/hod") ||
     url.startsWith("/alumni") ||
+    url.startsWith("/faculty/work-wallet") ||
+    url.startsWith("/staff/faculty-work-wallet") ||
     [
       "/employee-management",
       "/leave",
@@ -396,7 +406,7 @@ export const DEAN_NAVIGATION: NavSection[] = [
         children: [
           { title: "Dashboard", url: "/staff/student-dean" },
           { title: "Students", url: "/staff/student-dean/students" },
-          { title: "Student Profiles", url: "/staff/student-dean/profiles" },
+          { title: "Student Profiles", url: "/staff/student-dean/student-profiles" },
           { title: "Grievances", url: "/staff/student-dean/grievances" },
           { title: "Scholarships", url: "/staff/student-dean/scholarships" },
           { title: "Discipline", url: "/staff/student-dean/discipline" },
@@ -417,12 +427,12 @@ export const DEAN_NAVIGATION: NavSection[] = [
           { title: "Dashboard", url: "/staff/iqac" },
           { title: "NAAC", url: "/staff/iqac/naac" },
           { title: "AQAR", url: "/staff/iqac/aqar" },
-          { title: "Academic Audit", url: "/staff/iqac/audit" },
-          { title: "Quality Metrics", url: "/staff/iqac/metrics" },
-          { title: "KPI Monitoring", url: "/staff/iqac/kpi" },
+          { title: "Academic Audit", url: "/staff/iqac/academic-audit" },
+          { title: "Quality Metrics", url: "/staff/iqac/quality-metrics" },
+          { title: "KPI Monitoring", url: "/staff/iqac/kpi-dashboard" },
           { title: "Feedback", url: "/staff/iqac/feedback" },
-          { title: "Compliance", url: "/staff/iqac/compliance" },
-          { title: "Documents", url: "/staff/iqac/documents" },
+          { title: "Compliance", url: "/staff/iqac/compliance-tracker" },
+          { title: "Documents", url: "/staff/iqac/criteria-docs" },
           { title: "Reports", url: "/staff/iqac/reports" },
           { title: "Notifications", url: "/staff/iqac/notifications" },
           { title: "Settings", url: "/staff/iqac/settings" },
@@ -434,13 +444,13 @@ export const DEAN_NAVIGATION: NavSection[] = [
         icon: Building2,
         children: [
           { title: "Dashboard", url: "/staff/ima" },
+          { title: "Laboratories", url: "/staff/ima/laboratories" },
           { title: "Industry Partners", url: "/staff/ima/partners" },
           { title: "MoUs", url: "/staff/ima/mou" },
           { title: "Guest Lectures", url: "/staff/ima/guest-lectures" },
           { title: "Workshops", url: "/staff/ima/workshops" },
-          { title: "Alumni", url: "/staff/ima/alumni" },
-          { title: "Internships", url: "/staff/ima/internships" },
-          { title: "Skill Programs", url: "/staff/ima/skill-programs" },
+          { title: "Equipment Inventory", url: "/staff/ima/equipment-inventory" },
+          { title: "Asset Register", url: "/staff/ima/asset-register" },
           { title: "Reports", url: "/staff/ima/reports" },
           { title: "Notifications", url: "/staff/ima/notifications" },
           { title: "Settings", url: "/staff/ima/settings" },
@@ -452,14 +462,14 @@ export const DEAN_NAVIGATION: NavSection[] = [
         icon: TrendingUp,
         children: [
           { title: "Dashboard", url: "/staff/research-development" },
-          { title: "Research Projects", url: "/staff/research-development/projects" },
-          { title: "Publications", url: "/staff/research-development/publications" },
+          { title: "Research Projects", url: "/staff/research-development/ongoing-projects" },
+          { title: "Publications", url: "/staff/research-development/journal-publications" },
           { title: "Patents", url: "/staff/research-development/patents" },
-          { title: "Grants", url: "/staff/research-development/grants" },
-          { title: "Research Scholars", url: "/staff/research-development/scholars" },
+          { title: "Grants", url: "/staff/research-development/govt-grants" },
+          { title: "Research Scholars", url: "/staff/research-development/phd-scholars" },
           { title: "Conferences", url: "/staff/research-development/conferences" },
-          { title: "Innovation", url: "/staff/research-development/innovation" },
-          { title: "Startups", url: "/staff/research-development/startups" },
+          { title: "Innovation", url: "/staff/research-development/innovations" },
+          { title: "Startups", url: "/staff/research-development/incubation" },
           { title: "Reports", url: "/staff/research-development/reports" },
           { title: "Notifications", url: "/staff/research-development/notifications" },
           { title: "Settings", url: "/staff/research-development/settings" },
@@ -471,14 +481,14 @@ export const DEAN_NAVIGATION: NavSection[] = [
         icon: Wallet,
         children: [
           { title: "Dashboard", url: "/staff/finance-dean" },
-          { title: "Budget", url: "/staff/finance-dean/budget" },
-          { title: "Fee Collection", url: "/staff/finance-dean/fees" },
-          { title: "Expenses", url: "/staff/finance-dean/expenses" },
-          { title: "Payroll", url: "/staff/finance-dean/payroll" },
-          { title: "Purchase Requests", url: "/staff/finance-dean/purchases" },
-          { title: "Scholarships", url: "/staff/finance-dean/scholarships" },
-          { title: "Financial Reports", url: "/staff/finance-dean/reports" },
-          { title: "Audit", url: "/staff/finance-dean/audit" },
+          { title: "Annual Budget", url: "/staff/finance-dean/annual-budget" },
+          { title: "Fee Collection", url: "/staff/finance-dean/fee-collection" },
+          { title: "Daily Expenses", url: "/staff/finance-dean/daily-expenses" },
+          { title: "Faculty Payroll", url: "/staff/finance-dean/faculty-payroll" },
+          { title: "Purchase Requests", url: "/staff/finance-dean/purchase-requests" },
+          { title: "Scholarships", url: "/staff/finance-dean/scholarships-concessions" },
+          { title: "Financial Reports", url: "/staff/finance-dean/financial-reports" },
+          { title: "Internal Audit", url: "/staff/finance-dean/internal-audit" },
           { title: "Notifications", url: "/staff/finance-dean/notifications" },
           { title: "Settings", url: "/staff/finance-dean/settings" },
         ],
@@ -489,14 +499,14 @@ export const DEAN_NAVIGATION: NavSection[] = [
         icon: FileSpreadsheet,
         children: [
           { title: "Dashboard", url: "/staff/examination-dean" },
-          { title: "Exam Schedule", url: "/staff/examination-dean/schedule" },
-          { title: "Hall Tickets", url: "/staff/examination-dean/hall-tickets" },
-          { title: "Invigilators", url: "/staff/examination-dean/invigilators" },
-          { title: "Results", url: "/staff/examination-dean/results" },
-          { title: "Revaluation", url: "/staff/examination-dean/revaluation" },
-          { title: "Malpractice", url: "/staff/examination-dean/malpractice" },
-          { title: "Question Papers", url: "/staff/examination-dean/question-papers" },
-          { title: "Reports", url: "/staff/examination-dean/reports" },
+          { title: "Exam Schedule", url: "/staff/examination-dean/exam-schedule" },
+          { title: "Hall Tickets", url: "/staff/examination-dean/generate-hall-tickets" },
+          { title: "Invigilators", url: "/staff/examination-dean/invigilator-allocation" },
+          { title: "Result Processing", url: "/staff/examination-dean/result-processing" },
+          { title: "Revaluation", url: "/staff/examination-dean/revaluation-requests" },
+          { title: "Malpractice", url: "/staff/examination-dean/malpractice-cases" },
+          { title: "Question Papers", url: "/staff/examination-dean/question-paper-upload" },
+          { title: "Exam Reports", url: "/staff/examination-dean/exam-reports" },
           { title: "Notifications", url: "/staff/examination-dean/notifications" },
           { title: "Settings", url: "/staff/examination-dean/settings" },
         ],
@@ -508,13 +518,13 @@ export const DEAN_NAVIGATION: NavSection[] = [
         children: [
           { title: "Dashboard", url: "/staff/placement-dean" },
           { title: "Companies", url: "/staff/placement-dean/companies" },
-          { title: "Placement Drives", url: "/staff/placement-dean/drives" },
-          { title: "Internships", url: "/staff/placement-dean/internships" },
+          { title: "Placement Drives", url: "/staff/placement-dean/upcoming-drives" },
+          { title: "Internships", url: "/staff/placement-dean/internship-opportunities" },
           { title: "Eligible Students", url: "/staff/placement-dean/eligible-students" },
-          { title: "Training", url: "/staff/placement-dean/training" },
-          { title: "Offers", url: "\/staff/placement-dean/offers" },
-          { title: "Package Analytics", url: "/staff/placement-dean/package-analytics" },
-          { title: "Reports", url: "/staff/placement-dean/reports" },
+          { title: "Training", url: "/staff/placement-dean/aptitude-training" },
+          { title: "Offers", url: "/staff/placement-dean/offer-letters" },
+          { title: "Package Analytics", url: "/staff/placement-dean/package-analysis" },
+          { title: "Reports", url: "/staff/placement-dean/placement-reports" },
           { title: "Notifications", url: "/staff/placement-dean/notifications" },
           { title: "Settings", url: "/staff/placement-dean/settings" },
         ],
@@ -524,10 +534,15 @@ export const DEAN_NAVIGATION: NavSection[] = [
 ];
 
 export function navigationForUser(user: UserPermissionContext, currentPath?: string): NavSection[] {
-  // Path-based Dean portfolio navigation matching (guarantees ONLY that dean's sidebar is shown)
+  // Path-based Dean & Module portfolio navigation matching (guarantees ONLY that module's sidebar is shown)
   if (currentPath) {
-    if (currentPath.startsWith("/librarian")) return LIBRARIAN_NAVIGATION;
+    if (currentPath.startsWith("/librarian") || currentPath.startsWith("/library")) return LIBRARIAN_NAVIGATION;
     if (currentPath.startsWith("/transport")) return TRANSPORT_NAVIGATION;
+    if (currentPath.startsWith("/hostel")) return HOSTEL_NAVIGATION;
+    if (currentPath.startsWith("/hr")) return HR_NAVIGATION;
+    if (currentPath.startsWith("/ai-analytics")) return AI_ANALYTICS_NAVIGATION;
+    if (currentPath.startsWith("/placement")) return PLACEMENT_OFFICER_NAVIGATION;
+    if (currentPath.startsWith("/external-user")) return RECRUITER_NAVIGATION;
     if (currentPath.startsWith("/staff/academic-dean")) return ACADEMIC_DEAN_NAVIGATION;
     if (currentPath.startsWith("/staff/student-dean")) return STUDENT_DEAN_NAVIGATION;
     if (currentPath.startsWith("/staff/iqac")) return IQAC_NAVIGATION;
@@ -536,6 +551,12 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
     if (currentPath.startsWith("/staff/finance-dean")) return FINANCE_NAVIGATION;
     if (currentPath.startsWith("/staff/examination-dean")) return EXAMINATION_NAVIGATION;
     if (currentPath.startsWith("/staff/placement-dean")) return PLACEMENT_NAVIGATION;
+    if (currentPath.startsWith("/hod")) return HOD_NAVIGATION;
+  }
+
+  // HOD Navigation
+  if (user.flags.includes("isHod") || user.role === "hod") {
+    return HOD_NAVIGATION;
   }
 
   // Librarian Portal Navigation
@@ -610,6 +631,7 @@ export function navigationForUser(user: UserPermissionContext, currentPath?: str
           { title: "Assessments", url: "/faculty/assessments", icon: GraduationCap },
           { title: "Examinations", url: "/faculty/examinations", icon: FileSpreadsheet },
           { title: "Research", url: "/faculty/research", icon: TrendingUp },
+          { title: "Extra Work Wallet", url: "/faculty/work-wallet", icon: Star, badge: "WWP" },
           { title: "Leave", url: "/faculty/leave", icon: CalendarRange },
           { title: "Payroll", url: "/faculty/payroll", icon: Wallet },
           { title: "Reports", url: "/faculty/reports", icon: BarChart3 },

@@ -65,6 +65,7 @@ export const IQAC_NAVIGATION: NavSection[] = [
     label: "Compliance",
     items: [
       { title: "Compliance Tracker", url: "/staff/iqac/compliance-tracker", icon: CheckSquare },
+      { title: "Faculty Work Approvals", url: "/staff/faculty-work-wallet", icon: BadgeCheck },
       { title: "Criteria Documentation", url: "/staff/iqac/criteria-docs", icon: FolderKanban },
       { title: "Document Repository", url: "/staff/iqac/document-repo", icon: FolderGit2 },
       { title: "Evidence Uploads", url: "/staff/iqac/evidence-uploads", icon: Upload },

@@ -65,6 +65,7 @@ export const RESEARCH_NAVIGATION: NavSection[] = [
     items: [
       { title: "Patents", url: "/staff/research-development/patents", icon: Award },
       { title: "Copyrights", url: "/staff/research-development/copyrights", icon: ShieldCheck },
+      { title: "Faculty Research Extra Work", url: "/staff/faculty-work-wallet", icon: Award },
       { title: "Innovations", url: "/staff/research-development/innovations", icon: Sparkles },
       { title: "Startups & Incubation", url: "/staff/research-development/incubation", icon: Rocket },
     ],

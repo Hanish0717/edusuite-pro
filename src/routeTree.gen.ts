@@ -123,6 +123,7 @@ import { Route as FacultySettingsRouteImport } from './routes/faculty.settings'
 import { Route as FacultyStudentsRouteImport } from './routes/faculty.students'
 import { Route as FacultySubjectsRouteImport } from './routes/faculty.subjects'
 import { Route as FacultyTimetableRouteImport } from './routes/faculty.timetable'
+import { Route as FacultyWorkWalletRouteImport } from './routes/faculty.work-wallet'
 import { Route as FinanceIndexRouteImport } from './routes/finance.index'
 import { Route as FinanceDashboardRouteImport } from './routes/finance.dashboard'
 import { Route as FinanceFeesRouteImport } from './routes/finance.fees'
@@ -131,7 +132,9 @@ import { Route as HodIndexRouteImport } from './routes/hod.index'
 import { Route as HodAttendanceRouteImport } from './routes/hod.attendance'
 import { Route as HodDashboardRouteImport } from './routes/hod.dashboard'
 import { Route as HodFacultyRouteImport } from './routes/hod.faculty'
+import { Route as HodFacultyWorkWalletRouteImport } from './routes/hod.faculty-work-wallet'
 import { Route as HodReportsRouteImport } from './routes/hod.reports'
+import { Route as HodWorkWalletRouteImport } from './routes/hod.work-wallet'
 import { Route as HostelIndexRouteImport } from './routes/hostel.index'
 import { Route as HostelAttendanceRouteImport } from './routes/hostel.attendance'
 import { Route as HostelBlocksRouteImport } from './routes/hostel.blocks'
@@ -208,6 +211,7 @@ import { Route as PlacementStudentsRouteImport } from './routes/placement.studen
 import { Route as StaffIndexRouteImport } from './routes/staff.index'
 import { Route as StaffAcademicDeanRouteImport } from './routes/staff.academic-dean'
 import { Route as StaffExaminationDeanRouteImport } from './routes/staff.examination-dean'
+import { Route as StaffFacultyWorkWalletRouteImport } from './routes/staff.faculty-work-wallet'
 import { Route as StaffFinanceDeanRouteImport } from './routes/staff.finance-dean'
 import { Route as StaffImaRouteImport } from './routes/staff.ima'
 import { Route as StaffIqacRouteImport } from './routes/staff.iqac'
@@ -1221,6 +1225,11 @@ const FacultyTimetableRoute = FacultyTimetableRouteImport.update({
   path: '/timetable',
   getParentRoute: () => FacultyRoute,
 } as any)
+const FacultyWorkWalletRoute = FacultyWorkWalletRouteImport.update({
+  id: '/work-wallet',
+  path: '/work-wallet',
+  getParentRoute: () => FacultyRoute,
+} as any)
 const FinanceIndexRoute = FinanceIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -1261,9 +1270,19 @@ const HodFacultyRoute = HodFacultyRouteImport.update({
   path: '/faculty',
   getParentRoute: () => HodRoute,
 } as any)
+const HodFacultyWorkWalletRoute = HodFacultyWorkWalletRouteImport.update({
+  id: '/faculty-work-wallet',
+  path: '/faculty-work-wallet',
+  getParentRoute: () => HodRoute,
+} as any)
 const HodReportsRoute = HodReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodWorkWalletRoute = HodWorkWalletRouteImport.update({
+  id: '/work-wallet',
+  path: '/work-wallet',
   getParentRoute: () => HodRoute,
 } as any)
 const HostelIndexRoute = HostelIndexRouteImport.update({
@@ -1646,6 +1665,11 @@ const StaffAcademicDeanRoute = StaffAcademicDeanRouteImport.update({
 const StaffExaminationDeanRoute = StaffExaminationDeanRouteImport.update({
   id: '/examination-dean',
   path: '/examination-dean',
+  getParentRoute: () => StaffRoute,
+} as any)
+const StaffFacultyWorkWalletRoute = StaffFacultyWorkWalletRouteImport.update({
+  id: '/faculty-work-wallet',
+  path: '/faculty-work-wallet',
   getParentRoute: () => StaffRoute,
 } as any)
 const StaffFinanceDeanRoute = StaffFinanceDeanRouteImport.update({
@@ -4247,13 +4271,16 @@ export interface FileRoutesByFullPath {
   '/faculty/students': typeof FacultyStudentsRoute
   '/faculty/subjects': typeof FacultySubjectsRoute
   '/faculty/timetable': typeof FacultyTimetableRoute
+  '/faculty/work-wallet': typeof FacultyWorkWalletRoute
   '/finance/dashboard': typeof FinanceDashboardRoute
   '/finance/fees': typeof FinanceFeesRoute
   '/finance/reports': typeof FinanceReportsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/dashboard': typeof HodDashboardRoute
   '/hod/faculty': typeof HodFacultyRoute
+  '/hod/faculty-work-wallet': typeof HodFacultyWorkWalletRoute
   '/hod/reports': typeof HodReportsRoute
+  '/hod/work-wallet': typeof HodWorkWalletRoute
   '/hostel/attendance': typeof HostelAttendanceRoute
   '/hostel/blocks': typeof HostelBlocksRoute
   '/hostel/complaints': typeof HostelComplaintsRoute
@@ -4323,6 +4350,7 @@ export interface FileRoutesByFullPath {
   '/placement/students': typeof PlacementStudentsRoute
   '/staff/academic-dean': typeof StaffAcademicDeanRouteWithChildren
   '/staff/examination-dean': typeof StaffExaminationDeanRouteWithChildren
+  '/staff/faculty-work-wallet': typeof StaffFacultyWorkWalletRoute
   '/staff/finance-dean': typeof StaffFinanceDeanRouteWithChildren
   '/staff/ima': typeof StaffImaRouteWithChildren
   '/staff/iqac': typeof StaffIqacRouteWithChildren
@@ -4864,13 +4892,16 @@ export interface FileRoutesByTo {
   '/faculty/students': typeof FacultyStudentsRoute
   '/faculty/subjects': typeof FacultySubjectsRoute
   '/faculty/timetable': typeof FacultyTimetableRoute
+  '/faculty/work-wallet': typeof FacultyWorkWalletRoute
   '/finance/dashboard': typeof FinanceDashboardRoute
   '/finance/fees': typeof FinanceFeesRoute
   '/finance/reports': typeof FinanceReportsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/dashboard': typeof HodDashboardRoute
   '/hod/faculty': typeof HodFacultyRoute
+  '/hod/faculty-work-wallet': typeof HodFacultyWorkWalletRoute
   '/hod/reports': typeof HodReportsRoute
+  '/hod/work-wallet': typeof HodWorkWalletRoute
   '/hostel/attendance': typeof HostelAttendanceRoute
   '/hostel/blocks': typeof HostelBlocksRoute
   '/hostel/complaints': typeof HostelComplaintsRoute
@@ -4938,6 +4969,7 @@ export interface FileRoutesByTo {
   '/placement/reports': typeof PlacementReportsRoute
   '/placement/settings': typeof PlacementSettingsRoute
   '/placement/students': typeof PlacementStudentsRoute
+  '/staff/faculty-work-wallet': typeof StaffFacultyWorkWalletRoute
   '/staff/student_dean': typeof StaffStudent_deanRouteWithChildren
   '/student/attendance': typeof StudentAttendanceRoute
   '/student/courses': typeof StudentCoursesRoute
@@ -5494,13 +5526,16 @@ export interface FileRoutesById {
   '/faculty/students': typeof FacultyStudentsRoute
   '/faculty/subjects': typeof FacultySubjectsRoute
   '/faculty/timetable': typeof FacultyTimetableRoute
+  '/faculty/work-wallet': typeof FacultyWorkWalletRoute
   '/finance/dashboard': typeof FinanceDashboardRoute
   '/finance/fees': typeof FinanceFeesRoute
   '/finance/reports': typeof FinanceReportsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/dashboard': typeof HodDashboardRoute
   '/hod/faculty': typeof HodFacultyRoute
+  '/hod/faculty-work-wallet': typeof HodFacultyWorkWalletRoute
   '/hod/reports': typeof HodReportsRoute
+  '/hod/work-wallet': typeof HodWorkWalletRoute
   '/hostel/attendance': typeof HostelAttendanceRoute
   '/hostel/blocks': typeof HostelBlocksRoute
   '/hostel/complaints': typeof HostelComplaintsRoute
@@ -5570,6 +5605,7 @@ export interface FileRoutesById {
   '/placement/students': typeof PlacementStudentsRoute
   '/staff/academic-dean': typeof StaffAcademicDeanRouteWithChildren
   '/staff/examination-dean': typeof StaffExaminationDeanRouteWithChildren
+  '/staff/faculty-work-wallet': typeof StaffFacultyWorkWalletRoute
   '/staff/finance-dean': typeof StaffFinanceDeanRouteWithChildren
   '/staff/ima': typeof StaffImaRouteWithChildren
   '/staff/iqac': typeof StaffIqacRouteWithChildren
@@ -6133,13 +6169,16 @@ export interface FileRouteTypes {
     | '/faculty/students'
     | '/faculty/subjects'
     | '/faculty/timetable'
+    | '/faculty/work-wallet'
     | '/finance/dashboard'
     | '/finance/fees'
     | '/finance/reports'
     | '/hod/attendance'
     | '/hod/dashboard'
     | '/hod/faculty'
+    | '/hod/faculty-work-wallet'
     | '/hod/reports'
+    | '/hod/work-wallet'
     | '/hostel/attendance'
     | '/hostel/blocks'
     | '/hostel/complaints'
@@ -6209,6 +6248,7 @@ export interface FileRouteTypes {
     | '/placement/students'
     | '/staff/academic-dean'
     | '/staff/examination-dean'
+    | '/staff/faculty-work-wallet'
     | '/staff/finance-dean'
     | '/staff/ima'
     | '/staff/iqac'
@@ -6750,13 +6790,16 @@ export interface FileRouteTypes {
     | '/faculty/students'
     | '/faculty/subjects'
     | '/faculty/timetable'
+    | '/faculty/work-wallet'
     | '/finance/dashboard'
     | '/finance/fees'
     | '/finance/reports'
     | '/hod/attendance'
     | '/hod/dashboard'
     | '/hod/faculty'
+    | '/hod/faculty-work-wallet'
     | '/hod/reports'
+    | '/hod/work-wallet'
     | '/hostel/attendance'
     | '/hostel/blocks'
     | '/hostel/complaints'
@@ -6824,6 +6867,7 @@ export interface FileRouteTypes {
     | '/placement/reports'
     | '/placement/settings'
     | '/placement/students'
+    | '/staff/faculty-work-wallet'
     | '/staff/student_dean'
     | '/student/attendance'
     | '/student/courses'
@@ -7379,13 +7423,16 @@ export interface FileRouteTypes {
     | '/faculty/students'
     | '/faculty/subjects'
     | '/faculty/timetable'
+    | '/faculty/work-wallet'
     | '/finance/dashboard'
     | '/finance/fees'
     | '/finance/reports'
     | '/hod/attendance'
     | '/hod/dashboard'
     | '/hod/faculty'
+    | '/hod/faculty-work-wallet'
     | '/hod/reports'
+    | '/hod/work-wallet'
     | '/hostel/attendance'
     | '/hostel/blocks'
     | '/hostel/complaints'
@@ -7455,6 +7502,7 @@ export interface FileRouteTypes {
     | '/placement/students'
     | '/staff/academic-dean'
     | '/staff/examination-dean'
+    | '/staff/faculty-work-wallet'
     | '/staff/finance-dean'
     | '/staff/ima'
     | '/staff/iqac'
@@ -8778,6 +8826,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacultyTimetableRouteImport
       parentRoute: typeof FacultyRoute
     }
+    '/faculty/work-wallet': {
+      id: '/faculty/work-wallet'
+      path: '/work-wallet'
+      fullPath: '/faculty/work-wallet'
+      preLoaderRoute: typeof FacultyWorkWalletRouteImport
+      parentRoute: typeof FacultyRoute
+    }
     '/finance/': {
       id: '/finance/'
       path: '/'
@@ -8834,11 +8889,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HodFacultyRouteImport
       parentRoute: typeof HodRoute
     }
+    '/hod/faculty-work-wallet': {
+      id: '/hod/faculty-work-wallet'
+      path: '/faculty-work-wallet'
+      fullPath: '/hod/faculty-work-wallet'
+      preLoaderRoute: typeof HodFacultyWorkWalletRouteImport
+      parentRoute: typeof HodRoute
+    }
     '/hod/reports': {
       id: '/hod/reports'
       path: '/reports'
       fullPath: '/hod/reports'
       preLoaderRoute: typeof HodReportsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/work-wallet': {
+      id: '/hod/work-wallet'
+      path: '/work-wallet'
+      fullPath: '/hod/work-wallet'
+      preLoaderRoute: typeof HodWorkWalletRouteImport
       parentRoute: typeof HodRoute
     }
     '/hostel/': {
@@ -9371,6 +9440,13 @@ declare module '@tanstack/react-router' {
       path: '/examination-dean'
       fullPath: '/staff/examination-dean'
       preLoaderRoute: typeof StaffExaminationDeanRouteImport
+      parentRoute: typeof StaffRoute
+    }
+    '/staff/faculty-work-wallet': {
+      id: '/staff/faculty-work-wallet'
+      path: '/faculty-work-wallet'
+      fullPath: '/staff/faculty-work-wallet'
+      preLoaderRoute: typeof StaffFacultyWorkWalletRouteImport
       parentRoute: typeof StaffRoute
     }
     '/staff/finance-dean': {
@@ -12600,6 +12676,7 @@ interface FacultyRouteChildren {
   FacultyStudentsRoute: typeof FacultyStudentsRoute
   FacultySubjectsRoute: typeof FacultySubjectsRoute
   FacultyTimetableRoute: typeof FacultyTimetableRoute
+  FacultyWorkWalletRoute: typeof FacultyWorkWalletRoute
   FacultyIndexRoute: typeof FacultyIndexRoute
 }
 
@@ -12623,6 +12700,7 @@ const FacultyRouteChildren: FacultyRouteChildren = {
   FacultyStudentsRoute: FacultyStudentsRoute,
   FacultySubjectsRoute: FacultySubjectsRoute,
   FacultyTimetableRoute: FacultyTimetableRoute,
+  FacultyWorkWalletRoute: FacultyWorkWalletRoute,
   FacultyIndexRoute: FacultyIndexRoute,
 }
 
@@ -12650,7 +12728,9 @@ interface HodRouteChildren {
   HodAttendanceRoute: typeof HodAttendanceRoute
   HodDashboardRoute: typeof HodDashboardRoute
   HodFacultyRoute: typeof HodFacultyRoute
+  HodFacultyWorkWalletRoute: typeof HodFacultyWorkWalletRoute
   HodReportsRoute: typeof HodReportsRoute
+  HodWorkWalletRoute: typeof HodWorkWalletRoute
   HodIndexRoute: typeof HodIndexRoute
 }
 
@@ -12658,7 +12738,9 @@ const HodRouteChildren: HodRouteChildren = {
   HodAttendanceRoute: HodAttendanceRoute,
   HodDashboardRoute: HodDashboardRoute,
   HodFacultyRoute: HodFacultyRoute,
+  HodFacultyWorkWalletRoute: HodFacultyWorkWalletRoute,
   HodReportsRoute: HodReportsRoute,
+  HodWorkWalletRoute: HodWorkWalletRoute,
   HodIndexRoute: HodIndexRoute,
 }
 
@@ -13817,6 +13899,7 @@ const StaffStudent_deanRouteWithChildren =
 interface StaffRouteChildren {
   StaffAcademicDeanRoute: typeof StaffAcademicDeanRouteWithChildren
   StaffExaminationDeanRoute: typeof StaffExaminationDeanRouteWithChildren
+  StaffFacultyWorkWalletRoute: typeof StaffFacultyWorkWalletRoute
   StaffFinanceDeanRoute: typeof StaffFinanceDeanRouteWithChildren
   StaffImaRoute: typeof StaffImaRouteWithChildren
   StaffIqacRoute: typeof StaffIqacRouteWithChildren
@@ -13830,6 +13913,7 @@ interface StaffRouteChildren {
 const StaffRouteChildren: StaffRouteChildren = {
   StaffAcademicDeanRoute: StaffAcademicDeanRouteWithChildren,
   StaffExaminationDeanRoute: StaffExaminationDeanRouteWithChildren,
+  StaffFacultyWorkWalletRoute: StaffFacultyWorkWalletRoute,
   StaffFinanceDeanRoute: StaffFinanceDeanRouteWithChildren,
   StaffImaRoute: StaffImaRouteWithChildren,
   StaffIqacRoute: StaffIqacRouteWithChildren,

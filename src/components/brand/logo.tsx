@@ -3,10 +3,12 @@ import { cn } from "@/lib/utils";
 
 interface LogoProps {
   variant?: "mark" | "wordmark";
-  tone?: "color" | "mono";
+  tone?: "color" | "mono" | "white";
   className?: string;
   showName?: boolean;
   nameClassName?: string;
+  size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
+  animated?: boolean;
 }
 
 export function Logo({
@@ -15,30 +17,59 @@ export function Logo({
   className,
   showName = false,
   nameClassName,
+  size = "md",
+  animated = false,
 }: LogoProps) {
   const src = variant === "wordmark" ? brand.logos.wordmark : brand.logos.mark;
 
-  // If showName is true, show the full logo (image containing text) to avoid duplicate text
+  const sizeClasses = {
+    sm: "h-9 md:h-10",
+    md: "h-12 md:h-14",
+    lg: "h-16 md:h-18",
+    xl: "h-28 md:h-32",
+    "2xl": "h-36 md:h-44",
+    "3xl": "h-44 md:h-52",
+  };
+
+  const markSizeClasses = {
+    sm: "h-8 w-8",
+    md: "h-10 w-10",
+    lg: "h-16 w-16",
+    xl: "h-24 w-24",
+    "2xl": "h-32 w-32",
+    "3xl": "h-40 w-40",
+  };
+
+  const isWhite = tone === "mono" || tone === "white";
+
   if (showName) {
     return (
-      <span className={cn("flex min-w-0 items-center justify-start py-1", className)}>
+      <span
+        className={cn(
+          "inline-flex min-w-0 items-center justify-start py-1 transition-transform duration-300 hover:scale-105",
+          animated && "animate-logo-float",
+          className,
+        )}
+      >
         <img
           src={src}
           alt={brand.name}
           className={cn(
-            "h-12 w-auto shrink-0 object-contain",
-            tone === "mono" && brand.monochromeClassName,
+            "w-auto shrink-0 object-contain transition-all duration-300",
+            sizeClasses[size],
+            isWhite && "brightness-0 invert",
           )}
         />
       </span>
     );
   }
 
-  // Icon-only / Mark (app icon): Blue rounded square with a white icon inside
   return (
     <span
       className={cn(
-        "relative overflow-hidden h-9 w-9 shrink-0 rounded-xl flex items-center justify-center bg-primary shadow-sm",
+        "shrink-0 rounded-xl flex items-center justify-center bg-transparent transition-all duration-300 hover:scale-105",
+        markSizeClasses[size],
+        animated && "animate-logo-float",
         className,
       )}
     >
@@ -46,8 +77,8 @@ export function Logo({
         src={src}
         alt={`${brand.name} mark`}
         className={cn(
-          "absolute left-1/2 top-0 h-[54px] w-[81px] -translate-x-1/2 object-contain",
-          tone === "mono" && brand.monochromeClassName,
+          "h-full w-full object-contain transition-all duration-300",
+          isWhite && "brightness-0 invert",
         )}
       />
     </span>

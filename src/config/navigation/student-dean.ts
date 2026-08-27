@@ -53,6 +53,7 @@ export const STUDENT_DEAN_NAVIGATION: NavSection[] = [
     label: "Academic Support",
     items: [
       { title: "Mentoring", url: "/staff/student-dean/mentoring", icon: HeartHandshake },
+      { title: "Faculty Extra Work Approvals", url: "/staff/faculty-work-wallet", icon: Award },
       { title: "Student Requests", url: "/staff/student-dean/student-requests", icon: FileCheck },
       { title: "Certificates", url: "/staff/student-dean/certificates", icon: Award },
       { title: "Timetable", url: "/staff/student-dean/timetable", icon: CalendarRange },
