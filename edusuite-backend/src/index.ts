@@ -48,6 +48,7 @@ import studentPortalRoutes from "./modules/students/student-portal.routes";
 import employeeRoutes from "./modules/employees/employees.routes";
 import superAdminRoutes from "./modules/super-admin/super-admin.routes";
 import academicsRoutes from "./modules/academics/academics.routes";
+import deanRoutes from "./modules/dean/dean.routes";
 import hostelRoutes from "./modules/hostel/hostel.routes";
 import lmsRoutes from "./modules/lms/lms.routes";
 
